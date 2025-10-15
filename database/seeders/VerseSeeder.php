@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class ScriptureSeeder extends Seeder
+class VerseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,3 +15,6 @@ class ScriptureSeeder extends Seeder
         //
     }
 }
+
+
+

@@ -23,4 +23,19 @@ class Book extends Model
     {
         return $this->hasMany(Chapter::class);
     }
+
+    public function verses()
+    {
+    return $this->hasManyThrough(Verse::class, Chapter::class);
+    }
+
+    public function references()
+    {
+        return $this->hasMany(Reference::class);
+    }
+
+    public function reference()
+    {
+        return $this->belongsTo(Reference::class);
+    }
 }

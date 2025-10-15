@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreScriptureRequest;
-use App\Http\Requests\UpdateScriptureRequest;
-use App\Models\Scripture;
+use App\Http\Requests\StoreReferenceRequest;
+use App\Http\Requests\UpdateReferenceRequest;
+use App\Models\Reference;
 
-class ScriptureController extends Controller
+class ReferenceController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class ScriptureController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreScriptureRequest $request)
+    public function store(StoreReferenceRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class ScriptureController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Scripture $scripture)
+    public function show(Reference $reference)
     {
         //
     }
@@ -43,7 +43,7 @@ class ScriptureController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Scripture $scripture)
+    public function edit(Reference $reference)
     {
         //
     }
@@ -51,7 +51,7 @@ class ScriptureController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateScriptureRequest $request, Scripture $scripture)
+    public function update(UpdateReferenceRequest $request, Reference $reference)
     {
         //
     }
@@ -59,7 +59,7 @@ class ScriptureController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Scripture $scripture)
+    public function destroy(Reference $reference)
     {
         //
     }

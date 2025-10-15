@@ -5,26 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Chapter extends Model
+class Verse extends Model
 {
-    /** @use HasFactory<\Database\Factories\ChapterFactory> */
     use HasFactory;
 
     protected $fillable = [
         'book_id',
-        'title',
-        'introduction',
-        'chapter_number',
+        'chapter_id',
+        'verse_number',
+        'text',
+        'reference_id',
     ];
+
+    public function chapter()
+    {
+        return $this->belongsTo(Chapter::class);
+    }
 
     public function book()
     {
         return $this->belongsTo(Book::class);
-    }
-
-    public function verses()
-    {
-    return $this->hasMany(Verse::class);
     }
 
     public function references()
