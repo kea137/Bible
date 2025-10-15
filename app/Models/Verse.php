@@ -10,12 +10,17 @@ class Verse extends Model
     use HasFactory;
 
     protected $fillable = [
+        'bible_id',
         'book_id',
         'chapter_id',
         'verse_number',
         'text',
-        'reference_id',
     ];
+
+    public function bible()
+    {
+        return $this->belongsTo(Bible::class);
+    }
 
     public function chapter()
     {

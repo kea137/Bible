@@ -11,13 +11,19 @@ class Book extends Model
     use HasFactory;
 
     protected $fillable = [
+        'bible_id',
+        'book_number',
         'title',
         'author',
         'published_year',
         'introduction',
         'summary',
-        'book_number',
     ];
+
+    public function bible()
+    {
+        return $this->belongsTo(Bible::class);
+    }
 
     public function chapters()
     {

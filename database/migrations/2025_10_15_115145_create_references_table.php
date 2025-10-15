@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('references', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('bible_id')->constrained()->onDelete('cascade');
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
+            $table->foreignId('chapter_id')->constrained()->onDelete('cascade');
+            $table->foreignId('verse_id')->constrained()->onDelete('cascade');
+            $table->json('verse_reference');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

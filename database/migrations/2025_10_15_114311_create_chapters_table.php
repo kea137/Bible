@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('chapters', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('bible_id')->constrained()->onDelete('cascade');
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
+            $table->integer('chapter_number');
+            $table->string('title')->nullable();
+            $table->text('introduction')->nullable();
             $table->timestamps();
         });
     }

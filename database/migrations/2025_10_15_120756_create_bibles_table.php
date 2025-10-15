@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-    Schema::create('verses', function (Blueprint $table) {
+        Schema::create('bibles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bible_id')->constrained()->onDelete('cascade');
-            $table->foreignId('book_id')->constrained()->onDelete('cascade');
-            $table->foreignId('chapter_id')->constrained()->onDelete('cascade');
-            $table->integer('verse_number');
-            $table->text('text');
+            $table->string('name');
+            $table->string('abbreviation')->unique();
+            $table->string('language')->default('en');
+            $table->string('version')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-    Schema::dropIfExists('verses');
+        Schema::dropIfExists('bibles');
     }
 };
