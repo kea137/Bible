@@ -165,7 +165,7 @@ if (info) {
                                             'flex w-full max-w-xl flex-col items-center justify-center rounded-md border-2 border-dashed p-6 transition-colors',
                                             isDragActive
                                                 ? 'border-primary'
-                                                : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-zinc-950',
+                                                : 'border-gray-100 dark:border-accent bg-white dark:bg-background',
                                         ]"
                                         @dragover.prevent="handleDragOver"
                                         @dragleave="handleDragLeave"
