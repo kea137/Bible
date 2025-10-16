@@ -13,14 +13,6 @@ const setCookie = (name: string, value: string, days = 365) => {
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
 };
 
-const getStoredLanguage = () => {
-    if (typeof window === 'undefined') {
-        return null;
-    }
-
-    return localStorage.getItem('language') as Language | null;
-};
-
 const language = ref<Language>('en');
 
 export function useLanguage() {
