@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBibleRequest;
 use App\Http\Requests\UpdateBibleRequest;
 use App\Models\Bible;
+use Inertia\Inertia;
 
 class BibleController extends Controller
 {
@@ -13,7 +14,26 @@ class BibleController extends Controller
      */
     public function index()
     {
-        //
+        $bibles = Bible::all();
+
+        if ($bibles->count() === 0) {
+            // If no bibles exist, create a default one
+            $bible = Bible::create([
+                'name' => 'Default Bible',
+                'abbreviation' => 'KJV',
+                'description' => 'This is the default Bible.',
+                'language' => 'English',
+                'version' => 'KJV 1611',
+            ]);
+
+            // Optionally, you can add default books, chapters, and verses here
+
+            $bibles = Bible::all(); // Refresh the list of bibles
+        }
+
+        return Inertia::render('Bibles', [
+            'bibles' => $bibles,
+        ]);
     }
 
     /**
