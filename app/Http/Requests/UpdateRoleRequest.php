@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBibleRequest extends FormRequest
+class UpdateRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,12 +22,7 @@ class StoreBibleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'abbreviation' => ['required', 'string', 'max:10'],
-            'language' => ['required', 'string', 'max:100'],
-            'version' => ['required', 'string', 'max:100'],
-            'description' => ['nullable', 'string'],
-            'file' => ['required', 'file', 'mimes:txt,csv,xml,json', 'max:10240'], // Max 10MB
+            //
         ];
     }
 }

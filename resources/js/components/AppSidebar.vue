@@ -11,7 +11,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, bibles, bible_create } from '@/routes';
+import { dashboard, bibles, bible_create, role_management } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, CogIcon, Folder, LayoutGrid, LibraryBig, UserCog2 } from 'lucide-vue-next';
@@ -28,6 +28,11 @@ const mainNavItems: NavItem[] = [
         href: bibles(),
         icon: LibraryBig,
     },
+    {
+        title: 'Create Bibles',
+        href: bible_create(),
+        icon: BookOpen,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
@@ -37,8 +42,8 @@ const footerNavItems: NavItem[] = [
         icon: CogIcon,
     },
     {
-        title: 'Upload Bibles',
-        href: bible_create(),
+        title: 'Role Management',
+        href: role_management(),
         icon: UserCog2,
     },
 ];

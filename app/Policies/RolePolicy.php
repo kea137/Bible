@@ -2,27 +2,26 @@
 
 namespace App\Policies;
 
-use App\Models\Bible;
+use App\Models\Role;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
-class BiblePolicy
+class RolePolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        // All roles can view any Bibles
+        // All roles can view any roles
         return $user->roles()->whereIn('role_id', [1,2,3])->exists();
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Bible $bible): bool
+    public function view(User $user, Role $role): bool
     {
-        // All roles can view a Bible
+        // All roles can view a role
         return $user->roles()->whereIn('role_id', [1,2,3])->exists();
     }
 
@@ -32,42 +31,41 @@ class BiblePolicy
     public function create(User $user): bool
     {
         // Only admin (role 1) can create
-        return $user->roles()->where('role_id', 1)->exists();
+        return $user->roles()->where('role_id', [1])->exists();
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Bible $bible): bool
+    public function update(User $user, Role $role): bool
     {
-        // Admin (1) and editor (2) can update
-        return $user->roles()->whereIn('role_id', [1,2])->exists();
+        return $user->roles()->where('role_id', [1,2])->exists();
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Bible $bible): bool
+    public function delete(User $user, Role $role): bool
     {
         // Only admin (role 1) can delete
-        return $user->roles()->where('role_id', 1)->exists();
+        return $user->roles()->where('role_id', [1])->exists();
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Bible $bible): bool
+    public function restore(User $user, Role $role): bool
     {
         // Only admin (role 1) can restore
-        return $user->roles()->where('role_id', 1)->exists();
+        return $user->roles()->where('role_id', [1])->exists();
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Bible $bible): bool
+    public function forceDelete(User $user, Role $role): bool
     {
         // Only admin (role 1) can force delete
-        return $user->roles()->where('role_id', 1)->exists();
+        return $user->roles()->where('role_id', [1])->exists();
     }
 }

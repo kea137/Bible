@@ -1,0 +1,178 @@
+<script setup lang="ts">
+import AlertUser from '@/components/AlertUser.vue';
+import Button from '@/components/ui/button/Button.vue';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Table from '@/components/ui/table/Table.vue';
+import TableBody from '@/components/ui/table/TableBody.vue';
+import TableCell from '@/components/ui/table/TableCell.vue';
+import TableHead from '@/components/ui/table/TableHead.vue';
+import TableHeader from '@/components/ui/table/TableHeader.vue';
+import TableRow from '@/components/ui/table/TableRow.vue';
+// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { role_management, update_roles } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { Plus, Save, Trash2, UserCog } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+
+const page = usePage();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Role Management',
+        href: role_management().url,
+    },
+];
+
+type User = {
+    id: number;
+    name: string;
+    email: string;
+    roles: string[];
+    role_ids: number[];
+};
+
+type Role = {
+    id: number;
+    name: string;
+    role_number: number;
+    description: string;
+};
+
+const props = defineProps<{
+    users: User[];
+    roles: Role[];
+}>();
+
+// Success/error handling
+const success = computed(() => page.props.success as string);
+const error = computed(() => page.props.error as string);
+const alertSuccess = ref(!!success.value);
+const alertError = ref(!!error.value);
+
+// User role management
+const selectedUserRoles = ref<{ [userId: number]: number[] }>({});
+
+// Initialize selected roles
+props.users.forEach((user) => {
+    selectedUserRoles.value[user.id] = [...user.role_ids];
+});
+
+const updateUserRole = (userId: number, roleId: number) => {
+    const currentRoles = selectedUserRoles.value[userId] || [];
+    const index = currentRoles.indexOf(roleId);
+
+    if (index > -1) {
+        currentRoles.splice(index, 1);
+    } else {
+        currentRoles.push(roleId);
+    }
+
+    selectedUserRoles.value[userId] = [...currentRoles];
+};
+
+const saveUserRoles = (userId: number) => {
+    router.put(
+        update_roles(userId).url,
+        {
+            role_ids: selectedUserRoles.value[userId],
+        },
+        {
+            preserveScroll: true,
+        },
+    );
+};
+
+// Leadership management
+const newLeadership = ref({
+    course_id: null as number | null,
+    name: '',
+    rank: '',
+    position: '',
+});
+
+</script>
+
+<template>
+    <Head title="Role Management" />
+
+    <AlertUser
+        v-if="alertSuccess"
+        :open="true"
+        title="Success"
+        :confirmButtonText="'OK'"
+        :message="success"
+        variant="success"
+        @update:open="() => (alertSuccess = false)"
+    />
+    <AlertUser
+        v-if="alertError"
+        :open="true"
+        title="Error"
+        :confirmButtonText="'OK'"
+        :message="error"
+        variant="error"
+        @update:open="() => (alertError = false)"
+    />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+            <!-- User Role Management Section -->
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-2">
+                        <UserCog class="h-6 w-6" />
+                        <CardTitle>User Role Management</CardTitle>
+                    </div>
+                    <CardDescription>Assign and manage user roles in the system</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Current Roles</TableHead>
+                                <TableHead>Assign Roles</TableHead>
+                                <TableHead>Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow v-for="user in users" :key="user.id">
+                                <TableCell>{{ user.name }}</TableCell>
+                                <TableCell>{{ user.email }}</TableCell>
+                                <TableCell>
+                                    <div class="flex gap-1">
+                                        <span v-for="role in user.roles" :key="role" class="rounded-md bg-primary/10 px-2 py-1 text-xs">
+                                            {{ role }}
+                                        </span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div class="flex flex-wrap gap-2">
+                                        <label v-for="role in roles" :key="role.id" class="flex cursor-pointer items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                :checked="selectedUserRoles[user.id]?.includes(role.id)"
+                                                @change="updateUserRole(user.id, role.id)"
+                                                class="h-4 w-4 rounded border-gray-300"
+                                            />
+                                            <span class="text-sm">{{ role.name }}</span>
+                                        </label>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <Button size="sm" @click="saveUserRoles(user.id)">
+                                        <Save class="h-4 w-4" />
+                                        Save
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
+    </AppLayout>
+</template>
