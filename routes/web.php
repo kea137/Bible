@@ -33,5 +33,11 @@ Route::get('/create/{bible}/references', [ReferenceController::class, 'create'])
 Route::post('/references/store', [ReferenceController::class, 'store'])->name('references_store')->middleware('auth');
 Route::get('/api/verses/{verse}/references', [ReferenceController::class, 'getVerseReferences'])->name('verse_references');
 
+// Verse highlight routes
+Route::post('/api/verse-highlights', [\App\Http\Controllers\VerseHighlightController::class, 'store'])->name('verse_highlights_store')->middleware('auth');
+Route::delete('/api/verse-highlights/{verse}', [\App\Http\Controllers\VerseHighlightController::class, 'destroy'])->name('verse_highlights_destroy')->middleware('auth');
+Route::get('/api/verse-highlights', [\App\Http\Controllers\VerseHighlightController::class, 'index'])->name('verse_highlights_index')->middleware('auth');
+Route::get('/api/verse-highlights/chapter', [\App\Http\Controllers\VerseHighlightController::class, 'getForChapter'])->name('verse_highlights_chapter')->middleware('auth');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

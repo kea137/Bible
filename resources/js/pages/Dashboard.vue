@@ -9,7 +9,8 @@ import CardTitle from '@/components/ui/card/CardTitle.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import Button from '@/components/ui/button/Button.vue';
-import { BookOpen, Library, Quote, TrendingUp } from 'lucide-vue-next';
+import { BookOpen, Library, Quote, TrendingUp, Highlighter } from 'lucide-vue-next';
+import { ref, onMounted } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -49,6 +50,23 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const highlights = ref<any[]>([]);
+
+async function loadHighlights() {
+    try {
+        const response = await fetch('/api/verse-highlights');
+        if (response.ok) {
+            highlights.value = await response.json();
+        }
+    } catch (error) {
+        console.error('Failed to load highlights:', error);
+    }
+}
+
+onMounted(() => {
+    loadHighlights();
+});
+
 function continueLast() {
     if (props.lastReading) {
         router.visit(`/bibles/${props.lastReading.bible_id}`);
@@ -57,6 +75,15 @@ function continueLast() {
 
 function exploreBibles() {
     router.visit(bibles().url);
+}
+
+function getHighlightColorClass(color: string): string {
+    if (color === 'yellow') {
+        return 'border-l-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
+    } else if (color === 'green') {
+        return 'border-l-green-400 bg-green-50 dark:bg-green-900/20';
+    }
+    return '';
 }
 </script>
 
@@ -194,6 +221,37 @@ function exploreBibles() {
                             </p>
                         </div>
                         <BookOpen class="h-8 w-8 text-primary/40" />
+                    </div>
+                </CardContent>
+            </Card>
+
+            <!-- Highlighted Verses -->
+            <Card v-if="highlights.length > 0">
+                <CardHeader>
+                    <div class="flex items-center gap-2">
+                        <Highlighter class="h-5 w-5 text-primary" />
+                        <CardTitle>Your Highlighted Verses</CardTitle>
+                    </div>
+                    <CardDescription>Recent verses you've marked</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div class="space-y-3">
+                        <div 
+                            v-for="highlight in highlights.slice(0, 5)" 
+                            :key="highlight.id"
+                            :class="['border-l-4 pl-4 py-2 rounded-r transition-colors', getHighlightColorClass(highlight.color)]"
+                        >
+                            <p class="text-sm mb-2">{{ highlight.verse.text }}</p>
+                            <p class="text-xs text-muted-foreground font-medium">
+                                {{ highlight.verse.book?.title }} {{ highlight.verse.chapter?.chapter_number }}:{{ highlight.verse.verse_number }}
+                            </p>
+                            <p v-if="highlight.note" class="text-xs text-muted-foreground italic mt-1">
+                                Note: {{ highlight.note }}
+                            </p>
+                        </div>
+                        <Button v-if="highlights.length > 5" variant="outline" class="w-full mt-4">
+                            View All {{ highlights.length }} Highlights
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
