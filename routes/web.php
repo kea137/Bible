@@ -13,6 +13,10 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/license', function () {
+    return Inertia::render('License');
+})->name('license');
+
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles');
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
 Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create');

@@ -11,10 +11,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, bibles, bible_create, role_management } from '@/routes';
+import { dashboard, bibles, bible_create, role_management, license } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CogIcon, Folder, LayoutGrid, LibraryBig, UserCog2 } from 'lucide-vue-next';
+import { BookOpen, CogIcon, FileText, LayoutGrid, LibraryBig, UserCog2 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -45,6 +45,11 @@ const footerNavItems: NavItem[] = [
         title: 'Role Management',
         href: role_management(),
         icon: UserCog2,
+    },
+    {
+        title: 'License',
+        href: license(),
+        icon: FileText,
     },
 ];
 </script>
