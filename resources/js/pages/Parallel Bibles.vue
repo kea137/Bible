@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import AlertUser from '@/components/AlertUser.vue';
+import { bibles_parallel } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import Card from '@/components/ui/card/Card.vue';
@@ -44,7 +45,7 @@ const props = defineProps<{
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Parallel Bibles',
-        href: '/bibles/parallel',
+        href: bibles_parallel().url,
     },
 ];
 

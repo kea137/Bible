@@ -13,7 +13,7 @@ import {
     SidebarMenuItem,
     SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { dashboard, bibles, bible_create, role_management, license } from '@/routes';
+import { dashboard, bibles, bible_create, role_management, license, bibles_parallel } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, CogIcon, FileText, LayoutGrid, LibraryBig, UserCog2, BookCopy } from 'lucide-vue-next';
@@ -32,7 +32,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Parallel Bibles',
-        href: '/bibles/parallel',
+        href: bibles_parallel(),
         icon: BookCopy,
     },
     {
