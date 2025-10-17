@@ -3,6 +3,7 @@ import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import LanguageSelector from '@/components/LanguageSelector.vue';
+import AppearanceTabs from '@/components/AppearanceTabs.vue';
 import {
     Sidebar,
     SidebarContent,
@@ -12,6 +13,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarSeparator,
+    SidebarGroup,
+    SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { dashboard, bibles, bible_create, role_management, license, bibles_parallel } from '@/routes';
 import { type NavItem } from '@/types';
@@ -80,10 +83,19 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <div class="px-3 py-2">
-                <div class="text-xs font-medium text-sidebar-foreground/70 mb-2">Language</div>
-                <LanguageSelector />
-            </div>
+            <SidebarGroup class="px-2 py-0">
+                <SidebarGroupLabel>Preferences</SidebarGroupLabel>
+                <div class="space-y-3 px-2 py-2">
+                    <div class="space-y-1">
+                        <div class="text-xs font-medium text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">Language</div>
+                        <LanguageSelector />
+                    </div>
+                    <div class="space-y-1">
+                        <div class="text-xs font-medium text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">Appearance</div>
+                        <AppearanceTabs />
+                    </div>
+                </div>
+            </SidebarGroup>
             <SidebarSeparator />
             <NavFooter :items="footerNavItems" />
             <NavUser />
