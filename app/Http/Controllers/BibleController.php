@@ -35,11 +35,67 @@ class BibleController extends Controller
             $bibles = Bible::all(); // Refresh the list of bibles
         }
 
-        $bibles = Bible::with('books.chapters')->get();
-        // dd($bibles->toArray());
+        // Get user's preferred language from cookie or default to 'en'
+        $userLanguage = request()->cookie('language', 'en');
+        $languageMap = [
+            'en' => 'English',
+            'sw' => 'Swahili',
+        ];
+        
+        $languageName = $languageMap[$userLanguage] ?? 'English';
+        
+        // Filter bibles by language
+        $bibles = Bible::with('books.chapters')
+            ->where('language', $languageName)
+            ->get();
 
         return Inertia::render('Bibles', [
             'biblesList' => $bibles->toArray(),
+        ]);
+    }
+
+    /**
+     * Display parallel bibles view
+     */
+    public function parallel()
+    {
+        // Get user's preferred language from cookie or default to 'en'
+        $userLanguage = request()->cookie('language', 'en');
+        $languageMap = [
+            'en' => 'English',
+            'sw' => 'Swahili',
+        ];
+        
+        $languageName = $languageMap[$userLanguage] ?? 'English';
+        
+        // Filter bibles by language
+        $bibles = Bible::with('books.chapters')
+            ->where('language', $languageName)
+            ->get();
+
+        return Inertia::render('Parallel Bibles', [
+            'biblesList' => $bibles->toArray(),
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Bible $bible)
+    {
+        $bible->load('books.chapters');
+        
+        // Get the first book and first chapter
+        $firstBook = $bible->books->first();
+        $firstChapter = $firstBook ? $firstBook->chapters->first() : null;
+        
+        if ($firstChapter) {
+            $firstChapter->load('verses', 'book');
+        }
+
+        return Inertia::render('Bible', [
+            'bible' => $bible->toArray(),
+            'initialChapter' => $firstChapter ? $firstChapter->toArray() : null,
         ]);
     }
 
@@ -100,9 +156,9 @@ class BibleController extends Controller
      */
     public function showChapter(Chapter $chapter)
     {
-        return response()->json([
-            'verses' => $chapter->verses,
-        ]);
+        $chapter->load('verses', 'book');
+        
+        return response()->json($chapter);
     }
 
     /**

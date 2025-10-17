@@ -18,6 +18,7 @@ Route::get('/license', function () {
 })->name('license');
 
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles');
+Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel');
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
 Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create');
 Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store');
