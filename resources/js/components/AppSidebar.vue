@@ -10,12 +10,17 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarSeparator,
+    SidebarGroup,
+    SidebarGroupLabel,
 } from '@/components/ui/sidebar';
-import { dashboard, bibles, bible_create, role_management, license } from '@/routes';
+import { dashboard, bibles, bible_create, role_management, license, bibles_parallel } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, CogIcon, FileText, LayoutGrid, LibraryBig, UserCog2 } from 'lucide-vue-next';
+import { BookOpen, CogIcon, FileText, LayoutGrid, LibraryBig, UserCog2, BookCopy } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import AppearanceSideBar from './AppearanceSideBar.vue';
+import LanguageSelectorSideBar from './LanguageSelectorSideBar.vue';
 
 const mainNavItems: NavItem[] = [
     {
@@ -27,6 +32,11 @@ const mainNavItems: NavItem[] = [
         title: 'Bibles',
         href: bibles(),
         icon: LibraryBig,
+    },
+    {
+        title: 'Parallel Bibles',
+        href: bibles_parallel(),
+        icon: BookCopy,
     },
     {
         title: 'Create Bibles',
@@ -73,6 +83,17 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
+            <SidebarGroup class="px-2 py-0">
+                <div class="space-y-3 mr-4 py-2">
+                    <div class="space-y-1">
+                        <LanguageSelectorSideBar />
+                    </div>
+                    <div class="space-y-1">
+                        <AppearanceSideBar />
+                    </div>
+                </div>
+            </SidebarGroup>
+            <SidebarSeparator />
             <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>

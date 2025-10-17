@@ -7,6 +7,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bible_create, bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -146,7 +155,18 @@ if (info) {
                                 </div>
                                 <div class="col-span-1 flex flex-col space-y-1.5">
                                     <Label for="language">Language</Label>
-                                    <Input id="language" name="language" :tabindex="1" type="text" placeholder="Language of the Bible" />
+                                    <Select name="language">
+                                        <SelectTrigger id="language">
+                                            <SelectValue placeholder="Select Language" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Languages</SelectLabel>
+                                                <SelectItem value="English">English</SelectItem>
+                                                <SelectItem value="Swahili">Swahili</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                     <InputError :message="errors.language" />
                                 </div>
                                 <div class="col-span-1 flex flex-col space-y-1.5">

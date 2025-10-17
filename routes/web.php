@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BibleController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -10,15 +11,14 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/license', function () {
     return Inertia::render('License');
 })->name('license');
 
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles');
+Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel');
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
 Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create');
 Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store');
