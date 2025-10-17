@@ -28,11 +28,11 @@ class ReferenceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Bible $bible)
+    public function create()
     {
         return Inertia::render('Create References', [
             'bibles' => Bible::all()->toArray(),
-            'selected_bible' => $bible->toArray(),
+            'selected_bible' => Bible::first()?->toArray(),
         ]);
     }
 
@@ -49,7 +49,6 @@ class ReferenceController extends Controller
             
             if ($file->getClientOriginalExtension() === 'json') {
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
-                
                 try {
                     $this->referenceService->loadFromJson($bible, $data);
                     return redirect()->back()->with('success', 'References loaded successfully.');

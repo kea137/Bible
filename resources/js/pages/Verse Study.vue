@@ -5,6 +5,7 @@ import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
+import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -126,14 +127,14 @@ function navigateToVerse(verse: Verse) {
                         >
                     </CardHeader>
                     <CardContent>
-                        <div
+                        <ScrollArea
                             v-if="references.length > 0"
-                            class="max-h-[60vh] space-y-4 overflow-y-auto"
+                            class="h-60 space-y-4"
                         >
                             <div
                                 v-for="ref in references"
                                 :key="ref.id"
-                                class="cursor-pointer rounded-lg border p-4 transition-colors hover:bg-accent"
+                                class="cursor-pointer rounded-lg border p-4 mt-2 transition-colors hover:bg-accent"
                                 @click="navigateToVerse(ref.verse)"
                             >
                                 <p
@@ -143,7 +144,7 @@ function navigateToVerse(verse: Verse) {
                                 </p>
                                 <p class="text-sm">{{ ref.verse.text }}</p>
                             </div>
-                        </div>
+                        </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
                             No cross-references available for this verse.
                         </p>

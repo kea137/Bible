@@ -22,19 +22,19 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, references } from '@/routes';
+import { bibles, references_create } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { LoaderCircle, UploadCloudIcon } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const props = defineProps<{
-    bibles: {
+    bibles: Array<{
         id: number;
         name: string;
         abbreviation: string;
         language: string;
-    }[];
+    }>;
     selected_bible: {
         id: number;
         name: string;
@@ -48,7 +48,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Create References',
-        href: references({ bible: props.selected_bible.id }).url,
+        href: references_create().url,
     },
 ];
 
@@ -186,7 +186,7 @@ if (info) {
                                                     >Bibles</SelectLabel
                                                 >
                                                 <SelectItem
-                                                    v-for="bible in bibles"
+                                                    v-for="bible in props.bibles"
                                                     :key="bible.id"
                                                     :value="bible.id.toString()"
                                                 >

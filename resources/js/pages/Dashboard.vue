@@ -6,9 +6,9 @@ import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, dashboard } from '@/routes';
+import { bibles, dashboard, highlighted_verses_page } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import {
     BookOpen,
     Highlighter,
@@ -268,7 +268,7 @@ function getHighlightColorClass(color: string): string {
             <Card
                 class="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
             >
-                <CardContent class="pt-6">
+                <CardContent class="pt-2">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="mb-1 font-semibold">
@@ -323,6 +323,7 @@ function getHighlightColorClass(color: string): string {
                                 Note: {{ highlight.note }}
                             </p>
                         </div>
+                        <Link :href="highlighted_verses_page()">
                         <Button
                             v-if="highlights.length > 5"
                             variant="outline"
@@ -330,6 +331,7 @@ function getHighlightColorClass(color: string): string {
                         >
                             View All {{ highlights.length }} Highlights
                         </Button>
+                        </Link>
                     </div>
                 </CardContent>
             </Card>

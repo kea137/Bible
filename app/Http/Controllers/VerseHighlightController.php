@@ -82,4 +82,9 @@ class VerseHighlightController extends Controller
 
         return response()->json($highlights);
     }
+
+    public function highlightedVersesPage()
+    {
+        return inertia('Highlighted Verses');
+    }
 }

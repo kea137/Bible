@@ -20,6 +20,7 @@ import {
     dashboard,
     license,
     role_management,
+    references_create,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
@@ -52,11 +53,6 @@ const mainNavItems: NavItem[] = [
         href: bibles_parallel(),
         icon: BookCopy,
     },
-    {
-        title: 'Create Bibles',
-        href: bible_create(),
-        icon: BookOpen,
-    },
 ];
 
 const footerNavItems: NavItem[] = [
@@ -64,6 +60,11 @@ const footerNavItems: NavItem[] = [
         title: 'Upload Bibles',
         href: bible_create(),
         icon: CogIcon,
+    },
+    {
+        title: 'Create References',
+        href: references_create(),
+        icon: BookOpen,
     },
     {
         title: 'Role Management',

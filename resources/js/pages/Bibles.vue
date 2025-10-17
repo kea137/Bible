@@ -118,9 +118,9 @@ if (info) {
                         <div>
                             <CardTitle class="flex items-center gap-2">
                                 <LibraryBigIcon class="h-5 w-5" />
-                                Available Bibles
+                                Bibles
                             </CardTitle>
-                            <CardDescription>Loaded Bibles</CardDescription>
+                            <CardDescription>Available Bibles</CardDescription>
                         </div>
                     </div>
                 </CardHeader>

@@ -21,7 +21,6 @@ import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import { BookOpen } from 'lucide-vue-next';
-
 import {
     Select,
     SelectContent,
@@ -32,6 +31,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { ref, watch } from 'vue';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const props = defineProps<{
     bible: {
@@ -117,14 +117,26 @@ async function highlightVerse(verseId: number, color: string) {
     }
 
     try {
+        // Try to get CSRF token from meta tag first
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        // Fallback to Inertia page props if not found
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        // If still not found, try to reload the page to get a fresh token
+        if (!csrfToken) {
+            // Attempt to reload the page to refresh CSRF token
+            alert('CSRF token not found. Refreshing page to fix authentication...');
+            window.location.reload();
+            return;
+        }
+
         const response = await fetch('/api/verse-highlights', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN':
-                    document
-                        .querySelector('meta[name="csrf-token"]')
-                        ?.getAttribute('content') || '',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
             },
             body: JSON.stringify({
                 verse_id: verseId,
@@ -132,11 +144,27 @@ async function highlightVerse(verseId: number, color: string) {
             }),
         });
 
-        if (response.ok) {
+        type HighlightResponse = {
+            success?: boolean;
+            message?: string;
+        };
+        let result: HighlightResponse = {};
+        try {
+            result = await response.json();
+        } catch (jsonError) {
+            // If response is not JSON, treat as error
+            alert('Unexpected server response. Please try again.');
+            return;
+        }
+
+        if (response.ok && result?.success) {
             await loadChapterHighlights(selectedChapterId.value);
+        } else {
+            alert(result?.message || 'Failed to highlight verse.');
         }
     } catch (error) {
-        console.error('Failed to highlight verse:', error);
+        alert('Failed to highlight verse.');
+        console.error(error);
     }
 }
 
@@ -145,9 +173,9 @@ function getVerseHighlightClass(verseId: number): string {
     if (!highlight) return '';
 
     if (highlight.color === 'yellow') {
-        return 'bg-yellow-100 dark:bg-yellow-900/30';
+        return 'bg-yellow-300 dark:bg-yellow-300/30';
     } else if (highlight.color === 'green') {
-        return 'bg-green-100 dark:bg-green-900/30';
+        return 'bg-green-300 dark:bg-green-300/30';
     }
     return '';
 }
@@ -314,9 +342,7 @@ if (props.initialChapter?.id) {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div
-                            class="mx-30 max-w-4xl space-y-2 text-justify text-lg leading-relaxed"
-                        >
+                        <ScrollArea class="mx-30 max-w-4xl space-y-2 text-justify text-lg leading-relaxed h-130">
                             <h3 class="mb-4 text-center text-xl font-semibold">
                                 {{ loadedChapter.book?.title }}
                                 {{ loadedChapter.chapter_number }}
@@ -328,9 +354,7 @@ if (props.initialChapter?.id) {
                                 :class="getVerseHighlightClass(verse.id)"
                             >
                                 <ContextMenu>
-                                    <ContextMenuTrigger
-                                        class="w-full cursor-default"
-                                    >
+                                    <ContextMenuTrigger class="w-full cursor-default">
                                         <HoverCard
                                             @update:open="
                                                 (open) =>
@@ -341,64 +365,36 @@ if (props.initialChapter?.id) {
                                             <HoverCardTrigger>
                                                 <span
                                                     class="cursor-pointer font-semibold text-primary hover:underline"
-                                                    >{{
-                                                        verse.verse_number
-                                                    }}.</span
-                                                >
+                                                >{{ verse.verse_number }}.</span>
                                             </HoverCardTrigger>
                                             <HoverCardContent class="w-80">
                                                 <div
-                                                    v-if="
-                                                        hoveredVerseReferences.length >
-                                                        0
-                                                    "
+                                                    v-if="hoveredVerseReferences.length > 0"
                                                     class="space-y-2"
                                                 >
-                                                    <p
-                                                        class="text-sm font-semibold"
-                                                    >
+                                                    <p class="text-sm font-semibold">
                                                         Cross References:
                                                     </p>
-                                                    <div
-                                                        class="space-y-1 text-sm"
-                                                    >
+                                                    <div class="space-y-1 text-sm">
                                                         <p
-                                                            v-for="ref in hoveredVerseReferences.slice(
-                                                                0,
-                                                                3,
-                                                            )"
+                                                            v-for="ref in hoveredVerseReferences.slice(0, 3)"
                                                             :key="ref.id"
                                                             class="text-muted-foreground"
                                                         >
                                                             {{ ref.reference }}:
-                                                            {{
-                                                                ref.verse?.text?.substring(
-                                                                    0,
-                                                                    80,
-                                                                )
-                                                            }}...
+                                                            {{ ref.verse?.text?.substring(0, 80) }}...
                                                         </p>
                                                         <p
-                                                            v-if="
-                                                                hoveredVerseReferences.length >
-                                                                3
-                                                            "
+                                                            v-if="hoveredVerseReferences.length > 3"
                                                             class="text-xs text-muted-foreground italic"
                                                         >
-                                                            +{{
-                                                                hoveredVerseReferences.length -
-                                                                3
-                                                            }}
+                                                            +{{ hoveredVerseReferences.length - 3 }}
                                                             more references
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <p
-                                                    v-else
-                                                    class="text-sm text-muted-foreground"
-                                                >
-                                                    No cross-references
-                                                    available
+                                                <p v-else class="text-sm text-muted-foreground">
+                                                    No cross-references available
                                                 </p>
                                             </HoverCardContent>
                                         </HoverCard>
@@ -406,36 +402,18 @@ if (props.initialChapter?.id) {
                                     </ContextMenuTrigger>
                                     <ContextMenuContent>
                                         <ContextMenuItem
-                                            @click="
-                                                highlightVerse(
-                                                    verse.id,
-                                                    'yellow',
-                                                )
-                                            "
+                                            @click="highlightVerse(verse.id, 'yellow')"
                                         >
-                                            <span
-                                                class="flex items-center gap-2"
-                                            >
-                                                <span
-                                                    class="h-4 w-4 rounded bg-yellow-300"
-                                                ></span>
+                                            <span class="flex items-center gap-2">
+                                                <span class="h-4 w-4 rounded bg-yellow-300"></span>
                                                 Highlight - Yellow
                                             </span>
                                         </ContextMenuItem>
                                         <ContextMenuItem
-                                            @click="
-                                                highlightVerse(
-                                                    verse.id,
-                                                    'green',
-                                                )
-                                            "
+                                            @click="highlightVerse(verse.id, 'green')"
                                         >
-                                            <span
-                                                class="flex items-center gap-2"
-                                            >
-                                                <span
-                                                    class="h-4 w-4 rounded bg-green-300"
-                                                ></span>
+                                            <span class="flex items-center gap-2">
+                                                <span class="h-4 w-4 rounded bg-green-300"></span>
                                                 Highlight - Green
                                             </span>
                                         </ContextMenuItem>
@@ -447,13 +425,13 @@ if (props.initialChapter?.id) {
                                     </ContextMenuContent>
                                 </ContextMenu>
                             </p>
-                        </div>
+                        </ScrollArea>
                     </CardContent>
                 </Card>
             </div>
 
             <!-- References sidebar (1/3) -->
-            <div class="flex flex-[1] flex-col gap-4">
+            <div class="flex flex-[1] flex-col gap-4 h-160">
                 <!-- Top half - Hovered verse references -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader>
@@ -466,24 +444,26 @@ if (props.initialChapter?.id) {
                         >
                     </CardHeader>
                     <CardContent class="max-h-[40vh] overflow-y-auto">
-                        <div
-                            v-if="hoveredVerseReferences.length > 0"
-                            class="space-y-3"
-                        >
+                        <ScrollArea v-if="hoveredVerseReferences.length > 0" class="h-full">
                             <div
-                                v-for="ref in hoveredVerseReferences"
-                                :key="ref.id"
-                                class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
-                                @click="handleReferenceClick(ref)"
+                                
+                                class="space-y-3"
                             >
-                                <p class="text-sm font-semibold text-primary">
-                                    {{ ref.reference }}
-                                </p>
-                                <p class="mt-1 text-xs text-muted-foreground">
-                                    {{ ref.verse?.text?.substring(0, 100) }}...
-                                </p>
+                                <div
+                                    v-for="ref in hoveredVerseReferences"
+                                    :key="ref.id"
+                                    class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
+                                    @click="handleReferenceClick(ref)"
+                                >
+                                    <p class="text-sm font-semibold text-primary">
+                                        {{ ref.reference }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-muted-foreground">
+                                        {{ ref.verse?.text?.substring(0, 100) }}...
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
                             Hover over a verse number to see its
                             cross-references

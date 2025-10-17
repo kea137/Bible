@@ -17,13 +17,19 @@ class ReferenceService
     public function loadFromJson(Bible $bible, array $data): void
     {
         DB::transaction(function () use ($bible, $data) {
-            foreach ($data as $verseId => $referenceData) {
+            foreach ($data as $referenceData) {
+
+                // Ensure required keys exist
+                if (!isset($referenceData['v']) || !isset($referenceData['r'])) {
+                    continue;
+                }
+                
                 // Parse the verse reference
                 $verseRef = BookShorthand::parseReference($referenceData['v']);
                 if (empty($verseRef)) {
                     continue;
                 }
-
+                
                 // Find the verse in the database
                 $verse = $this->findVerseByReference($bible, $verseRef);
                 if (!$verse) {
@@ -38,7 +44,7 @@ class ReferenceService
                         $references[$refId] = $refString;
                     }
                 }
-
+                
                 // Store the reference
                 Reference::updateOrCreate(
                     [
