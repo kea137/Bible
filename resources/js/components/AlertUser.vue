@@ -57,7 +57,9 @@ function handleClose() {
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogAction @click="handleClose">{{ confirmButtonText }}</AlertDialogAction>
+                <AlertDialogAction @click="handleClose">{{
+                    confirmButtonText
+                }}</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>

@@ -20,21 +20,6 @@ class BibleController extends Controller
     {
         $bibles = Bible::all();
 
-        if ($bibles->count() === 0) {
-            // If no bibles exist, create a default one
-            $bible = Bible::create([
-                'name' => 'Default Bible',
-                'abbreviation' => 'KJV',
-                'description' => 'This is the default Bible.',
-                'language' => 'English',
-                'version' => 'KJV 1611',
-            ]);
-
-            // Optionally, you can add default books, chapters, and verses here
-
-            $bibles = Bible::all(); // Refresh the list of bibles
-        }
-
         // Get user's preferred language from cookie or default to 'en'
         $userLanguage = request()->cookie('language', 'en');
         $languageMap = [
@@ -122,7 +107,7 @@ class BibleController extends Controller
 
         $bible = Bible::create([
             'name' => $validated['name'],
-            'abbreviation' => strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 9)), // to be changed later
+            'abbreviation' => $validated['abbreviation'],
             'language' => $validated['language'],
             'version' => $validated['version'],
             'description' => $validated['description'] ?? null,

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
 import AlertUser from '@/components/AlertUser.vue';
-import { bibles } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head, usePage, router } from '@inertiajs/vue3';
 import Card from '@/components/ui/card/Card.vue';
+import CardContent from '@/components/ui/card/CardContent.vue';
+import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { bibles } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { LibraryBigIcon } from 'lucide-vue-next';
-import CardDescription from '@/components/ui/card/CardDescription.vue';
-import CardContent from '@/components/ui/card/CardContent.vue';
 import { ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -20,25 +20,23 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 defineProps<{
-    biblesList:
-        {
-            id:number;
-            name:string;
-            abbreviation:string;
-            description:string;
-            language:string;
-            version:string;
-            books: {
-                id:number;
-                title:string;
-                book_number:number;
-                chapters: {
-                    id:number;
-                    chapter_number:number;
-                }[]
-            }[]
-        }[]
-
+    biblesList: {
+        id: number;
+        name: string;
+        abbreviation: string;
+        description: string;
+        language: string;
+        version: string;
+        books: {
+            id: number;
+            title: string;
+            book_number: number;
+            chapters: {
+                id: number;
+                chapter_number: number;
+            }[];
+        }[];
+    }[];
 }>();
 
 function viewBible(bibleId: number) {
@@ -49,7 +47,6 @@ const page = usePage();
 const success = page.props.success;
 const error = page.props.error;
 const info = page.props.info;
-
 
 const alertSuccess = ref(false);
 const alertError = ref(false);
@@ -66,13 +63,12 @@ if (error) {
 if (info) {
     alertInfo.value = true;
 }
-
 </script>
 
 <template>
     <Head title="Bibles" />
 
-        <AlertUser
+    <AlertUser
         v-if="alertSuccess"
         :open="true"
         title="Success"
@@ -122,9 +118,9 @@ if (info) {
                         <div>
                             <CardTitle class="flex items-center gap-2">
                                 <LibraryBigIcon class="h-5 w-5" />
-                                Available Bibles
+                                Bibles
                             </CardTitle>
-                            <CardDescription>Loaded Bibles</CardDescription>
+                            <CardDescription>Available Bibles</CardDescription>
                         </div>
                     </div>
                 </CardHeader>
@@ -133,12 +129,14 @@ if (info) {
                         <div
                             v-for="bible in biblesList"
                             :key="bible.id"
-                            class="flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-accent/50 cursor-pointer"
+                            class="flex cursor-pointer items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-accent/50"
                             @click="viewBible(bible.id)"
                         >
                             <div class="flex-1">
                                 <p class="font-medium">{{ bible.name }}</p>
-                                <p class="text-sm text-muted-foreground">{{ bible.language }} • {{ bible.version }}</p>
+                                <p class="text-sm text-muted-foreground">
+                                    {{ bible.language }} • {{ bible.version }}
+                                </p>
                             </div>
                         </div>
                     </div>
