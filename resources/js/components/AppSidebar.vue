@@ -38,11 +38,6 @@ const mainNavItems: NavItem[] = [
         href: bibles_parallel(),
         icon: BookCopy,
     },
-    {
-        title: 'Create Bibles',
-        href: bible_create(),
-        icon: BookOpen,
-    },
 ];
 
 const footerNavItems: NavItem[] = [
