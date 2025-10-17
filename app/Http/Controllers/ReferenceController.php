@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreReferenceRequest;
 use App\Http\Requests\UpdateReferenceRequest;
+use App\Models\Bible;
 use App\Models\Reference;
+use Inertia\Inertia;
 
 class ReferenceController extends Controller
 {
@@ -19,9 +21,12 @@ class ReferenceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Bible $bible)
     {
-        //
+        return Inertia::render('Create References', [
+            'bibles' => Bible::all()->toArray(),
+            'selected_bible' => $bible->toArray(),
+        ]);
     }
 
     /**

@@ -84,7 +84,7 @@ class BibleController extends Controller
                     // If parsing fails, delete the created Bible and return error
                     $bible->delete();
 
-                    return redirect('bibles')->with('error', 'Failed to parse the uploaded Bible file: ' . $e->getMessage());
+                    return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: ' . $e->getMessage());
                 }
             }
 

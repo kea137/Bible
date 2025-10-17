@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BibleController;
+use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +27,9 @@ Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'sho
 // Role Management routes (admin only)
 Route::get('/role/management', [RoleController::class, 'index'])->name('role_management')->middleware('auth');
 Route::put('/users/{user}/roles', [RoleController::class, 'updateRoles'])->name('update_roles')->middleware('auth');
+
+// Reference page
+Route::get('/create/{bible}/references', [ReferenceController::class, 'create'])->name('references')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
