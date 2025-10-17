@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useAppearance } from '@/composables/useAppearance';
 import { useSidebar } from '@/components/ui/sidebar';
-import { Monitor, Moon, Sun } from 'lucide-vue-next';
+import { useAppearance } from '@/composables/useAppearance';
+import { Moon, Sun } from 'lucide-vue-next';
 
 const { appearance, updateAppearance } = useAppearance();
 const { state } = useSidebar();
@@ -15,8 +15,8 @@ const tabs = [
 <template>
     <div
         :class="[
-            'inline-flex rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800 transition-all duration-300',
-            state === 'collapsed' ? 'flex-col gap-1' : 'gap-1'
+            'inline-flex rounded-lg bg-neutral-100 p-1 transition-all duration-300 dark:bg-neutral-800',
+            state === 'collapsed' ? 'flex-col gap-1' : 'gap-1',
         ]"
     >
         <button
@@ -32,8 +32,13 @@ const tabs = [
             ]"
             :title="state === 'collapsed' ? label : undefined"
         >
-            <component :is="Icon" :class="state === 'collapsed' ? 'h-4 w-4' : '-ml-1 h-4 w-4'" />
-            <span v-if="state !== 'collapsed'" class="ml-1.5 text-sm">{{ label }}</span>
+            <component
+                :is="Icon"
+                :class="state === 'collapsed' ? 'h-4 w-4' : '-ml-1 h-4 w-4'"
+            />
+            <span v-if="state !== 'collapsed'" class="ml-1.5 text-sm">{{
+                label
+            }}</span>
         </button>
     </div>
 </template>

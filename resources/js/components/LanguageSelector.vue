@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useLanguage } from '@/composables/useLanguage';
 import { useSidebar } from '@/components/ui/sidebar';
+import { useLanguage } from '@/composables/useLanguage';
 import { Languages } from 'lucide-vue-next';
 
 const { language, updateLanguage } = useLanguage();
@@ -14,7 +14,7 @@ const languages = [
 
 <template>
     <div
-        class="inline-flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800 transition-all duration-200"
+        class="inline-flex gap-1 rounded-lg bg-neutral-100 p-1 transition-all duration-200 dark:bg-neutral-800"
     >
         <button
             v-for="{ value, label } in languages"
@@ -29,8 +29,13 @@ const languages = [
             ]"
             :title="state === 'collapsed' ? label : undefined"
         >
-            <component :is="Languages" :class="state === 'collapsed' ? 'h-4 w-4' : '-ml-1 h-4 w-4'" />
-            <span v-if="state !== 'collapsed'" class="ml-1.5 text-sm">{{ label }}</span>
+            <component
+                :is="Languages"
+                :class="state === 'collapsed' ? 'h-4 w-4' : '-ml-1 h-4 w-4'"
+            />
+            <span v-if="state !== 'collapsed'" class="ml-1.5 text-sm">{{
+                label
+            }}</span>
         </button>
     </div>
 </template>

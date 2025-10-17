@@ -17,7 +17,9 @@ const language = ref<Language>('en');
 
 export function useLanguage() {
     onMounted(() => {
-        const savedLanguage = localStorage.getItem('language') as Language | null;
+        const savedLanguage = localStorage.getItem(
+            'language',
+        ) as Language | null;
 
         if (savedLanguage) {
             language.value = savedLanguage;

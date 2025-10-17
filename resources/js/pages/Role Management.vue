@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
 import Button from '@/components/ui/button/Button.vue';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import Table from '@/components/ui/table/Table.vue';
 import TableBody from '@/components/ui/table/TableBody.vue';
 import TableCell from '@/components/ui/table/TableCell.vue';
@@ -13,7 +19,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { role_management, update_roles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Plus, Save, Trash2, UserCog } from 'lucide-vue-next';
+import { Save, UserCog } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const page = usePage();
@@ -91,7 +97,6 @@ const newLeadership = ref({
     rank: '',
     position: '',
 });
-
 </script>
 
 <template>
@@ -117,7 +122,9 @@ const newLeadership = ref({
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4">
+        <div
+            class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4"
+        >
             <!-- User Role Management Section -->
             <Card>
                 <CardHeader>
@@ -125,7 +132,10 @@ const newLeadership = ref({
                         <UserCog class="h-6 w-6" />
                         <CardTitle>User Role Management</CardTitle>
                     </div>
-                    <CardDescription>Assign and manage user roles in the system</CardDescription>
+                    <CardDescription
+                        >Assign and manage user roles in the
+                        system</CardDescription
+                    >
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -144,26 +154,48 @@ const newLeadership = ref({
                                 <TableCell>{{ user.email }}</TableCell>
                                 <TableCell>
                                     <div class="flex gap-1">
-                                        <span v-for="role in user.roles" :key="role" class="rounded-md bg-primary/10 px-2 py-1 text-xs">
+                                        <span
+                                            v-for="role in user.roles"
+                                            :key="role"
+                                            class="rounded-md bg-primary/10 px-2 py-1 text-xs"
+                                        >
                                             {{ role }}
                                         </span>
                                     </div>
                                 </TableCell>
                                 <TableCell>
                                     <div class="flex flex-wrap gap-2">
-                                        <label v-for="role in roles" :key="role.id" class="flex cursor-pointer items-center gap-2">
+                                        <label
+                                            v-for="role in roles"
+                                            :key="role.id"
+                                            class="flex cursor-pointer items-center gap-2"
+                                        >
                                             <input
                                                 type="checkbox"
-                                                :checked="selectedUserRoles[user.id]?.includes(role.id)"
-                                                @change="updateUserRole(user.id, role.id)"
+                                                :checked="
+                                                    selectedUserRoles[
+                                                        user.id
+                                                    ]?.includes(role.id)
+                                                "
+                                                @change="
+                                                    updateUserRole(
+                                                        user.id,
+                                                        role.id,
+                                                    )
+                                                "
                                                 class="h-4 w-4 rounded border-gray-300"
                                             />
-                                            <span class="text-sm">{{ role.name }}</span>
+                                            <span class="text-sm">{{
+                                                role.name
+                                            }}</span>
                                         </label>
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Button size="sm" @click="saveUserRoles(user.id)">
+                                    <Button
+                                        size="sm"
+                                        @click="saveUserRoles(user.id)"
+                                    >
                                         <Save class="h-4 w-4" />
                                         Save
                                     </Button>

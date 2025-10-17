@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
+import Card from '@/components/ui/card/Card.vue';
+import CardContent from '@/components/ui/card/CardContent.vue';
+import CardDescription from '@/components/ui/card/CardDescription.vue';
+import CardHeader from '@/components/ui/card/CardHeader.vue';
+import CardTitle from '@/components/ui/card/CardTitle.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import Card from '@/components/ui/card/Card.vue';
-import CardHeader from '@/components/ui/card/CardHeader.vue';
-import CardTitle from '@/components/ui/card/CardTitle.vue';
-import CardDescription from '@/components/ui/card/CardDescription.vue';
-import CardContent from '@/components/ui/card/CardContent.vue';
-import Button from '@/components/ui/button/Button.vue';
 import { BookOpen, ExternalLink, Languages } from 'lucide-vue-next';
 
 interface Verse {
@@ -72,10 +72,14 @@ function navigateToVerse(verse: Verse) {
 </script>
 
 <template>
-    <Head :title="`${verse.book.title} ${verse.chapter.chapter_number}:${verse.verse_number}`" />
+    <Head
+        :title="`${verse.book.title} ${verse.chapter.chapter_number}:${verse.verse_number}`"
+    />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        <div
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+        >
             <!-- Main Verse Card -->
             <Card>
                 <CardHeader>
@@ -83,14 +87,23 @@ function navigateToVerse(verse: Verse) {
                         <BookOpen class="h-6 w-6 text-primary" />
                         <div>
                             <CardTitle class="text-2xl">
-                                {{ verse.book.title }} {{ verse.chapter.chapter_number }}:{{ verse.verse_number }}
+                                {{ verse.book.title }}
+                                {{ verse.chapter.chapter_number }}:{{
+                                    verse.verse_number
+                                }}
                             </CardTitle>
-                            <CardDescription>{{ verse.bible.name }} ({{ verse.bible.version }})</CardDescription>
+                            <CardDescription
+                                >{{ verse.bible.name }} ({{
+                                    verse.bible.version
+                                }})</CardDescription
+                            >
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <blockquote class="border-l-4 border-primary pl-6 py-4 bg-muted/30 rounded-r-lg">
+                    <blockquote
+                        class="rounded-r-lg border-l-4 border-primary bg-muted/30 py-4 pl-6"
+                    >
                         <p class="text-xl leading-relaxed italic">
                             "{{ verse.text }}"
                         </p>
@@ -104,19 +117,28 @@ function navigateToVerse(verse: Verse) {
                     <CardHeader>
                         <div class="flex items-center justify-between">
                             <CardTitle>Cross References</CardTitle>
-                            <ExternalLink class="h-5 w-5 text-muted-foreground" />
+                            <ExternalLink
+                                class="h-5 w-5 text-muted-foreground"
+                            />
                         </div>
-                        <CardDescription>Related verses from scripture</CardDescription>
+                        <CardDescription
+                            >Related verses from scripture</CardDescription
+                        >
                     </CardHeader>
                     <CardContent>
-                        <div v-if="references.length > 0" class="space-y-4 max-h-[60vh] overflow-y-auto">
-                            <div 
-                                v-for="ref in references" 
+                        <div
+                            v-if="references.length > 0"
+                            class="max-h-[60vh] space-y-4 overflow-y-auto"
+                        >
+                            <div
+                                v-for="ref in references"
                                 :key="ref.id"
-                                class="p-4 border rounded-lg hover:bg-accent cursor-pointer transition-colors"
+                                class="cursor-pointer rounded-lg border p-4 transition-colors hover:bg-accent"
                                 @click="navigateToVerse(ref.verse)"
                             >
-                                <p class="font-semibold text-sm text-primary mb-2">
+                                <p
+                                    class="mb-2 text-sm font-semibold text-primary"
+                                >
                                     {{ ref.reference }}
                                 </p>
                                 <p class="text-sm">{{ ref.verse.text }}</p>
@@ -135,29 +157,39 @@ function navigateToVerse(verse: Verse) {
                             <CardTitle>Other Translations</CardTitle>
                             <Languages class="h-5 w-5 text-muted-foreground" />
                         </div>
-                        <CardDescription>Same verse in different Bibles</CardDescription>
+                        <CardDescription
+                            >Same verse in different Bibles</CardDescription
+                        >
                     </CardHeader>
                     <CardContent>
-                        <div v-if="otherVersions.length > 0" class="space-y-4 max-h-[60vh] overflow-y-auto">
-                            <div 
-                                v-for="version in otherVersions" 
+                        <div
+                            v-if="otherVersions.length > 0"
+                            class="max-h-[60vh] space-y-4 overflow-y-auto"
+                        >
+                            <div
+                                v-for="version in otherVersions"
                                 :key="version.id"
-                                class="p-4 border rounded-lg hover:bg-accent transition-colors"
+                                class="rounded-lg border p-4 transition-colors hover:bg-accent"
                             >
-                                <div class="flex items-center justify-between mb-2">
-                                    <p class="font-semibold text-sm text-primary">
+                                <div
+                                    class="mb-2 flex items-center justify-between"
+                                >
+                                    <p
+                                        class="text-sm font-semibold text-primary"
+                                    >
                                         {{ version.bible.name }}
                                     </p>
-                                    <Button 
-                                        size="sm" 
+                                    <Button
+                                        size="sm"
                                         variant="ghost"
                                         @click="navigateToVerse(version)"
                                     >
                                         <ExternalLink class="h-3 w-3" />
                                     </Button>
                                 </div>
-                                <p class="text-xs text-muted-foreground mb-2">
-                                    {{ version.bible.language }} • {{ version.bible.version }}
+                                <p class="mb-2 text-xs text-muted-foreground">
+                                    {{ version.bible.language }} •
+                                    {{ version.bible.version }}
                                 </p>
                                 <p class="text-sm">{{ version.text }}</p>
                             </div>
@@ -170,8 +202,11 @@ function navigateToVerse(verse: Verse) {
             </div>
 
             <!-- Back Button -->
-            <div class="flex justify-center mt-4">
-                <Button variant="outline" @click="router.visit(`/bibles/${verse.bible.id}`)">
+            <div class="mt-4 flex justify-center">
+                <Button
+                    variant="outline"
+                    @click="router.visit(`/bibles/${verse.bible.id}`)"
+                >
                     <BookOpen class="mr-2 h-4 w-4" />
                     Return to Bible
                 </Button>

@@ -28,15 +28,15 @@ const breadcrumbItems: BreadcrumbItem[] = [
                     title="Appearance settings"
                     description="Update your account's appearance settings"
                 />
-                
+
                 <div class="space-y-4">
                     <div>
-                        <h3 class="text-sm font-medium mb-2">Theme</h3>
+                        <h3 class="mb-2 text-sm font-medium">Theme</h3>
                         <AppearanceTabs />
                     </div>
-                    
+
                     <div>
-                        <h3 class="text-sm font-medium mb-2">Language</h3>
+                        <h3 class="mb-2 text-sm font-medium">Language</h3>
                         <LanguageSelector />
                     </div>
                 </div>
