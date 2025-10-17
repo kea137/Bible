@@ -6,6 +6,56 @@ use App\Models\Bible;
 use App\Models\Book;
 use App\Models\Chapter;
 
+/**
+ * BibleJsonParser - Service for parsing Bible JSON files in multiple formats
+ *
+ * This service supports three common Bible JSON formats:
+ *
+ * 1. Swahili Format (Original):
+ *    {
+ *      "BIBLEBOOK": [
+ *        {
+ *          "book_number": 1,
+ *          "book_name": "Genesis",
+ *          "author": "Moses",
+ *          "CHAPTER": [
+ *            {
+ *              "chapter_number": 1,
+ *              "VERSES": [
+ *                {"verse_number": 1, "verse_text": "In the beginning..."}
+ *              ]
+ *            }
+ *          ]
+ *        }
+ *      ]
+ *    }
+ *
+ * 2. Flat Verses Format (BibleTranslations common format):
+ *    [
+ *      {"book": "Genesis", "chapter": 1, "verse": 1, "text": "In the beginning..."},
+ *      {"book": "Genesis", "chapter": 1, "verse": 2, "text": "And the earth was..."}
+ *    ]
+ *
+ * 3. Nested Books Format:
+ *    {
+ *      "books": [
+ *        {
+ *          "name": "Genesis",
+ *          "number": 1,
+ *          "chapters": [
+ *            {
+ *              "number": 1,
+ *              "verses": [
+ *                {"number": 1, "text": "In the beginning..."}
+ *              ]
+ *            }
+ *          ]
+ *        }
+ *      ]
+ *    }
+ *
+ * The parser automatically detects which format is being used and processes it accordingly.
+ */
 class BibleJsonParser
 {
     /**
