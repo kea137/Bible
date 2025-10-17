@@ -2,8 +2,6 @@
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
-import LanguageSelector from '@/components/LanguageSelector.vue';
-import AppearanceTabs from '@/components/AppearanceTabs.vue';
 import {
     Sidebar,
     SidebarContent,
@@ -21,6 +19,8 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, CogIcon, FileText, LayoutGrid, LibraryBig, UserCog2, BookCopy } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import AppearanceSideBar from './AppearanceSideBar.vue';
+import LanguageSelectorSideBar from './LanguageSelectorSideBar.vue';
 
 const mainNavItems: NavItem[] = [
     {
@@ -84,15 +84,12 @@ const footerNavItems: NavItem[] = [
 
         <SidebarFooter>
             <SidebarGroup class="px-2 py-0">
-                <SidebarGroupLabel>Preferences</SidebarGroupLabel>
-                <div class="space-y-3 px-2 py-2">
+                <div class="space-y-3 mr-4 py-2">
                     <div class="space-y-1">
-                        <div class="text-xs font-medium text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">Language</div>
-                        <LanguageSelector />
+                        <LanguageSelectorSideBar />
                     </div>
                     <div class="space-y-1">
-                        <div class="text-xs font-medium text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">Appearance</div>
-                        <AppearanceTabs />
+                        <AppearanceSideBar />
                     </div>
                 </div>
             </SidebarGroup>

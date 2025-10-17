@@ -69,12 +69,15 @@ class BibleController extends Controller
         $languageName = $languageMap[$userLanguage] ?? 'English';
         
         // Filter bibles by language
-        $bibles = Bible::with('books.chapters')
+        $bibles_preffered = Bible::with('books.chapters')
             ->where('language', $languageName)
+            ->get();
+        $bibles_other = Bible::with('books.chapters')
             ->get();
 
         return Inertia::render('Parallel Bibles', [
-            'biblesList' => $bibles->toArray(),
+            'biblesList' => $bibles_preffered->toArray(),
+            'biblesOther' => $bibles_other->toArray(),
         ]);
     }
 

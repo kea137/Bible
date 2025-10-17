@@ -22,6 +22,23 @@ import {
 import { ref, watch } from 'vue';
 
 const props = defineProps<{
+    biblesOther:       {
+            id:number;
+            name:string;
+            abbreviation:string;
+            description:string;
+            language:string;
+            version:string;
+            books: {
+                id:number;
+                title:string;
+                book_number:number;
+                chapters: {
+                    id:number;
+                    chapter_number:number;
+                }[]
+            }[]
+        }[],
     biblesList:
         {
             id:number;
@@ -87,7 +104,7 @@ watch(selectedBible1, (newBibleId) => {
 
 watch(selectedBible2, (newBibleId) => {
     if (newBibleId) {
-        const bible = props.biblesList.find(b => b.id === newBibleId);
+        const bible = props.biblesOther.find(b => b.id === newBibleId);
         if (bible && bible.books.length > 0) {
             selectedBook2.value = bible.books[0].id;
             if (bible.books[0].chapters.length > 0) {
@@ -274,7 +291,7 @@ if (info) {
                                     <SelectGroup>
                                         <SelectLabel>Bibles</SelectLabel>
                                         <SelectItem
-                                            v-for="bible in biblesList"
+                                            v-for="bible in biblesOther"
                                             :key="bible.id"
                                             :value="bible.id.toString()"
                                         >
@@ -292,7 +309,7 @@ if (info) {
                                         <SelectGroup>
                                             <SelectLabel>Books</SelectLabel>
                                             <SelectItem
-                                                v-for="book in biblesList.find(b => b.id === Number(selectedBible2))?.books || []"
+                                                v-for="book in biblesOther.find(b => b.id === Number(selectedBible2))?.books || []"
                                                 :key="book.id"
                                                 :value="book.id.toString()"
                                             >
@@ -309,7 +326,7 @@ if (info) {
                                         <SelectGroup>
                                             <SelectLabel>Chapters</SelectLabel>
                                             <SelectItem
-                                                v-for="chapter in biblesList.find(b => b.id === Number(selectedBible2))?.books.find(book => book.id === Number(selectedBook2))?.chapters || []"
+                                                v-for="chapter in biblesOther.find(b => b.id === Number(selectedBible2))?.books.find(book => book.id === Number(selectedBook2))?.chapters || []"
                                                 :key="chapter.id"
                                                 :value="chapter.id.toString()"
                                             >

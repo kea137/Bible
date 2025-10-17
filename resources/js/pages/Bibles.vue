@@ -7,7 +7,7 @@ import { Head, usePage, router } from '@inertiajs/vue3';
 import Card from '@/components/ui/card/Card.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
-import { GraduationCap } from 'lucide-vue-next';
+import { LibraryBigIcon } from 'lucide-vue-next';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import { ref } from 'vue';
@@ -121,7 +121,7 @@ if (info) {
                     <div class="flex items-center justify-between">
                         <div>
                             <CardTitle class="flex items-center gap-2">
-                                <GraduationCap class="h-5 w-5" />
+                                <LibraryBigIcon class="h-5 w-5" />
                                 Available Bibles
                             </CardTitle>
                             <CardDescription>Loaded Bibles</CardDescription>
