@@ -11,7 +11,7 @@ class StoreReferenceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StoreReferenceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'bible_id' => 'required|exists:bibles,id',
+            'file' => 'required|file|mimes:json',
         ];
     }
 }

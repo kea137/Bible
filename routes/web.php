@@ -28,8 +28,10 @@ Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'sho
 Route::get('/role/management', [RoleController::class, 'index'])->name('role_management')->middleware('auth');
 Route::put('/users/{user}/roles', [RoleController::class, 'updateRoles'])->name('update_roles')->middleware('auth');
 
-// Reference page
+// Reference routes
 Route::get('/create/{bible}/references', [ReferenceController::class, 'create'])->name('references')->middleware('auth');
+Route::post('/references/store', [ReferenceController::class, 'store'])->name('references_store')->middleware('auth');
+Route::get('/api/verses/{verse}/references', [ReferenceController::class, 'getVerseReferences'])->name('verse_references');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
