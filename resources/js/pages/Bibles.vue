@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import AlertUser from '@/components/AlertUser.vue';
-import { bible_create, bibles } from '@/routes';
+import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import Card from '@/components/ui/card/Card.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
-import { GraduationCap, Link } from 'lucide-vue-next';
+import { GraduationCap } from 'lucide-vue-next';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
-import Button from '@/components/ui/button/Button.vue';
+
 import {
   Select,
   SelectContent,
