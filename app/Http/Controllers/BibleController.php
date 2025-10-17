@@ -6,7 +6,9 @@ use App\Http\Requests\StoreBibleRequest;
 use App\Http\Requests\UpdateBibleRequest;
 use App\Models\Bible;
 use App\Models\Chapter;
+use App\Models\Role;
 use App\Services\BibleJsonParser;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class BibleController extends Controller
@@ -54,11 +56,14 @@ class BibleController extends Controller
      */
     public function store(StoreBibleRequest $request, BibleJsonParser $parser)
     {
+
+        Gate::authorize('create', Role::class);
+
         $validated = $request->validated();
 
         $bible = Bible::create([
             'name' => $validated['name'],
-            'abbreviation' => $validated['abbreviation'],
+            'abbreviation' => strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 9)), // to be changed later
             'language' => $validated['language'],
             'version' => $validated['version'],
             'description' => $validated['description'] ?? null,
@@ -79,7 +84,7 @@ class BibleController extends Controller
                     // If parsing fails, delete the created Bible and return error
                     $bible->delete();
 
-                    return redirect()->back()->withErrors(['file' => $e->getMessage()]);
+                    return redirect('bibles')->with('error', 'Failed to parse the uploaded Bible file: ' . $e->getMessage());
                 }
             }
 

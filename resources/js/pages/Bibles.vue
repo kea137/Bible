@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import AlertUser from '@/components/AlertUser.vue';
 import { bible_create, bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import Card from '@/components/ui/card/Card.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
@@ -71,10 +72,72 @@ function chapter_loaded( chapterId: number) {
         });
 }
 
+const page = usePage();
+const success = page.props.success;
+const error = page.props.error;
+const info = page.props.info;
+
+
+const alertSuccess = ref(false);
+const alertError = ref(false);
+const alertInfo = ref(false);
+
+if (success) {
+    alertSuccess.value = true;
+}
+
+if (error) {
+    alertError.value = true;
+}
+
+if (info) {
+    alertInfo.value = true;
+}
+
 </script>
 
 <template>
     <Head title="Bibles" />
+
+        <AlertUser
+        v-if="alertSuccess"
+        :open="true"
+        title="Success"
+        :confirmButtonText="'OK'"
+        :message="success"
+        variant="success"
+        @update:open="
+            () => {
+                alertSuccess = false;
+            }
+        "
+    />
+    <AlertUser
+        v-if="alertError"
+        :open="true"
+        title="Error"
+        :confirmButtonText="'OK'"
+        :message="error"
+        variant="error"
+        @update:open="
+            () => {
+                alertError = false;
+            }
+        "
+    />
+    <AlertUser
+        v-if="alertInfo"
+        :open="true"
+        title="Information"
+        :confirmButtonText="'OK'"
+        :message="info"
+        variant="info"
+        @update:open="
+            () => {
+                alertInfo = false;
+            }
+        "
+    />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div

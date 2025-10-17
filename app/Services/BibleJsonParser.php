@@ -69,6 +69,7 @@ class BibleJsonParser
             'swahili' => $this->parseSwahiliFormat($bible, $data),
             'flat_verses' => $this->parseFlatVersesFormat($bible, $data),
             'nested_books' => $this->parseNestedBooksFormat($bible, $data),
+            'nested_associative' => $this->parseNestedAssociativeFormat($bible, $data),
             default => throw new \InvalidArgumentException('Unsupported JSON format'),
         };
     }
@@ -88,6 +89,11 @@ class BibleJsonParser
             return 'flat_verses';
         }
 
+        // Check for nested associative format: { "Genesis": { "1": { "1": "text" } } }
+        if ($this->isNestedAssociativeFormat($data)) {
+            return 'nested_associative';
+        }
+
         // Check for nested books format (array of books with chapters and verses)
         if (isset($data['books']) && is_array($data['books'])) {
             return 'nested_books';
@@ -100,6 +106,72 @@ class BibleJsonParser
 
         throw new \InvalidArgumentException('Unable to detect JSON format');
     }
+
+    /**
+     * Detect if the data is in the nested associative format: { book: { chapter: { verse: text } } }
+     */
+    private function isNestedAssociativeFormat(array $data): bool
+    {
+        // Check if top-level keys are strings (book names)
+        if (empty($data) || !is_array($data)) {
+            return false;
+        }
+        $firstBook = reset($data);
+        if (!is_array($firstBook)) {
+            return false;
+        }
+        $firstChapter = reset($firstBook);
+        if (!is_array($firstChapter)) {
+            return false;
+        }
+        $firstVerse = reset($firstChapter);
+        return is_string($firstVerse);
+    }
+
+    /**
+     * Parse nested associative format: { book: { chapter: { verse: text } } }
+     */
+    private function parseNestedAssociativeFormat(Bible $bible, array $data): void
+    {
+        $books = [];
+        $chapters = [];
+
+        foreach ($data as $bookName => $chaptersData) {
+            // Get or create book
+            if (!isset($books[$bookName])) {
+                $bookNumber = $this->getBookNumber($bookName);
+                $books[$bookName] = Book::create([
+                    'bible_id' => $bible->id,
+                    'book_number' => $bookNumber,
+                    'title' => $bookName,
+                ]);
+            }
+            $book = $books[$bookName];
+
+            foreach ($chaptersData as $chapterNumber => $versesData) {
+                $chapterKey = $bookName . '_' . $chapterNumber;
+                if (!isset($chapters[$chapterKey])) {
+                    $chapters[$chapterKey] = Chapter::create([
+                        'bible_id' => $bible->id,
+                        'book_id' => $book->id,
+                        'chapter_number' => (int)$chapterNumber,
+                    ]);
+                }
+                $chapter = $chapters[$chapterKey];
+
+                foreach ($versesData as $verseNumber => $verseText) {
+                    $chapter->verses()->create([
+                        'bible_id' => $bible->id,
+                        'book_id' => $book->id,
+                        'chapter_id' => $chapter->id,
+                        'verse_number' => (int)$verseNumber,
+                        'text' => $verseText,
+                    ]);
+                }
+            }
+        }
+    }
+    
 
     /**
      * Parse Swahili format (original implementation)
