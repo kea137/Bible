@@ -32,6 +32,7 @@ Route::put('/users/{user}/roles', [RoleController::class, 'updateRoles'])->name(
 Route::get('/create/{bible}/references', [ReferenceController::class, 'create'])->name('references')->middleware('auth');
 Route::post('/references/store', [ReferenceController::class, 'store'])->name('references_store')->middleware('auth');
 Route::get('/api/verses/{verse}/references', [ReferenceController::class, 'getVerseReferences'])->name('verse_references');
+Route::get('/verses/{verse}/study', [ReferenceController::class, 'studyVerse'])->name('verse_study');
 
 // Verse highlight routes
 Route::post('/api/verse-highlights', [\App\Http\Controllers\VerseHighlightController::class, 'store'])->name('verse_highlights_store')->middleware('auth');

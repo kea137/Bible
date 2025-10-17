@@ -123,4 +123,33 @@ class ReferenceService
             'references' => $this->getReferencesForVerse($verse),
         ];
     }
+
+    /**
+     * Show verse study page
+     */
+    public function studyVerse(Verse $verse)
+    {
+        $verse->load(['book', 'chapter', 'bible']);
+        
+        // Get references for this verse
+        $references = $this->getReferencesForVerse($verse);
+        
+        // Get other Bible versions of the same verse
+        $otherVersions = Verse::whereHas('book', function ($query) use ($verse) {
+            $query->where('book_number', $verse->book->book_number);
+        })
+        ->whereHas('chapter', function ($query) use ($verse) {
+            $query->where('chapter_number', $verse->chapter->chapter_number);
+        })
+        ->where('verse_number', $verse->verse_number)
+        ->where('bible_id', '!=', $verse->bible_id)
+        ->with(['bible'])
+        ->get();
+        
+        return \Inertia\Inertia::render('Verse Study', [
+            'verse' => $verse->toArray(),
+            'references' => $references,
+            'otherVersions' => $otherVersions->toArray(),
+        ]);
+    }
 }

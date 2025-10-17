@@ -165,6 +165,10 @@ async function handleReferenceClick(reference: any) {
     selectedReferenceVerse.value = reference.verse;
 }
 
+function studyVerse(verseId: number) {
+    window.location.href = `/verses/${verseId}/study`;
+}
+
 watch(selectedChapterId, (newChapterId) => {
     if (newChapterId) {
         loadChapter(newChapterId);
@@ -335,7 +339,9 @@ if (props.initialChapter?.id) {
                                                 Highlight - Green
                                             </span>
                                         </ContextMenuItem>
-                                        <ContextMenuItem>Study this Verse</ContextMenuItem>
+                                        <ContextMenuItem @click="studyVerse(verse.id)">
+                                            Study this Verse
+                                        </ContextMenuItem>
                                     </ContextMenuContent>
                                 </ContextMenu>
                             </p>

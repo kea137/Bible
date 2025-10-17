@@ -72,6 +72,14 @@ class ReferenceController extends Controller
     }
 
     /**
+     * Show verse study page
+     */
+    public function studyVerse(Verse $verse)
+    {
+        return $this->referenceService->studyVerse($verse);
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Reference $reference)
