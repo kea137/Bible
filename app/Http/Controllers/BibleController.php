@@ -60,7 +60,7 @@ class BibleController extends Controller
     public function parallel()
     {
         // Get user's preferred language from cookie or default to 'en'
-        $userLanguage = request()->cookie('language', 'en');
+        $userLanguage = request()->user()->language ?? 'en';
         $languageMap = [
             'en' => 'English',
             'sw' => 'Swahili',

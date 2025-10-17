@@ -203,8 +203,8 @@ if (info) {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div class="text-lg leading-relaxed space-y-2 max-w-4xl mx-auto">
-                        <h3 class="text-xl font-semibold mb-4">
+                    <div class="text-lg leading-relaxed space-y-2 max-w-4xl mx-30 text-justify">
+                        <h3 class="text-xl font-semibold mb-4 text-center">
                             {{ loadedChapter.book?.title }} {{ loadedChapter.chapter_number }}
                         </h3>
                         <p v-for="verse in loadedChapter.verses" :key="verse.id" class="mb-2">
