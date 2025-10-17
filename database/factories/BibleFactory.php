@@ -17,7 +17,11 @@ class BibleFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->words(3, true),
+            'abbreviation' => fake()->lexify('???'),
+            'language' => 'English',
+            'version' => fake()->word(),
+            'description' => fake()->sentence(),
         ];
     }
 }

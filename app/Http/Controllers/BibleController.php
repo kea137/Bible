@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBibleRequest;
 use App\Http\Requests\UpdateBibleRequest;
 use App\Models\Bible;
-use App\Models\Book;
 use App\Models\Chapter;
+use App\Services\BibleJsonParser;
 use Inertia\Inertia;
 
 class BibleController extends Controller
@@ -52,7 +52,7 @@ class BibleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBibleRequest $request)
+    public function store(StoreBibleRequest $request, BibleJsonParser $parser)
     {
         $validated = $request->validated();
 
@@ -67,56 +67,19 @@ class BibleController extends Controller
         // Handle file upload and parsing here
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            
+
             // if the file is json, parse it accordingly
             if ($file->getClientOriginalExtension() === 'json') {
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
-                // Process the JSON data (e.g., create books, chapters, verses)
-                // dd($data['BIBLEBOOK'][0]['CHAPTER'][0]['VERSES'][0]['verse_text']);
 
-                foreach ($data['BIBLEBOOK'] as $book) {
-                    // Example: Create book, chapters, and verses
-                    // $bible->books()->create([...]);
-                    $created_book = Book::create([
-                        'bible_id' => $bible->id,
-                        'book_number' => $book['book_number'],
-                        'title' => $book['book_name'],
-                        'author' => $book['author'] ?? null,
-                        'published_year' => $book['published_year'] ?? null,
-                        'introduction' => $book['introduction'] ?? null,
-                        'summary' => $book['summary'] ?? null,
-                    ]);
+                try {
+                    // Use the parser service to handle different JSON formats
+                    $parser->parse($bible, $data);
+                } catch (\InvalidArgumentException $e) {
+                    // If parsing fails, delete the created Bible and return error
+                    $bible->delete();
 
-                    foreach ($book['CHAPTER'] as $chapter) {
-                        // Ensure $chapter is an array before accessing its keys
-                        if (!is_array($chapter)) {
-                            continue;
-                        }
-
-                        $created_chapter = Chapter::create([
-                            'bible_id' => $bible->id,
-                            'book_id' => $created_book->id, // Adjust as necessary
-                            'chapter_number' => $chapter['chapter_number'] ?? 0,
-                            'title' => $chapter['title'] ?? null,
-                            'introduction' => $chapter['introduction'] ?? null,
-                        ]);
-
-                        if (isset($chapter['VERSES']) && is_array($chapter['VERSES'])) {
-                            foreach ($chapter['VERSES'] as $verse) {
-                                // Create verses
-                                if (!is_array($verse)) {
-                                    continue;
-                                }
-                                $created_chapter->verses()->create([
-                                    'bible_id' => $bible->id,
-                                    'book_id' => $created_book->id,
-                                    'chapter_id' => $created_chapter->id,
-                                    'verse_number' => $verse['verse_number'],
-                                    'text' => $verse['verse_text'],
-                                ]);
-                            }
-                        }
-                    }
+                    return redirect()->back()->withErrors(['file' => $e->getMessage()]);
                 }
             }
 
