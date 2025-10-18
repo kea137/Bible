@@ -113,18 +113,19 @@ class BibleJsonParser
     private function isNestedAssociativeFormat(array $data): bool
     {
         // Check if top-level keys are strings (book names)
-        if (empty($data) || !is_array($data)) {
+        if (empty($data) || ! is_array($data)) {
             return false;
         }
         $firstBook = reset($data);
-        if (!is_array($firstBook)) {
+        if (! is_array($firstBook)) {
             return false;
         }
         $firstChapter = reset($firstBook);
-        if (!is_array($firstChapter)) {
+        if (! is_array($firstChapter)) {
             return false;
         }
         $firstVerse = reset($firstChapter);
+
         return is_string($firstVerse);
     }
 
@@ -138,7 +139,7 @@ class BibleJsonParser
 
         foreach ($data as $bookName => $chaptersData) {
             // Get or create book
-            if (!isset($books[$bookName])) {
+            if (! isset($books[$bookName])) {
                 $bookNumber = $this->getBookNumber($bookName);
                 $books[$bookName] = Book::create([
                     'bible_id' => $bible->id,
@@ -149,12 +150,12 @@ class BibleJsonParser
             $book = $books[$bookName];
 
             foreach ($chaptersData as $chapterNumber => $versesData) {
-                $chapterKey = $bookName . '_' . $chapterNumber;
-                if (!isset($chapters[$chapterKey])) {
+                $chapterKey = $bookName.'_'.$chapterNumber;
+                if (! isset($chapters[$chapterKey])) {
                     $chapters[$chapterKey] = Chapter::create([
                         'bible_id' => $bible->id,
                         'book_id' => $book->id,
-                        'chapter_number' => (int)$chapterNumber,
+                        'chapter_number' => (int) $chapterNumber,
                     ]);
                 }
                 $chapter = $chapters[$chapterKey];
@@ -164,14 +165,13 @@ class BibleJsonParser
                         'bible_id' => $bible->id,
                         'book_id' => $book->id,
                         'chapter_id' => $chapter->id,
-                        'verse_number' => (int)$verseNumber,
+                        'verse_number' => (int) $verseNumber,
                         'text' => $verseText,
                     ]);
                 }
             }
         }
     }
-    
 
     /**
      * Parse Swahili format (original implementation)

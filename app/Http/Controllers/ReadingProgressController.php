@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bible;
-use App\Models\ReadingProgress;
 use App\Models\Chapter;
+use App\Models\ReadingProgress;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ReadingProgressController extends Controller
@@ -27,7 +26,7 @@ class ReadingProgressController extends Controller
 
         if ($progress) {
             // Toggle completion
-            $progress->completed = !$progress->completed;
+            $progress->completed = ! $progress->completed;
             $progress->completed_at = $progress->completed ? now() : null;
             $progress->save();
         } else {
@@ -116,20 +115,20 @@ class ReadingProgressController extends Controller
     public function readingPlan(Request $request)
     {
         $userId = auth()->id();
-        
+
         // Get selected Bible ID from request or use the first Bible or last read Bible
         $selectedBibleId = $request->input('bible_id');
-        
-        if (!$selectedBibleId) {
+
+        if (! $selectedBibleId) {
             // Try to get the last read Bible
             $lastReading = ReadingProgress::where('user_id', $userId)
                 ->where('completed', true)
                 ->latest('completed_at')
                 ->first();
-            
+
             $selectedBibleId = $lastReading ? $lastReading->bible_id : Bible::orderBy('id')->value('id');
         }
-        
+
         $selectedBible = Bible::find($selectedBibleId);
         $allBibles = Bible::all();
 
@@ -143,7 +142,7 @@ class ReadingProgressController extends Controller
             ->where('bible_id', $selectedBibleId)
             ->where('completed', true)
             ->count();
-            
+
         $chaptersReadToday = ReadingProgress::where('user_id', $userId)
             ->where('bible_id', $selectedBibleId)
             ->where('completed', true)

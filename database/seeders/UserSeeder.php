@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,8 +13,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-       $user = User::updateOrCreate(
-            ['email' => 'kea.rajab@icloud.com'],
+        $user = User::updateOrCreate(
+            ['email' => 'kea@bible.comm'],
             [
                 'name' => 'Admin Kea',
                 'password' => Hash::make('asdfasdf'),
@@ -23,7 +22,7 @@ class UserSeeder extends Seeder
         );
 
         // Attach admin role (role_id = 1) if not already attached
-        if (!$user->roles()->where('role_id', 1)->exists()) {
+        if (! $user->roles()->where('role_number', 1)->exists()) {
             $user->roles()->attach(1);
         }
     }

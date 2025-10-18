@@ -17,7 +17,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        Gate::authorize('viewAny', Role::class);
+        Gate::authorize('update', Role::class);
 
         $users = User::with('roles')->get()->map(function ($user) {
             return [
@@ -42,7 +42,7 @@ class RoleController extends Controller
      */
     public function updateRoles(Request $request, User $user)
     {
-        Gate::authorize('updateRoles', $user);
+        Gate::authorize('create', Role::class);
 
         $validated = $request->validate([
             'role_ids' => 'required|array',
@@ -52,6 +52,18 @@ class RoleController extends Controller
         $user->roles()->sync($validated['role_ids']);
 
         return redirect()->back()->with('success', 'User roles updated successfully.');
+    }
+
+    /**
+     * Delete a user.
+     */
+    public function deleteUser(User $user)
+    {
+        Gate::authorize('delete', $user);
+
+        $user->delete();
+
+        return redirect()->back()->with('success', 'User deleted successfully.');
     }
 
     /**

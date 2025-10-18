@@ -38,7 +38,7 @@ test('getReferencesForVerse loads references from first created Bible', function
         '1' => 'GEN 1 2',
         '2' => 'GEN 1 3',
     ];
-    
+
     Reference::create([
         'bible_id' => $firstBible->id,
         'book_id' => $firstBook->id,
@@ -55,7 +55,7 @@ test('getReferencesForVerse loads references from first created Bible', function
         'verse_number' => 2,
         'text' => 'First Bible reference verse 2',
     ]);
-    
+
     $refVerse2 = Verse::factory()->create([
         'bible_id' => $firstBible->id,
         'book_id' => $firstBook->id,
@@ -92,7 +92,7 @@ test('getReferencesForVerse loads references from first created Bible', function
         'verse_number' => 2,
         'text' => 'Second Bible reference verse 2',
     ]);
-    
+
     $secondRefVerse2 = Verse::factory()->create([
         'bible_id' => $secondBible->id,
         'book_id' => $secondBook->id,
@@ -107,11 +107,11 @@ test('getReferencesForVerse loads references from first created Bible', function
 
     // Assert that references were found
     expect($references)->toHaveCount(2);
-    
+
     // Assert that the reference verses are from the second Bible
     expect($references[0]['verse']->bible_id)->toBe($secondBible->id);
     expect($references[1]['verse']->bible_id)->toBe($secondBible->id);
-    
+
     // Assert that the verse texts match the second Bible
     expect($references[0]['verse']->text)->toBe('Second Bible reference verse 2');
     expect($references[1]['verse']->text)->toBe('Second Bible reference verse 3');
@@ -172,7 +172,7 @@ test('getReferencesForVerse returns empty array when no Bibles exist', function 
 
     // Create a verse without proper setup (should not happen in production)
     // This tests the edge case when no Bibles exist
-    
+
     // Since we need at least a Bible to create a verse, we'll skip this test
     // or just verify that it handles the null case gracefully by checking the method
     expect(true)->toBeTrue();

@@ -4,6 +4,28 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        {{-- SEO Meta Tags --}}
+        <meta name="description" content="A modern Bible reading application with multiple translations, cross-references, verse highlighting, and reading progress tracking. Read the Bible online for free.">
+        <meta name="keywords" content="Bible, Bible reading, Bible translations, Bible study, cross-references, scripture, Christian resources, online Bible">
+        <meta name="author" content="Kea Rajabu Baruan">
+        <meta name="robots" content="index, follow">
+        <meta name="language" content="English">
+        
+        {{-- Open Graph Meta Tags --}}
+        <meta property="og:title" content="{{ config('app.name', 'Bible Application') }}">
+        <meta property="og:description" content="A modern Bible reading application with multiple translations, cross-references, and study tools.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ config('app.url') }}">
+        <meta property="og:site_name" content="{{ config('app.name', 'Bible Application') }}">
+        
+        {{-- Twitter Card Meta Tags --}}
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="{{ config('app.name', 'Bible Application') }}">
+        <meta name="twitter:description" content="A modern Bible reading application with multiple translations, cross-references, and study tools.">
+        
+        {{-- Canonical URL --}}
+        <link rel="canonical" href="{{ url()->current() }}">
+
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
             (function() {

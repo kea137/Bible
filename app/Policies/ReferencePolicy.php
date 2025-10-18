@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Reference;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ReferencePolicy
 {
@@ -13,7 +12,8 @@ class ReferencePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        // All authenticated users can view references
+        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
     }
 
     /**
@@ -21,7 +21,8 @@ class ReferencePolicy
      */
     public function view(User $user, Reference $reference): bool
     {
-        return false;
+        // All authenticated users can view references
+        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
     }
 
     /**
@@ -29,7 +30,8 @@ class ReferencePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        // Only admin (role number 1) and editor (role number 2) can create references
+        return $user->roles()->whereIn('role_number', [1, 2])->exists();
     }
 
     /**
@@ -37,7 +39,8 @@ class ReferencePolicy
      */
     public function update(User $user, Reference $reference): bool
     {
-        return false;
+        // Admin (role 1) and editor (role 2) can update references
+        return $user->roles()->whereIn('role_number', [1, 2])->exists();
     }
 
     /**
@@ -45,7 +48,8 @@ class ReferencePolicy
      */
     public function delete(User $user, Reference $reference): bool
     {
-        return false;
+        // Only admin (role number 1) can delete
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -53,7 +57,8 @@ class ReferencePolicy
      */
     public function restore(User $user, Reference $reference): bool
     {
-        return false;
+        // Only admin (role number 1) can restore
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -61,6 +66,7 @@ class ReferencePolicy
      */
     public function forceDelete(User $user, Reference $reference): bool
     {
-        return false;
+        // Only admin (role number 1) can force delete
+        return $user->roles()->where('role_number', 1)->exists();
     }
 }

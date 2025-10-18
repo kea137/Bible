@@ -80,6 +80,7 @@ class BookShorthand
         if ($language === 'sw') {
             return self::SWAHILI_NAMES[$shorthand] ?? null;
         }
+
         return self::ENGLISH_NAMES[$shorthand] ?? null;
     }
 
@@ -106,6 +107,7 @@ class BookShorthand
     public static function getBookNumber(string $shorthand): ?int
     {
         $flipped = array_flip(self::BOOK_SHORTHANDS);
+
         return $flipped[$shorthand] ?? null;
     }
 }

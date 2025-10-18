@@ -1,2 +1,11 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /settings
+Disallow: /api/
+Disallow: /storage/
+
+# Allow access to public assets
+Allow: /build/
+Allow: /favicon.ico
+Allow: /robots.txt

@@ -2,6 +2,16 @@
 import AlertUser from '@/components/AlertUser.vue';
 import Button from '@/components/ui/button/Button.vue';
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
     Card,
     CardContent,
     CardDescription,
@@ -16,13 +26,16 @@ import TableHeader from '@/components/ui/table/TableHeader.vue';
 import TableRow from '@/components/ui/table/TableRow.vue';
 // import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { role_management, update_roles } from '@/routes';
+import { delete_user, role_management, update_roles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Save, UserCog } from 'lucide-vue-next';
+import { Save, Trash2, UserCog } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const page = usePage();
+const auth = computed(() => page.props.auth);
+const roleNumbers = computed(() => auth.value?.roleNumbers || []);
+const isAdmin = computed(() => roleNumbers.value.includes(1));
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -57,6 +70,10 @@ const error = computed(() => page.props.error as string);
 const alertSuccess = ref(!!success.value);
 const alertError = ref(!!error.value);
 
+// Delete confirmation dialog state
+const showDeleteDialog = ref(false);
+const userToDelete = ref<{ id: number; name: string } | null>(null);
+
 // User role management
 const selectedUserRoles = ref<{ [userId: number]: number[] }>({});
 
@@ -88,6 +105,28 @@ const saveUserRoles = (userId: number) => {
             preserveScroll: true,
         },
     );
+};
+
+const openDeleteDialog = (userId: number, userName: string) => {
+    userToDelete.value = { id: userId, name: userName };
+    showDeleteDialog.value = true;
+};
+
+const confirmDelete = () => {
+    if (userToDelete.value) {
+        router.delete(delete_user(userToDelete.value.id).url, {
+            preserveScroll: true,
+            onSuccess: () => {
+                showDeleteDialog.value = false;
+                userToDelete.value = null;
+            },
+        });
+    }
+};
+
+const cancelDelete = () => {
+    showDeleteDialog.value = false;
+    userToDelete.value = null;
 };
 </script>
 
@@ -184,13 +223,24 @@ const saveUserRoles = (userId: number) => {
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Button
-                                        size="sm"
-                                        @click="saveUserRoles(user.id)"
-                                    >
-                                        <Save class="h-4 w-4" />
-                                        Save
-                                    </Button>
+                                    <div class="flex gap-2">
+                                        <Button
+                                            size="sm"
+                                            @click="saveUserRoles(user.id)"
+                                        >
+                                            <Save class="h-4 w-4" />
+                                            Save
+                                        </Button>
+                                        <Button
+                                            v-if="isAdmin && user.id !== auth.user?.id"
+                                            size="sm"
+                                            variant="destructive"
+                                            @click="openDeleteDialog(user.id, user.name)"
+                                        >
+                                            <Trash2 class="h-4 w-4" />
+                                            Delete
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         </TableBody>
@@ -198,5 +248,30 @@ const saveUserRoles = (userId: number) => {
                 </CardContent>
             </Card>
         </div>
+
+        <!-- Delete User Confirmation Dialog -->
+        <AlertDialog v-model:open="showDeleteDialog">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Delete User</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Are you sure you want to delete user
+                        <strong>{{ userToDelete?.name }}</strong
+                        >? This action cannot be undone.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel @click="cancelDelete">
+                        Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        @click="confirmDelete"
+                        class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                        Delete
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </AppLayout>
 </template>
