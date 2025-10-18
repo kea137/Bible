@@ -22,7 +22,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
-import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-vue-next';
 import {
     Select,
     SelectContent,
@@ -90,6 +90,7 @@ const selectedReferenceVerse = ref<any>(null);
 const verseHighlights = ref<Record<number, any>>({});
 const notesDialogOpen = ref(false);
 const selectedVerseForNote = ref<any>(null);
+const chapterCompleted = ref(false);
 
 const currentBook = computed(() => 
     props.bible.books.find(book => book.id === Number(selectedBookId.value))
@@ -135,6 +136,60 @@ async function loadChapterHighlights(chapterId: number) {
     }
 }
 
+async function loadChapterProgress(chapterId: number) {
+    if (!page.props.auth?.user) return;
+
+    try {
+        const response = await fetch(
+            `/api/reading-progress/bible?bible_id=${props.bible.id}`,
+        );
+        const data = await response.json();
+        chapterCompleted.value = !!data[chapterId];
+    } catch (error) {
+        console.error('Failed to load chapter progress:', error);
+        chapterCompleted.value = false;
+    }
+}
+
+async function toggleChapterCompletion() {
+    if (!page.props.auth?.user) {
+        alert('Please log in to track reading progress');
+        return;
+    }
+
+    try {
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        if (!csrfToken) {
+            alert('CSRF token not found. Refreshing page to fix authentication...');
+            window.location.reload();
+            return;
+        }
+
+        const response = await fetch('/api/reading-progress/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                chapter_id: selectedChapterId.value,
+                bible_id: props.bible.id,
+            }),
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            chapterCompleted.value = result.progress.completed;
+        }
+    } catch (error) {
+        console.error('Failed to toggle chapter completion:', error);
+    }
+}
+
 function loadChapter(chapterId: number) {
     fetch(`/api/bibles/books/chapters/${chapterId}`)
         .then((res) => res.json())
@@ -144,6 +199,7 @@ function loadChapter(chapterId: number) {
             hoveredVerseReferences.value = [];
             selectedReferenceVerse.value = null;
             loadChapterHighlights(chapterId);
+            loadChapterProgress(chapterId);
         });
 }
 
@@ -335,9 +391,10 @@ if (info) {
     alertInfo.value = true;
 }
 
-// Load initial highlights
+// Load initial highlights and progress
 if (props.initialChapter?.id) {
     loadChapterHighlights(props.initialChapter.id);
+    loadChapterProgress(props.initialChapter.id);
 }
 </script>
 
@@ -457,6 +514,15 @@ if (props.initialChapter?.id) {
                             >
                                 <ChevronLeft class="h-4 w-4 mr-1" />
                                 Previous
+                            </Button>
+                            <Button
+                                v-if="page.props.auth?.user"
+                                :variant="chapterCompleted ? 'default' : 'outline'"
+                                size="sm"
+                                @click="toggleChapterCompletion"
+                            >
+                                <CheckCircle class="h-4 w-4 mr-1" />
+                                {{ chapterCompleted ? 'Completed' : 'Mark as Read' }}
                             </Button>
                             <Button
                                 variant="outline"
