@@ -6,6 +6,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ReadingProgressController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\VerseHighlightController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,6 +20,9 @@ Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['aut
 Route::get('/license', function () {
     return Inertia::render('License');
 })->name('license');
+
+// Sitemap for SEO
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles');
 Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel');

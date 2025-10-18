@@ -20,19 +20,19 @@ class ReferenceService
             foreach ($data as $referenceData) {
 
                 // Ensure required keys exist
-                if (!isset($referenceData['v']) || !isset($referenceData['r'])) {
+                if (! isset($referenceData['v']) || ! isset($referenceData['r'])) {
                     continue;
                 }
-                
+
                 // Parse the verse reference
                 $verseRef = BookShorthand::parseReference($referenceData['v']);
                 if (empty($verseRef)) {
                     continue;
                 }
-                
+
                 // Find the verse in the database
                 $verse = $this->findVerseByReference($bible, $verseRef);
-                if (!$verse) {
+                if (! $verse) {
                     continue;
                 }
 
@@ -40,11 +40,11 @@ class ReferenceService
                 $references = [];
                 foreach ($referenceData['r'] as $refId => $refString) {
                     $refData = BookShorthand::parseReference($refString);
-                    if (!empty($refData)) {
+                    if (! empty($refData)) {
                         $references[$refId] = $refString;
                     }
                 }
-                
+
                 // Store the reference
                 Reference::updateOrCreate(
                     [
@@ -69,14 +69,14 @@ class ReferenceService
     {
         // Load the verse and its related data
         $verse->load(['book', 'chapter', 'bible']);
-        
+
         // Find the first created Bible
         $firstBible = Bible::orderBy('id', 'asc')->first();
-        
-        if (!$firstBible) {
+
+        if (! $firstBible) {
             return [];
         }
-        
+
         // Find the equivalent verse in the first Bible
         $firstBibleVerse = $this->findVerseInBible(
             $firstBible,
@@ -84,32 +84,32 @@ class ReferenceService
             $verse->chapter->chapter_number,
             $verse->verse_number
         );
-        
-        if (!$firstBibleVerse) {
+
+        if (! $firstBibleVerse) {
             return [];
         }
-        
+
         // Get the reference for this verse from the first Bible
         $reference = Reference::where('verse_id', $firstBibleVerse->id)
             ->where('bible_id', $firstBible->id)
             ->first();
-        
-        if (!$reference) {
+
+        if (! $reference) {
             return [];
         }
 
         $references = json_decode($reference->verse_reference, true);
-        
+
         // Validate that decoded JSON is an array
-        if (!is_array($references)) {
+        if (! is_array($references)) {
             return [];
         }
-        
+
         $result = [];
 
         foreach ($references as $id => $refString) {
             $refData = BookShorthand::parseReference($refString);
-            if (!empty($refData)) {
+            if (! empty($refData)) {
                 // Find the reference verse in the current Bible being viewed
                 $refVerse = $this->findVerseByReference($verse->bible, $refData);
                 if ($refVerse) {
@@ -133,14 +133,14 @@ class ReferenceService
     {
         return Verse::whereHas('book', function ($query) use ($bookNumber, $bible) {
             $query->where('bible_id', $bible->id)
-                  ->where('book_number', $bookNumber);
+                ->where('book_number', $bookNumber);
         })
-        ->whereHas('chapter', function ($query) use ($chapterNumber, $bible) {
-            $query->where('bible_id', $bible->id)
-                  ->where('chapter_number', $chapterNumber);
-        })
-        ->where('verse_number', $verseNumber)
-        ->first();
+            ->whereHas('chapter', function ($query) use ($chapterNumber, $bible) {
+                $query->where('bible_id', $bible->id)
+                    ->where('chapter_number', $chapterNumber);
+            })
+            ->where('verse_number', $verseNumber)
+            ->first();
     }
 
     /**
@@ -149,20 +149,20 @@ class ReferenceService
     private function findVerseByReference(Bible $bible, array $ref): ?Verse
     {
         $bookNumber = BookShorthand::getBookNumber($ref['book']);
-        if (!$bookNumber) {
+        if (! $bookNumber) {
             return null;
         }
 
         return Verse::whereHas('book', function ($query) use ($bookNumber, $bible) {
             $query->where('bible_id', $bible->id)
-                  ->where('book_number', $bookNumber);
+                ->where('book_number', $bookNumber);
         })
-        ->whereHas('chapter', function ($query) use ($ref, $bible) {
-            $query->where('bible_id', $bible->id)
-                  ->where('chapter_number', $ref['chapter']);
-        })
-        ->where('verse_number', $ref['verse'])
-        ->first();
+            ->whereHas('chapter', function ($query) use ($ref, $bible) {
+                $query->where('bible_id', $bible->id)
+                    ->where('chapter_number', $ref['chapter']);
+            })
+            ->where('verse_number', $ref['verse'])
+            ->first();
     }
 
     /**
@@ -171,7 +171,7 @@ class ReferenceService
     public function getVerseWithReferences(int $verseId): ?array
     {
         $verse = Verse::with(['book', 'chapter'])->find($verseId);
-        if (!$verse) {
+        if (! $verse) {
             return null;
         }
 
@@ -187,22 +187,22 @@ class ReferenceService
     public function studyVerse(Verse $verse)
     {
         $verse->load(['book', 'chapter', 'bible']);
-        
+
         // Get references for this verse
         $references = $this->getReferencesForVerse($verse);
-        
+
         // Get other Bible versions of the same verse
         $otherVersions = Verse::whereHas('book', function ($query) use ($verse) {
             $query->where('book_number', $verse->book->book_number);
         })
-        ->whereHas('chapter', function ($query) use ($verse) {
-            $query->where('chapter_number', $verse->chapter->chapter_number);
-        })
-        ->where('verse_number', $verse->verse_number)
-        ->where('bible_id', '!=', $verse->bible_id)
-        ->with(['bible'])
-        ->get();
-        
+            ->whereHas('chapter', function ($query) use ($verse) {
+                $query->where('chapter_number', $verse->chapter->chapter_number);
+            })
+            ->where('verse_number', $verse->verse_number)
+            ->where('bible_id', '!=', $verse->bible_id)
+            ->with(['bible'])
+            ->get();
+
         return \Inertia\Inertia::render('Verse Study', [
             'verse' => $verse->toArray(),
             'references' => $references,

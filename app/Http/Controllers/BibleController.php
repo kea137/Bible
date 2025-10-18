@@ -18,7 +18,10 @@ class BibleController extends Controller
      */
     public function index()
     {
-        $bibles = Bible::all();
+        // Only load the necessary fields for the index page to reduce memory usage
+        $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version', 'description')
+            ->orderBy('name')
+            ->get();
 
         return Inertia::render('Bibles', [
             'biblesList' => $bibles->toArray(),
@@ -36,9 +39,9 @@ class BibleController extends Controller
             'en' => 'English',
             'sw' => 'Swahili',
         ];
-        
+
         $languageName = $languageMap[$userLanguage] ?? 'English';
-        
+
         // Filter bibles by language
         $bibles_preffered = Bible::with('books.chapters')
             ->where('language', $languageName)
@@ -58,11 +61,11 @@ class BibleController extends Controller
     public function show(Bible $bible)
     {
         $bible->load('books.chapters');
-        
+
         // Get the first book and first chapter
         $firstBook = $bible->books->first();
         $firstChapter = $firstBook ? $firstBook->chapters->first() : null;
-        
+
         if ($firstChapter) {
             $firstChapter->load('verses', 'book');
         }
@@ -114,7 +117,7 @@ class BibleController extends Controller
                     // If parsing fails, delete the created Bible and return error
                     $bible->delete();
 
-                    return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: ' . $e->getMessage());
+                    return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: '.$e->getMessage());
                 }
             }
 
@@ -131,7 +134,7 @@ class BibleController extends Controller
     public function showChapter(Chapter $chapter)
     {
         $chapter->load('verses', 'book');
-        
+
         return response()->json($chapter);
     }
 

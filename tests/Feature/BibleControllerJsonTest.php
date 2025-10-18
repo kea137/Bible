@@ -89,7 +89,7 @@ test('bible controller handles invalid json format gracefully', function () {
 
     // Bible should not be created due to invalid format
     expect(Bible::count())->toBe(0);
-    
+
     // Should redirect back with error
     $response->assertSessionHasErrors('file');
 });

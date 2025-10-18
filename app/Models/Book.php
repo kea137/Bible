@@ -32,7 +32,7 @@ class Book extends Model
 
     public function verses()
     {
-    return $this->hasManyThrough(Verse::class, Chapter::class);
+        return $this->hasManyThrough(Verse::class, Chapter::class);
     }
 
     public function references()

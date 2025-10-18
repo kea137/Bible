@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Bible;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class BiblePolicy
 {
@@ -14,7 +13,7 @@ class BiblePolicy
     public function viewAny(User $user): bool
     {
         // All roles can view any Bibles
-        return $user->roles()->whereIn('role_id', [1,2,3])->exists();
+        return $user->roles()->whereIn('role_id', [1, 2, 3])->exists();
     }
 
     /**
@@ -23,7 +22,7 @@ class BiblePolicy
     public function view(User $user, Bible $bible): bool
     {
         // All roles can view a Bible
-        return $user->roles()->whereIn('role_id', [1,2,3])->exists();
+        return $user->roles()->whereIn('role_id', [1, 2, 3])->exists();
     }
 
     /**
@@ -41,7 +40,7 @@ class BiblePolicy
     public function update(User $user, Bible $bible): bool
     {
         // Admin (1) and editor (2) can update
-        return $user->roles()->whereIn('role_id', [1,2])->exists();
+        return $user->roles()->whereIn('role_id', [1, 2])->exists();
     }
 
     /**

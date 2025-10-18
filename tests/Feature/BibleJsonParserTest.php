@@ -11,7 +11,7 @@ uses(RefreshDatabase::class);
 
 test('it can parse swahili format json', function () {
     $bible = Bible::factory()->create();
-    $parser = new BibleJsonParser();
+    $parser = new BibleJsonParser;
 
     $data = [
         'BIBLEBOOK' => [
@@ -37,7 +37,7 @@ test('it can parse swahili format json', function () {
     expect(Book::count())->toBe(1);
     expect(Chapter::count())->toBe(1);
     expect(Verse::count())->toBe(2);
-    
+
     $book = Book::first();
     expect($book->title)->toBe('Genesis');
     expect($book->book_number)->toBe(1);
@@ -46,7 +46,7 @@ test('it can parse swahili format json', function () {
 
 test('it can parse flat verses format json', function () {
     $bible = Bible::factory()->create();
-    $parser = new BibleJsonParser();
+    $parser = new BibleJsonParser;
 
     $data = [
         ['book' => 'Genesis', 'chapter' => 1, 'verse' => 1, 'text' => 'In the beginning...'],
@@ -60,18 +60,18 @@ test('it can parse flat verses format json', function () {
     expect(Book::count())->toBe(2);
     expect(Chapter::count())->toBe(3);
     expect(Verse::count())->toBe(4);
-    
+
     $genesis = Book::where('title', 'Genesis')->first();
     expect($genesis->book_number)->toBe(1);
     expect($genesis->chapters->count())->toBe(2);
-    
+
     $exodus = Book::where('title', 'Exodus')->first();
     expect($exodus->book_number)->toBe(2);
 });
 
 test('it can parse nested books format json', function () {
     $bible = Bible::factory()->create();
-    $parser = new BibleJsonParser();
+    $parser = new BibleJsonParser;
 
     $data = [
         'books' => [
@@ -108,14 +108,14 @@ test('it can parse nested books format json', function () {
     expect(Book::count())->toBe(2);
     expect(Chapter::count())->toBe(2);
     expect(Verse::count())->toBe(3);
-    
+
     $genesis = Book::where('title', 'Genesis')->first();
     expect($genesis->book_number)->toBe(1);
 });
 
 test('it can parse nested books format without books wrapper', function () {
     $bible = Bible::factory()->create();
-    $parser = new BibleJsonParser();
+    $parser = new BibleJsonParser;
 
     $data = [
         [
@@ -140,7 +140,7 @@ test('it can parse nested books format without books wrapper', function () {
 
 test('it throws exception for unsupported format', function () {
     $bible = Bible::factory()->create();
-    $parser = new BibleJsonParser();
+    $parser = new BibleJsonParser;
 
     $data = ['invalid' => 'format'];
 
@@ -149,10 +149,10 @@ test('it throws exception for unsupported format', function () {
 
 test('it detects swahili format correctly', function () {
     $bible = Bible::factory()->create();
-    $parser = new BibleJsonParser();
+    $parser = new BibleJsonParser;
 
     $data = ['BIBLEBOOK' => []];
 
     // Should not throw exception
-    expect(fn() => $parser->parse($bible, $data))->not->toThrow(InvalidArgumentException::class);
+    expect(fn () => $parser->parse($bible, $data))->not->toThrow(InvalidArgumentException::class);
 });

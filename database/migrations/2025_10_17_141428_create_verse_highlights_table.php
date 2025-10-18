@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('color', 50); // e.g., 'yellow', 'green'
             $table->text('note')->nullable();
             $table->timestamps();
-            
+
             // Ensure a user can only have one highlight per verse
             $table->unique(['user_id', 'verse_id']);
         });

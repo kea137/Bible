@@ -15,16 +15,16 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         // Get user's preferred language
         $userLanguage = $request->cookie('language', 'en');
         $languageMap = [
             'en' => 'English',
             'sw' => 'Swahili',
         ];
-        
+
         $languageName = $languageMap[$userLanguage] ?? 'English';
-        
+
         // Get random verse of the day with eager loading to prevent N+1 queries
         $randomVerse = Verse::with(['bible', 'book', 'chapter'])
             ->whereHas('bible', function ($query) use ($languageName) {
@@ -32,17 +32,17 @@ class DashboardController extends Controller
             })
             ->inRandomOrder()
             ->first();
-        
+
         // Get total Bibles in user's language
         $totalBibles = Bible::where('language', $languageName)->count();
-        
+
         // Get last reading from reading progress with eager loading
         $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->with(['bible', 'chapter.book'])
             ->latest('completed_at')
             ->first();
-        
+
         $lastReading = null;
         if ($lastReadingProgress) {
             $lastReading = [
@@ -52,29 +52,29 @@ class DashboardController extends Controller
                 'chapter_number' => $lastReadingProgress->chapter->chapter_number,
             ];
         }
-        
+
         // Get reading stats with accurate verse counts - optimized query
         $totalChaptersCompleted = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->count();
-        
+
         // Get chapters read today with their actual verse counts - eager load verses
         $chaptersReadToday = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->whereDate('completed_at', today())
             ->with('chapter.verses')
             ->get();
-        
+
         $versesReadToday = $chaptersReadToday->sum(function ($progress) {
             return $progress->chapter->verses->count();
         });
-        
+
         $readingStats = [
             'total_bibles' => $totalBibles,
             'verses_read_today' => $versesReadToday,
             'chapters_completed' => $totalChaptersCompleted,
         ];
-        
+
         return Inertia::render('Dashboard', [
             'verseOfTheDay' => $randomVerse,
             'lastReading' => $lastReading,

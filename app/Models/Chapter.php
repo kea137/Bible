@@ -30,7 +30,7 @@ class Chapter extends Model
 
     public function verses()
     {
-    return $this->hasMany(Verse::class);
+        return $this->hasMany(Verse::class);
     }
 
     public function references()
