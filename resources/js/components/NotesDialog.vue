@@ -59,7 +59,7 @@ async function saveNote() {
             return;
         }
 
-        const response = await fetch('/api/verse-notes', {
+        const response = await fetch('/api/notes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

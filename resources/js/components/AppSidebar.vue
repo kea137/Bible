@@ -19,6 +19,7 @@ import {
     bibles_parallel,
     dashboard,
     license,
+    notes,
     role_management,
     references_create,
     highlighted_verses_page,
@@ -33,6 +34,7 @@ import {
     Highlighter,
     LayoutGrid,
     LibraryBig,
+    StickyNote,
     UserCog2,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
@@ -59,6 +61,11 @@ const mainNavItems: NavItem[] = [
         title: 'Highlights',
         href: highlighted_verses_page(),
         icon: Highlighter,
+    },
+    {
+        title: 'Notes',
+        href: notes(),
+        icon: StickyNote,
     },
 ];
 
