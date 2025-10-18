@@ -13,7 +13,7 @@ class BiblePolicy
     public function viewAny(User $user): bool
     {
         // All roles can view any Bibles
-        return $user->roles()->whereIn('role_id', [1, 2, 3])->exists();
+        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
     }
 
     /**
@@ -22,7 +22,7 @@ class BiblePolicy
     public function view(User $user, Bible $bible): bool
     {
         // All roles can view a Bible
-        return $user->roles()->whereIn('role_id', [1, 2, 3])->exists();
+        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
     }
 
     /**
@@ -30,8 +30,8 @@ class BiblePolicy
      */
     public function create(User $user): bool
     {
-        // Only admin (role 1) can create
-        return $user->roles()->where('role_id', 1)->exists();
+        // Only admin (role number 1) can create
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -39,8 +39,8 @@ class BiblePolicy
      */
     public function update(User $user, Bible $bible): bool
     {
-        // Admin (1) and editor (2) can update
-        return $user->roles()->whereIn('role_id', [1, 2])->exists();
+        // Admin (role 1) and editor (role 2) can update
+        return $user->roles()->whereIn('role_number', [1, 2])->exists();
     }
 
     /**
@@ -48,8 +48,8 @@ class BiblePolicy
      */
     public function delete(User $user, Bible $bible): bool
     {
-        // Only admin (role 1) can delete
-        return $user->roles()->where('role_id', 1)->exists();
+        // Only admin (role number 1) can delete
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -57,8 +57,8 @@ class BiblePolicy
      */
     public function restore(User $user, Bible $bible): bool
     {
-        // Only admin (role 1) can restore
-        return $user->roles()->where('role_id', 1)->exists();
+        // Only admin (role number 1) can restore
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -66,7 +66,7 @@ class BiblePolicy
      */
     public function forceDelete(User $user, Bible $bible): bool
     {
-        // Only admin (role 1) can force delete
-        return $user->roles()->where('role_id', 1)->exists();
+        // Only admin (role number 1) can force delete
+        return $user->roles()->where('role_number', 1)->exists();
     }
 }

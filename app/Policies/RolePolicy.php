@@ -13,7 +13,7 @@ class RolePolicy
     public function viewAny(User $user): bool
     {
         // All roles can view any roles
-        return $user->roles()->whereIn('role_id', [1, 2, 3])->exists();
+        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
     }
 
     /**
@@ -22,7 +22,7 @@ class RolePolicy
     public function view(User $user, Role $role): bool
     {
         // All roles can view a role
-        return $user->roles()->whereIn('role_id', [1, 2, 3])->exists();
+        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
     }
 
     /**
@@ -30,8 +30,8 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        // Only admin (role 1) can create
-        return $user->roles()->where('role_id', [1])->exists();
+        // Only admin (role number 1) can create
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -39,7 +39,8 @@ class RolePolicy
      */
     public function update(User $user): bool
     {
-        return $user->roles()->where('role_id', [1, 2])->exists();
+        // Admin (role 1) or Editor (role 2) can update
+        return $user->roles()->whereIn('role_number', [1, 2])->exists();
     }
 
     /**
@@ -47,8 +48,8 @@ class RolePolicy
      */
     public function delete(User $user): bool
     {
-        // Only admin (role 1) can delete
-        return $user->roles()->where('role_id', [1])->exists();
+        // Only admin (role number 1) can delete
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -56,8 +57,8 @@ class RolePolicy
      */
     public function restore(User $user): bool
     {
-        // Only admin (role 1) can restore
-        return $user->roles()->where('role_id', [1])->exists();
+        // Only admin (role number 1) can restore
+        return $user->roles()->where('role_number', 1)->exists();
     }
 
     /**
@@ -65,7 +66,7 @@ class RolePolicy
      */
     public function forceDelete(User $user): bool
     {
-        // Only admin (role 1) can force delete
-        return $user->roles()->where('role_id', [1])->exists();
+        // Only admin (role number 1) can force delete
+        return $user->roles()->where('role_number', 1)->exists();
     }
 }
