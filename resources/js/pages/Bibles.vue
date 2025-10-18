@@ -20,7 +20,8 @@ import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { LibraryBigIcon, Search } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue';
+import { toast } from 'vue-sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -74,10 +75,32 @@ const page = usePage();
 const success = page.props.success;
 const error = page.props.error;
 const info = page.props.info;
+const bibleId = page.props.bible_id;
 
 const alertSuccess = ref(false);
 const alertError = ref(false);
 const alertInfo = ref(false);
+
+// Watch for flash messages and show toasts
+watchEffect(() => {
+    if (success) {
+        toast.success('Success', {
+            description: String(success),
+        });
+    }
+    
+    if (error) {
+        toast.error('Error', {
+            description: String(error),
+        });
+    }
+    
+    if (info) {
+        toast.info('Information', {
+            description: String(info),
+        });
+    }
+});
 
 if (success) {
     alertSuccess.value = true;
@@ -90,6 +113,61 @@ if (error) {
 if (info) {
     alertInfo.value = true;
 }
+
+// Poll for Bible status if bible_id is present
+let statusCheckInterval: NodeJS.Timeout | null = null;
+
+async function checkBibleStatus(id: number) {
+    try {
+        const response = await fetch(`/api/bibles/${id}/status`);
+        const data = await response.json();
+        
+        if (data.status === 'completed') {
+            toast.success('Bible Created Successfully', {
+                description: `${data.name} has been successfully created and is now available.`,
+            });
+            
+            // Stop polling
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+                statusCheckInterval = null;
+            }
+            
+            // Reload the page to show the new Bible
+            router.reload();
+        } else if (data.status === 'failed') {
+            toast.error('Bible Creation Failed', {
+                description: `Failed to create ${data.name}: ${data.error_message || 'Unknown error'}`,
+            });
+            
+            // Stop polling
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+                statusCheckInterval = null;
+            }
+        }
+    } catch (error) {
+        console.error('Error checking Bible status:', error);
+    }
+}
+
+onMounted(() => {
+    if (bibleId) {
+        // Start polling for status every 3 seconds
+        statusCheckInterval = setInterval(() => {
+            checkBibleStatus(Number(bibleId));
+        }, 3000);
+        
+        // Also check immediately
+        checkBibleStatus(Number(bibleId));
+    }
+});
+
+onUnmounted(() => {
+    if (statusCheckInterval) {
+        clearInterval(statusCheckInterval);
+    }
+});
 </script>
 
 <template>

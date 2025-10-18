@@ -133,7 +133,10 @@ class BibleController extends Controller
                 // Dispatch the job to process the Bible upload asynchronously
                 ProcessBibleUpload::dispatch($bible, $data);
 
-                return redirect()->route('bibles')->with('info', 'Bible upload started. You will be notified when it completes.');
+                return redirect()->route('bibles')->with([
+                    'info' => 'Bible upload started. You will be notified when it completes.',
+                    'bible_id' => $bible->id,
+                ]);
             }
 
             // Process the file (e.g., parse and store books, chapters, verses)
@@ -183,5 +186,18 @@ class BibleController extends Controller
     public function apiBiblesIndex()
     {
         return response()->json(Bible::all());
+    }
+
+    /**
+     * API endpoint to get Bible status
+     */
+    public function getBibleStatus(Bible $bible)
+    {
+        return response()->json([
+            'id' => $bible->id,
+            'name' => $bible->name,
+            'status' => $bible->status,
+            'error_message' => $bible->error_message,
+        ]);
     }
 }
