@@ -177,3 +177,42 @@ test('getReferencesForVerse returns empty array when no Bibles exist', function 
     // or just verify that it handles the null case gracefully by checking the method
     expect(true)->toBeTrue();
 });
+
+test('getReferencesForVerse handles malformed JSON in verse_reference gracefully', function () {
+    $referenceService = app(ReferenceService::class);
+
+    // Create first Bible
+    $firstBible = Bible::factory()->create(['name' => 'First Bible']);
+    $firstBook = Book::factory()->create([
+        'bible_id' => $firstBible->id,
+        'book_number' => 1,
+        'title' => 'Genesis',
+    ]);
+    $firstChapter = Chapter::factory()->create([
+        'bible_id' => $firstBible->id,
+        'book_id' => $firstBook->id,
+        'chapter_number' => 1,
+    ]);
+    $firstVerse = Verse::factory()->create([
+        'bible_id' => $firstBible->id,
+        'book_id' => $firstBook->id,
+        'chapter_id' => $firstChapter->id,
+        'verse_number' => 1,
+        'text' => 'First Bible verse text',
+    ]);
+
+    // Create a reference with a string value instead of array (malformed JSON structure)
+    Reference::create([
+        'bible_id' => $firstBible->id,
+        'book_id' => $firstBook->id,
+        'chapter_id' => $firstChapter->id,
+        'verse_id' => $firstVerse->id,
+        'verse_reference' => json_encode('not an array'), // String instead of array
+    ]);
+
+    // Get references for the verse
+    $references = $referenceService->getReferencesForVerse($firstVerse);
+
+    // Should return empty array for malformed data
+    expect($references)->toBeArray()->toBeEmpty();
+});

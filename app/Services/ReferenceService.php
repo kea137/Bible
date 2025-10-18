@@ -99,6 +99,12 @@ class ReferenceService
         }
 
         $references = json_decode($reference->verse_reference, true);
+        
+        // Validate that decoded JSON is an array
+        if (!is_array($references)) {
+            return [];
+        }
+        
         $result = [];
 
         foreach ($references as $id => $refString) {
@@ -129,8 +135,9 @@ class ReferenceService
             $query->where('bible_id', $bible->id)
                   ->where('book_number', $bookNumber);
         })
-        ->whereHas('chapter', function ($query) use ($chapterNumber) {
-            $query->where('chapter_number', $chapterNumber);
+        ->whereHas('chapter', function ($query) use ($chapterNumber, $bible) {
+            $query->where('bible_id', $bible->id)
+                  ->where('chapter_number', $chapterNumber);
         })
         ->where('verse_number', $verseNumber)
         ->first();
@@ -150,8 +157,9 @@ class ReferenceService
             $query->where('bible_id', $bible->id)
                   ->where('book_number', $bookNumber);
         })
-        ->whereHas('chapter', function ($query) use ($ref) {
-            $query->where('chapter_number', $ref['chapter']);
+        ->whereHas('chapter', function ($query) use ($ref, $bible) {
+            $query->where('bible_id', $bible->id)
+                  ->where('chapter_number', $ref['chapter']);
         })
         ->where('verse_number', $ref['verse'])
         ->first();
