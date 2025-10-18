@@ -89,14 +89,6 @@ const saveUserRoles = (userId: number) => {
         },
     );
 };
-
-// Leadership management
-const newLeadership = ref({
-    course_id: null as number | null,
-    name: '',
-    rank: '',
-    position: '',
-});
 </script>
 
 <template>

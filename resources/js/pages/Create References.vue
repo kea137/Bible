@@ -22,7 +22,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, references_create } from '@/routes';
+import { references_create } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { LoaderCircle, UploadCloudIcon } from 'lucide-vue-next';
@@ -42,10 +42,6 @@ const props = defineProps<{
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Bibles',
-        href: bibles().url,
-    },
     {
         title: 'Create References',
         href: references_create().url,

@@ -153,7 +153,7 @@ async function highlightVerse(verseId: number, color: string) {
         let result: HighlightResponse = {};
         try {
             result = await response.json();
-        } catch (jsonError) {
+        } catch {
             // If response is not JSON, treat as error
             alert('Unexpected server response. Please try again.');
             return;
@@ -203,16 +203,11 @@ async function removeHighlight(verseId: number) {
             }),
         });
 
-        type HighlightResponse = {
-            success?: boolean;
-            message?: string;
-        };
-        let result: HighlightResponse = {};
         try {
-            result = await response.json();
+            await response.json();
             // Remove highlight color
             removeVerseHighlightClass(verseId);
-        } catch (jsonError) {
+        } catch {
             // If response is not JSON, treat as error
             alert('Unexpected server response. Please try again.');
             return;
@@ -255,7 +250,7 @@ async function handleVerseHover(verseId: number) {
         } else {
             hoveredVerseReferences.value = [];
         }
-    } catch (error) {
+    } catch {
         hoveredVerseReferences.value = [];
     }
 }
