@@ -16,6 +16,8 @@ class Bible extends Model
         'language',
         'version',
         'description',
+        'status',
+        'error_message',
     ];
 
     public function books()

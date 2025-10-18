@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBibleRequest;
 use App\Http\Requests\UpdateBibleRequest;
+use App\Jobs\ProcessBibleUpload;
 use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Role;
@@ -81,7 +82,7 @@ class BibleController extends Controller
      */
     public function create()
     {
-        Gate::authorize('create', Role::class);
+        Gate::authorize('create', Bible::class);
 
         return Inertia::render('Create Bible');
     }
@@ -92,7 +93,7 @@ class BibleController extends Controller
     public function store(StoreBibleRequest $request, BibleJsonParser $parser)
     {
 
-        Gate::authorize('create', Role::class);
+        Gate::authorize('create', Bible::class);
 
         $validated = $request->validated();
 
@@ -102,6 +103,7 @@ class BibleController extends Controller
             'language' => $validated['language'],
             'version' => $validated['version'],
             'description' => $validated['description'] ?? null,
+            'status' => 'pending',
         ]);
 
         // Handle file upload and parsing here
@@ -112,22 +114,36 @@ class BibleController extends Controller
             if ($file->getClientOriginalExtension() === 'json') {
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
 
+                // Validate the JSON structure before dispatching the job
                 try {
-                    // Use the parser service to handle different JSON formats
-                    $parser->parse($bible, $data);
+                    // Quick validation by trying to detect format
+                    $reflection = new \ReflectionClass($parser);
+                    $method = $reflection->getMethod('detectFormat');
+                    $method->setAccessible(true);
+                    $method->invoke($parser, $data);
                 } catch (\InvalidArgumentException $e) {
-                    // If parsing fails, delete the created Bible and return error
+                    // If format detection fails, delete the created Bible and return error
                     $bible->delete();
 
-                    return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: '.$e->getMessage());
+                    return redirect()->back()->withErrors([
+                        'file' => 'Failed to parse the uploaded Bible file: '.$e->getMessage(),
+                    ])->withInput();
                 }
+
+                // Dispatch the job to process the Bible upload asynchronously
+                ProcessBibleUpload::dispatch($bible, $data, $request->user()->id);
+
+                return redirect()->route('bibles')->with([
+                    'info' => 'Bible upload started. You will be notified when it completes.',
+                    'bible_id' => $bible->id,
+                ]);
             }
 
             // Process the file (e.g., parse and store books, chapters, verses)
             // This is a placeholder for actual file processing logic
         }
 
-        return redirect()->route('bibles')->with('success', 'Bible uploaded successfully.');
+        return redirect()->route('bibles')->with('success', 'Bible created successfully.');
     }
 
     /**
@@ -170,5 +186,18 @@ class BibleController extends Controller
     public function apiBiblesIndex()
     {
         return response()->json(Bible::all());
+    }
+
+    /**
+     * API endpoint to get Bible status
+     */
+    public function getBibleStatus(Bible $bible)
+    {
+        return response()->json([
+            'id' => $bible->id,
+            'name' => $bible->name,
+            'status' => $bible->status,
+            'error_message' => $bible->error_message,
+        ]);
     }
 }

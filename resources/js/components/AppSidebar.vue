@@ -2,6 +2,7 @@
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
+import NotificationsPanel from '@/components/notifications/NotificationsPanel.vue';
 import {
     Sidebar,
     SidebarContent,
@@ -13,6 +14,8 @@ import {
     SidebarMenuItem,
     SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { Badge } from '@/components/ui/badge';
+import Button from '@/components/ui/button/Button.vue';
 import {
     bible_create,
     bibles,
@@ -30,6 +33,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookCopy,
     BookOpen,
+    BellIcon,
     CogIcon,
     FileText,
     Highlighter,
@@ -39,7 +43,7 @@ import {
     Target,
     UserCog2,
 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import AppLogo from './AppLogo.vue';
 import AppearanceSideBar from './AppearanceSideBar.vue';
 import LanguageSelectorSideBar from './LanguageSelectorSideBar.vue';
@@ -121,6 +125,46 @@ const footerNavItems = computed(() => {
     
     return items;
 });
+
+// Notifications
+const showNotifications = ref(false);
+const unreadCount = ref(0);
+
+const canViewNotifications = computed(() => {
+    return roleNumbers.value.includes(1) || roleNumbers.value.includes(2);
+});
+
+async function fetchUnreadCount() {
+    if (!canViewNotifications.value) return;
+    
+    try {
+        const response = await fetch('/api/notifications/unread-count');
+        const data = await response.json();
+        unreadCount.value = data.count;
+    } catch (error) {
+        console.error('Error fetching unread count:', error);
+    }
+}
+
+let intervalId: NodeJS.Timeout | null = null;
+
+onMounted(() => {
+    if (canViewNotifications.value) {
+        fetchUnreadCount();
+        // Poll for new notifications every 30 seconds
+        intervalId = setInterval(fetchUnreadCount, 30000);
+    }
+});
+
+onUnmounted(() => {
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+});
+
+function handleNotificationRead() {
+    fetchUnreadCount();
+}
 </script>
 
 <template>
@@ -153,9 +197,41 @@ const footerNavItems = computed(() => {
                 </div>
             </SidebarGroup>
             <SidebarSeparator />
+            
+            <!-- Notifications button - only for role 1 and 2 -->
+            <SidebarGroup v-if="canViewNotifications" class="px-2 py-0">
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton @click="showNotifications = true" tooltip="Notifications">
+                            <div class="relative">
+                                <BellIcon />
+                                <Badge 
+                                    v-if="unreadCount > 0" 
+                                    variant="destructive" 
+                                    class="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center p-0 text-[10px]"
+                                >
+                                    {{ unreadCount > 99 ? '99+' : unreadCount }}
+                                </Badge>
+                            </div>
+                            <span>Notifications</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarGroup>
+            
+            <SidebarSeparator v-if="canViewNotifications" />
             <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>
+    
+    <!-- Notifications Panel -->
+    <NotificationsPanel 
+        v-if="canViewNotifications"
+        :open="showNotifications" 
+        @update:open="showNotifications = $event"
+        @notification-read="handleNotificationRead"
+    />
+    
     <slot />
 </template>

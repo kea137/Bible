@@ -27,9 +27,10 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles');
 Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel');
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
-Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create')->middleware(['auth', 'can:update,App\\Models\\Bible']);
-Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store')->middleware(['auth', 'can:update,App\\Models\\Bible']);
+Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create')->middleware(['auth', 'can:create,App\\Models\\Bible']);
+Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store')->middleware(['auth', 'can:create,App\\Models\\Bible']);
 Route::get('/api/bibles', [BibleController::class, 'apiBiblesIndex'])->name('api_bibles');
+Route::get('/api/bibles/{bible}/status', [BibleController::class, 'getBibleStatus'])->name('api_bible_status');
 Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'showChapter'])->name('bible_show_chapter');
 
 // Role Management routes (admin only)
@@ -63,6 +64,13 @@ Route::get('/reading-plan', [ReadingProgressController::class, 'readingPlan'])->
 Route::post('/api/reading-progress/toggle', [ReadingProgressController::class, 'toggleChapter'])->name('reading_progress_toggle')->middleware('auth');
 Route::get('/api/reading-progress/bible', [ReadingProgressController::class, 'getBibleProgress'])->name('reading_progress_bible')->middleware('auth');
 Route::get('/api/reading-progress/statistics', [ReadingProgressController::class, 'getStatistics'])->name('reading_progress_statistics')->middleware('auth');
+
+// Notification routes
+Route::get('/api/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications_index')->middleware('auth');
+Route::get('/api/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications_unread_count')->middleware('auth');
+Route::post('/api/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications_mark_read')->middleware('auth');
+Route::post('/api/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications_mark_all_read')->middleware('auth');
+Route::delete('/api/notifications/{notification}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications_destroy')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
