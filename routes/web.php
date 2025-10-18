@@ -65,5 +65,12 @@ Route::post('/api/reading-progress/toggle', [ReadingProgressController::class, '
 Route::get('/api/reading-progress/bible', [ReadingProgressController::class, 'getBibleProgress'])->name('reading_progress_bible')->middleware('auth');
 Route::get('/api/reading-progress/statistics', [ReadingProgressController::class, 'getStatistics'])->name('reading_progress_statistics')->middleware('auth');
 
+// Notification routes
+Route::get('/api/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications_index')->middleware('auth');
+Route::get('/api/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications_unread_count')->middleware('auth');
+Route::post('/api/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications_mark_read')->middleware('auth');
+Route::post('/api/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications_mark_all_read')->middleware('auth');
+Route::delete('/api/notifications/{notification}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications_destroy')->middleware('auth');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

@@ -64,7 +64,7 @@ test('bible controller can upload swahili format json file', function () {
     Queue::assertPushed(ProcessBibleUpload::class);
     
     // Process the job to test it works
-    $job = new ProcessBibleUpload($bible, json_decode($jsonContent, true));
+    $job = new ProcessBibleUpload($bible, json_decode($jsonContent, true), $user->id);
     $job->handle(app(\App\Services\BibleJsonParser::class));
     
     // Now check that books were created
@@ -110,7 +110,7 @@ test('bible controller can upload flat verses format json file', function () {
     Queue::assertPushed(ProcessBibleUpload::class);
     
     // Process the job to test it works
-    $job = new ProcessBibleUpload($bible, json_decode($jsonContent, true));
+    $job = new ProcessBibleUpload($bible, json_decode($jsonContent, true), $user->id);
     $job->handle(app(\App\Services\BibleJsonParser::class));
     
     // Now check that books were created

@@ -4,12 +4,13 @@ namespace App\Jobs;
 
 use App\Models\Bible;
 use App\Models\Notification;
-use App\Services\BibleJsonParser;
+use App\Models\User;
+use App\Services\ReferenceService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-class ProcessBibleUpload implements ShouldQueue
+class ProcessReferencesUpload implements ShouldQueue
 {
     use Queueable;
 
@@ -27,53 +28,40 @@ class ProcessBibleUpload implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(BibleJsonParser $parser): void
+    public function handle(ReferenceService $referenceService): void
     {
         try {
-            // Update status to processing
-            $this->bible->update(['status' => 'processing']);
-
-            // Parse the Bible data
-            $parser->parse($this->bible, $this->data);
-
-            // Update status to completed
-            $this->bible->update([
-                'status' => 'completed',
-                'error_message' => null,
-            ]);
+            // Process the references
+            $referenceService->loadFromJson($this->bible, $this->data);
 
             // Create success notification
             Notification::create([
                 'user_id' => $this->userId,
-                'type' => 'bible_upload_success',
-                'title' => 'Bible Created Successfully',
-                'message' => "{$this->bible->name} has been successfully created and is now available.",
+                'type' => 'reference_upload_success',
+                'title' => 'References Created Successfully',
+                'message' => "References for {$this->bible->name} have been successfully created.",
                 'data' => json_encode(['bible_id' => $this->bible->id, 'bible_name' => $this->bible->name]),
                 'read' => false,
             ]);
 
-            Log::info("Bible '{$this->bible->name}' uploaded successfully.", [
+            Log::info("References for Bible '{$this->bible->name}' uploaded successfully.", [
                 'bible_id' => $this->bible->id,
+                'user_id' => $this->userId,
             ]);
         } catch (\Exception $e) {
-            // Update status to failed with error message
-            $this->bible->update([
-                'status' => 'failed',
-                'error_message' => $e->getMessage(),
-            ]);
-
             // Create failure notification
             Notification::create([
                 'user_id' => $this->userId,
-                'type' => 'bible_upload_failed',
-                'title' => 'Bible Creation Failed',
-                'message' => "Failed to create {$this->bible->name}: {$e->getMessage()}",
+                'type' => 'reference_upload_failed',
+                'title' => 'References Creation Failed',
+                'message' => "Failed to create references for {$this->bible->name}: {$e->getMessage()}",
                 'data' => json_encode(['bible_id' => $this->bible->id, 'bible_name' => $this->bible->name, 'error' => $e->getMessage()]),
                 'read' => false,
             ]);
 
-            Log::error("Failed to process Bible '{$this->bible->name}'.", [
+            Log::error("Failed to process references for Bible '{$this->bible->name}'.", [
                 'bible_id' => $this->bible->id,
+                'user_id' => $this->userId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -88,24 +76,19 @@ class ProcessBibleUpload implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        // Update the Bible status to failed
-        $this->bible->update([
-            'status' => 'failed',
-            'error_message' => $exception->getMessage(),
-        ]);
-
         // Create failure notification
         Notification::create([
             'user_id' => $this->userId,
-            'type' => 'bible_upload_failed',
-            'title' => 'Bible Creation Failed',
-            'message' => "Failed to create {$this->bible->name}: {$exception->getMessage()}",
+            'type' => 'reference_upload_failed',
+            'title' => 'References Creation Failed',
+            'message' => "Failed to create references for {$this->bible->name}: {$exception->getMessage()}",
             'data' => json_encode(['bible_id' => $this->bible->id, 'bible_name' => $this->bible->name, 'error' => $exception->getMessage()]),
             'read' => false,
         ]);
 
-        Log::error("Bible upload job failed for '{$this->bible->name}'.", [
+        Log::error("References upload job failed for '{$this->bible->name}'.", [
             'bible_id' => $this->bible->id,
+            'user_id' => $this->userId,
             'error' => $exception->getMessage(),
         ]);
     }

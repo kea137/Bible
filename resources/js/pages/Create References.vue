@@ -80,6 +80,9 @@ const handleFileChange = (event: Event) => {
     }
 };
 
+import { watchEffect } from 'vue';
+import { toast } from 'vue-sonner';
+
 const page = usePage();
 const success = page.props.success;
 const error = page.props.error;
@@ -88,6 +91,27 @@ const info = page.props.info;
 const alertSuccess = ref(false);
 const alertError = ref(false);
 const alertInfo = ref(false);
+
+// Watch for flash messages and show toasts
+watchEffect(() => {
+    if (success) {
+        toast.success('Success', {
+            description: String(success),
+        });
+    }
+    
+    if (error) {
+        toast.error('Error', {
+            description: String(error),
+        });
+    }
+    
+    if (info) {
+        toast.info('Information', {
+            description: String(info),
+        });
+    }
+});
 
 if (success) {
     alertSuccess.value = true;

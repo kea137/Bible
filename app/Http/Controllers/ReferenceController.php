@@ -52,13 +52,11 @@ class ReferenceController extends Controller
 
             if ($file->getClientOriginalExtension() === 'json') {
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
-                try {
-                    $this->referenceService->loadFromJson($bible, $data);
-
-                    return redirect()->back()->with('success', 'References loaded successfully.');
-                } catch (\Exception $e) {
-                    return redirect()->back()->with('error', 'Failed to load references: '.$e->getMessage());
-                }
+                
+                // Dispatch the job to process references asynchronously
+                \App\Jobs\ProcessReferencesUpload::dispatch($bible, $data, $request->user()->id);
+                
+                return redirect()->back()->with('info', 'References upload started. You will be notified when it completes.');
             }
         }
 

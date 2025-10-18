@@ -131,7 +131,7 @@ class BibleController extends Controller
                 }
 
                 // Dispatch the job to process the Bible upload asynchronously
-                ProcessBibleUpload::dispatch($bible, $data);
+                ProcessBibleUpload::dispatch($bible, $data, $request->user()->id);
 
                 return redirect()->route('bibles')->with([
                     'info' => 'Bible upload started. You will be notified when it completes.',
