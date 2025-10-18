@@ -534,7 +534,7 @@ if (props.initialChapter?.id) {
                                 <ChevronRight class="h-4 w-4 ml-1" />
                             </Button>
                         </div>
-                        <ScrollArea class="mx-30 max-w-4xl space-y-2 text-justify text-lg leading-relaxed h-130">
+                        <ScrollArea class="mx-30 max-w-4xl space-y-2 text-justify text-lg leading-relaxed h-118">
                             <h3 class="mb-4 text-center text-xl font-semibold">
                                 {{ loadedChapter.book?.title }}
                                 {{ loadedChapter.chapter_number }}

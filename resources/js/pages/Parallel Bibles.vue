@@ -194,7 +194,6 @@ function loadChapter(chapterId: number, side: 'left' | 'right') {
                 loadChapterHighlights(chapterId, 'right');
             }
             hoveredVerseReferences.value = [];
-            selectedReferenceVerse.value = null;
         });
 }
 
@@ -555,7 +554,7 @@ if (info) {
                                 <ChevronRight class="h-4 w-4 ml-1" />
                             </Button>
                         </div>
-                        <ScrollArea class="space-y-2 text-base leading-relaxed h-110">
+                        <ScrollArea class="space-y-2 text-base leading-relaxed h-98">
                             <h3 class="mb-4 text-lg font-semibold">
                                 {{ loadedChapter1.book?.title }}
                                 {{ loadedChapter1.chapter_number }}
@@ -766,7 +765,7 @@ if (info) {
                                 <ChevronRight class="h-4 w-4 ml-1" />
                             </Button>
                         </div>
-                        <ScrollArea class="space-y-2 text-base leading-relaxed h-110">
+                        <ScrollArea class="space-y-2 text-base leading-relaxed h-98">
                             <h3 class="mb-4 text-lg font-semibold">
                                 {{ loadedChapter2.book?.title }}
                                 {{ loadedChapter2.chapter_number }}
