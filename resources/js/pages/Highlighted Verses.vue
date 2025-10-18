@@ -138,52 +138,52 @@ function handleNoteSaved() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
         >
             <!-- Reading Reminder -->
             <Card
                 class="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
             >
                 <CardContent class="pt-2">
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h3 class="mb-1 font-semibold">
+                            <h3 class="mb-1 text-sm font-semibold sm:text-base">
                                 Make Reading a Habit
                             </h3>
-                            <p class="text-sm text-muted-foreground">
+                            <p class="text-xs text-muted-foreground sm:text-sm">
                                 Set aside time each day to read and reflect on
                                 the Word
                             </p>
                         </div>
-                        <BookOpen class="h-8 w-8 text-primary/40" />
+                        <BookOpen class="h-6 w-6 text-primary/40 sm:h-8 sm:w-8" />
                     </div>
                 </CardContent>
             </Card>
 
             <!-- Highlighted Verses -->
             <Card v-if="highlights.length > 0">
-                <CardHeader>
+                <CardHeader class="pb-3">
                     <div class="flex items-center gap-2">
-                        <Highlighter class="h-5 w-5 text-primary" />
-                        <CardTitle>Your Highlighted Verses</CardTitle>
+                        <Highlighter class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                        <CardTitle class="text-base sm:text-lg">Your Highlighted Verses</CardTitle>
                     </div>
-                    <CardDescription
+                    <CardDescription class="text-xs sm:text-sm"
                         >Recent verses you've marked</CardDescription
                     >
                 </CardHeader>
                 <CardContent>
-                    <ScrollArea class="space-y-3 h-100">
+                    <ScrollArea class="space-y-2 h-100 sm:space-y-3">
                         <div
                             v-for="highlight in highlights"
                             :key="highlight.id"
                             :class="[
-                                'rounded-r border-l-4 py-2 pl-4 transition-colors relative group',
+                                'rounded-r border-l-4 py-2 pl-3 transition-colors relative group sm:pl-4',
                                 getHighlightColorClass(highlight.color),
                             ]"
                         >
-                            <div class="flex items-start justify-between">
+                            <div class="flex items-start justify-between gap-2">
                                 <div class="flex-1">
-                                    <p class="mb-2 text-sm">
+                                    <p class="mb-2 text-xs sm:text-sm">
                                         {{ highlight.verse.text }}
                                     </p>
                                     <p

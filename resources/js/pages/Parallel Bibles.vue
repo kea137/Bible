@@ -521,15 +521,15 @@ if (info) {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
         >
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
                 <!-- Left Bible -->
                 <Card>
-                    <CardHeader>
-                        <div class="space-y-4">
-                            <CardTitle class="flex items-center gap-2">
-                                <BookOpen class="h-5 w-5" />
+                    <CardHeader class="pb-3">
+                        <div class="space-y-3 sm:space-y-4">
+                            <CardTitle class="flex items-center gap-2 text-base sm:text-lg">
+                                <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
                                 Bible 1
                             </CardTitle>
                             <Select v-model="selectedBible1">
@@ -551,9 +551,9 @@ if (info) {
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
-                            <div v-if="selectedBible1" class="flex gap-2">
+                            <div v-if="selectedBible1" class="flex flex-col gap-2 sm:flex-row">
                                 <Select v-model="selectedBook1">
-                                    <SelectTrigger class="flex-1">
+                                    <SelectTrigger class="flex-1 w-full">
                                         <SelectValue placeholder="Book" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -574,7 +574,7 @@ if (info) {
                                     </SelectContent>
                                 </Select>
                                 <Select v-model="selectedChapter1">
-                                    <SelectTrigger class="w-32">
+                                    <SelectTrigger class="w-full sm:w-32">
                                         <SelectValue placeholder="Chapter" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -608,12 +608,13 @@ if (info) {
                         </div>
                     </CardHeader>
                     <CardContent v-if="loadedChapter1">
-                        <div class="mb-4 flex items-center justify-between">
+                        <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <Button
                                 variant="outline"
                                 size="sm"
                                 @click="goToPreviousChapter1"
                                 :disabled="!hasPreviousChapter1"
+                                class="w-full sm:w-auto"
                             >
                                 <ChevronLeft class="h-4 w-4 mr-1" />
                                 Previous
@@ -623,6 +624,7 @@ if (info) {
                                 :variant="chapterCompleted1 ? 'default' : 'outline'"
                                 size="sm"
                                 @click="toggleChapterCompletion(selectedChapter1, Number(selectedBible1), 'left')"
+                                class="w-full sm:w-auto"
                             >
                                 <CheckCircle class="h-4 w-4 mr-1" />
                                 {{ chapterCompleted1 ? 'Completed' : 'Mark as Read' }}
@@ -632,13 +634,14 @@ if (info) {
                                 size="sm"
                                 @click="goToNextChapter1"
                                 :disabled="!hasNextChapter1"
+                                class="w-full sm:w-auto"
                             >
                                 Next
                                 <ChevronRight class="h-4 w-4 ml-1" />
                             </Button>
                         </div>
-                        <ScrollArea class="space-y-2 text-base leading-relaxed h-98">
-                            <h3 class="mb-4 text-lg font-semibold">
+                        <ScrollArea class="space-y-2 text-sm leading-relaxed sm:text-base h-98">
+                            <h3 class="mb-4 text-base font-semibold sm:text-lg">
                                 {{ loadedChapter1.book?.title }}
                                 {{ loadedChapter1.chapter_number }}
                             </h3>
@@ -738,7 +741,7 @@ if (info) {
                     </CardContent>
                     <CardContent
                         v-else
-                        class="py-8 text-center text-muted-foreground"
+                        class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
                         <p>Select a Bible to start</p>
                     </CardContent>
@@ -746,10 +749,10 @@ if (info) {
 
                 <!-- Right Bible -->
                 <Card>
-                    <CardHeader>
-                        <div class="space-y-4">
-                            <CardTitle class="flex items-center gap-2">
-                                <BookOpen class="h-5 w-5" />
+                    <CardHeader class="pb-3">
+                        <div class="space-y-3 sm:space-y-4">
+                            <CardTitle class="flex items-center gap-2 text-base sm:text-lg">
+                                <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
                                 Bible 2
                             </CardTitle>
                             <Select v-model="selectedBible2">
@@ -771,9 +774,9 @@ if (info) {
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
-                            <div v-if="selectedBible2" class="flex gap-2">
+                            <div v-if="selectedBible2" class="flex flex-col gap-2 sm:flex-row">
                                 <Select v-model="selectedBook2">
-                                    <SelectTrigger class="flex-1">
+                                    <SelectTrigger class="flex-1 w-full">
                                         <SelectValue placeholder="Book" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -794,7 +797,7 @@ if (info) {
                                     </SelectContent>
                                 </Select>
                                 <Select v-model="selectedChapter2">
-                                    <SelectTrigger class="w-32">
+                                    <SelectTrigger class="w-full sm:w-32">
                                         <SelectValue placeholder="Chapter" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -828,12 +831,13 @@ if (info) {
                         </div>
                     </CardHeader>
                     <CardContent v-if="loadedChapter2">
-                        <div class="mb-4 flex items-center justify-between">
+                        <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <Button
                                 variant="outline"
                                 size="sm"
                                 @click="goToPreviousChapter2"
                                 :disabled="!hasPreviousChapter2"
+                                class="w-full sm:w-auto"
                             >
                                 <ChevronLeft class="h-4 w-4 mr-1" />
                                 Previous
@@ -843,6 +847,7 @@ if (info) {
                                 :variant="chapterCompleted2 ? 'default' : 'outline'"
                                 size="sm"
                                 @click="toggleChapterCompletion(selectedChapter2, Number(selectedBible2), 'right')"
+                                class="w-full sm:w-auto"
                             >
                                 <CheckCircle class="h-4 w-4 mr-1" />
                                 {{ chapterCompleted2 ? 'Completed' : 'Mark as Read' }}
@@ -852,13 +857,14 @@ if (info) {
                                 size="sm"
                                 @click="goToNextChapter2"
                                 :disabled="!hasNextChapter2"
+                                class="w-full sm:w-auto"
                             >
                                 Next
                                 <ChevronRight class="h-4 w-4 ml-1" />
                             </Button>
                         </div>
-                        <ScrollArea class="space-y-2 text-base leading-relaxed h-98">
-                            <h3 class="mb-4 text-lg font-semibold">
+                        <ScrollArea class="space-y-2 text-sm leading-relaxed sm:text-base h-98">
+                            <h3 class="mb-4 text-base font-semibold sm:text-lg">
                                 {{ loadedChapter2.book?.title }}
                                 {{ loadedChapter2.chapter_number }}
                             </h3>
@@ -958,7 +964,7 @@ if (info) {
                     </CardContent>
                     <CardContent
                         v-else
-                        class="py-8 text-center text-muted-foreground"
+                        class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
                         <p>Select a Bible to start</p>
                     </CardContent>

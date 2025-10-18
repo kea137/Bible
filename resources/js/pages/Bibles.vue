@@ -137,41 +137,41 @@ if (info) {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
         >
             <Card>
-                <CardHeader>
-                    <div class="flex items-center justify-between">
+                <CardHeader class="pb-3">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <CardTitle class="flex items-center gap-2">
-                                <LibraryBigIcon class="h-5 w-5" />
+                            <CardTitle class="flex items-center gap-2 text-base sm:text-lg">
+                                <LibraryBigIcon class="h-4 w-4 sm:h-5 sm:w-5" />
                                 Bibles
                             </CardTitle>
-                            <CardDescription>Available Bibles</CardDescription>
+                            <CardDescription class="text-xs sm:text-sm">Available Bibles</CardDescription>
                         </div>
-                        <Button @click="searchOpen = true" variant="outline">
+                        <Button @click="searchOpen = true" variant="outline" class="w-full sm:w-auto">
                             <Search class="h-4 w-4 mr-2" />
                             Search Bibles
                         </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="filteredBibles.length > 0" class="space-y-3">
+                    <div v-if="filteredBibles.length > 0" class="space-y-2 sm:space-y-3">
                         <div
                             v-for="bible in filteredBibles"
                             :key="bible.id"
-                            class="flex cursor-pointer items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-accent/50"
+                            class="flex cursor-pointer items-center justify-between rounded-lg border border-border p-2 transition-colors hover:bg-accent/50 sm:p-3"
                             @click="viewBible(bible.id)"
                         >
                             <div class="flex-1">
-                                <p class="font-medium">{{ bible.name }}</p>
-                                <p class="text-sm text-muted-foreground">
+                                <p class="text-sm font-medium sm:text-base">{{ bible.name }}</p>
+                                <p class="text-xs text-muted-foreground sm:text-sm">
                                     {{ bible.language }} • {{ bible.version }}
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div v-else class="py-8 text-center text-muted-foreground">
+                    <div v-else class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base">
                         <p>No Bibles Available</p>
                     </div>
                 </CardContent>

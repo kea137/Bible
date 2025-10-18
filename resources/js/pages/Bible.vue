@@ -443,26 +443,26 @@ if (props.initialChapter?.id) {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-row gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 lg:flex-row lg:gap-4"
         >
             <!-- Main content area (2/3) -->
             <div class="flex-[2]">
                 <Card>
-                    <CardHeader>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <CardTitle class="flex items-center gap-2">
-                                    <BookOpen class="h-5 w-5" />
+                    <CardHeader class="pb-3">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div class="flex-shrink-0">
+                                <CardTitle class="flex items-center gap-2 text-base sm:text-lg">
+                                    <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
                                     {{ bible.name }}
                                 </CardTitle>
-                                <CardDescription
+                                <CardDescription class="text-xs sm:text-sm"
                                     >{{ bible.language }} •
                                     {{ bible.version }}</CardDescription
                                 >
                             </div>
-                            <div class="flex flex-row gap-4">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:gap-3">
                                 <Select v-model="selectedBookId">
-                                    <SelectTrigger class="w-48">
+                                    <SelectTrigger class="w-full sm:w-40">
                                         <SelectValue
                                             placeholder="Select a book"
                                         />
@@ -481,7 +481,7 @@ if (props.initialChapter?.id) {
                                     </SelectContent>
                                 </Select>
                                 <Select v-model="selectedChapterId">
-                                    <SelectTrigger class="w-32">
+                                    <SelectTrigger class="w-full sm:w-28">
                                         <SelectValue placeholder="Chapter" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -505,12 +505,13 @@ if (props.initialChapter?.id) {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div class="mb-4 flex items-center justify-between">
+                        <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <Button
                                 variant="outline"
                                 size="sm"
                                 @click="goToPreviousChapter"
                                 :disabled="!hasPreviousChapter"
+                                class="w-full sm:w-auto"
                             >
                                 <ChevronLeft class="h-4 w-4 mr-1" />
                                 Previous
@@ -520,6 +521,7 @@ if (props.initialChapter?.id) {
                                 :variant="chapterCompleted ? 'default' : 'outline'"
                                 size="sm"
                                 @click="toggleChapterCompletion"
+                                class="w-full sm:w-auto"
                             >
                                 <CheckCircle class="h-4 w-4 mr-1" />
                                 {{ chapterCompleted ? 'Completed' : 'Mark as Read' }}
@@ -529,13 +531,14 @@ if (props.initialChapter?.id) {
                                 size="sm"
                                 @click="goToNextChapter"
                                 :disabled="!hasNextChapter"
+                                class="w-full sm:w-auto"
                             >
                                 Next
                                 <ChevronRight class="h-4 w-4 ml-1" />
                             </Button>
                         </div>
-                        <ScrollArea class="mx-30 max-w-4xl space-y-2 text-justify text-lg leading-relaxed h-118">
-                            <h3 class="mb-4 text-center text-xl font-semibold">
+                        <ScrollArea class="mx-0 max-w-4xl space-y-2 text-justify text-base leading-relaxed sm:mx-30 sm:text-lg h-118">
+                            <h3 class="mb-4 text-center text-lg font-semibold sm:text-xl">
                                 {{ loadedChapter.book?.title }}
                                 {{ loadedChapter.chapter_number }}
                             </h3>
@@ -637,11 +640,11 @@ if (props.initialChapter?.id) {
             </div>
 
             <!-- References sidebar (1/3) -->
-            <div class="flex flex-[1] flex-col gap-4 h-160">
+            <div class="flex flex-[1] flex-col gap-3 lg:gap-4 lg:h-160">
                 <!-- Top half - Hovered verse references -->
                 <Card class="flex-1 overflow-hidden">
-                    <CardHeader>
-                        <CardTitle class="text-base"
+                    <CardHeader class="pb-3">
+                        <CardTitle class="text-sm sm:text-base"
                             >Cross References</CardTitle
                         >
                         <CardDescription class="text-xs"
@@ -649,7 +652,7 @@ if (props.initialChapter?.id) {
                             references</CardDescription
                         >
                     </CardHeader>
-                    <CardContent class="max-h-[40vh] overflow-y-auto">
+                    <CardContent class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]">
                         <ScrollArea v-if="hoveredVerseReferences.length > 0" class="h-full">
                             <div
                                 
@@ -679,8 +682,8 @@ if (props.initialChapter?.id) {
 
                 <!-- Bottom half - Selected reference verse -->
                 <Card class="flex-1 overflow-hidden">
-                    <CardHeader>
-                        <CardTitle class="text-base"
+                    <CardHeader class="pb-3">
+                        <CardTitle class="text-sm sm:text-base"
                             >Selected Reference</CardTitle
                         >
                         <CardDescription class="text-xs"
@@ -688,7 +691,7 @@ if (props.initialChapter?.id) {
                             verse</CardDescription
                         >
                     </CardHeader>
-                    <CardContent class="max-h-[40vh] overflow-y-auto">
+                    <CardContent class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]">
                         <div v-if="selectedReferenceVerse" class="space-y-2">
                             <p class="text-sm font-semibold">
                                 {{ selectedReferenceVerse.book?.title }}

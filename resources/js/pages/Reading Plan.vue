@@ -95,19 +95,19 @@ const readingPlans = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
         >
             <!-- Welcome Message -->
-            <div class="mb-2 flex items-center justify-between">
+            <div class="mb-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-foreground">
+                    <h1 class="text-xl font-bold text-foreground sm:text-2xl">
                         Your Bible Reading Journey
                     </h1>
-                    <p class="text-muted-foreground">
+                    <p class="text-sm text-muted-foreground sm:text-base">
                         Track your progress and stay motivated as you read through the Bible
                     </p>
                 </div>
-                <div class="w-64">
+                <div class="w-full sm:w-64">
                     <Select v-model="selectedBibleId">
                         <SelectTrigger>
                             <SelectValue placeholder="Select Bible" />
@@ -129,23 +129,23 @@ const readingPlans = [
             </div>
 
             <!-- Progress Overview -->
-            <div class="grid gap-4 md:grid-cols-4">
-                <Card class="md:col-span-4">
-                    <CardHeader>
-                        <div class="flex items-center justify-between">
+            <div class="grid gap-3 sm:gap-4 lg:grid-cols-4">
+                <Card class="lg:col-span-4">
+                    <CardHeader class="pb-3">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <CardTitle>Overall Progress</CardTitle>
-                                <CardDescription>
+                                <CardTitle class="text-base sm:text-lg">Overall Progress</CardTitle>
+                                <CardDescription class="text-xs sm:text-sm">
                                     {{ completedChapters }} of {{ totalChapters }} chapters completed
                                 </CardDescription>
                             </div>
-                            <TrendingUp class="h-8 w-8 text-primary" />
+                            <TrendingUp class="h-6 w-6 text-primary sm:h-8 sm:w-8" />
                         </div>
                     </CardHeader>
                     <CardContent>
                         <div class="space-y-2">
-                            <Progress :model-value="progressPercentage" class="h-3" />
-                            <p class="text-center text-2xl font-bold text-primary">
+                            <Progress :model-value="progressPercentage" class="h-2 sm:h-3" />
+                            <p class="text-center text-xl font-bold text-primary sm:text-2xl">
                                 {{ progressPercentage }}%
                             </p>
                         </div>
@@ -153,14 +153,14 @@ const readingPlans = [
                 </Card>
 
                 <Card>
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-lg">Today</CardTitle>
-                            <Calendar class="h-5 w-5 text-muted-foreground" />
+                            <CardTitle class="text-base sm:text-lg">Today</CardTitle>
+                            <Calendar class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-3xl font-bold">
+                    <CardContent class="pb-4">
+                        <div class="text-2xl font-bold sm:text-3xl">
                             {{ chaptersReadToday }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
@@ -170,14 +170,14 @@ const readingPlans = [
                 </Card>
 
                 <Card>
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-lg">Completed</CardTitle>
-                            <CheckCircle2 class="h-5 w-5 text-muted-foreground" />
+                            <CardTitle class="text-base sm:text-lg">Completed</CardTitle>
+                            <CheckCircle2 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-3xl font-bold">
+                    <CardContent class="pb-4">
+                        <div class="text-2xl font-bold sm:text-3xl">
                             {{ completedChapters }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
@@ -187,14 +187,14 @@ const readingPlans = [
                 </Card>
 
                 <Card>
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-lg">Remaining</CardTitle>
-                            <BookMarked class="h-5 w-5 text-muted-foreground" />
+                            <CardTitle class="text-base sm:text-lg">Remaining</CardTitle>
+                            <BookMarked class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-3xl font-bold">
+                    <CardContent class="pb-4">
+                        <div class="text-2xl font-bold sm:text-3xl">
                             {{ remainingChapters }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
@@ -204,14 +204,14 @@ const readingPlans = [
                 </Card>
 
                 <Card>
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-lg">Total</CardTitle>
-                            <BookOpen class="h-5 w-5 text-muted-foreground" />
+                            <CardTitle class="text-base sm:text-lg">Total</CardTitle>
+                            <BookOpen class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-3xl font-bold">
+                    <CardContent class="pb-4">
+                        <div class="text-2xl font-bold sm:text-3xl">
                             {{ totalChapters }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
@@ -223,24 +223,24 @@ const readingPlans = [
 
             <!-- Reading Plans -->
             <Card>
-                <CardHeader>
+                <CardHeader class="pb-3">
                     <div class="flex items-center gap-2">
-                        <Target class="h-5 w-5 text-primary" />
-                        <CardTitle>Suggested Reading Plans</CardTitle>
+                        <Target class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                        <CardTitle class="text-base sm:text-lg">Suggested Reading Plans</CardTitle>
                     </div>
-                    <CardDescription>
+                    <CardDescription class="text-xs sm:text-sm">
                         Choose a pace that works for you
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div class="grid gap-4 md:grid-cols-2">
+                    <div class="grid gap-3 sm:gap-4 lg:grid-cols-2">
                         <div
                             v-for="plan in readingPlans"
                             :key="plan.name"
-                            class="rounded-lg border p-4 transition-colors hover:bg-accent"
+                            class="rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
                         >
-                            <h3 class="font-semibold">{{ plan.name }}</h3>
-                            <p class="mt-1 text-sm text-muted-foreground">
+                            <h3 class="text-sm font-semibold sm:text-base">{{ plan.name }}</h3>
+                            <p class="mt-1 text-xs text-muted-foreground sm:text-sm">
                                 {{ plan.description }}
                             </p>
                             <div class="mt-3 flex items-center gap-4 text-sm">

@@ -215,35 +215,35 @@ async function deleteNote() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-row gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 lg:flex-row lg:gap-4"
         >
             <!-- Notes List (Left Side - 1/3) -->
             <div class="flex-[1]">
                 <Card class="h-full">
-                    <CardHeader>
-                        <CardTitle class="flex items-center gap-2">
-                            <FileText class="h-5 w-5" />
+                    <CardHeader class="pb-3">
+                        <CardTitle class="flex items-center gap-2 text-base sm:text-lg">
+                            <FileText class="h-4 w-4 sm:h-5 sm:w-5" />
                             My Notes
                         </CardTitle>
-                        <CardDescription>{{ notes.length }} notes</CardDescription>
+                        <CardDescription class="text-xs sm:text-sm">{{ notes.length }} notes</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ScrollArea v-if="notes.length > 0" class="h-[calc(100vh-16rem)]">
+                        <ScrollArea v-if="notes.length > 0" class="h-[calc(100vh-16rem)] lg:h-[calc(100vh-16rem)]">
                             <div class="space-y-2">
                                 <div
                                     v-for="note in notes"
                                     :key="note.id"
-                                    class="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent/50"
+                                    class="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-accent/50 sm:p-3"
                                     :class="{ 'bg-accent': selectedNote?.id === note.id }"
                                     @click="selectNote(note)"
                                 >
                                     <div class="mb-2">
-                                        <p class="text-sm font-semibold text-primary">
+                                        <p class="text-xs font-semibold text-primary sm:text-sm">
                                             {{ note.verse.book?.title }}
                                             {{ note.verse.chapter?.chapter_number }}:{{ note.verse.verse_number }}
                                         </p>
                                     </div>
-                                    <p v-if="note.title" class="mb-1 text-sm font-medium">
+                                    <p v-if="note.title" class="mb-1 text-xs font-medium sm:text-sm">
                                         {{ note.title }}
                                     </p>
                                     <p class="line-clamp-2 text-xs text-muted-foreground">
@@ -255,9 +255,9 @@ async function deleteNote() {
                                 </div>
                             </div>
                         </ScrollArea>
-                        <div v-else class="py-8 text-center text-muted-foreground">
+                        <div v-else class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base">
                             <p class="mb-4">No notes yet</p>
-                            <p class="text-sm">
+                            <p class="text-xs sm:text-sm">
                                 Add notes to verses while reading to see them here
                             </p>
                         </div>
@@ -268,42 +268,42 @@ async function deleteNote() {
             <!-- Note Details (Right Side - 2/3) -->
             <div class="flex-[2]">
                 <Card class="h-full">
-                    <CardHeader v-if="selectedNote">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1 mr-4">
-                                <CardTitle>
+                    <CardHeader v-if="selectedNote" class="pb-3">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div class="flex-1 sm:mr-4">
+                                <CardTitle class="text-base sm:text-lg">
                                     {{ selectedNote.verse.book?.title }}
                                     {{ selectedNote.verse.chapter?.chapter_number }}:{{ selectedNote.verse.verse_number }}
                                 </CardTitle>
-                                <CardDescription class="mt-2">
+                                <CardDescription class="mt-2 text-xs sm:text-sm">
                                     "{{ selectedNote.verse.text }}"
                                 </CardDescription>
                             </div>
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 flex-shrink-0">
                                 <Button
                                     v-if="!editMode"
                                     variant="outline"
-                                    class=" cursor-pointer"
+                                    class="cursor-pointer"
                                     size="sm"
                                     @click="startEdit"
                                 >
-                                    <Pencil class="h-4 w-4 mr-1" />
-                                    Edit
+                                    <Pencil class="h-4 w-4 sm:mr-1" />
+                                    <span class="hidden sm:inline">Edit</span>
                                 </Button>
                                 <Button
                                     v-if="!editMode"
                                     variant="destructive"
                                     size="sm"
-                                    class=" cursor-pointer"
+                                    class="cursor-pointer"
                                     @click="confirmDelete"
                                     :disabled="deleting"
                                 >
                                     <LoaderCircle
                                         v-if="deleting"
-                                        class="mr-1 h-4 w-4 animate-spin"
+                                        class="h-4 w-4 animate-spin sm:mr-1"
                                     />
-                                    <Trash2 v-else class="h-4 w-4 mr-1" />
-                                    Delete
+                                    <Trash2 v-else class="h-4 w-4 sm:mr-1" />
+                                    <span class="hidden sm:inline">Delete</span>
                                 </Button>
                             </div>
                         </div>
@@ -327,11 +327,12 @@ async function deleteNote() {
                                     rows="12"
                                 />
                             </div>
-                            <div class="flex justify-end gap-2">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
                                 <Button
                                     variant="outline"
                                     @click="cancelEdit"
                                     :disabled="saving"
+                                    class="w-full sm:w-auto"
                                 >
                                     <X class="h-4 w-4 mr-1" />
                                     Cancel
@@ -339,6 +340,7 @@ async function deleteNote() {
                                 <Button
                                     @click="saveNote"
                                     :disabled="saving"
+                                    class="w-full sm:w-auto"
                                 >
                                     <LoaderCircle
                                         v-if="saving"
@@ -361,8 +363,8 @@ async function deleteNote() {
                             </div>
                         </div>
                     </CardContent>
-                    <CardContent v-else class="py-16 text-center text-muted-foreground">
-                        <FileText class="mx-auto mb-4 h-12 w-12 opacity-20" />
+                    <CardContent v-else class="py-12 text-center text-sm text-muted-foreground sm:py-16 sm:text-base">
+                        <FileText class="mx-auto mb-4 h-10 w-10 opacity-20 sm:h-12 sm:w-12" />
                         <p>Select a note from the list to view its details</p>
                     </CardContent>
                 </Card>

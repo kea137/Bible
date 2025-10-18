@@ -161,37 +161,37 @@ function getHighlightColorClass(color: string): string {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-2 sm:p-4"
         >
             <!-- Welcome Message -->
-            <div class="mb-2 flex items-center justify-between">
+            <div class="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-foreground">
+                    <h1 class="text-xl font-bold text-foreground sm:text-2xl">
                         Welcome back, {{ userName }}!
                     </h1>
-                    <p class="text-muted-foreground">
+                    <p class="text-sm text-muted-foreground sm:text-base">
                         Continue your spiritual journey
                     </p>
                 </div>
-                <Button @click="searchOpen = true" variant="outline">
+                <Button @click="searchOpen = true" variant="outline" class="w-full sm:w-auto">
                     <Search class="h-4 w-4 mr-2" />
                     Search
                 </Button>
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div class="grid auto-rows-min gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
                 <Card class="transition-shadow hover:shadow-md">
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-lg"
+                            <CardTitle class="text-base sm:text-lg"
                                 >Bibles Available</CardTitle
                             >
-                            <Library class="h-5 w-5 text-muted-foreground" />
+                            <Library class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-3xl font-bold">
+                    <CardContent class="pb-4">
+                        <div class="text-2xl font-bold sm:text-3xl">
                             {{ readingStats.total_bibles }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
@@ -201,14 +201,14 @@ function getHighlightColorClass(color: string): string {
                 </Card>
 
                 <Card class="transition-shadow hover:shadow-md">
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-lg">Verses Today</CardTitle>
-                            <BookOpen class="h-5 w-5 text-muted-foreground" />
+                            <CardTitle class="text-base sm:text-lg">Verses Today</CardTitle>
+                            <BookOpen class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-3xl font-bold">
+                    <CardContent class="pb-4">
+                        <div class="text-2xl font-bold sm:text-3xl">
                             {{ readingStats.verses_read_today }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
@@ -218,14 +218,14 @@ function getHighlightColorClass(color: string): string {
                 </Card>
 
                 <Card class="transition-shadow hover:shadow-md">
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-lg">Progress</CardTitle>
-                            <TrendingUp class="h-5 w-5 text-muted-foreground" />
+                            <CardTitle class="text-base sm:text-lg">Progress</CardTitle>
+                            <TrendingUp class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <div class="text-3xl font-bold">
+                    <CardContent class="pb-4">
+                        <div class="text-2xl font-bold sm:text-3xl">
                             {{ readingStats.chapters_completed }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
@@ -236,24 +236,24 @@ function getHighlightColorClass(color: string): string {
             </div>
 
             <!-- Main Content Area -->
-            <div class="grid gap-4 md:grid-cols-2">
+            <div class="grid gap-3 sm:gap-4 lg:grid-cols-2">
                 <!-- Verse of the Day -->
-                <Card class="md:col-span-2">
-                    <CardHeader>
+                <Card class="lg:col-span-2">
+                    <CardHeader class="pb-3">
                         <div class="flex items-center gap-2">
-                            <Quote class="h-5 w-5 text-primary" />
-                            <CardTitle>Verse of the Day</CardTitle>
+                            <Quote class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                            <CardTitle class="text-base sm:text-lg">Verse of the Day</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent v-if="verseOfTheDay">
                         <blockquote
-                            class="border-l-4 border-primary pl-4 italic"
+                            class="border-l-4 border-primary pl-3 italic sm:pl-4"
                         >
-                            <p class="mb-4 text-lg leading-relaxed">
+                            <p class="mb-3 text-base leading-relaxed sm:mb-4 sm:text-lg">
                                 "{{ verseOfTheDay.text }}"
                             </p>
                             <footer
-                                class="text-sm font-medium text-muted-foreground"
+                                class="text-xs font-medium text-muted-foreground sm:text-sm"
                             >
                                 — {{ verseOfTheDay.book.title }}
                                 {{ verseOfTheDay.chapter.chapter_number }}:{{
@@ -267,7 +267,7 @@ function getHighlightColorClass(color: string): string {
                     </CardContent>
                     <CardContent
                         v-else
-                        class="py-8 text-center text-muted-foreground"
+                        class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
                         <p>
                             No verse available. Start reading to discover
@@ -278,19 +278,19 @@ function getHighlightColorClass(color: string): string {
 
                 <!-- Last Reading / Continue Reading -->
                 <Card v-if="lastReading">
-                    <CardHeader>
-                        <CardTitle>Continue Reading</CardTitle>
-                        <CardDescription
+                    <CardHeader class="pb-3">
+                        <CardTitle class="text-base sm:text-lg">Continue Reading</CardTitle>
+                        <CardDescription class="text-xs sm:text-sm"
                             >Pick up where you left off</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
                         <div class="space-y-3">
                             <div>
-                                <p class="font-medium">
+                                <p class="text-sm font-medium sm:text-base">
                                     {{ lastReading.bible_name }}
                                 </p>
-                                <p class="text-sm text-muted-foreground">
+                                <p class="text-xs text-muted-foreground sm:text-sm">
                                     {{ lastReading.book_title }} Chapter
                                     {{ lastReading.chapter_number }}
                                 </p>
@@ -303,10 +303,10 @@ function getHighlightColorClass(color: string): string {
                 </Card>
 
                 <!-- Quick Actions -->
-                <Card :class="lastReading ? '' : 'md:col-span-2'">
-                    <CardHeader>
-                        <CardTitle>Quick Actions</CardTitle>
-                        <CardDescription
+                <Card :class="lastReading ? '' : 'lg:col-span-2'">
+                    <CardHeader class="pb-3">
+                        <CardTitle class="text-base sm:text-lg">Quick Actions</CardTitle>
+                        <CardDescription class="text-xs sm:text-sm"
                             >Start your study session</CardDescription
                         >
                     </CardHeader>
@@ -338,29 +338,29 @@ function getHighlightColorClass(color: string): string {
                 class="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
             >
                 <CardContent class="pt-2">
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h3 class="mb-1 font-semibold">
+                            <h3 class="mb-1 text-sm font-semibold sm:text-base">
                                 Make Reading a Habit
                             </h3>
-                            <p class="text-sm text-muted-foreground">
+                            <p class="text-xs text-muted-foreground sm:text-sm">
                                 Set aside time each day to read and reflect on
                                 the Word
                             </p>
                         </div>
-                        <BookOpen class="h-8 w-8 text-primary/40" />
+                        <BookOpen class="h-6 w-6 text-primary/40 sm:h-8 sm:w-8" />
                     </div>
                 </CardContent>
             </Card>
 
             <!-- Highlighted Verses -->
             <Card v-if="highlights.length > 0">
-                <CardHeader>
+                <CardHeader class="pb-3">
                     <div class="flex items-center gap-2">
-                        <Highlighter class="h-5 w-5 text-primary" />
-                        <CardTitle>Your Highlighted Verses</CardTitle>
+                        <Highlighter class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                        <CardTitle class="text-base sm:text-lg">Your Highlighted Verses</CardTitle>
                     </div>
-                    <CardDescription
+                    <CardDescription class="text-xs sm:text-sm"
                         >Recent verses you've marked</CardDescription
                     >
                 </CardHeader>
@@ -370,11 +370,11 @@ function getHighlightColorClass(color: string): string {
                             v-for="highlight in highlights.slice(0, 5)"
                             :key="highlight.id"
                             :class="[
-                                'rounded-r border-l-4 py-2 pl-4 transition-colors',
+                                'rounded-r border-l-4 py-2 pl-3 transition-colors sm:pl-4',
                                 getHighlightColorClass(highlight.color),
                             ]"
                         >
-                            <p class="mb-2 text-sm">
+                            <p class="mb-2 text-xs sm:text-sm">
                                 {{ highlight.verse.text }}
                             </p>
                             <p
