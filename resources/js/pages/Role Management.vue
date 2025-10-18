@@ -2,6 +2,16 @@
 import AlertUser from '@/components/AlertUser.vue';
 import Button from '@/components/ui/button/Button.vue';
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
     Card,
     CardContent,
     CardDescription,
@@ -60,6 +70,10 @@ const error = computed(() => page.props.error as string);
 const alertSuccess = ref(!!success.value);
 const alertError = ref(!!error.value);
 
+// Delete confirmation dialog state
+const showDeleteDialog = ref(false);
+const userToDelete = ref<{ id: number; name: string } | null>(null);
+
 // User role management
 const selectedUserRoles = ref<{ [userId: number]: number[] }>({});
 
@@ -93,16 +107,26 @@ const saveUserRoles = (userId: number) => {
     );
 };
 
-const deleteUser = (userId: number, userName: string) => {
-    if (
-        confirm(
-            `Are you sure you want to delete user "${userName}"? This action cannot be undone.`,
-        )
-    ) {
-        router.delete(delete_user(userId).url, {
+const openDeleteDialog = (userId: number, userName: string) => {
+    userToDelete.value = { id: userId, name: userName };
+    showDeleteDialog.value = true;
+};
+
+const confirmDelete = () => {
+    if (userToDelete.value) {
+        router.delete(delete_user(userToDelete.value.id).url, {
             preserveScroll: true,
+            onSuccess: () => {
+                showDeleteDialog.value = false;
+                userToDelete.value = null;
+            },
         });
     }
+};
+
+const cancelDelete = () => {
+    showDeleteDialog.value = false;
+    userToDelete.value = null;
 };
 </script>
 
@@ -211,7 +235,7 @@ const deleteUser = (userId: number, userName: string) => {
                                             v-if="isAdmin && user.id !== auth.user?.id"
                                             size="sm"
                                             variant="destructive"
-                                            @click="deleteUser(user.id, user.name)"
+                                            @click="openDeleteDialog(user.id, user.name)"
                                         >
                                             <Trash2 class="h-4 w-4" />
                                             Delete
@@ -224,5 +248,30 @@ const deleteUser = (userId: number, userName: string) => {
                 </CardContent>
             </Card>
         </div>
+
+        <!-- Delete User Confirmation Dialog -->
+        <AlertDialog v-model:open="showDeleteDialog">
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Delete User</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Are you sure you want to delete user
+                        <strong>{{ userToDelete?.name }}</strong
+                        >? This action cannot be undone.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel @click="cancelDelete">
+                        Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        @click="confirmDelete"
+                        class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                        Delete
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </AppLayout>
 </template>
