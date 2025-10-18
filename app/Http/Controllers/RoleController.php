@@ -17,7 +17,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        Gate::authorize('viewAny', Role::class);
+        Gate::authorize('update', Role::class);
 
         $users = User::with('roles')->get()->map(function ($user) {
             return [
@@ -42,7 +42,7 @@ class RoleController extends Controller
      */
     public function updateRoles(Request $request, User $user)
     {
-        Gate::authorize('updateRoles', $user);
+        Gate::authorize('create', Role::class);
 
         $validated = $request->validate([
             'role_ids' => 'required|array',

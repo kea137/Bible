@@ -37,7 +37,7 @@ class RolePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Role $role): bool
+    public function update(User $user): bool
     {
         return $user->roles()->where('role_id', [1, 2])->exists();
     }
@@ -45,7 +45,7 @@ class RolePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Role $role): bool
+    public function delete(User $user): bool
     {
         // Only admin (role 1) can delete
         return $user->roles()->where('role_id', [1])->exists();
@@ -54,7 +54,7 @@ class RolePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Role $role): bool
+    public function restore(User $user): bool
     {
         // Only admin (role 1) can restore
         return $user->roles()->where('role_id', [1])->exists();
@@ -63,7 +63,7 @@ class RolePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Role $role): bool
+    public function forceDelete(User $user): bool
     {
         // Only admin (role 1) can force delete
         return $user->roles()->where('role_id', [1])->exists();

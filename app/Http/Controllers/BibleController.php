@@ -81,6 +81,8 @@ class BibleController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Role::class);
+
         return Inertia::render('Create Bible');
     }
 

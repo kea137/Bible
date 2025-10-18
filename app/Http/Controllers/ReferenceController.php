@@ -6,8 +6,10 @@ use App\Http\Requests\StoreReferenceRequest;
 use App\Http\Requests\UpdateReferenceRequest;
 use App\Models\Bible;
 use App\Models\Reference;
+use App\Models\Role;
 use App\Models\Verse;
 use App\Services\ReferenceService;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class ReferenceController extends Controller
@@ -27,6 +29,8 @@ class ReferenceController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Role::class);
+
         return Inertia::render('Create References', [
             'bibles' => Bible::all()->toArray(),
             'selected_bible' => Bible::first()?->toArray(),
@@ -38,6 +42,8 @@ class ReferenceController extends Controller
      */
     public function store(StoreReferenceRequest $request)
     {
+        Gate::authorize('create', Role::class);
+
         $validated = $request->validated();
         $bible = Bible::findOrFail($validated['bible_id']);
 
