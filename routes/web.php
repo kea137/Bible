@@ -27,8 +27,8 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles');
 Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel');
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
-Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create')->middleware(['auth', 'can:update,App\\Models\\Bible']);
-Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store')->middleware(['auth', 'can:update,App\\Models\\Bible']);
+Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create')->middleware(['auth', 'can:create,App\\Models\\Bible']);
+Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store')->middleware(['auth', 'can:create,App\\Models\\Bible']);
 Route::get('/api/bibles', [BibleController::class, 'apiBiblesIndex'])->name('api_bibles');
 Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'showChapter'])->name('bible_show_chapter');
 

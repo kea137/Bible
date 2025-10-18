@@ -81,7 +81,7 @@ class BibleController extends Controller
      */
     public function create()
     {
-        Gate::authorize('create', Role::class);
+        Gate::authorize('create', Bible::class);
 
         return Inertia::render('Create Bible');
     }
@@ -92,7 +92,7 @@ class BibleController extends Controller
     public function store(StoreBibleRequest $request, BibleJsonParser $parser)
     {
 
-        Gate::authorize('create', Role::class);
+        Gate::authorize('create', Bible::class);
 
         $validated = $request->validated();
 
@@ -119,7 +119,9 @@ class BibleController extends Controller
                     // If parsing fails, delete the created Bible and return error
                     $bible->delete();
 
-                    return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: '.$e->getMessage());
+                    return redirect()->back()->withErrors([
+                        'file' => 'Failed to parse the uploaded Bible file: '.$e->getMessage(),
+                    ])->withInput();
                 }
             }
 

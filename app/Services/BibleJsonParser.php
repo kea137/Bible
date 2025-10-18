@@ -116,10 +116,27 @@ class BibleJsonParser
         if (empty($data) || ! is_array($data)) {
             return false;
         }
+        
+        // Get the first key - for nested associative, it should be a book name (string)
+        $firstKey = array_key_first($data);
+        
+        // If the first key is numeric or is 'books', it's not nested associative format
+        if (is_numeric($firstKey) || $firstKey === 'books') {
+            return false;
+        }
+        
         $firstBook = reset($data);
         if (! is_array($firstBook)) {
             return false;
         }
+        
+        // For nested associative, the first book value should be a simple array of chapters
+        // not an object with 'name', 'chapters', etc. keys
+        // Check if the first book has structure keys like 'name', 'chapters', 'number'
+        if (isset($firstBook['name']) || isset($firstBook['chapters']) || isset($firstBook['number'])) {
+            return false;
+        }
+        
         $firstChapter = reset($firstBook);
         if (! is_array($firstChapter)) {
             return false;
