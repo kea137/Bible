@@ -18,43 +18,43 @@ const imageUrl = Logo;
 const features = [
     {
         icon: BookOpen,
-        title: 'Multiple Bible Translations',
-        description: 'Read and study from various Bible translations',
+        title: 'Multiple Translations',
+        description: 'Various Bible versions',
     },
     {
         icon: SplitSquareHorizontal,
-        title: 'Parallel Bible Reading',
-        description: 'Compare verses side-by-side across translations',
+        title: 'Parallel Reading',
+        description: 'Compare side-by-side',
     },
     {
         icon: Highlighter,
-        title: 'Highlight & Bookmark',
-        description: 'Mark and save your favorite verses',
+        title: 'Highlights',
+        description: 'Mark favorite verses',
     },
     {
         icon: NotebookPen,
-        title: 'Personal Notes',
-        description: 'Write and organize your study notes',
+        title: 'Notes',
+        description: 'Organize study notes',
     },
     {
         icon: Calendar,
         title: 'Reading Plans',
-        description: 'Stay consistent with guided reading schedules',
+        description: 'Guided schedules',
     },
     {
         icon: Link2,
         title: 'Cross References',
-        description: 'Explore connections between related passages',
+        description: 'Connected passages',
     },
     {
         icon: Library,
-        title: 'Verse Study Tools',
-        description: 'Deep dive into scriptures with study aids',
+        title: 'Study Tools',
+        description: 'Deep scripture study',
     },
     {
         icon: Moon,
         title: 'Dark Mode',
-        description: 'Comfortable reading in any lighting',
+        description: 'Comfortable reading',
     },
 ];
 </script>
@@ -103,35 +103,35 @@ const features = [
                 <div
                     class="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
                 >
-                    <h1 class="mb-2 text-2xl font-semibold">
+                    <h1 class="mb-1 text-xl font-semibold">
                         Welcome to Bible Study App
                     </h1>
-                    <p class="mb-6 text-[#706f6c] dark:text-[#A1A09A]">
+                    <p class="mb-4 text-[#706f6c] dark:text-[#A1A09A]">
                         A comprehensive platform for studying God's Word with
                         powerful tools designed to deepen your understanding and
                         strengthen your faith.
                     </p>
 
-                    <div class="mb-6">
-                        <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-[#706f6c] dark:text-[#A1A09A]">
+                    <div class="mb-4">
+                        <h2 class="mb-3 text-xs font-semibold uppercase tracking-wide text-[#706f6c] dark:text-[#A1A09A]">
                             Features
                         </h2>
-                        <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="grid gap-3 sm:grid-cols-2">
                             <div
                                 v-for="feature in features"
                                 :key="feature.title"
-                                class="flex gap-3"
+                                class="flex gap-2"
                             >
                                 <div
-                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#f53003]/10 dark:bg-[#FF4433]/10"
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#f53003]/10 dark:bg-[#FF4433]/10"
                                 >
                                     <component
                                         :is="feature.icon"
-                                        class="h-4 w-4 text-[#f53003] dark:text-[#FF4433]"
+                                        class="h-3.5 w-3.5 text-[#f53003] dark:text-[#FF4433]"
                                     />
                                 </div>
                                 <div>
-                                    <h3 class="mb-0.5 font-medium leading-tight">
+                                    <h3 class="mb-0 text-sm font-medium leading-tight">
                                         {{ feature.title }}
                                     </h3>
                                     <p
