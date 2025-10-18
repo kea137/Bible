@@ -39,7 +39,7 @@ const alertError = ref(!!error.value);
 
 async function loadNotes() {
     try {
-        const response = await fetch('/api/verse-notes');
+        const response = await fetch('/api/notes');
         if (response.ok) {
             notes.value = await response.json();
             // Select first note by default if available
@@ -85,7 +85,7 @@ async function saveNote() {
             csrfToken = String(page.props.csrf_token);
         }
 
-        const response = await fetch(`/api/verse-notes/${selectedNote.value.id}`, {
+        const response = await fetch(`/api/notes/${selectedNote.value.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ async function deleteNote() {
             csrfToken = String(page.props.csrf_token);
         }
 
-        const response = await fetch(`/api/verse-notes/${selectedNote.value.id}`, {
+        const response = await fetch(`/api/notes/${selectedNote.value.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

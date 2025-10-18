@@ -11,7 +11,7 @@ class UpdateNoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->id === $this->route('note')->user_id;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'nullable|string|max:255',
+            'content' => 'required|string',
         ];
     }
 }

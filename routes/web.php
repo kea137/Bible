@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BibleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\VerseHighlightController;
@@ -41,6 +42,14 @@ Route::delete('/api/verse-highlights/{verse}', [VerseHighlightController::class,
 Route::get('/api/verse-highlights', [VerseHighlightController::class, 'index'])->name('verse_highlights_index')->middleware('auth');
 Route::get('/api/verse-highlights/chapter', [VerseHighlightController::class, 'getForChapter'])->name('verse_highlights_chapter')->middleware('auth');
 Route::get('/highlighted-verses', [VerseHighlightController::class, 'highlightedVersesPage'])->name('highlighted_verses_page')->middleware('auth');
+
+// Note routes
+Route::get('/notes', [NoteController::class, 'index'])->name('notes')->middleware('auth');
+Route::get('/api/notes', [NoteController::class, 'index'])->name('notes_index')->middleware('auth');
+Route::post('/api/notes', [NoteController::class, 'store'])->name('notes_store')->middleware('auth');
+Route::get('/api/notes/{note}', [NoteController::class, 'show'])->name('notes_show')->middleware('auth');
+Route::put('/api/notes/{note}', [NoteController::class, 'update'])->name('notes_update')->middleware('auth');
+Route::delete('/api/notes/{note}', [NoteController::class, 'destroy'])->name('notes_destroy')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
