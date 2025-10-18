@@ -1,16 +1,20 @@
 <?php
 
+use App\Jobs\ProcessBibleUpload;
 use App\Models\Bible;
 use App\Models\Book;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
 test('bible controller can upload swahili format json file', function () {
+    Queue::fake();
+    
     $adminRole = Role::create([
         'name' => 'Admin',
         'role_number' => 1,
@@ -50,14 +54,27 @@ test('bible controller can upload swahili format json file', function () {
         'file' => $file,
     ]);
 
+    // Assert that the Bible was created with pending status
     expect(Bible::count())->toBe(1);
-    expect(Book::count())->toBe(1);
-
     $bible = Bible::first();
     expect($bible->name)->toBe('Test Bible');
+    expect($bible->status)->toBe('pending');
+    
+    // Assert that the job was dispatched
+    Queue::assertPushed(ProcessBibleUpload::class);
+    
+    // Process the job to test it works
+    $job = new ProcessBibleUpload($bible, json_decode($jsonContent, true));
+    $job->handle(app(\App\Services\BibleJsonParser::class));
+    
+    // Now check that books were created
+    expect(Book::count())->toBe(1);
+    expect($bible->fresh()->status)->toBe('completed');
 });
 
 test('bible controller can upload flat verses format json file', function () {
+    Queue::fake();
+    
     $adminRole = Role::create([
         'name' => 'Admin',
         'role_number' => 1,
@@ -84,8 +101,21 @@ test('bible controller can upload flat verses format json file', function () {
         'file' => $file,
     ]);
 
+    // Assert that the Bible was created with pending status
     expect(Bible::count())->toBe(1);
+    $bible = Bible::first();
+    expect($bible->status)->toBe('pending');
+    
+    // Assert that the job was dispatched
+    Queue::assertPushed(ProcessBibleUpload::class);
+    
+    // Process the job to test it works
+    $job = new ProcessBibleUpload($bible, json_decode($jsonContent, true));
+    $job->handle(app(\App\Services\BibleJsonParser::class));
+    
+    // Now check that books were created
     expect(Book::count())->toBe(1);
+    expect($bible->fresh()->status)->toBe('completed');
 });
 
 test('bible controller handles invalid json format gracefully', function () {

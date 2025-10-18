@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBibleRequest;
 use App\Http\Requests\UpdateBibleRequest;
+use App\Jobs\ProcessBibleUpload;
 use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Role;
@@ -102,6 +103,7 @@ class BibleController extends Controller
             'language' => $validated['language'],
             'version' => $validated['version'],
             'description' => $validated['description'] ?? null,
+            'status' => 'pending',
         ]);
 
         // Handle file upload and parsing here
@@ -112,24 +114,33 @@ class BibleController extends Controller
             if ($file->getClientOriginalExtension() === 'json') {
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
 
+                // Validate the JSON structure before dispatching the job
                 try {
-                    // Use the parser service to handle different JSON formats
-                    $parser->parse($bible, $data);
+                    // Quick validation by trying to detect format
+                    $reflection = new \ReflectionClass($parser);
+                    $method = $reflection->getMethod('detectFormat');
+                    $method->setAccessible(true);
+                    $method->invoke($parser, $data);
                 } catch (\InvalidArgumentException $e) {
-                    // If parsing fails, delete the created Bible and return error
+                    // If format detection fails, delete the created Bible and return error
                     $bible->delete();
 
                     return redirect()->back()->withErrors([
                         'file' => 'Failed to parse the uploaded Bible file: '.$e->getMessage(),
                     ])->withInput();
                 }
+
+                // Dispatch the job to process the Bible upload asynchronously
+                ProcessBibleUpload::dispatch($bible, $data);
+
+                return redirect()->route('bibles')->with('info', 'Bible upload started. You will be notified when it completes.');
             }
 
             // Process the file (e.g., parse and store books, chapters, verses)
             // This is a placeholder for actual file processing logic
         }
 
-        return redirect()->route('bibles')->with('success', 'Bible uploaded successfully.');
+        return redirect()->route('bibles')->with('success', 'Bible created successfully.');
     }
 
     /**
