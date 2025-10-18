@@ -11,7 +11,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/Dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import Button from '@/components/ui/button/Button.vue';
 import {
     HoverCard,
