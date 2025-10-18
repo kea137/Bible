@@ -4,11 +4,25 @@ import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
+import Button from '@/components/ui/button/Button.vue';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/Dropdown-menu';
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from '@/components/ui/hover-card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles_parallel } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
-import { BookOpen } from 'lucide-vue-next';
+import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 
 import {
     Select,
@@ -19,7 +33,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 
 const props = defineProps<{
@@ -78,16 +92,243 @@ const selectedBook2 = ref<number | null>(null);
 const selectedChapter2 = ref<number | null>(null);
 const loadedChapter2 = ref<any>(null);
 
+const hoveredVerseReferences = ref<any[]>([]);
+const verseHighlights1 = ref<Record<number, any>>({});
+const verseHighlights2 = ref<Record<number, any>>({});
+
+const page = usePage();
+
+// Computed properties for Bible 1 chapter navigation
+const currentBook1 = computed(() => 
+    props.biblesList.find(b => b.id === Number(selectedBible1.value))?.books.find(book => book.id === Number(selectedBook1.value))
+);
+
+const currentChapterIndex1 = computed(() => 
+    currentBook1.value?.chapters.findIndex(ch => ch.id === Number(selectedChapter1.value)) ?? -1
+);
+
+const hasPreviousChapter1 = computed(() => {
+    if (!currentBook1.value) return false;
+    return currentChapterIndex1.value > 0;
+});
+
+const hasNextChapter1 = computed(() => {
+    if (!currentBook1.value) return false;
+    return currentChapterIndex1.value < (currentBook1.value.chapters.length - 1);
+});
+
+// Computed properties for Bible 2 chapter navigation
+const currentBook2 = computed(() => 
+    props.biblesOther.find(b => b.id === Number(selectedBible2.value))?.books.find(book => book.id === Number(selectedBook2.value))
+);
+
+const currentChapterIndex2 = computed(() => 
+    currentBook2.value?.chapters.findIndex(ch => ch.id === Number(selectedChapter2.value)) ?? -1
+);
+
+const hasPreviousChapter2 = computed(() => {
+    if (!currentBook2.value) return false;
+    return currentChapterIndex2.value > 0;
+});
+
+const hasNextChapter2 = computed(() => {
+    if (!currentBook2.value) return false;
+    return currentChapterIndex2.value < (currentBook2.value.chapters.length - 1);
+});
+
+function goToPreviousChapter1() {
+    if (!hasPreviousChapter1.value || !currentBook1.value) return;
+    const prevChapter = currentBook1.value.chapters[currentChapterIndex1.value - 1];
+    selectedChapter1.value = prevChapter.id;
+}
+
+function goToNextChapter1() {
+    if (!hasNextChapter1.value || !currentBook1.value) return;
+    const nextChapter = currentBook1.value.chapters[currentChapterIndex1.value + 1];
+    selectedChapter1.value = nextChapter.id;
+}
+
+function goToPreviousChapter2() {
+    if (!hasPreviousChapter2.value || !currentBook2.value) return;
+    const prevChapter = currentBook2.value.chapters[currentChapterIndex2.value - 1];
+    selectedChapter2.value = prevChapter.id;
+}
+
+function goToNextChapter2() {
+    if (!hasNextChapter2.value || !currentBook2.value) return;
+    const nextChapter = currentBook2.value.chapters[currentChapterIndex2.value + 1];
+    selectedChapter2.value = nextChapter.id;
+}
+
+async function loadChapterHighlights(chapterId: number, side: 'left' | 'right') {
+    if (!page.props.auth?.user) return;
+
+    try {
+        const response = await fetch(
+            `/api/verse-highlights/chapter?chapter_id=${chapterId}`,
+        );
+        const data = await response.json();
+        if (side === 'left') {
+            verseHighlights1.value = data;
+        } else {
+            verseHighlights2.value = data;
+        }
+    } catch (error) {
+        console.error('Failed to load highlights:', error);
+    }
+}
+
 function loadChapter(chapterId: number, side: 'left' | 'right') {
     fetch(`/api/bibles/books/chapters/${chapterId}`)
         .then((res) => res.json())
         .then((data) => {
             if (side === 'left') {
                 loadedChapter1.value = data;
+                loadChapterHighlights(chapterId, 'left');
             } else {
                 loadedChapter2.value = data;
+                loadChapterHighlights(chapterId, 'right');
             }
+            hoveredVerseReferences.value = [];
+            selectedReferenceVerse.value = null;
         });
+}
+
+async function highlightVerse(verseId: number, color: string) {
+    if (!page.props.auth?.user) {
+        alert('Please log in to highlight verses');
+        return;
+    }
+
+    try {
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        if (!csrfToken) {
+            alert('CSRF token not found. Refreshing page to fix authentication...');
+            window.location.reload();
+            return;
+        }
+
+        const response = await fetch('/api/verse-highlights', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                verse_id: verseId,
+                color: color,
+            }),
+        });
+
+        type HighlightResponse = {
+            success?: boolean;
+            message?: string;
+        };
+        let result: HighlightResponse = {};
+        try {
+            result = await response.json();
+        } catch {
+            alert('Unexpected server response. Please try again.');
+            return;
+        }
+
+        if (response.ok && result?.success) {
+            if (selectedChapter1.value) {
+                await loadChapterHighlights(selectedChapter1.value, 'left');
+            }
+            if (selectedChapter2.value) {
+                await loadChapterHighlights(selectedChapter2.value, 'right');
+            }
+        } else {
+            alert(result?.message || 'Failed to highlight verse.');
+        }
+    } catch (error) {
+        alert('Failed to highlight verse.');
+        console.error(error);
+    }
+}
+
+async function removeHighlight(verseId: number) {
+    if (!page.props.auth?.user) {
+        alert('Please log in to highlight verses');
+        return;
+    }
+
+    try {
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        if (!csrfToken) {
+            alert('CSRF token not found. Refreshing page to fix authentication...');
+            window.location.reload();
+            return;
+        }
+
+        const response = await fetch('/api/verse-highlights/' + verseId, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                verse_id: verseId,
+            }),
+        });
+
+        try {
+            await response.json();
+            if (selectedChapter1.value) {
+                await loadChapterHighlights(selectedChapter1.value, 'left');
+            }
+            if (selectedChapter2.value) {
+                await loadChapterHighlights(selectedChapter2.value, 'right');
+            }
+        } catch {
+            alert('Unexpected server response. Please try again.');
+            return;
+        }
+    } catch (error) {
+        alert('Failed to Remove highlight.');
+        console.error(error);
+    }
+}
+
+function getVerseHighlightClass(verseId: number, side: 'left' | 'right'): string {
+    const highlights = side === 'left' ? verseHighlights1.value : verseHighlights2.value;
+    const highlight = highlights[verseId];
+    
+    if (!highlight) return '';
+
+    if (highlight.color === 'yellow') {
+        return 'bg-yellow-300 dark:bg-yellow-300/30';
+    } else if (highlight.color === 'green') {
+        return 'bg-green-300 dark:bg-green-300/30';
+    }
+    return '';
+}
+
+async function handleVerseHover(verseId: number) {
+    try {
+        const response = await fetch(`/api/verses/${verseId}/references`);
+        const data = await response.json();
+        if (data && data.references) {
+            hoveredVerseReferences.value = data.references;
+        } else {
+            hoveredVerseReferences.value = [];
+        }
+    } catch {
+        hoveredVerseReferences.value = [];
+    }
+}
+
+function studyVerse(verseId: number) {
+    window.location.href = `/verses/${verseId}/study`;
 }
 
 watch(selectedBible1, (newBibleId) => {
@@ -126,7 +367,6 @@ watch(selectedChapter2, (newChapterId) => {
     }
 });
 
-const page = usePage();
 const success = page.props.success;
 const error = page.props.error;
 const info = page.props.info;
@@ -280,6 +520,26 @@ if (info) {
                         </div>
                     </CardHeader>
                     <CardContent v-if="loadedChapter1">
+                        <div class="mb-4 flex items-center justify-between">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToPreviousChapter1"
+                                :disabled="!hasPreviousChapter1"
+                            >
+                                <ChevronLeft class="h-4 w-4 mr-1" />
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToNextChapter1"
+                                :disabled="!hasNextChapter1"
+                            >
+                                Next
+                                <ChevronRight class="h-4 w-4 ml-1" />
+                            </Button>
+                        </div>
                         <ScrollArea class="space-y-2 text-base leading-relaxed h-110">
                             <h3 class="mb-4 text-lg font-semibold">
                                 {{ loadedChapter1.book?.title }}
@@ -288,12 +548,94 @@ if (info) {
                             <p
                                 v-for="verse in loadedChapter1.verses"
                                 :key="verse.id"
-                                class="mb-2"
+                                class="mb-2 rounded px-2 py-1 transition-colors"
+                                :class="getVerseHighlightClass(verse.id, 'left')"
                             >
-                                <span class="font-semibold text-primary"
-                                    >{{ verse.verse_number }}.</span
-                                >
-                                {{ verse.text }}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger class="w-full cursor-default text-left">
+                                        <HoverCard
+                                            @update:open="
+                                                (open) =>
+                                                    open &&
+                                                    handleVerseHover(verse.verse_number)
+                                            "
+                                        >
+                                            <HoverCardTrigger>
+                                                <span
+                                                    class="cursor-pointer font-semibold text-primary hover:underline"
+                                                >{{ verse.verse_number }}.</span>
+                                            </HoverCardTrigger>
+                                            <HoverCardContent class="w-80">
+                                                <div
+                                                    v-if="hoveredVerseReferences.length > 0"
+                                                    class="space-y-2"
+                                                >
+                                                    <p class="text-sm font-semibold">
+                                                        Cross References:
+                                                    </p>
+                                                    <div class="space-y-1 text-sm">
+                                                        <p
+                                                            v-for="ref in hoveredVerseReferences.slice(0, 3)"
+                                                            :key="ref.id"
+                                                            class="text-muted-foreground"
+                                                        >
+                                                            {{ ref.reference }}:
+                                                            {{ ref.verse?.text?.substring(0, 80) }}...
+                                                        </p>
+                                                        <p
+                                                            v-if="hoveredVerseReferences.length > 3"
+                                                            class="text-xs text-muted-foreground italic"
+                                                        >
+                                                            +{{ hoveredVerseReferences.length - 3 }}
+                                                            more references
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <p v-else class="text-sm text-muted-foreground">
+                                                    No cross-references available
+                                                </p>
+                                            </HoverCardContent>
+                                        </HoverCard>
+                                        {{ verse.text }}
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>Highlight</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="highlightVerse(verse.id, 'yellow')"
+                                        >
+                                            <span class="flex items-center gap-2">
+                                                <span class="h-4 w-4 rounded bg-yellow-300"></span>
+                                                Highlight - Yellow
+                                            </span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="highlightVerse(verse.id, 'green')"
+                                        >
+                                            <span class="flex items-center gap-2">
+                                                <span class="h-4 w-4 rounded bg-green-300"></span>
+                                                Highlight - Green
+                                            </span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="removeHighlight(verse.id)"
+                                        >
+                                            Remove Highlight
+                                        </DropdownMenuItem>
+                                        <DropdownMenuLabel>Learn More</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="studyVerse(verse.id)"
+                                        >
+                                            Study this Verse
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="studyVerse(verse.id)"
+                                        >
+                                            Put Note on this Verse
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </p>
                         </ScrollArea>
                     </CardContent>
@@ -389,6 +731,26 @@ if (info) {
                         </div>
                     </CardHeader>
                     <CardContent v-if="loadedChapter2">
+                        <div class="mb-4 flex items-center justify-between">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToPreviousChapter2"
+                                :disabled="!hasPreviousChapter2"
+                            >
+                                <ChevronLeft class="h-4 w-4 mr-1" />
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToNextChapter2"
+                                :disabled="!hasNextChapter2"
+                            >
+                                Next
+                                <ChevronRight class="h-4 w-4 ml-1" />
+                            </Button>
+                        </div>
                         <ScrollArea class="space-y-2 text-base leading-relaxed h-110">
                             <h3 class="mb-4 text-lg font-semibold">
                                 {{ loadedChapter2.book?.title }}
@@ -397,12 +759,94 @@ if (info) {
                             <p
                                 v-for="verse in loadedChapter2.verses"
                                 :key="verse.id"
-                                class="mb-2"
+                                class="mb-2 rounded px-2 py-1 transition-colors"
+                                :class="getVerseHighlightClass(verse.id, 'right')"
                             >
-                                <span class="font-semibold text-primary"
-                                    >{{ verse.verse_number }}.</span
-                                >
-                                {{ verse.text }}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger class="w-full cursor-default text-left">
+                                        <HoverCard
+                                            @update:open="
+                                                (open) =>
+                                                    open &&
+                                                    handleVerseHover(verse.verse_number)
+                                            "
+                                        >
+                                            <HoverCardTrigger>
+                                                <span
+                                                    class="cursor-pointer font-semibold text-primary hover:underline"
+                                                >{{ verse.verse_number }}.</span>
+                                            </HoverCardTrigger>
+                                            <HoverCardContent class="w-80">
+                                                <div
+                                                    v-if="hoveredVerseReferences.length > 0"
+                                                    class="space-y-2"
+                                                >
+                                                    <p class="text-sm font-semibold">
+                                                        Cross References:
+                                                    </p>
+                                                    <div class="space-y-1 text-sm">
+                                                        <p
+                                                            v-for="ref in hoveredVerseReferences.slice(0, 3)"
+                                                            :key="ref.id"
+                                                            class="text-muted-foreground"
+                                                        >
+                                                            {{ ref.reference }}:
+                                                            {{ ref.verse?.text?.substring(0, 80) }}...
+                                                        </p>
+                                                        <p
+                                                            v-if="hoveredVerseReferences.length > 3"
+                                                            class="text-xs text-muted-foreground italic"
+                                                        >
+                                                            +{{ hoveredVerseReferences.length - 3 }}
+                                                            more references
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <p v-else class="text-sm text-muted-foreground">
+                                                    No cross-references available
+                                                </p>
+                                            </HoverCardContent>
+                                        </HoverCard>
+                                        {{ verse.text }}
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>Highlight</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="highlightVerse(verse.id, 'yellow')"
+                                        >
+                                            <span class="flex items-center gap-2">
+                                                <span class="h-4 w-4 rounded bg-yellow-300"></span>
+                                                Highlight - Yellow
+                                            </span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="highlightVerse(verse.id, 'green')"
+                                        >
+                                            <span class="flex items-center gap-2">
+                                                <span class="h-4 w-4 rounded bg-green-300"></span>
+                                                Highlight - Green
+                                            </span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="removeHighlight(verse.id)"
+                                        >
+                                            Remove Highlight
+                                        </DropdownMenuItem>
+                                        <DropdownMenuLabel>Learn More</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="studyVerse(verse.id)"
+                                        >
+                                            Study this Verse
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="studyVerse(verse.id)"
+                                        >
+                                            Put Note on this Verse
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </p>
                         </ScrollArea>
                     </CardContent>
