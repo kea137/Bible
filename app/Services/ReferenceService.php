@@ -63,21 +63,54 @@ class ReferenceService
 
     /**
      * Get references for a specific verse
+     * References are loaded from the first created Bible
      */
     public function getReferencesForVerse(Verse $verse): array
     {
-        $reference = Reference::where('verse_id', $verse->id)->first();
+        // Load the verse and its related data
+        $verse->load(['book', 'chapter', 'bible']);
+        
+        // Find the first created Bible
+        $firstBible = Bible::orderBy('id', 'asc')->first();
+        
+        if (!$firstBible) {
+            return [];
+        }
+        
+        // Find the equivalent verse in the first Bible
+        $firstBibleVerse = $this->findVerseInBible(
+            $firstBible,
+            $verse->book->book_number,
+            $verse->chapter->chapter_number,
+            $verse->verse_number
+        );
+        
+        if (!$firstBibleVerse) {
+            return [];
+        }
+        
+        // Get the reference for this verse from the first Bible
+        $reference = Reference::where('verse_id', $firstBibleVerse->id)
+            ->where('bible_id', $firstBible->id)
+            ->first();
         
         if (!$reference) {
             return [];
         }
 
         $references = json_decode($reference->verse_reference, true);
+        
+        // Validate that decoded JSON is an array
+        if (!is_array($references)) {
+            return [];
+        }
+        
         $result = [];
 
         foreach ($references as $id => $refString) {
             $refData = BookShorthand::parseReference($refString);
             if (!empty($refData)) {
+                // Find the reference verse in the current Bible being viewed
                 $refVerse = $this->findVerseByReference($verse->bible, $refData);
                 if ($refVerse) {
                     $result[] = [
@@ -94,6 +127,23 @@ class ReferenceService
     }
 
     /**
+     * Find a verse in a specific Bible by book number, chapter number, and verse number
+     */
+    private function findVerseInBible(Bible $bible, int $bookNumber, int $chapterNumber, int $verseNumber): ?Verse
+    {
+        return Verse::whereHas('book', function ($query) use ($bookNumber, $bible) {
+            $query->where('bible_id', $bible->id)
+                  ->where('book_number', $bookNumber);
+        })
+        ->whereHas('chapter', function ($query) use ($chapterNumber, $bible) {
+            $query->where('bible_id', $bible->id)
+                  ->where('chapter_number', $chapterNumber);
+        })
+        ->where('verse_number', $verseNumber)
+        ->first();
+    }
+
+    /**
      * Find a verse by reference (book shorthand, chapter, verse number)
      */
     private function findVerseByReference(Bible $bible, array $ref): ?Verse
@@ -107,8 +157,9 @@ class ReferenceService
             $query->where('bible_id', $bible->id)
                   ->where('book_number', $bookNumber);
         })
-        ->whereHas('chapter', function ($query) use ($ref) {
-            $query->where('chapter_number', $ref['chapter']);
+        ->whereHas('chapter', function ($query) use ($ref, $bible) {
+            $query->where('bible_id', $bible->id)
+                  ->where('chapter_number', $ref['chapter']);
         })
         ->where('verse_number', $ref['verse'])
         ->first();
