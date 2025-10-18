@@ -25,6 +25,7 @@ Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibl
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
 Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create');
 Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store');
+Route::get('/api/bibles', [BibleController::class, 'apiBiblesIndex'])->name('api_bibles');
 Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'showChapter'])->name('bible_show_chapter');
 
 // Role Management routes (admin only)

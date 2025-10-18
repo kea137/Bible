@@ -158,4 +158,12 @@ class BibleController extends Controller
     {
         //
     }
+
+    /**
+     * API endpoint to get all bibles
+     */
+    public function apiBiblesIndex()
+    {
+        return response()->json(Bible::all());
+    }
 }
