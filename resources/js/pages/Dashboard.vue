@@ -5,6 +5,16 @@ import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
+import {
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+} from '@/components/ui/command';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles, dashboard, highlighted_verses_page } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -14,9 +24,10 @@ import {
     Highlighter,
     Library,
     Quote,
+    Search,
     TrendingUp,
 } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -57,6 +68,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const highlights = ref<any[]>([]);
+const searchOpen = ref(false);
+const searchQuery = ref('');
+const availableBibles = ref<any[]>([]);
 
 async function loadHighlights() {
     try {
@@ -69,8 +83,43 @@ async function loadHighlights() {
     }
 }
 
+async function loadBibles() {
+    try {
+        const response = await fetch('/api/bibles');
+        if (response.ok) {
+            availableBibles.value = await response.json();
+        }
+    } catch (error) {
+        console.error('Failed to load bibles:', error);
+    }
+}
+
+const filteredHighlights = computed(() => {
+    if (!searchQuery.value) {
+        return highlights.value;
+    }
+    const query = searchQuery.value.toLowerCase();
+    return highlights.value.filter(h => 
+        h.verse.text.toLowerCase().includes(query) ||
+        h.verse.book?.title.toLowerCase().includes(query)
+    );
+});
+
+const filteredBibles = computed(() => {
+    if (!searchQuery.value) {
+        return availableBibles.value;
+    }
+    const query = searchQuery.value.toLowerCase();
+    return availableBibles.value.filter(bible => 
+        bible.name.toLowerCase().includes(query) ||
+        bible.language.toLowerCase().includes(query) ||
+        bible.version.toLowerCase().includes(query)
+    );
+});
+
 onMounted(() => {
     loadHighlights();
+    loadBibles();
 });
 
 function continueLast() {
@@ -81,6 +130,20 @@ function continueLast() {
 
 function exploreBibles() {
     router.visit(bibles().url);
+}
+
+function viewBible(bibleId: number) {
+    router.visit(`/bibles/${bibleId}`);
+    searchOpen.value = false;
+}
+
+function viewHighlight(verseId: number) {
+    // Navigate to the verse's bible page
+    const highlight = highlights.value.find(h => h.verse.id === verseId);
+    if (highlight && highlight.verse.chapter?.bible_id) {
+        router.visit(`/bibles/${highlight.verse.chapter.bible_id}`);
+        searchOpen.value = false;
+    }
 }
 
 function getHighlightColorClass(color: string): string {
@@ -101,13 +164,19 @@ function getHighlightColorClass(color: string): string {
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <!-- Welcome Message -->
-            <div class="mb-2">
-                <h1 class="text-2xl font-bold text-foreground">
-                    Welcome back, {{ userName }}!
-                </h1>
-                <p class="text-muted-foreground">
-                    Continue your spiritual journey
-                </p>
+            <div class="mb-2 flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-foreground">
+                        Welcome back, {{ userName }}!
+                    </h1>
+                    <p class="text-muted-foreground">
+                        Continue your spiritual journey
+                    </p>
+                </div>
+                <Button @click="searchOpen = true" variant="outline">
+                    <Search class="h-4 w-4 mr-2" />
+                    Search
+                </Button>
             </div>
 
             <!-- Stats Cards -->
@@ -336,5 +405,51 @@ function getHighlightColorClass(color: string): string {
                 </CardContent>
             </Card>
         </div>
+
+        <!-- Search Dialog -->
+        <CommandDialog :open="searchOpen" @update:open="searchOpen = $event">
+            <Command>
+                <CommandInput v-model="searchQuery" placeholder="Search bibles, verses, or highlighted passages..." />
+                <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    
+                    <CommandGroup v-if="filteredBibles.length > 0" heading="Bibles">
+                        <CommandItem
+                            v-for="bible in filteredBibles.slice(0, 5)"
+                            :key="bible.id"
+                            :value="bible.name"
+                            @select="viewBible(bible.id)"
+                        >
+                            <BookOpen class="mr-2 h-4 w-4" />
+                            <div class="flex flex-col">
+                                <span class="font-medium">{{ bible.name }}</span>
+                                <span class="text-xs text-muted-foreground">
+                                    {{ bible.language }} • {{ bible.version }}
+                                </span>
+                            </div>
+                        </CommandItem>
+                    </CommandGroup>
+                    
+                    <CommandSeparator v-if="filteredBibles.length > 0 && filteredHighlights.length > 0" />
+                    
+                    <CommandGroup v-if="filteredHighlights.length > 0" heading="Highlighted Verses">
+                        <CommandItem
+                            v-for="highlight in filteredHighlights.slice(0, 5)"
+                            :key="highlight.id"
+                            :value="highlight.verse.text"
+                            @select="viewHighlight(highlight.verse.id)"
+                        >
+                            <Highlighter class="mr-2 h-4 w-4" />
+                            <div class="flex flex-col">
+                                <span class="text-sm line-clamp-1">{{ highlight.verse.text }}</span>
+                                <span class="text-xs text-muted-foreground">
+                                    {{ highlight.verse.book?.title }} {{ highlight.verse.chapter?.chapter_number }}:{{ highlight.verse.verse_number }}
+                                </span>
+                            </div>
+                        </CommandItem>
+                    </CommandGroup>
+                </CommandList>
+            </Command>
+        </CommandDialog>
     </AppLayout>
 </template>
