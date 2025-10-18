@@ -281,7 +281,7 @@ if (info) {
                                                 <p
                                                     class="text-base font-medium text-gray-700 dark:text-white"
                                                 >
-                                                    Drag & drop template doc
+                                                    Drag & drop the Bible json
                                                     file or click to upload
                                                 </p>
                                             </div>
@@ -292,7 +292,7 @@ if (info) {
                                                 {{
                                                     selectedFiles.length
                                                 }}
-                                                file(s) selected
+                                                file selected
                                             </p>
                                         </template>
                                     </div>
@@ -309,7 +309,7 @@ if (info) {
                                     v-if="processing"
                                     class="h-4 w-4 animate-spin"
                                 />
-                                Create Report
+                                Create Bible
                             </Button>
                         </CardFooter>
                     </Form>

@@ -161,9 +161,8 @@ if (info) {
                             <CardTitle>Upload References</CardTitle>
                             <CardDescription>
                                 Upload a JSON file containing verse references
-                                for {{ selected_bible.name }}. Format:
-                                {"1":{"v":"GEN 1 1","r":{"2063":"EXO 20
-                                11",...}}}
+                                for {{ selected_bible.name }}. Ensure the file
+                                is properly formatted.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>

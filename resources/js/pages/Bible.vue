@@ -6,11 +6,11 @@ import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
 import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuTrigger,
-} from '@/components/ui/context-menu';
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/Dropdown-menu';
 import {
     HoverCard,
     HoverCardContent,
@@ -32,6 +32,8 @@ import {
 } from '@/components/ui/select';
 import { ref, watch } from 'vue';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import DropdownMenuLabel from '@/components/ui/dropdown-menu/DropdownMenuLabel.vue';
+import DropdownMenuSeparator from '@/components/ui/dropdown-menu/DropdownMenuSeparator.vue';
 
 const props = defineProps<{
     bible: {
@@ -168,8 +170,64 @@ async function highlightVerse(verseId: number, color: string) {
     }
 }
 
+async function removeHighlight(verseId: number) {
+    if (!page.props.auth?.user) {
+        alert('Please log in to highlight verses');
+        return;
+    }
+
+    try {
+        // Try to get CSRF token from meta tag first
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        // Fallback to Inertia page props if not found
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        // If still not found, try to reload the page to get a fresh token
+        if (!csrfToken) {
+            // Attempt to reload the page to refresh CSRF token
+            alert('CSRF token not found. Refreshing page to fix authentication...');
+            window.location.reload();
+            return;
+        }
+
+        const response = await fetch('/api/verse-highlights/' + verseId, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                verse_id: verseId,
+            }),
+        });
+
+        type HighlightResponse = {
+            success?: boolean;
+            message?: string;
+        };
+        let result: HighlightResponse = {};
+        try {
+            result = await response.json();
+            // Remove highlight color
+            removeVerseHighlightClass(verseId);
+        } catch (jsonError) {
+            // If response is not JSON, treat as error
+            alert('Unexpected server response. Please try again.');
+            return;
+        }
+
+    } catch (error) {
+        alert('Failed to Remove highlight.');
+        console.error(error);
+    }
+}
+
 function getVerseHighlightClass(verseId: number): string {
+
     const highlight = verseHighlights.value[verseId];
+    
     if (!highlight) return '';
 
     if (highlight.color === 'yellow') {
@@ -178,6 +236,14 @@ function getVerseHighlightClass(verseId: number): string {
         return 'bg-green-300 dark:bg-green-300/30';
     }
     return '';
+}
+
+// function to remove class based on verseId
+function removeVerseHighlightClass(verseId: number): void {
+    const highlight = verseHighlights.value[verseId];
+    if (highlight) {
+        delete verseHighlights.value[verseId];
+    }
 }
 
 async function handleVerseHover(verseId: number) {
@@ -353,8 +419,8 @@ if (props.initialChapter?.id) {
                                 class="mb-2 rounded px-2 py-1 transition-colors"
                                 :class="getVerseHighlightClass(verse.id)"
                             >
-                                <ContextMenu>
-                                    <ContextMenuTrigger class="w-full cursor-default">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger class="w-full cursor-default">
                                         <HoverCard
                                             @update:open="
                                                 (open) =>
@@ -399,31 +465,45 @@ if (props.initialChapter?.id) {
                                             </HoverCardContent>
                                         </HoverCard>
                                         {{ verse.text }}
-                                    </ContextMenuTrigger>
-                                    <ContextMenuContent>
-                                        <ContextMenuItem
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>Highlight</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
                                             @click="highlightVerse(verse.id, 'yellow')"
                                         >
                                             <span class="flex items-center gap-2">
                                                 <span class="h-4 w-4 rounded bg-yellow-300"></span>
                                                 Highlight - Yellow
                                             </span>
-                                        </ContextMenuItem>
-                                        <ContextMenuItem
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
                                             @click="highlightVerse(verse.id, 'green')"
                                         >
                                             <span class="flex items-center gap-2">
                                                 <span class="h-4 w-4 rounded bg-green-300"></span>
                                                 Highlight - Green
                                             </span>
-                                        </ContextMenuItem>
-                                        <ContextMenuItem
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="removeHighlight(verse.id)"
+                                        >
+                                            Remove Highlight
+                                        </DropdownMenuItem>
+                                        <DropdownMenuLabel>Learn More</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
                                             @click="studyVerse(verse.id)"
                                         >
                                             Study this Verse
-                                        </ContextMenuItem>
-                                    </ContextMenuContent>
-                                </ContextMenu>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="studyVerse(verse.id)"
+                                        >
+                                            Put Note on this Verse
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </p>
                         </ScrollArea>
                     </CardContent>
