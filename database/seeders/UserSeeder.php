@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
         );
 
         // Attach admin role (role_id = 1) if not already attached
-        if (! $user->roles()->where('role_id', 1)->exists()) {
+        if (! $user->roles()->where('role_number', 1)->exists()) {
             $user->roles()->attach(1);
         }
     }
