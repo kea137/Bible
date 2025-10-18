@@ -55,6 +55,18 @@ class RoleController extends Controller
     }
 
     /**
+     * Delete a user.
+     */
+    public function deleteUser(User $user)
+    {
+        Gate::authorize('delete', $user);
+
+        $user->delete();
+
+        return redirect()->back()->with('success', 'User deleted successfully.');
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()

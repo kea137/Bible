@@ -35,6 +35,7 @@ Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'sho
 // Role Management routes (admin only)
 Route::get('/role/management', [RoleController::class, 'index'])->name('role_management')->middleware(['auth', 'can:create,App\\Models\\Role']);
 Route::put('/users/{user}/roles', [RoleController::class, 'updateRoles'])->name('update_roles')->middleware(['auth', 'can:create,App\\Models\Role']);
+Route::delete('/users/{user}', [RoleController::class, 'deleteUser'])->name('delete_user')->middleware(['auth', 'can:delete,user']);
 
 // Reference routes
 Route::get('/create/references', [ReferenceController::class, 'create'])->name('references_create')->middleware(['auth', 'can:update,App\\Models\\Reference']);

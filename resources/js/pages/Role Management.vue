@@ -16,13 +16,16 @@ import TableHeader from '@/components/ui/table/TableHeader.vue';
 import TableRow from '@/components/ui/table/TableRow.vue';
 // import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { role_management, update_roles } from '@/routes';
+import { delete_user, role_management, update_roles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Save, UserCog } from 'lucide-vue-next';
+import { Save, Trash2, UserCog } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const page = usePage();
+const auth = computed(() => page.props.auth);
+const roleNumbers = computed(() => auth.value?.roleNumbers || []);
+const isAdmin = computed(() => roleNumbers.value.includes(1));
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -88,6 +91,18 @@ const saveUserRoles = (userId: number) => {
             preserveScroll: true,
         },
     );
+};
+
+const deleteUser = (userId: number, userName: string) => {
+    if (
+        confirm(
+            `Are you sure you want to delete user "${userName}"? This action cannot be undone.`,
+        )
+    ) {
+        router.delete(delete_user(userId).url, {
+            preserveScroll: true,
+        });
+    }
 };
 </script>
 
@@ -184,13 +199,24 @@ const saveUserRoles = (userId: number) => {
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Button
-                                        size="sm"
-                                        @click="saveUserRoles(user.id)"
-                                    >
-                                        <Save class="h-4 w-4" />
-                                        Save
-                                    </Button>
+                                    <div class="flex gap-2">
+                                        <Button
+                                            size="sm"
+                                            @click="saveUserRoles(user.id)"
+                                        >
+                                            <Save class="h-4 w-4" />
+                                            Save
+                                        </Button>
+                                        <Button
+                                            v-if="isAdmin && user.id !== auth.user?.id"
+                                            size="sm"
+                                            variant="destructive"
+                                            @click="deleteUser(user.id, user.name)"
+                                        >
+                                            <Trash2 class="h-4 w-4" />
+                                            Delete
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         </TableBody>
