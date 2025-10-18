@@ -25,7 +25,7 @@ class DashboardController extends Controller
         
         $languageName = $languageMap[$userLanguage] ?? 'English';
         
-        // Get random verse of the day
+        // Get random verse of the day with eager loading to prevent N+1 queries
         $randomVerse = Verse::with(['bible', 'book', 'chapter'])
             ->whereHas('bible', function ($query) use ($languageName) {
                 $query->where('language', $languageName);
@@ -36,7 +36,7 @@ class DashboardController extends Controller
         // Get total Bibles in user's language
         $totalBibles = Bible::where('language', $languageName)->count();
         
-        // Get last reading from reading progress
+        // Get last reading from reading progress with eager loading
         $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->with(['bible', 'chapter.book'])
@@ -53,12 +53,12 @@ class DashboardController extends Controller
             ];
         }
         
-        // Get reading stats with accurate verse counts
+        // Get reading stats with accurate verse counts - optimized query
         $totalChaptersCompleted = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->count();
         
-        // Get chapters read today with their actual verse counts
+        // Get chapters read today with their actual verse counts - eager load verses
         $chaptersReadToday = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->whereDate('completed_at', today())
