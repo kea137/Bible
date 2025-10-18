@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
+import NotesDialog from '@/components/NotesDialog.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
@@ -95,6 +96,9 @@ const loadedChapter2 = ref<any>(null);
 const hoveredVerseReferences = ref<any[]>([]);
 const verseHighlights1 = ref<Record<number, any>>({});
 const verseHighlights2 = ref<Record<number, any>>({});
+const notesDialogOpen = ref(false);
+const selectedVerseForNote = ref<any>(null);
+const selectedVerseChapterInfo = ref<any>(null);
 
 const page = usePage();
 
@@ -329,6 +333,17 @@ async function handleVerseHover(verseId: number) {
 
 function studyVerse(verseId: number) {
     window.location.href = `/verses/${verseId}/study`;
+}
+
+function openNotesDialog(verse: any, chapterInfo: any) {
+    selectedVerseForNote.value = verse;
+    selectedVerseChapterInfo.value = chapterInfo;
+    notesDialogOpen.value = true;
+}
+
+function handleNoteSaved() {
+    // Show success message
+    alertSuccess.value = true;
 }
 
 watch(selectedBible1, (newBibleId) => {
@@ -630,7 +645,7 @@ if (info) {
                                             Study this Verse
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            @click="studyVerse(verse.id)"
+                                            @click="openNotesDialog(verse, loadedChapter1)"
                                         >
                                             Put Note on this Verse
                                         </DropdownMenuItem>
@@ -841,7 +856,7 @@ if (info) {
                                             Study this Verse
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            @click="studyVerse(verse.id)"
+                                            @click="openNotesDialog(verse, loadedChapter2)"
                                         >
                                             Put Note on this Verse
                                         </DropdownMenuItem>
@@ -859,5 +874,16 @@ if (info) {
                 </Card>
             </div>
         </div>
+
+        <!-- Notes Dialog -->
+        <NotesDialog
+            v-if="selectedVerseForNote && selectedVerseChapterInfo"
+            :open="notesDialogOpen"
+            @update:open="notesDialogOpen = $event"
+            :verse-id="selectedVerseForNote.id"
+            :verse-text="selectedVerseForNote.text"
+            :verse-reference="`${selectedVerseChapterInfo.book?.title} ${selectedVerseChapterInfo.chapter_number}:${selectedVerseForNote.verse_number}`"
+            @saved="handleNoteSaved"
+        />
     </AppLayout>
 </template>
