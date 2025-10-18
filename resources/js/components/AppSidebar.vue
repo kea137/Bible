@@ -21,6 +21,7 @@ import {
     license,
     role_management,
     references_create,
+    highlighted_verses_page,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
@@ -29,6 +30,7 @@ import {
     BookOpen,
     CogIcon,
     FileText,
+    Highlighter,
     LayoutGrid,
     LibraryBig,
     UserCog2,
@@ -52,6 +54,11 @@ const mainNavItems: NavItem[] = [
         title: 'Parallel Bibles',
         href: bibles_parallel(),
         icon: BookCopy,
+    },
+    {
+        title: 'Highlights',
+        href: highlighted_verses_page(),
+        icon: Highlighter,
     },
 ];
 
