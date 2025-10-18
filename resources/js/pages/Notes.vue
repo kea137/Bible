@@ -270,7 +270,7 @@ async function deleteNote() {
                 <Card class="h-full">
                     <CardHeader v-if="selectedNote">
                         <div class="flex items-center justify-between">
-                            <div class="flex-1">
+                            <div class="flex-1 mr-4">
                                 <CardTitle>
                                     {{ selectedNote.verse.book?.title }}
                                     {{ selectedNote.verse.chapter?.chapter_number }}:{{ selectedNote.verse.verse_number }}
