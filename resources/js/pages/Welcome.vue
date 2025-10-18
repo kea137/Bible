@@ -3,13 +3,13 @@ import { dashboard, login, register } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 import {
     BookOpen,
+    Calendar,
     Highlighter,
     Library,
-    NotebookPen,
-    SplitSquareHorizontal,
-    Calendar,
     Link2,
     Moon,
+    NotebookPen,
+    SplitSquareHorizontal,
 } from 'lucide-vue-next';
 import Logo from '/resources/images/logo.png';
 
@@ -19,42 +19,34 @@ const features = [
     {
         icon: BookOpen,
         title: 'Multiple Bible Translations',
-
     },
     {
         icon: SplitSquareHorizontal,
         title: 'Parallel Bible Reading',
-
     },
     {
         icon: Highlighter,
         title: 'Highlight & Bookmark',
-
     },
     {
         icon: NotebookPen,
         title: 'Personal Notes',
-
     },
     {
         icon: Calendar,
         title: 'Reading Plans',
-
     },
     {
         icon: Link2,
         title: 'Cross References',
-
     },
     {
         icon: Library,
         title: 'Verse Study Tools',
-
     },
     {
         icon: Moon,
         title: 'Dark Mode',
-
     },
 ];
 </script>
@@ -112,7 +104,9 @@ const features = [
                     </p>
 
                     <div class="mb-2">
-                        <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-[#706f6c] dark:text-[#A1A09A]">
+                        <h2
+                            class="mb-4 text-sm font-semibold tracking-wide text-[#706f6c] uppercase dark:text-[#A1A09A]"
+                        >
                             Features
                         </h2>
                         <div class="grid gap-4 sm:grid-cols-2">
@@ -130,7 +124,9 @@ const features = [
                                     />
                                 </div>
                                 <div>
-                                    <h3 class="mb-0.5 font-medium leading-tight">
+                                    <h3
+                                        class="mb-0.5 leading-tight font-medium"
+                                    >
                                         {{ feature.title }}
                                     </h3>
                                 </div>
@@ -149,19 +145,19 @@ const features = [
                         <Link
                             v-else
                             :href="dashboard()"
-                            class="inline-block mt-4 rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                            class="mt-4 inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                         >
                             Go to Dashboard
                         </Link>
                     </div>
                 </div>
                 <div
-                    class="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden rounded-t-lg bg-[#fff2f2] border border-[#e5e5e5] lg:mb-0 lg:-ml-px lg:aspect-auto lg:w-[438px] lg:rounded-t-none lg:rounded-r-lg dark:bg-[#ffffff] dark:border-[#333]"
+                    class="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden rounded-t-lg border border-[#e5e5e5] bg-[#fff2f2] lg:mb-0 lg:-ml-px lg:aspect-auto lg:w-[438px] lg:rounded-t-none lg:rounded-r-lg dark:border-[#333] dark:bg-[#ffffff]"
                 >
                     <img
                         :src="imageUrl"
                         alt="Jesus"
-                        class="mx-auto h-full w-full object-cover rounded-lg shadow-lg"
+                        class="mx-auto h-full w-full rounded-lg object-cover shadow-lg"
                     />
                 </div>
             </main>

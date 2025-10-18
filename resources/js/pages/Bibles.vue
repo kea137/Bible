@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
+import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
@@ -14,7 +15,6 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
-import Button from '@/components/ui/button/Button.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -57,11 +57,12 @@ const filteredBibles = computed(() => {
         return props.biblesList;
     }
     const query = searchQuery.value.toLowerCase();
-    return props.biblesList.filter(bible => 
-        bible.name.toLowerCase().includes(query) ||
-        bible.language.toLowerCase().includes(query) ||
-        bible.version.toLowerCase().includes(query) ||
-        bible.abbreviation.toLowerCase().includes(query)
+    return props.biblesList.filter(
+        (bible) =>
+            bible.name.toLowerCase().includes(query) ||
+            bible.language.toLowerCase().includes(query) ||
+            bible.version.toLowerCase().includes(query) ||
+            bible.abbreviation.toLowerCase().includes(query),
     );
 });
 
@@ -137,26 +138,39 @@ if (info) {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:gap-4 sm:p-4"
         >
             <Card>
                 <CardHeader class="pb-3">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div
+                        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
                         <div>
-                            <CardTitle class="flex items-center gap-2 text-base sm:text-lg">
+                            <CardTitle
+                                class="flex items-center gap-2 text-base sm:text-lg"
+                            >
                                 <LibraryBigIcon class="h-4 w-4 sm:h-5 sm:w-5" />
                                 Bibles
                             </CardTitle>
-                            <CardDescription class="text-xs sm:text-sm">Available Bibles</CardDescription>
+                            <CardDescription class="text-xs sm:text-sm"
+                                >Available Bibles</CardDescription
+                            >
                         </div>
-                        <Button @click="searchOpen = true" variant="outline" class="w-full sm:w-auto">
-                            <Search class="h-4 w-4 mr-2" />
+                        <Button
+                            @click="searchOpen = true"
+                            variant="outline"
+                            class="w-full sm:w-auto"
+                        >
+                            <Search class="mr-2 h-4 w-4" />
                             Search Bibles
                         </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="filteredBibles.length > 0" class="space-y-2 sm:space-y-3">
+                    <div
+                        v-if="filteredBibles.length > 0"
+                        class="space-y-2 sm:space-y-3"
+                    >
                         <div
                             v-for="bible in filteredBibles"
                             :key="bible.id"
@@ -164,23 +178,36 @@ if (info) {
                             @click="viewBible(bible.id)"
                         >
                             <div class="flex-1">
-                                <p class="text-sm font-medium sm:text-base">{{ bible.name }}</p>
-                                <p class="text-xs text-muted-foreground sm:text-sm">
+                                <p class="text-sm font-medium sm:text-base">
+                                    {{ bible.name }}
+                                </p>
+                                <p
+                                    class="text-xs text-muted-foreground sm:text-sm"
+                                >
                                     {{ bible.language }} • {{ bible.version }}
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div v-else class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base">
+                    <div
+                        v-else
+                        class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
+                    >
                         <p>No Bibles Available</p>
                     </div>
                 </CardContent>
             </Card>
 
             <!-- Search Dialog -->
-            <CommandDialog :open="searchOpen" @update:open="searchOpen = $event">
+            <CommandDialog
+                :open="searchOpen"
+                @update:open="searchOpen = $event"
+            >
                 <Command>
-                    <CommandInput v-model="searchQuery" placeholder="Search bibles by name, language, or version..." />
+                    <CommandInput
+                        v-model="searchQuery"
+                        placeholder="Search bibles by name, language, or version..."
+                    />
                     <CommandList>
                         <CommandEmpty>No bibles found.</CommandEmpty>
                         <CommandGroup heading="Bibles">
@@ -191,9 +218,12 @@ if (info) {
                                 @select="viewBible(bible.id)"
                             >
                                 <div class="flex flex-col">
-                                    <span class="font-medium">{{ bible.name }}</span>
+                                    <span class="font-medium">{{
+                                        bible.name
+                                    }}</span>
                                     <span class="text-xs text-muted-foreground">
-                                        {{ bible.language }} • {{ bible.version }}
+                                        {{ bible.language }} •
+                                        {{ bible.version }}
                                     </span>
                                 </div>
                             </CommandItem>

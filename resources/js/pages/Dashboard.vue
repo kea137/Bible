@@ -99,9 +99,10 @@ const filteredHighlights = computed(() => {
         return highlights.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return highlights.value.filter(h => 
-        h.verse.text.toLowerCase().includes(query) ||
-        h.verse.book?.title.toLowerCase().includes(query)
+    return highlights.value.filter(
+        (h) =>
+            h.verse.text.toLowerCase().includes(query) ||
+            h.verse.book?.title.toLowerCase().includes(query),
     );
 });
 
@@ -110,10 +111,11 @@ const filteredBibles = computed(() => {
         return availableBibles.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return availableBibles.value.filter(bible => 
-        bible.name.toLowerCase().includes(query) ||
-        bible.language.toLowerCase().includes(query) ||
-        bible.version.toLowerCase().includes(query)
+    return availableBibles.value.filter(
+        (bible) =>
+            bible.name.toLowerCase().includes(query) ||
+            bible.language.toLowerCase().includes(query) ||
+            bible.version.toLowerCase().includes(query),
     );
 });
 
@@ -139,7 +141,7 @@ function viewBible(bibleId: number) {
 
 function viewHighlight(verseId: number) {
     // Navigate to the verse's bible page
-    const highlight = highlights.value.find(h => h.verse.id === verseId);
+    const highlight = highlights.value.find((h) => h.verse.id === verseId);
     if (highlight && highlight.verse.chapter?.bible_id) {
         router.visit(`/bibles/${highlight.verse.chapter.bible_id}`);
         searchOpen.value = false;
@@ -164,7 +166,9 @@ function getHighlightColorClass(color: string): string {
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-2 sm:p-4"
         >
             <!-- Welcome Message -->
-            <div class="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div
+                class="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            >
                 <div>
                     <h1 class="text-xl font-bold text-foreground sm:text-2xl">
                         Welcome back, {{ userName }}!
@@ -173,21 +177,29 @@ function getHighlightColorClass(color: string): string {
                         Continue your spiritual journey
                     </p>
                 </div>
-                <Button @click="searchOpen = true" variant="outline" class="w-full sm:w-auto">
-                    <Search class="h-4 w-4 mr-2" />
+                <Button
+                    @click="searchOpen = true"
+                    variant="outline"
+                    class="w-full sm:w-auto"
+                >
+                    <Search class="mr-2 h-4 w-4" />
                     Search
                 </Button>
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid auto-rows-min gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+            <div
+                class="grid auto-rows-min gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
+            >
                 <Card class="transition-shadow hover:shadow-md">
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
                                 >Bibles Available</CardTitle
                             >
-                            <Library class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
+                            <Library
+                                class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
+                            />
                         </div>
                     </CardHeader>
                     <CardContent class="pb-4">
@@ -203,8 +215,12 @@ function getHighlightColorClass(color: string): string {
                 <Card class="transition-shadow hover:shadow-md">
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg">Verses Today</CardTitle>
-                            <BookOpen class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
+                            <CardTitle class="text-base sm:text-lg"
+                                >Verses Today</CardTitle
+                            >
+                            <BookOpen
+                                class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
+                            />
                         </div>
                     </CardHeader>
                     <CardContent class="pb-4">
@@ -220,8 +236,12 @@ function getHighlightColorClass(color: string): string {
                 <Card class="transition-shadow hover:shadow-md">
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg">Progress</CardTitle>
-                            <TrendingUp class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
+                            <CardTitle class="text-base sm:text-lg"
+                                >Progress</CardTitle
+                            >
+                            <TrendingUp
+                                class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
+                            />
                         </div>
                     </CardHeader>
                     <CardContent class="pb-4">
@@ -242,14 +262,18 @@ function getHighlightColorClass(color: string): string {
                     <CardHeader class="pb-3">
                         <div class="flex items-center gap-2">
                             <Quote class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
-                            <CardTitle class="text-base sm:text-lg">Verse of the Day</CardTitle>
+                            <CardTitle class="text-base sm:text-lg"
+                                >Verse of the Day</CardTitle
+                            >
                         </div>
                     </CardHeader>
                     <CardContent v-if="verseOfTheDay">
                         <blockquote
                             class="border-l-4 border-primary pl-3 italic sm:pl-4"
                         >
-                            <p class="mb-3 text-base leading-relaxed sm:mb-4 sm:text-lg">
+                            <p
+                                class="mb-3 text-base leading-relaxed sm:mb-4 sm:text-lg"
+                            >
                                 "{{ verseOfTheDay.text }}"
                             </p>
                             <footer
@@ -279,7 +303,9 @@ function getHighlightColorClass(color: string): string {
                 <!-- Last Reading / Continue Reading -->
                 <Card v-if="lastReading">
                     <CardHeader class="pb-3">
-                        <CardTitle class="text-base sm:text-lg">Continue Reading</CardTitle>
+                        <CardTitle class="text-base sm:text-lg"
+                            >Continue Reading</CardTitle
+                        >
                         <CardDescription class="text-xs sm:text-sm"
                             >Pick up where you left off</CardDescription
                         >
@@ -290,7 +316,9 @@ function getHighlightColorClass(color: string): string {
                                 <p class="text-sm font-medium sm:text-base">
                                     {{ lastReading.bible_name }}
                                 </p>
-                                <p class="text-xs text-muted-foreground sm:text-sm">
+                                <p
+                                    class="text-xs text-muted-foreground sm:text-sm"
+                                >
                                     {{ lastReading.book_title }} Chapter
                                     {{ lastReading.chapter_number }}
                                 </p>
@@ -305,7 +333,9 @@ function getHighlightColorClass(color: string): string {
                 <!-- Quick Actions -->
                 <Card :class="lastReading ? '' : 'lg:col-span-2'">
                     <CardHeader class="pb-3">
-                        <CardTitle class="text-base sm:text-lg">Quick Actions</CardTitle>
+                        <CardTitle class="text-base sm:text-lg"
+                            >Quick Actions</CardTitle
+                        >
                         <CardDescription class="text-xs sm:text-sm"
                             >Start your study session</CardDescription
                         >
@@ -338,7 +368,9 @@ function getHighlightColorClass(color: string): string {
                 class="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
             >
                 <CardContent class="pt-2">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div
+                        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
                         <div>
                             <h3 class="mb-1 text-sm font-semibold sm:text-base">
                                 Make Reading a Habit
@@ -348,7 +380,9 @@ function getHighlightColorClass(color: string): string {
                                 the Word
                             </p>
                         </div>
-                        <BookOpen class="h-6 w-6 text-primary/40 sm:h-8 sm:w-8" />
+                        <BookOpen
+                            class="h-6 w-6 text-primary/40 sm:h-8 sm:w-8"
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -357,8 +391,12 @@ function getHighlightColorClass(color: string): string {
             <Card v-if="highlights.length > 0">
                 <CardHeader class="pb-3">
                     <div class="flex items-center gap-2">
-                        <Highlighter class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
-                        <CardTitle class="text-base sm:text-lg">Your Highlighted Verses</CardTitle>
+                        <Highlighter
+                            class="h-4 w-4 text-primary sm:h-5 sm:w-5"
+                        />
+                        <CardTitle class="text-base sm:text-lg"
+                            >Your Highlighted Verses</CardTitle
+                        >
                     </div>
                     <CardDescription class="text-xs sm:text-sm"
                         >Recent verses you've marked</CardDescription
@@ -393,13 +431,13 @@ function getHighlightColorClass(color: string): string {
                             </p>
                         </div>
                         <Link :href="highlighted_verses_page()">
-                        <Button
-                            v-if="highlights.length > 5"
-                            variant="outline"
-                            class="mt-4 w-full"
-                        >
-                            View All {{ highlights.length }} Highlights
-                        </Button>
+                            <Button
+                                v-if="highlights.length > 5"
+                                variant="outline"
+                                class="mt-4 w-full"
+                            >
+                                View All {{ highlights.length }} Highlights
+                            </Button>
                         </Link>
                     </div>
                 </CardContent>
@@ -409,11 +447,17 @@ function getHighlightColorClass(color: string): string {
         <!-- Search Dialog -->
         <CommandDialog :open="searchOpen" @update:open="searchOpen = $event">
             <Command>
-                <CommandInput v-model="searchQuery" placeholder="Search bibles, verses, or highlighted passages..." />
+                <CommandInput
+                    v-model="searchQuery"
+                    placeholder="Search bibles, verses, or highlighted passages..."
+                />
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
-                    
-                    <CommandGroup v-if="filteredBibles.length > 0" heading="Bibles">
+
+                    <CommandGroup
+                        v-if="filteredBibles.length > 0"
+                        heading="Bibles"
+                    >
                         <CommandItem
                             v-for="bible in filteredBibles.slice(0, 5)"
                             :key="bible.id"
@@ -422,17 +466,27 @@ function getHighlightColorClass(color: string): string {
                         >
                             <BookOpen class="mr-2 h-4 w-4" />
                             <div class="flex flex-col">
-                                <span class="font-medium">{{ bible.name }}</span>
+                                <span class="font-medium">{{
+                                    bible.name
+                                }}</span>
                                 <span class="text-xs text-muted-foreground">
                                     {{ bible.language }} • {{ bible.version }}
                                 </span>
                             </div>
                         </CommandItem>
                     </CommandGroup>
-                    
-                    <CommandSeparator v-if="filteredBibles.length > 0 && filteredHighlights.length > 0" />
-                    
-                    <CommandGroup v-if="filteredHighlights.length > 0" heading="Highlighted Verses">
+
+                    <CommandSeparator
+                        v-if="
+                            filteredBibles.length > 0 &&
+                            filteredHighlights.length > 0
+                        "
+                    />
+
+                    <CommandGroup
+                        v-if="filteredHighlights.length > 0"
+                        heading="Highlighted Verses"
+                    >
                         <CommandItem
                             v-for="highlight in filteredHighlights.slice(0, 5)"
                             :key="highlight.id"
@@ -441,9 +495,14 @@ function getHighlightColorClass(color: string): string {
                         >
                             <Highlighter class="mr-2 h-4 w-4" />
                             <div class="flex flex-col">
-                                <span class="text-sm line-clamp-1">{{ highlight.verse.text }}</span>
+                                <span class="line-clamp-1 text-sm">{{
+                                    highlight.verse.text
+                                }}</span>
                                 <span class="text-xs text-muted-foreground">
-                                    {{ highlight.verse.book?.title }} {{ highlight.verse.chapter?.chapter_number }}:{{ highlight.verse.verse_number }}
+                                    {{ highlight.verse.book?.title }}
+                                    {{
+                                        highlight.verse.chapter?.chapter_number
+                                    }}:{{ highlight.verse.verse_number }}
                                 </span>
                             </div>
                         </CommandItem>

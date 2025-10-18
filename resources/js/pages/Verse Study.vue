@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AlertUser from '@/components/AlertUser.vue';
+import NotesDialog from '@/components/NotesDialog.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
@@ -11,8 +13,6 @@ import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { BookOpen, ExternalLink, Languages, StickyNote } from 'lucide-vue-next';
-import NotesDialog from '@/components/NotesDialog.vue';
-import AlertUser from '@/components/AlertUser.vue';
 import { ref } from 'vue';
 
 interface Verse {
@@ -104,14 +104,18 @@ function handleNoteSaved() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:gap-4 sm:p-4"
         >
             <!-- Main Verse Card -->
             <Card>
                 <CardHeader class="pb-3">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div
+                        class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
+                    >
                         <div class="flex items-start gap-2">
-                            <BookOpen class="h-5 w-5 text-primary sm:h-6 sm:w-6 flex-shrink-0 mt-1" />
+                            <BookOpen
+                                class="mt-1 h-5 w-5 flex-shrink-0 text-primary sm:h-6 sm:w-6"
+                            />
                             <div>
                                 <CardTitle class="text-lg sm:text-2xl">
                                     {{ verse.book.title }}
@@ -130,9 +134,9 @@ function handleNoteSaved() {
                             @click="openNotesDialog"
                             variant="outline"
                             size="sm"
-                            class="w-full sm:w-auto flex-shrink-0"
+                            class="w-full flex-shrink-0 sm:w-auto"
                         >
-                            <StickyNote class="h-4 w-4 mr-2" />
+                            <StickyNote class="mr-2 h-4 w-4" />
                             Add Note
                         </Button>
                     </div>
@@ -153,7 +157,9 @@ function handleNoteSaved() {
                 <Card>
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg">Cross References</CardTitle>
+                            <CardTitle class="text-base sm:text-lg"
+                                >Cross References</CardTitle
+                            >
                             <ExternalLink
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
@@ -170,7 +176,7 @@ function handleNoteSaved() {
                             <div
                                 v-for="ref in references"
                                 :key="ref.id"
-                                class="cursor-pointer rounded-lg border p-3 mt-2 transition-colors hover:bg-accent sm:p-4"
+                                class="mt-2 cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
                                 @click="navigateToVerse(ref.verse)"
                             >
                                 <p
@@ -178,10 +184,15 @@ function handleNoteSaved() {
                                 >
                                     {{ ref.reference }}
                                 </p>
-                                <p class="text-xs sm:text-sm">{{ ref.verse.text }}</p>
+                                <p class="text-xs sm:text-sm">
+                                    {{ ref.verse.text }}
+                                </p>
                             </div>
                         </ScrollArea>
-                        <p v-else class="text-xs text-muted-foreground italic sm:text-sm">
+                        <p
+                            v-else
+                            class="text-xs text-muted-foreground italic sm:text-sm"
+                        >
                             No cross-references available for this verse.
                         </p>
                     </CardContent>
@@ -191,8 +202,12 @@ function handleNoteSaved() {
                 <Card>
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg">Other Translations</CardTitle>
-                            <Languages class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
+                            <CardTitle class="text-base sm:text-lg"
+                                >Other Translations</CardTitle
+                            >
+                            <Languages
+                                class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
+                            />
                         </div>
                         <CardDescription class="text-xs sm:text-sm"
                             >Same verse in different Bibles</CardDescription
@@ -228,10 +243,15 @@ function handleNoteSaved() {
                                     {{ version.bible.language }} •
                                     {{ version.bible.version }}
                                 </p>
-                                <p class="text-xs sm:text-sm">{{ version.text }}</p>
+                                <p class="text-xs sm:text-sm">
+                                    {{ version.text }}
+                                </p>
                             </div>
                         </div>
-                        <p v-else class="text-xs text-muted-foreground italic sm:text-sm">
+                        <p
+                            v-else
+                            class="text-xs text-muted-foreground italic sm:text-sm"
+                        >
                             No other translations available for this verse.
                         </p>
                     </CardContent>

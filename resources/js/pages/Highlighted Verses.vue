@@ -1,20 +1,12 @@
 <script setup lang="ts">
+import AlertUser from '@/components/AlertUser.vue';
+import NotesDialog from '@/components/NotesDialog.vue';
+import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
-import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { highlighted_verses_page } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head, usePage, router } from '@inertiajs/vue3';
-import {
-    BookOpen,
-    Highlighter,
-    MoreVertical,
-} from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,9 +15,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Button from '@/components/ui/button/Button.vue';
-import NotesDialog from '@/components/NotesDialog.vue';
-import AlertUser from '@/components/AlertUser.vue';
+import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { highlighted_verses_page } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { BookOpen, Highlighter, MoreVertical } from 'lucide-vue-next';
+import { onMounted, ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -68,28 +64,37 @@ function getHighlightColorClass(color: string): string {
 
 async function removeHighlight(highlight: any) {
     try {
-        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        let csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
         if (!csrfToken && page.props.csrf_token) {
             csrfToken = String(page.props.csrf_token);
         }
         if (!csrfToken) {
-            alert('CSRF token not found. Refreshing page to fix authentication...');
+            alert(
+                'CSRF token not found. Refreshing page to fix authentication...',
+            );
             window.location.reload();
             return;
         }
 
-        const response = await fetch('/api/verse-highlights/' + highlight.verse.id, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
+        const response = await fetch(
+            '/api/verse-highlights/' + highlight.verse.id,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                },
             },
-        });
+        );
 
         if (response.ok) {
             // Remove from local array
-            highlights.value = highlights.value.filter(h => h.id !== highlight.id);
+            highlights.value = highlights.value.filter(
+                (h) => h.id !== highlight.id,
+            );
             alertSuccess.value = true;
         } else {
             alertError.value = true;
@@ -138,14 +143,16 @@ function handleNoteSaved() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:gap-4 sm:p-4"
         >
             <!-- Reading Reminder -->
             <Card
                 class="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
             >
                 <CardContent class="pt-2">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div
+                        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
                         <div>
                             <h3 class="mb-1 text-sm font-semibold sm:text-base">
                                 Make Reading a Habit
@@ -155,7 +162,9 @@ function handleNoteSaved() {
                                 the Word
                             </p>
                         </div>
-                        <BookOpen class="h-6 w-6 text-primary/40 sm:h-8 sm:w-8" />
+                        <BookOpen
+                            class="h-6 w-6 text-primary/40 sm:h-8 sm:w-8"
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -164,20 +173,24 @@ function handleNoteSaved() {
             <Card v-if="highlights.length > 0">
                 <CardHeader class="pb-3">
                     <div class="flex items-center gap-2">
-                        <Highlighter class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
-                        <CardTitle class="text-base sm:text-lg">Your Highlighted Verses</CardTitle>
+                        <Highlighter
+                            class="h-4 w-4 text-primary sm:h-5 sm:w-5"
+                        />
+                        <CardTitle class="text-base sm:text-lg"
+                            >Your Highlighted Verses</CardTitle
+                        >
                     </div>
                     <CardDescription class="text-xs sm:text-sm"
                         >Recent verses you've marked</CardDescription
                     >
                 </CardHeader>
                 <CardContent>
-                    <ScrollArea class="space-y-2 h-100 sm:space-y-3">
+                    <ScrollArea class="h-100 space-y-2 sm:space-y-3">
                         <div
                             v-for="highlight in highlights"
                             :key="highlight.id"
                             :class="[
-                                'rounded-r border-l-4 py-2 pl-3 transition-colors relative group sm:pl-4',
+                                'group relative rounded-r border-l-4 py-2 pl-3 transition-colors sm:pl-4',
                                 getHighlightColorClass(highlight.color),
                             ]"
                         >
@@ -190,9 +203,10 @@ function handleNoteSaved() {
                                         class="text-xs font-medium text-muted-foreground"
                                     >
                                         {{ highlight.verse.book?.title }}
-                                        {{ highlight.verse.chapter?.chapter_number }}:{{
-                                            highlight.verse.verse_number
-                                        }}
+                                        {{
+                                            highlight.verse.chapter
+                                                ?.chapter_number
+                                        }}:{{ highlight.verse.verse_number }}
                                     </p>
                                     <p
                                         v-if="highlight.note"
@@ -212,10 +226,14 @@ function handleNoteSaved() {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                        <DropdownMenuLabel
+                                            >Actions</DropdownMenuLabel
+                                        >
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
-                                            @click="studyVerse(highlight.verse.id)"
+                                            @click="
+                                                studyVerse(highlight.verse.id)
+                                            "
                                         >
                                             Study this Verse
                                         </DropdownMenuItem>
@@ -242,10 +260,15 @@ function handleNoteSaved() {
             <!-- Empty State -->
             <Card v-else>
                 <CardContent class="py-8 text-center">
-                    <Highlighter class="mx-auto h-12 w-12 text-muted-foreground/50" />
-                    <h3 class="mt-4 text-lg font-semibold">No Highlighted Verses</h3>
+                    <Highlighter
+                        class="mx-auto h-12 w-12 text-muted-foreground/50"
+                    />
+                    <h3 class="mt-4 text-lg font-semibold">
+                        No Highlighted Verses
+                    </h3>
                     <p class="mt-2 text-sm text-muted-foreground">
-                        Start highlighting verses as you read through the Bible to keep track of important passages.
+                        Start highlighting verses as you read through the Bible
+                        to keep track of important passages.
                     </p>
                 </CardContent>
             </Card>
