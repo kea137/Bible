@@ -12,6 +12,11 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 - Cross-reference system for Bible verses
 - Reading progress tracking
 - Verse highlighting and notes
+- **Async Bible Upload**: Upload Bible JSON files with background processing
+  - Multiple JSON format support (Swahili, flat verses, nested books)
+  - Real-time status notifications using toast messages
+  - Non-blocking uploads allowing users to continue working
+  - Automatic error handling and reporting
 
 ## Installation
 
@@ -30,6 +35,16 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 - Run tests: `php artisan test`
 - Lint code: `npm run lint`
 - Format code: `npm run format`
+
+### Queue Worker
+
+For async Bible uploads to work, you need to run the queue worker:
+
+```bash
+php artisan queue:work
+```
+
+In production, you should use a process manager like Supervisor to keep the queue worker running. See [Laravel Queue Documentation](https://laravel.com/docs/queues) for more details.
 
 ## Credits & Acknowledgments
 
