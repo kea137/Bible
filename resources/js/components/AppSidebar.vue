@@ -23,6 +23,7 @@ import {
     role_management,
     references_create,
     highlighted_verses_page,
+    reading_plan,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
@@ -35,6 +36,7 @@ import {
     LayoutGrid,
     LibraryBig,
     StickyNote,
+    Target,
     UserCog2,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
@@ -56,6 +58,11 @@ const mainNavItems: NavItem[] = [
         title: 'Parallel Bibles',
         href: bibles_parallel(),
         icon: BookCopy,
+    },
+    {
+        title: 'Reading Plan',
+        href: reading_plan(),
+        icon: Target,
     },
     {
         title: 'Highlights',

@@ -42,4 +42,9 @@ class Chapter extends Model
     {
         return $this->belongsTo(Reference::class);
     }
+
+    public function readingProgress()
+    {
+        return $this->hasMany(ReadingProgress::class);
+    }
 }

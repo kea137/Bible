@@ -36,14 +36,43 @@ class DashboardController extends Controller
         // Get total Bibles in user's language
         $totalBibles = Bible::where('language', $languageName)->count();
         
-        // Get last reading (placeholder - can be implemented with user reading history)
-        $lastReading = null;
+        // Get last reading from reading progress
+        $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', $user->id)
+            ->where('completed', true)
+            ->with(['bible', 'chapter.book'])
+            ->latest('completed_at')
+            ->first();
         
-        // Get reading stats (placeholder for future enhancement)
+        $lastReading = null;
+        if ($lastReadingProgress) {
+            $lastReading = [
+                'bible_id' => $lastReadingProgress->bible_id,
+                'bible_name' => $lastReadingProgress->bible->name,
+                'book_title' => $lastReadingProgress->chapter->book->title,
+                'chapter_number' => $lastReadingProgress->chapter->chapter_number,
+            ];
+        }
+        
+        // Get reading stats with accurate verse counts
+        $totalChaptersCompleted = \App\Models\ReadingProgress::where('user_id', $user->id)
+            ->where('completed', true)
+            ->count();
+        
+        // Get chapters read today with their actual verse counts
+        $chaptersReadToday = \App\Models\ReadingProgress::where('user_id', $user->id)
+            ->where('completed', true)
+            ->whereDate('completed_at', today())
+            ->with('chapter.verses')
+            ->get();
+        
+        $versesReadToday = $chaptersReadToday->sum(function ($progress) {
+            return $progress->chapter->verses->count();
+        });
+        
         $readingStats = [
             'total_bibles' => $totalBibles,
-            'verses_read_today' => 0, // Placeholder
-            'chapters_completed' => 0, // Placeholder
+            'verses_read_today' => $versesReadToday,
+            'chapters_completed' => $totalChaptersCompleted,
         ];
         
         return Inertia::render('Dashboard', [

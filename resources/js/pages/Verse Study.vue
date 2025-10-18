@@ -9,8 +9,11 @@ import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/vue3';
-import { BookOpen, ExternalLink, Languages } from 'lucide-vue-next';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { BookOpen, ExternalLink, Languages, StickyNote } from 'lucide-vue-next';
+import NotesDialog from '@/components/NotesDialog.vue';
+import AlertUser from '@/components/AlertUser.vue';
+import { ref } from 'vue';
 
 interface Verse {
     id: number;
@@ -67,14 +70,36 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const page = usePage();
+const notesDialogOpen = ref(false);
+const alertSuccess = ref(false);
+
 function navigateToVerse(verse: Verse) {
     router.visit(`/bibles/${verse.bible.id}`);
+}
+
+function openNotesDialog() {
+    notesDialogOpen.value = true;
+}
+
+function handleNoteSaved() {
+    alertSuccess.value = true;
 }
 </script>
 
 <template>
     <Head
         :title="`${verse.book.title} ${verse.chapter.chapter_number}:${verse.verse_number}`"
+    />
+
+    <AlertUser
+        v-if="alertSuccess"
+        :open="true"
+        title="Success"
+        :confirmButtonText="'OK'"
+        message="Note saved successfully!"
+        variant="success"
+        @update:open="alertSuccess = false"
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">
@@ -84,21 +109,31 @@ function navigateToVerse(verse: Verse) {
             <!-- Main Verse Card -->
             <Card>
                 <CardHeader>
-                    <div class="flex items-center gap-2">
-                        <BookOpen class="h-6 w-6 text-primary" />
-                        <div>
-                            <CardTitle class="text-2xl">
-                                {{ verse.book.title }}
-                                {{ verse.chapter.chapter_number }}:{{
-                                    verse.verse_number
-                                }}
-                            </CardTitle>
-                            <CardDescription
-                                >{{ verse.bible.name }} ({{
-                                    verse.bible.version
-                                }})</CardDescription
-                            >
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <BookOpen class="h-6 w-6 text-primary" />
+                            <div>
+                                <CardTitle class="text-2xl">
+                                    {{ verse.book.title }}
+                                    {{ verse.chapter.chapter_number }}:{{
+                                        verse.verse_number
+                                    }}
+                                </CardTitle>
+                                <CardDescription
+                                    >{{ verse.bible.name }} ({{
+                                        verse.bible.version
+                                    }})</CardDescription
+                                >
+                            </div>
                         </div>
+                        <Button
+                            @click="openNotesDialog"
+                            variant="outline"
+                            size="sm"
+                        >
+                            <StickyNote class="h-4 w-4 mr-2" />
+                            Add Note
+                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -213,5 +248,15 @@ function navigateToVerse(verse: Verse) {
                 </Button>
             </div>
         </div>
+
+        <!-- Notes Dialog -->
+        <NotesDialog
+            :open="notesDialogOpen"
+            @update:open="notesDialogOpen = $event"
+            :verse-id="verse.id"
+            :verse-text="verse.text"
+            :verse-reference="`${verse.book.title} ${verse.chapter.chapter_number}:${verse.verse_number}`"
+            @saved="handleNoteSaved"
+        />
     </AppLayout>
 </template>

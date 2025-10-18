@@ -3,6 +3,7 @@
 use App\Http\Controllers\BibleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\ReadingProgressController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\VerseHighlightController;
@@ -24,6 +25,7 @@ Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibl
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
 Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create');
 Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store');
+Route::get('/api/bibles', [BibleController::class, 'apiBiblesIndex'])->name('api_bibles');
 Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'showChapter'])->name('bible_show_chapter');
 
 // Role Management routes (admin only)
@@ -50,6 +52,12 @@ Route::post('/api/notes', [NoteController::class, 'store'])->name('notes_store')
 Route::get('/api/notes/{note}', [NoteController::class, 'show'])->name('notes_show')->middleware('auth');
 Route::put('/api/notes/{note}', [NoteController::class, 'update'])->name('notes_update')->middleware('auth');
 Route::delete('/api/notes/{note}', [NoteController::class, 'destroy'])->name('notes_destroy')->middleware('auth');
+
+// Reading Progress routes
+Route::get('/reading-plan', [ReadingProgressController::class, 'readingPlan'])->name('reading_plan')->middleware('auth');
+Route::post('/api/reading-progress/toggle', [ReadingProgressController::class, 'toggleChapter'])->name('reading_progress_toggle')->middleware('auth');
+Route::get('/api/reading-progress/bible', [ReadingProgressController::class, 'getBibleProgress'])->name('reading_progress_bible')->middleware('auth');
+Route::get('/api/reading-progress/statistics', [ReadingProgressController::class, 'getStatistics'])->name('reading_progress_statistics')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
