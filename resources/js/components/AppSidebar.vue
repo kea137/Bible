@@ -26,7 +26,7 @@ import {
     reading_plan,
 } from '@/routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookCopy,
     BookOpen,
@@ -39,9 +39,14 @@ import {
     Target,
     UserCog2,
 } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 import AppearanceSideBar from './AppearanceSideBar.vue';
 import LanguageSelectorSideBar from './LanguageSelectorSideBar.vue';
+
+const page = usePage();
+const auth = computed(() => page.props.auth);
+const roleNumbers = computed(() => auth.value?.roleNumbers || []);
 
 const mainNavItems: NavItem[] = [
     {
@@ -76,28 +81,46 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Upload Bibles',
-        href: bible_create(),
-        icon: CogIcon,
-    },
-    {
-        title: 'Create References',
-        href: references_create(),
-        icon: BookOpen,
-    },
-    {
-        title: 'Role Management',
-        href: role_management(),
-        icon: UserCog2,
-    },
-    {
+// Filter footer items based on role numbers
+const footerNavItems = computed(() => {
+    const items: NavItem[] = [];
+    
+    // Upload Bibles - only for role numbers 1 & 2 (admin & editor)
+    if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
+        items.push({
+            title: 'Upload Bibles',
+            href: bible_create(),
+            icon: CogIcon,
+        });
+    }
+    
+    // Create References - only for role numbers 1 & 2 (admin & editor)
+    if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
+        items.push({
+            title: 'Create References',
+            href: references_create(),
+            icon: BookOpen,
+        });
+    }
+    
+    // Role Management - only for role number 1 (admin)
+    if (roleNumbers.value.includes(1)) {
+        items.push({
+            title: 'Role Management',
+            href: role_management(),
+            icon: UserCog2,
+        });
+    }
+    
+    // License - available to everyone
+    items.push({
         title: 'License',
         href: license(),
         icon: FileText,
-    },
-];
+    });
+    
+    return items;
+});
 </script>
 
 <template>
