@@ -6,15 +6,25 @@ import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { FileText, LoaderCircle, Pencil, Save, Trash2, X } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -24,62 +34,27 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 // page props for notes data
-const props = defineProps<{
+defineProps<{
     notes: any[];
     csrf_token?: string;
     success?: string;
     error?: string;
 }>();
 
-type notes = {
-    id: number;
-    title: string;
-    content: string;
-    verse: {
-        id: number;
-        book: {
-            id: number;
-            title: string;
-        } | null;
-        chapter: {
-            id: number;
-            chapter_number: number;
-        } | null;
-        verse_number: number;
-        text: string;
-    };
-    created_at: string;
-    updated_at: string;
-}
-
 const page = usePage();
-// const notes = ref<any[]>([]);
 const selectedNote = ref<any>(null);
 const editMode = ref(false);
 const editTitle = ref('');
 const editContent = ref('');
 const saving = ref(false);
 const deleting = ref(false);
+const showDeleteDialog = ref(false);
 
-const success = computed(() => page.props.success as string);
-const error = computed(() => page.props.error as string);
-const alertSuccess = ref(!!success.value);
-const alertError = ref(!!error.value);
-
-// async function loadNotes() {
-//     try {
-//         const response = await fetch('/api/notes');
-//         if (response.ok) {
-//             notes.value = await response.json();
-//             // Select first note by default if available
-//             if (notes.value.length > 0 && !selectedNote.value) {
-//                 selectNote(notes.value[0]);
-//             }
-//         }
-//     } catch (error) {
-//         console.error('Failed to load notes:', error);
-//     }
-// }
+const successMessage = computed(() => page.props.success as string);
+const errorMessage = computed(() => page.props.error as string);
+const alertSuccess = ref(!!successMessage.value);
+const alertError = ref(!!errorMessage.value);
+const alertErrorMessage = ref('');
 
 function selectNote(note: any) {
     selectedNote.value = note;
@@ -129,21 +104,35 @@ async function saveNote() {
 
         const result = await response.json();
 
+        if (response.ok && result?.success) {
+            // Update the selected note with new values
+            selectedNote.value.title = editTitle.value;
+            selectedNote.value.content = editContent.value;
+            editMode.value = false;
+            alertSuccess.value = true;
+            // Reload the page to refresh notes list
+            router.reload({ only: ['notes'] });
+        } else {
+            alertErrorMessage.value = result?.message || 'Failed to save note.';
+            alertError.value = true;
+        }
     } catch (error) {
-        alert('Failed to save note.');
+        alertErrorMessage.value = 'Failed to save note.';
+        alertError.value = true;
         console.error(error);
     } finally {
         saving.value = false;
     }
 }
 
+function confirmDelete() {
+    showDeleteDialog.value = true;
+}
+
 async function deleteNote() {
     if (!selectedNote.value) return;
 
-    if (!confirm('Are you sure you want to delete this note?')) {
-        return;
-    }
-
+    showDeleteDialog.value = false;
     deleting.value = true;
 
     try {
@@ -166,18 +155,19 @@ async function deleteNote() {
         if (response.ok && result?.success) {
             selectedNote.value = null;
             editMode.value = false;
-            
             alertSuccess.value = true;
+            // Reload the page to refresh notes list
+            router.reload({ only: ['notes'] });
         } else {
-            alert(result?.message || 'Failed to delete note.');
+            alertErrorMessage.value = result?.message || 'Failed to delete note.';
+            alertError.value = true;
         }
     } catch (error) {
-        alert('Failed to delete note.');
+        alertErrorMessage.value = 'Failed to delete note.';
+        alertError.value = true;
         console.error(error);
     } finally {
         deleting.value = false;
-        // reload notes
-        window.location.reload();
     }
 }
 
@@ -191,7 +181,7 @@ async function deleteNote() {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        :message="success || 'Note saved successfully'"
+        :message="successMessage || 'Note saved successfully'"
         variant="success"
         @update:open="() => (alertSuccess = false)"
     />
@@ -200,10 +190,28 @@ async function deleteNote() {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        :message="error"
+        :message="errorMessage || alertErrorMessage"
         variant="error"
         @update:open="() => (alertError = false)"
     />
+
+    <!-- Delete Confirmation Dialog -->
+    <AlertDialog v-model:open="showDeleteDialog">
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Delete Note</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Are you sure you want to delete this note? This action cannot be undone.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction @click="deleteNote" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Delete
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
@@ -287,7 +295,7 @@ async function deleteNote() {
                                     variant="destructive"
                                     size="sm"
                                     class=" cursor-pointer"
-                                    @click="deleteNote"
+                                    @click="confirmDelete"
                                     :disabled="deleting"
                                 >
                                     <LoaderCircle
