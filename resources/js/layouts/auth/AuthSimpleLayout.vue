@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { home } from '@/routes';
 import { Link } from '@inertiajs/vue3';
+import Logo from '/resources/images/logo-small.png';
+
+const imageUrl = Logo;
 
 defineProps<{
     title?: string;
@@ -23,9 +25,7 @@ defineProps<{
                         <div
                             class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
                         >
-                            <AppLogoIcon
-                                class="size-9 fill-current text-[var(--foreground)] dark:text-white"
-                            />
+                            <img :src="imageUrl" alt="Jesus" class="mx-auto max-h-full max-w-full rounded-lg shadow-lg" />
                         </div>
                         <span class="sr-only">{{ title }}</span>
                     </Link>

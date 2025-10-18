@@ -36,6 +36,9 @@ import type { BreadcrumbItem, NavItem } from '@/types';
 import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
+import Logo from '/resources/images/logo-small.png';
+
+const imageUrl = Logo;
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];

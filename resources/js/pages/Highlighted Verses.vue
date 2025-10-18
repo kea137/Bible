@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
@@ -7,9 +6,9 @@ import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, dashboard } from '@/routes';
+import { highlighted_verses_page } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import {
     BookOpen,
     Highlighter,
@@ -18,8 +17,8 @@ import { onMounted, ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: dashboard().url,
+        title: 'Highlighted Verses',
+        href: highlighted_verses_page().url,
     },
 ];
 
@@ -39,10 +38,6 @@ async function loadHighlights() {
 onMounted(() => {
     loadHighlights();
 });
-
-function exploreBibles() {
-    router.visit(bibles().url);
-}
 
 function getHighlightColorClass(color: string): string {
     if (color === 'yellow') {
@@ -93,7 +88,7 @@ function getHighlightColorClass(color: string): string {
                     >
                 </CardHeader>
                 <CardContent>
-                    <ScrollArea class="space-y-3">
+                    <ScrollArea class="space-y-3 h-100">
                         <div
                             v-for="highlight in highlights"
                             :key="highlight.id"

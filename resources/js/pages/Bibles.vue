@@ -5,12 +5,22 @@ import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
+import {
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/components/ui/command';
+import Button from '@/components/ui/button/Button.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { LibraryBigIcon } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { LibraryBigIcon, Search } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -19,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-defineProps<{
+const props = defineProps<{
     biblesList: {
         id: number;
         name: string;
@@ -39,8 +49,25 @@ defineProps<{
     }[];
 }>();
 
+const searchOpen = ref(false);
+const searchQuery = ref('');
+
+const filteredBibles = computed(() => {
+    if (!searchQuery.value) {
+        return props.biblesList;
+    }
+    const query = searchQuery.value.toLowerCase();
+    return props.biblesList.filter(bible => 
+        bible.name.toLowerCase().includes(query) ||
+        bible.language.toLowerCase().includes(query) ||
+        bible.version.toLowerCase().includes(query) ||
+        bible.abbreviation.toLowerCase().includes(query)
+    );
+});
+
 function viewBible(bibleId: number) {
     router.visit(`/bibles/${bibleId}`);
+    searchOpen.value = false;
 }
 
 const page = usePage();
@@ -122,12 +149,16 @@ if (info) {
                             </CardTitle>
                             <CardDescription>Available Bibles</CardDescription>
                         </div>
+                        <Button @click="searchOpen = true" variant="outline">
+                            <Search class="h-4 w-4 mr-2" />
+                            Search Bibles
+                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="biblesList.length > 0" class="space-y-3">
+                    <div v-if="filteredBibles.length > 0" class="space-y-3">
                         <div
-                            v-for="bible in biblesList"
+                            v-for="bible in filteredBibles"
                             :key="bible.id"
                             class="flex cursor-pointer items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-accent/50"
                             @click="viewBible(bible.id)"
@@ -145,6 +176,31 @@ if (info) {
                     </div>
                 </CardContent>
             </Card>
+
+            <!-- Search Dialog -->
+            <CommandDialog :open="searchOpen" @update:open="searchOpen = $event">
+                <Command>
+                    <CommandInput v-model="searchQuery" placeholder="Search bibles by name, language, or version..." />
+                    <CommandList>
+                        <CommandEmpty>No bibles found.</CommandEmpty>
+                        <CommandGroup heading="Bibles">
+                            <CommandItem
+                                v-for="bible in filteredBibles"
+                                :key="bible.id"
+                                :value="bible.name"
+                                @select="viewBible(bible.id)"
+                            >
+                                <div class="flex flex-col">
+                                    <span class="font-medium">{{ bible.name }}</span>
+                                    <span class="text-xs text-muted-foreground">
+                                        {{ bible.language }} • {{ bible.version }}
+                                    </span>
+                                </div>
+                            </CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </CommandDialog>
         </div>
     </AppLayout>
 </template>

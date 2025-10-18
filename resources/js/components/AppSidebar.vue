@@ -19,8 +19,10 @@ import {
     bibles_parallel,
     dashboard,
     license,
+    notes,
     role_management,
     references_create,
+    highlighted_verses_page,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
@@ -29,8 +31,10 @@ import {
     BookOpen,
     CogIcon,
     FileText,
+    Highlighter,
     LayoutGrid,
     LibraryBig,
+    StickyNote,
     UserCog2,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
@@ -52,6 +56,16 @@ const mainNavItems: NavItem[] = [
         title: 'Parallel Bibles',
         href: bibles_parallel(),
         icon: BookCopy,
+    },
+    {
+        title: 'Highlights',
+        href: highlighted_verses_page(),
+        icon: Highlighter,
+    },
+    {
+        title: 'Notes',
+        href: notes(),
+        icon: StickyNote,
     },
 ];
 

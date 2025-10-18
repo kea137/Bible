@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
+import NotesDialog from '@/components/NotesDialog.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
@@ -10,7 +11,8 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/Dropdown-menu';
+} from '@/components/ui/dropdown-menu';
+import Button from '@/components/ui/button/Button.vue';
 import {
     HoverCard,
     HoverCardContent,
@@ -20,7 +22,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
-import { BookOpen } from 'lucide-vue-next';
+import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import {
     Select,
     SelectContent,
@@ -34,6 +36,7 @@ import { ref, watch } from 'vue';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import DropdownMenuLabel from '@/components/ui/dropdown-menu/DropdownMenuLabel.vue';
 import DropdownMenuSeparator from '@/components/ui/dropdown-menu/DropdownMenuSeparator.vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
     bible: {
@@ -85,6 +88,38 @@ const loadedChapter = ref(props.initialChapter);
 const hoveredVerseReferences = ref<any[]>([]);
 const selectedReferenceVerse = ref<any>(null);
 const verseHighlights = ref<Record<number, any>>({});
+const notesDialogOpen = ref(false);
+const selectedVerseForNote = ref<any>(null);
+
+const currentBook = computed(() => 
+    props.bible.books.find(book => book.id === Number(selectedBookId.value))
+);
+
+const currentChapterIndex = computed(() => 
+    currentBook.value?.chapters.findIndex(ch => ch.id === Number(selectedChapterId.value)) ?? -1
+);
+
+const hasPreviousChapter = computed(() => {
+    if (!currentBook.value) return false;
+    return currentChapterIndex.value > 0;
+});
+
+const hasNextChapter = computed(() => {
+    if (!currentBook.value) return false;
+    return currentChapterIndex.value < (currentBook.value.chapters.length - 1);
+});
+
+function goToPreviousChapter() {
+    if (!hasPreviousChapter.value || !currentBook.value) return;
+    const prevChapter = currentBook.value.chapters[currentChapterIndex.value - 1];
+    selectedChapterId.value = prevChapter.id;
+}
+
+function goToNextChapter() {
+    if (!hasNextChapter.value || !currentBook.value) return;
+    const nextChapter = currentBook.value.chapters[currentChapterIndex.value + 1];
+    selectedChapterId.value = nextChapter.id;
+}
 
 async function loadChapterHighlights(chapterId: number) {
     if (!page.props.auth?.user) return;
@@ -153,7 +188,7 @@ async function highlightVerse(verseId: number, color: string) {
         let result: HighlightResponse = {};
         try {
             result = await response.json();
-        } catch (jsonError) {
+        } catch {
             // If response is not JSON, treat as error
             alert('Unexpected server response. Please try again.');
             return;
@@ -203,16 +238,11 @@ async function removeHighlight(verseId: number) {
             }),
         });
 
-        type HighlightResponse = {
-            success?: boolean;
-            message?: string;
-        };
-        let result: HighlightResponse = {};
         try {
-            result = await response.json();
+            await response.json();
             // Remove highlight color
             removeVerseHighlightClass(verseId);
-        } catch (jsonError) {
+        } catch {
             // If response is not JSON, treat as error
             alert('Unexpected server response. Please try again.');
             return;
@@ -255,7 +285,7 @@ async function handleVerseHover(verseId: number) {
         } else {
             hoveredVerseReferences.value = [];
         }
-    } catch (error) {
+    } catch {
         hoveredVerseReferences.value = [];
     }
 }
@@ -266,6 +296,16 @@ async function handleReferenceClick(reference: any) {
 
 function studyVerse(verseId: number) {
     window.location.href = `/verses/${verseId}/study`;
+}
+
+function openNotesDialog(verse: any) {
+    selectedVerseForNote.value = verse;
+    notesDialogOpen.value = true;
+}
+
+function handleNoteSaved() {
+    // Optionally reload highlights or show a success message
+    alertSuccess.value = true;
 }
 
 watch(selectedChapterId, (newChapterId) => {
@@ -408,6 +448,26 @@ if (props.initialChapter?.id) {
                         </div>
                     </CardHeader>
                     <CardContent>
+                        <div class="mb-4 flex items-center justify-between">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToPreviousChapter"
+                                :disabled="!hasPreviousChapter"
+                            >
+                                <ChevronLeft class="h-4 w-4 mr-1" />
+                                Previous
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToNextChapter"
+                                :disabled="!hasNextChapter"
+                            >
+                                Next
+                                <ChevronRight class="h-4 w-4 ml-1" />
+                            </Button>
+                        </div>
                         <ScrollArea class="mx-30 max-w-4xl space-y-2 text-justify text-lg leading-relaxed h-130">
                             <h3 class="mb-4 text-center text-xl font-semibold">
                                 {{ loadedChapter.book?.title }}
@@ -498,7 +558,7 @@ if (props.initialChapter?.id) {
                                             Study this Verse
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            @click="studyVerse(verse.id)"
+                                            @click="openNotesDialog(verse)"
                                         >
                                             Put Note on this Verse
                                         </DropdownMenuItem>
@@ -582,5 +642,16 @@ if (props.initialChapter?.id) {
                 </Card>
             </div>
         </div>
+
+        <!-- Notes Dialog -->
+        <NotesDialog
+            v-if="selectedVerseForNote"
+            :open="notesDialogOpen"
+            @update:open="notesDialogOpen = $event"
+            :verse-id="selectedVerseForNote.id"
+            :verse-text="selectedVerseForNote.text"
+            :verse-reference="`${loadedChapter.book?.title} ${loadedChapter.chapter_number}:${selectedVerseForNote.verse_number}`"
+            @saved="handleNoteSaved"
+        />
     </AppLayout>
 </template>
