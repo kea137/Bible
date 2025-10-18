@@ -16,16 +16,19 @@ class NoteController extends Controller
      */
     public function index(): JsonResponse|Response
     {
+        $notes = Note::with(['verse.book', 'verse.chapter'])
+            ->where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         if (request()->expectsJson()) {
-            $notes = Note::with(['verse.book', 'verse.chapter'])
-                ->where('user_id', auth()->id())
-                ->orderBy('created_at', 'desc')
-                ->get();
 
             return response()->json($notes);
         }
 
-        return Inertia::render('Notes');
+        return Inertia::render('Notes', [
+            'notes' => $notes,
+        ]);
     }
 
     /**

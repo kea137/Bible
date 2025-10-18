@@ -23,8 +23,37 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+// page props for notes data
+const props = defineProps<{
+    notes: any[];
+    csrf_token?: string;
+    success?: string;
+    error?: string;
+}>();
+
+type notes = {
+    id: number;
+    title: string;
+    content: string;
+    verse: {
+        id: number;
+        book: {
+            id: number;
+            title: string;
+        } | null;
+        chapter: {
+            id: number;
+            chapter_number: number;
+        } | null;
+        verse_number: number;
+        text: string;
+    };
+    created_at: string;
+    updated_at: string;
+}
+
 const page = usePage();
-const notes = ref<any[]>([]);
+// const notes = ref<any[]>([]);
 const selectedNote = ref<any>(null);
 const editMode = ref(false);
 const editTitle = ref('');
@@ -37,20 +66,20 @@ const error = computed(() => page.props.error as string);
 const alertSuccess = ref(!!success.value);
 const alertError = ref(!!error.value);
 
-async function loadNotes() {
-    try {
-        const response = await fetch('/api/notes');
-        if (response.ok) {
-            notes.value = await response.json();
-            // Select first note by default if available
-            if (notes.value.length > 0 && !selectedNote.value) {
-                selectNote(notes.value[0]);
-            }
-        }
-    } catch (error) {
-        console.error('Failed to load notes:', error);
-    }
-}
+// async function loadNotes() {
+//     try {
+//         const response = await fetch('/api/notes');
+//         if (response.ok) {
+//             notes.value = await response.json();
+//             // Select first note by default if available
+//             if (notes.value.length > 0 && !selectedNote.value) {
+//                 selectNote(notes.value[0]);
+//             }
+//         }
+//     } catch (error) {
+//         console.error('Failed to load notes:', error);
+//     }
+// }
 
 function selectNote(note: any) {
     selectedNote.value = note;
@@ -100,16 +129,6 @@ async function saveNote() {
 
         const result = await response.json();
 
-        if (response.ok && result?.success) {
-            await loadNotes();
-            const updatedNote = notes.value.find(n => n.id === selectedNote.value?.id);
-            if (updatedNote) {
-                selectNote(updatedNote);
-            }
-            alertSuccess.value = true;
-        } else {
-            alert(result?.message || 'Failed to save note.');
-        }
     } catch (error) {
         alert('Failed to save note.');
         console.error(error);
@@ -147,7 +166,7 @@ async function deleteNote() {
         if (response.ok && result?.success) {
             selectedNote.value = null;
             editMode.value = false;
-            await loadNotes();
+            
             alertSuccess.value = true;
         } else {
             alert(result?.message || 'Failed to delete note.');
@@ -157,12 +176,11 @@ async function deleteNote() {
         console.error(error);
     } finally {
         deleting.value = false;
+        // reload notes
+        window.location.reload();
     }
 }
 
-onMounted(() => {
-    loadNotes();
-});
 </script>
 
 <template>
@@ -257,6 +275,7 @@ onMounted(() => {
                                 <Button
                                     v-if="!editMode"
                                     variant="outline"
+                                    class=" cursor-pointer"
                                     size="sm"
                                     @click="startEdit"
                                 >
@@ -265,8 +284,9 @@ onMounted(() => {
                                 </Button>
                                 <Button
                                     v-if="!editMode"
-                                    variant="outline"
+                                    variant="destructive"
                                     size="sm"
+                                    class=" cursor-pointer"
                                     @click="deleteNote"
                                     :disabled="deleting"
                                 >
