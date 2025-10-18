@@ -104,22 +104,22 @@ function handleNoteSaved() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 sm:gap-4"
         >
             <!-- Main Verse Card -->
             <Card>
-                <CardHeader>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <BookOpen class="h-6 w-6 text-primary" />
+                <CardHeader class="pb-3">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div class="flex items-start gap-2">
+                            <BookOpen class="h-5 w-5 text-primary sm:h-6 sm:w-6 flex-shrink-0 mt-1" />
                             <div>
-                                <CardTitle class="text-2xl">
+                                <CardTitle class="text-lg sm:text-2xl">
                                     {{ verse.book.title }}
                                     {{ verse.chapter.chapter_number }}:{{
                                         verse.verse_number
                                     }}
                                 </CardTitle>
-                                <CardDescription
+                                <CardDescription class="text-xs sm:text-sm"
                                     >{{ verse.bible.name }} ({{
                                         verse.bible.version
                                     }})</CardDescription
@@ -130,6 +130,7 @@ function handleNoteSaved() {
                             @click="openNotesDialog"
                             variant="outline"
                             size="sm"
+                            class="w-full sm:w-auto flex-shrink-0"
                         >
                             <StickyNote class="h-4 w-4 mr-2" />
                             Add Note
@@ -138,49 +139,49 @@ function handleNoteSaved() {
                 </CardHeader>
                 <CardContent>
                     <blockquote
-                        class="rounded-r-lg border-l-4 border-primary bg-muted/30 py-4 pl-6"
+                        class="rounded-r-lg border-l-4 border-primary bg-muted/30 py-3 pl-4 sm:py-4 sm:pl-6"
                     >
-                        <p class="text-xl leading-relaxed italic">
+                        <p class="text-base leading-relaxed italic sm:text-xl">
                             "{{ verse.text }}"
                         </p>
                     </blockquote>
                 </CardContent>
             </Card>
 
-            <div class="grid gap-4 md:grid-cols-2">
+            <div class="grid gap-3 sm:gap-4 lg:grid-cols-2">
                 <!-- Cross References -->
                 <Card>
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle>Cross References</CardTitle>
+                            <CardTitle class="text-base sm:text-lg">Cross References</CardTitle>
                             <ExternalLink
-                                class="h-5 w-5 text-muted-foreground"
+                                class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
                         </div>
-                        <CardDescription
+                        <CardDescription class="text-xs sm:text-sm"
                             >Related verses from scripture</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
                         <ScrollArea
                             v-if="references.length > 0"
-                            class="h-60 space-y-4"
+                            class="h-60 space-y-3 sm:space-y-4"
                         >
                             <div
                                 v-for="ref in references"
                                 :key="ref.id"
-                                class="cursor-pointer rounded-lg border p-4 mt-2 transition-colors hover:bg-accent"
+                                class="cursor-pointer rounded-lg border p-3 mt-2 transition-colors hover:bg-accent sm:p-4"
                                 @click="navigateToVerse(ref.verse)"
                             >
                                 <p
-                                    class="mb-2 text-sm font-semibold text-primary"
+                                    class="mb-2 text-xs font-semibold text-primary sm:text-sm"
                                 >
                                     {{ ref.reference }}
                                 </p>
-                                <p class="text-sm">{{ ref.verse.text }}</p>
+                                <p class="text-xs sm:text-sm">{{ ref.verse.text }}</p>
                             </div>
                         </ScrollArea>
-                        <p v-else class="text-sm text-muted-foreground italic">
+                        <p v-else class="text-xs text-muted-foreground italic sm:text-sm">
                             No cross-references available for this verse.
                         </p>
                     </CardContent>
@@ -188,30 +189,30 @@ function handleNoteSaved() {
 
                 <!-- Other Bible Versions -->
                 <Card>
-                    <CardHeader>
+                    <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle>Other Translations</CardTitle>
-                            <Languages class="h-5 w-5 text-muted-foreground" />
+                            <CardTitle class="text-base sm:text-lg">Other Translations</CardTitle>
+                            <Languages class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5" />
                         </div>
-                        <CardDescription
+                        <CardDescription class="text-xs sm:text-sm"
                             >Same verse in different Bibles</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
                         <div
                             v-if="otherVersions.length > 0"
-                            class="max-h-[60vh] space-y-4 overflow-y-auto"
+                            class="max-h-[60vh] space-y-3 overflow-y-auto sm:space-y-4"
                         >
                             <div
                                 v-for="version in otherVersions"
                                 :key="version.id"
-                                class="rounded-lg border p-4 transition-colors hover:bg-accent"
+                                class="rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
                             >
                                 <div
-                                    class="mb-2 flex items-center justify-between"
+                                    class="mb-2 flex items-center justify-between gap-2"
                                 >
                                     <p
-                                        class="text-sm font-semibold text-primary"
+                                        class="text-xs font-semibold text-primary sm:text-sm"
                                     >
                                         {{ version.bible.name }}
                                     </p>
@@ -227,10 +228,10 @@ function handleNoteSaved() {
                                     {{ version.bible.language }} •
                                     {{ version.bible.version }}
                                 </p>
-                                <p class="text-sm">{{ version.text }}</p>
+                                <p class="text-xs sm:text-sm">{{ version.text }}</p>
                             </div>
                         </div>
-                        <p v-else class="text-sm text-muted-foreground italic">
+                        <p v-else class="text-xs text-muted-foreground italic sm:text-sm">
                             No other translations available for this verse.
                         </p>
                     </CardContent>
@@ -242,6 +243,7 @@ function handleNoteSaved() {
                 <Button
                     variant="outline"
                     @click="router.visit(`/bibles/${verse.bible.id}`)"
+                    class="w-full sm:w-auto"
                 >
                     <BookOpen class="mr-2 h-4 w-4" />
                     Return to Bible
