@@ -25,7 +25,11 @@ defineProps<{
                         <div
                             class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
                         >
-                            <img :src="imageUrl" alt="Jesus" class="mx-auto max-h-full max-w-full rounded-lg shadow-lg" />
+                            <img
+                                :src="imageUrl"
+                                alt="Jesus"
+                                class="mx-auto max-h-full max-w-full rounded-lg shadow-lg"
+                            />
                         </div>
                         <span class="sr-only">{{ title }}</span>
                     </Link>

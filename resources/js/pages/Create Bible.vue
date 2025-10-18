@@ -289,9 +289,7 @@ if (info) {
                                                 v-if="selectedFiles.length > 0"
                                                 class="mt-2 text-sm text-gray-500 dark:text-gray-400"
                                             >
-                                                {{
-                                                    selectedFiles.length
-                                                }}
+                                                {{ selectedFiles.length }}
                                                 file selected
                                             </p>
                                         </template>

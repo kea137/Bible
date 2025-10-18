@@ -18,12 +18,12 @@ import {
     bibles,
     bibles_parallel,
     dashboard,
+    highlighted_verses_page,
     license,
     notes,
-    role_management,
-    references_create,
-    highlighted_verses_page,
     reading_plan,
+    references_create,
+    role_management,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -84,7 +84,7 @@ const mainNavItems: NavItem[] = [
 // Filter footer items based on role numbers
 const footerNavItems = computed(() => {
     const items: NavItem[] = [];
-    
+
     // Upload Bibles - only for role numbers 1 & 2 (admin & editor)
     if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
         items.push({
@@ -93,7 +93,7 @@ const footerNavItems = computed(() => {
             icon: CogIcon,
         });
     }
-    
+
     // Create References - only for role numbers 1 & 2 (admin & editor)
     if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
         items.push({
@@ -102,7 +102,7 @@ const footerNavItems = computed(() => {
             icon: BookOpen,
         });
     }
-    
+
     // Role Management - only for role number 1 (admin)
     if (roleNumbers.value.includes(1)) {
         items.push({
@@ -111,14 +111,14 @@ const footerNavItems = computed(() => {
             icon: UserCog2,
         });
     }
-    
+
     // License - available to everyone
     items.push({
         title: 'License',
         href: license(),
         icon: FileText,
     });
-    
+
     return items;
 });
 </script>

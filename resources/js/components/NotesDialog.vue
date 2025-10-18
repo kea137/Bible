@@ -24,7 +24,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:open': [value: boolean];
-    'saved': [];
+    saved: [];
 }>();
 
 const page = usePage();
@@ -32,13 +32,16 @@ const noteTitle = ref('');
 const noteContent = ref('');
 const saving = ref(false);
 
-watch(() => props.open, (isOpen) => {
-    if (isOpen) {
-        // Reset form when dialog opens
-        noteTitle.value = '';
-        noteContent.value = '';
-    }
-});
+watch(
+    () => props.open,
+    (isOpen) => {
+        if (isOpen) {
+            // Reset form when dialog opens
+            noteTitle.value = '';
+            noteContent.value = '';
+        }
+    },
+);
 
 async function saveNote() {
     if (!noteContent.value.trim()) {
@@ -49,12 +52,16 @@ async function saveNote() {
     saving.value = true;
 
     try {
-        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        let csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
         if (!csrfToken && page.props.csrf_token) {
             csrfToken = String(page.props.csrf_token);
         }
         if (!csrfToken) {
-            alert('CSRF token not found. Refreshing page to fix authentication...');
+            alert(
+                'CSRF token not found. Refreshing page to fix authentication...',
+            );
             window.location.reload();
             return;
         }
@@ -64,7 +71,7 @@ async function saveNote() {
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
+                Accept: 'application/json',
             },
             body: JSON.stringify({
                 verse_id: props.verseId,
@@ -105,14 +112,10 @@ function closeDialog() {
             </DialogHeader>
             <div class="grid gap-4 py-4">
                 <div class="rounded-lg border bg-muted/50 p-3">
-                    <p class="text-sm italic">
-                        "{{ verseText }}"
-                    </p>
+                    <p class="text-sm italic">"{{ verseText }}"</p>
                 </div>
                 <div class="grid gap-2">
-                    <Label for="note-title">
-                        Title (Optional)
-                    </Label>
+                    <Label for="note-title"> Title (Optional) </Label>
                     <Input
                         id="note-title"
                         v-model="noteTitle"
@@ -132,17 +135,14 @@ function closeDialog() {
                 </div>
             </div>
             <DialogFooter>
-                <Button 
-                    variant="outline" 
+                <Button
+                    variant="outline"
                     @click="closeDialog"
                     :disabled="saving"
                 >
                     Cancel
                 </Button>
-                <Button 
-                    @click="saveNote"
-                    :disabled="saving"
-                >
+                <Button @click="saveNote" :disabled="saving">
                     <LoaderCircle
                         v-if="saving"
                         class="mr-2 h-4 w-4 animate-spin"

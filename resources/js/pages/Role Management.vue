@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
-import Button from '@/components/ui/button/Button.vue';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,6 +10,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import Button from '@/components/ui/button/Button.vue';
 import {
     Card,
     CardContent,
@@ -232,10 +232,18 @@ const cancelDelete = () => {
                                             Save
                                         </Button>
                                         <Button
-                                            v-if="isAdmin && user.id !== auth.user?.id"
+                                            v-if="
+                                                isAdmin &&
+                                                user.id !== auth.user?.id
+                                            "
                                             size="sm"
                                             variant="destructive"
-                                            @click="openDeleteDialog(user.id, user.name)"
+                                            @click="
+                                                openDeleteDialog(
+                                                    user.id,
+                                                    user.name,
+                                                )
+                                            "
                                         >
                                             <Trash2 class="h-4 w-4" />
                                             Delete
