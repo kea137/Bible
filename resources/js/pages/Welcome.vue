@@ -19,42 +19,42 @@ const features = [
     {
         icon: BookOpen,
         title: 'Multiple Bible Translations',
-        description: 'Read and study from various Bible translations',
+
     },
     {
         icon: SplitSquareHorizontal,
         title: 'Parallel Bible Reading',
-        description: 'Compare verses side-by-side across translations',
+
     },
     {
         icon: Highlighter,
         title: 'Highlight & Bookmark',
-        description: 'Mark and save your favorite verses',
+
     },
     {
         icon: NotebookPen,
         title: 'Personal Notes',
-        description: 'Write and organize your study notes',
+
     },
     {
         icon: Calendar,
         title: 'Reading Plans',
-        description: 'Stay consistent with guided reading schedules',
+
     },
     {
         icon: Link2,
         title: 'Cross References',
-        description: 'Explore connections between related passages',
+
     },
     {
         icon: Library,
         title: 'Verse Study Tools',
-        description: 'Deep dive into scriptures with study aids',
+
     },
     {
         icon: Moon,
         title: 'Dark Mode',
-        description: 'Comfortable reading in any lighting',
+
     },
 ];
 </script>
@@ -101,18 +101,17 @@ const features = [
                 class="flex w-full max-w-[335px] flex-col-reverse overflow-hidden rounded-lg lg:max-w-4xl lg:flex-row"
             >
                 <div
-                    class="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
+                    class="flex-1 rounded-br-lg rounded-bl-lg bg-white p-4 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
                 >
                     <h1 class="mb-2 text-2xl font-semibold">
-                        Welcome to Bible Study App
+                        Welcome to Bible App
                     </h1>
-                    <p class="mb-6 text-[#706f6c] dark:text-[#A1A09A]">
+                    <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
                         A comprehensive platform for studying God's Word with
-                        powerful tools designed to deepen your understanding and
-                        strengthen your faith.
+                        powerful tools.
                     </p>
 
-                    <div class="mb-6">
+                    <div class="mb-2">
                         <h2 class="mb-4 text-sm font-semibold uppercase tracking-wide text-[#706f6c] dark:text-[#A1A09A]">
                             Features
                         </h2>
@@ -134,11 +133,6 @@ const features = [
                                     <h3 class="mb-0.5 font-medium leading-tight">
                                         {{ feature.title }}
                                     </h3>
-                                    <p
-                                        class="text-xs text-[#706f6c] dark:text-[#A1A09A]"
-                                    >
-                                        {{ feature.description }}
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -155,16 +149,20 @@ const features = [
                         <Link
                             v-else
                             :href="dashboard()"
-                            class="inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                            class="inline-block mt-4 rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                         >
                             Go to Dashboard
                         </Link>
                     </div>
                 </div>
                 <div
-                    class="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden rounded-t-lg bg-[#fff2f2] lg:mb-0 lg:-ml-px lg:aspect-auto lg:w-[438px] lg:rounded-t-none lg:rounded-r-lg dark:bg-[#1D0002]"
+                    class="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden rounded-t-lg bg-[#fff2f2] border border-[#e5e5e5] lg:mb-0 lg:-ml-px lg:aspect-auto lg:w-[438px] lg:rounded-t-none lg:rounded-r-lg dark:bg-[#ffffff] dark:border-[#333]"
                 >
-                    <img :src="imageUrl" alt="Jesus" class="mx-auto max-h-full max-w-full rounded-lg shadow-lg" />
+                    <img
+                        :src="imageUrl"
+                        alt="Jesus"
+                        class="mx-auto h-full w-full object-cover rounded-lg shadow-lg"
+                    />
                 </div>
             </main>
         </div>
