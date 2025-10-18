@@ -203,7 +203,7 @@ function navigateToVerse(verse: Verse) {
             </div>
 
             <!-- Back Button -->
-            <div class="mt-4 flex justify-center">
+            <div class="flex justify-center">
                 <Button
                     variant="outline"
                     @click="router.visit(`/bibles/${verse.bible.id}`)"

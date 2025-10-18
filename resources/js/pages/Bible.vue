@@ -359,7 +359,7 @@ if (props.initialChapter?.id) {
                                             @update:open="
                                                 (open) =>
                                                     open &&
-                                                    handleVerseHover(verse.id)
+                                                    handleVerseHover(verse.verse_number)
                                             "
                                         >
                                             <HoverCardTrigger>

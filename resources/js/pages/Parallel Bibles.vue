@@ -20,6 +20,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { ref, watch } from 'vue';
+import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 
 const props = defineProps<{
     biblesOther: {
@@ -279,7 +280,7 @@ if (info) {
                         </div>
                     </CardHeader>
                     <CardContent v-if="loadedChapter1">
-                        <div class="space-y-2 text-base leading-relaxed">
+                        <ScrollArea class="space-y-2 text-base leading-relaxed h-110">
                             <h3 class="mb-4 text-lg font-semibold">
                                 {{ loadedChapter1.book?.title }}
                                 {{ loadedChapter1.chapter_number }}
@@ -294,7 +295,7 @@ if (info) {
                                 >
                                 {{ verse.text }}
                             </p>
-                        </div>
+                        </ScrollArea>
                     </CardContent>
                     <CardContent
                         v-else
@@ -388,7 +389,7 @@ if (info) {
                         </div>
                     </CardHeader>
                     <CardContent v-if="loadedChapter2">
-                        <div class="space-y-2 text-base leading-relaxed">
+                        <ScrollArea class="space-y-2 text-base leading-relaxed h-110">
                             <h3 class="mb-4 text-lg font-semibold">
                                 {{ loadedChapter2.book?.title }}
                                 {{ loadedChapter2.chapter_number }}
@@ -403,7 +404,7 @@ if (info) {
                                 >
                                 {{ verse.text }}
                             </p>
-                        </div>
+                        </ScrollArea>
                     </CardContent>
                     <CardContent
                         v-else

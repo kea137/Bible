@@ -20,20 +20,6 @@ class BibleController extends Controller
     {
         $bibles = Bible::all();
 
-        // Get user's preferred language from cookie or default to 'en'
-        $userLanguage = request()->cookie('language', 'en');
-        $languageMap = [
-            'en' => 'English',
-            'sw' => 'Swahili',
-        ];
-        
-        $languageName = $languageMap[$userLanguage] ?? 'English';
-        
-        // Filter bibles by language
-        $bibles = Bible::with('books.chapters')
-            ->where('language', $languageName)
-            ->get();
-
         return Inertia::render('Bibles', [
             'biblesList' => $bibles->toArray(),
         ]);
