@@ -23,7 +23,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles_parallel } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
-import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-vue-next';
 
 import {
     Select,
@@ -99,6 +99,8 @@ const verseHighlights2 = ref<Record<number, any>>({});
 const notesDialogOpen = ref(false);
 const selectedVerseForNote = ref<any>(null);
 const selectedVerseChapterInfo = ref<any>(null);
+const chapterCompleted1 = ref(false);
+const chapterCompleted2 = ref(false);
 
 const page = usePage();
 
@@ -182,6 +184,72 @@ async function loadChapterHighlights(chapterId: number, side: 'left' | 'right') 
     }
 }
 
+async function loadChapterProgress(chapterId: number, bibleId: number, side: 'left' | 'right') {
+    if (!page.props.auth?.user) return;
+
+    try {
+        const response = await fetch(
+            `/api/reading-progress/bible?bible_id=${bibleId}`,
+        );
+        const data = await response.json();
+        if (side === 'left') {
+            chapterCompleted1.value = !!data[chapterId];
+        } else {
+            chapterCompleted2.value = !!data[chapterId];
+        }
+    } catch (error) {
+        console.error('Failed to load chapter progress:', error);
+        if (side === 'left') {
+            chapterCompleted1.value = false;
+        } else {
+            chapterCompleted2.value = false;
+        }
+    }
+}
+
+async function toggleChapterCompletion(chapterId: number, bibleId: number, side: 'left' | 'right') {
+    if (!page.props.auth?.user) {
+        alert('Please log in to track reading progress');
+        return;
+    }
+
+    try {
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        if (!csrfToken) {
+            alert('CSRF token not found. Refreshing page to fix authentication...');
+            window.location.reload();
+            return;
+        }
+
+        const response = await fetch('/api/reading-progress/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                chapter_id: chapterId,
+                bible_id: bibleId,
+            }),
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            if (side === 'left') {
+                chapterCompleted1.value = result.progress.completed;
+            } else {
+                chapterCompleted2.value = result.progress.completed;
+            }
+        }
+    } catch (error) {
+        console.error('Failed to toggle chapter completion:', error);
+    }
+}
+
 function loadChapter(chapterId: number, side: 'left' | 'right') {
     fetch(`/api/bibles/books/chapters/${chapterId}`)
         .then((res) => res.json())
@@ -189,9 +257,15 @@ function loadChapter(chapterId: number, side: 'left' | 'right') {
             if (side === 'left') {
                 loadedChapter1.value = data;
                 loadChapterHighlights(chapterId, 'left');
+                if (selectedBible1.value) {
+                    loadChapterProgress(chapterId, selectedBible1.value, 'left');
+                }
             } else {
                 loadedChapter2.value = data;
                 loadChapterHighlights(chapterId, 'right');
+                if (selectedBible2.value) {
+                    loadChapterProgress(chapterId, selectedBible2.value, 'right');
+                }
             }
             hoveredVerseReferences.value = [];
         });
@@ -545,6 +619,15 @@ if (info) {
                                 Previous
                             </Button>
                             <Button
+                                v-if="page.props.auth?.user && selectedChapter1"
+                                :variant="chapterCompleted1 ? 'default' : 'outline'"
+                                size="sm"
+                                @click="toggleChapterCompletion(selectedChapter1, Number(selectedBible1), 'left')"
+                            >
+                                <CheckCircle class="h-4 w-4 mr-1" />
+                                {{ chapterCompleted1 ? 'Completed' : 'Mark as Read' }}
+                            </Button>
+                            <Button
                                 variant="outline"
                                 size="sm"
                                 @click="goToNextChapter1"
@@ -754,6 +837,15 @@ if (info) {
                             >
                                 <ChevronLeft class="h-4 w-4 mr-1" />
                                 Previous
+                            </Button>
+                            <Button
+                                v-if="page.props.auth?.user && selectedChapter2"
+                                :variant="chapterCompleted2 ? 'default' : 'outline'"
+                                size="sm"
+                                @click="toggleChapterCompletion(selectedChapter2, Number(selectedBible2), 'right')"
+                            >
+                                <CheckCircle class="h-4 w-4 mr-1" />
+                                {{ chapterCompleted2 ? 'Completed' : 'Mark as Read' }}
                             </Button>
                             <Button
                                 variant="outline"

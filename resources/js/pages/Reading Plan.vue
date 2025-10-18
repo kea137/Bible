@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { reading_plan } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import {
     BookOpen,
     Calendar,
@@ -17,13 +17,41 @@ import {
     CheckCircle2,
     BookMarked,
 } from 'lucide-vue-next';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     totalChapters: number;
     completedChapters: number;
     progressPercentage: number;
     chaptersReadToday: number;
+    selectedBible: {
+        id: number;
+        name: string;
+        language: string;
+    };
+    allBibles: Array<{
+        id: number;
+        name: string;
+        language: string;
+    }>;
 }>();
+
+const selectedBibleId = ref(props.selectedBible.id.toString());
+
+watch(selectedBibleId, (newBibleId) => {
+    router.visit(`/reading-plan?bible_id=${newBibleId}`, {
+        preserveScroll: true,
+    });
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -70,13 +98,34 @@ const readingPlans = [
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <!-- Welcome Message -->
-            <div class="mb-2">
-                <h1 class="text-2xl font-bold text-foreground">
-                    Your Bible Reading Journey
-                </h1>
-                <p class="text-muted-foreground">
-                    Track your progress and stay motivated as you read through the Bible
-                </p>
+            <div class="mb-2 flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-foreground">
+                        Your Bible Reading Journey
+                    </h1>
+                    <p class="text-muted-foreground">
+                        Track your progress and stay motivated as you read through the Bible
+                    </p>
+                </div>
+                <div class="w-64">
+                    <Select v-model="selectedBibleId">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Bible" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Select Bible</SelectLabel>
+                                <SelectItem
+                                    v-for="bible in allBibles"
+                                    :key="bible.id"
+                                    :value="bible.id.toString()"
+                                >
+                                    {{ bible.name }} ({{ bible.language }})
+                                </SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             <!-- Progress Overview -->

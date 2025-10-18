@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bible;
 use App\Models\ReadingProgress;
 use App\Models\Chapter;
 use Illuminate\Http\Request;
@@ -77,14 +78,17 @@ class ReadingProgressController extends Controller
             ->where('completed', true)
             ->count();
 
-        // Chapters read today
+        // Chapters read today with accurate verse count
         $chaptersReadToday = ReadingProgress::where('user_id', $userId)
             ->where('completed', true)
             ->whereDate('completed_at', today())
-            ->count();
+            ->with('chapter.verses')
+            ->get();
 
-        // Total verses read (approximate based on chapters)
-        $versesReadToday = $chaptersReadToday * 25; // Rough estimate
+        // Calculate actual verses read today
+        $versesReadToday = $chaptersReadToday->sum(function ($progress) {
+            return $progress->chapter->verses->count();
+        });
 
         // Most recent reading
         $lastReading = ReadingProgress::where('user_id', $userId)
@@ -95,7 +99,7 @@ class ReadingProgressController extends Controller
 
         return response()->json([
             'total_chapters_completed' => $totalChaptersCompleted,
-            'chapters_read_today' => $chaptersReadToday,
+            'chapters_read_today' => $chaptersReadToday->count(),
             'verses_read_today' => $versesReadToday,
             'last_reading' => $lastReading ? [
                 'bible_id' => $lastReading->bible_id,
@@ -109,35 +113,52 @@ class ReadingProgressController extends Controller
     /**
      * Show reading plan page
      */
-    public function readingPlan()
+    public function readingPlan(Request $request)
     {
         $userId = auth()->id();
+        
+        // Get selected Bible ID from request or use the first Bible or last read Bible
+        $selectedBibleId = $request->input('bible_id');
+        
+        if (!$selectedBibleId) {
+            // Try to get the last read Bible
+            $lastReading = ReadingProgress::where('user_id', $userId)
+                ->where('completed', true)
+                ->latest('completed_at')
+                ->first();
+            
+            $selectedBibleId = $lastReading ? $lastReading->bible_id : Bible::orderBy('id')->value('id');
+        }
+        
+        $selectedBible = Bible::find($selectedBibleId);
+        $allBibles = Bible::all();
 
-        // Get progress statistics
-        $stats = DB::table('reading_progress')
-            ->where('user_id', $userId)
-            ->where('completed', true)
-            ->selectRaw('
-                COUNT(*) as total_chapters_completed,
-                COUNT(CASE WHEN DATE(completed_at) = CURDATE() THEN 1 END) as chapters_read_today
-            ')
-            ->first();
-
-        // Get total chapters in Bible (using first Bible for reference)
-        $totalChapters = Chapter::whereHas('book', function ($query) {
-            $query->whereHas('bible', function ($q) {
-                $q->orderBy('id')->limit(1);
-            });
+        // Get total chapters in the selected Bible only
+        $totalChapters = Chapter::whereHas('book', function ($query) use ($selectedBibleId) {
+            $query->where('bible_id', $selectedBibleId);
         })->count();
 
-        $completedChapters = $stats->total_chapters_completed ?? 0;
+        // Get progress statistics for the selected Bible only
+        $completedChapters = ReadingProgress::where('user_id', $userId)
+            ->where('bible_id', $selectedBibleId)
+            ->where('completed', true)
+            ->count();
+            
+        $chaptersReadToday = ReadingProgress::where('user_id', $userId)
+            ->where('bible_id', $selectedBibleId)
+            ->where('completed', true)
+            ->whereDate('completed_at', today())
+            ->count();
+
         $progressPercentage = $totalChapters > 0 ? round(($completedChapters / $totalChapters) * 100, 1) : 0;
 
         return Inertia::render('Reading Plan', [
             'totalChapters' => $totalChapters,
             'completedChapters' => $completedChapters,
             'progressPercentage' => $progressPercentage,
-            'chaptersReadToday' => $stats->chapters_read_today ?? 0,
+            'chaptersReadToday' => $chaptersReadToday,
+            'selectedBible' => $selectedBible,
+            'allBibles' => $allBibles,
         ]);
     }
 }

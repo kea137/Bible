@@ -53,17 +53,21 @@ class DashboardController extends Controller
             ];
         }
         
-        // Get reading stats
+        // Get reading stats with accurate verse counts
         $totalChaptersCompleted = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->count();
         
+        // Get chapters read today with their actual verse counts
         $chaptersReadToday = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->whereDate('completed_at', today())
-            ->count();
+            ->with('chapter.verses')
+            ->get();
         
-        $versesReadToday = $chaptersReadToday * 25; // Rough estimate
+        $versesReadToday = $chaptersReadToday->sum(function ($progress) {
+            return $progress->chapter->verses->count();
+        });
         
         $readingStats = [
             'total_bibles' => $totalBibles,
