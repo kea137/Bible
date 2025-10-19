@@ -62,6 +62,7 @@ class InstallReferencesForFirstBible implements ShouldQueue
                 if (! $data) {
                     Log::error("Failed to parse JSON for {$filename}");
                     $errorCount++;
+
                     continue;
                 }
 

@@ -55,14 +55,14 @@ test('guest cannot trigger bible bootup', function () {
 
 test('install all bibles job can be dispatched', function () {
     // This is a smoke test to ensure the job can be instantiated
-    $job = new InstallAllBibles();
+    $job = new InstallAllBibles;
 
     expect($job)->toBeInstanceOf(InstallAllBibles::class);
 });
 
 test('install references job can be dispatched', function () {
     // This is a smoke test to ensure the job can be instantiated
-    $job = new InstallReferencesForFirstBible();
+    $job = new InstallReferencesForFirstBible;
 
     expect($job)->toBeInstanceOf(InstallReferencesForFirstBible::class);
 });
@@ -78,7 +78,7 @@ test('bootup job chains both install jobs', function () {
     ]);
 
     // Dispatch the bootup job
-    $job = new BootupBiblesAndReferences();
+    $job = new BootupBiblesAndReferences;
     $job->handle();
 
     // Since we're using dispatchSync in the job, we can't easily test the queue

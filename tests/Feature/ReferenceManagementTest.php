@@ -9,8 +9,6 @@ use App\Models\User;
 use App\Models\Verse;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\delete;
-use function Pest\Laravel\get;
 
 beforeEach(function () {
     // Create an admin user with role number 1

@@ -52,6 +52,7 @@ class InstallAllBibles implements ShouldQueue
                 if (Bible::where('abbreviation', $abbreviation)->exists()) {
                     Log::info("Bible {$abbreviation} already exists, skipping.");
                     $skippedCount++;
+
                     continue;
                 }
 
@@ -61,6 +62,7 @@ class InstallAllBibles implements ShouldQueue
                 if (! $data) {
                     Log::error("Failed to parse JSON for {$filename}");
                     $errorCount++;
+
                     continue;
                 }
 

@@ -6,9 +6,6 @@ use App\Models\Role;
 use App\Models\User;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\delete;
-use function Pest\Laravel\get;
-use function Pest\Laravel\put;
 
 beforeEach(function () {
     // Create an admin user with role number 1
