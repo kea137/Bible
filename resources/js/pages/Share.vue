@@ -19,6 +19,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Download, Palette, Share2, Type } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
+import LogoImage from '/resources/images/logo-small.png';
 
 const props = defineProps<{
     verseReference: string;
@@ -243,9 +244,73 @@ function generateImage() {
     ctx.lineTo(canvas.width - decorPadding, y + 120);
     ctx.stroke();
 
-    // Convert to data URL
-    imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-    isGenerating.value = false;
+    // Load and draw logo badge at bottom right corner
+    const logo = new Image();
+    logo.onload = () => {
+        // Logo size (small rounded square badge)
+        const logoSize = 80;
+        const margin = 30;
+        const logoX = canvas.width - logoSize - margin;
+        const logoY = canvas.height - logoSize - margin;
+        const borderRadius = 15;
+
+        // Reset shadow for logo
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Draw semi-transparent white background for logo
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.beginPath();
+        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
+        ctx.fill();
+
+        // Add subtle shadow around logo background
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.beginPath();
+        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
+        ctx.fill();
+
+        // Reset shadow for drawing logo
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Draw logo with some padding inside the rounded square
+        const logoPadding = 10;
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
+        ctx.clip();
+        ctx.drawImage(
+            logo,
+            logoX + logoPadding,
+            logoY + logoPadding,
+            logoSize - logoPadding * 2,
+            logoSize - logoPadding * 2,
+        );
+        ctx.restore();
+
+        // Convert to data URL after logo is drawn
+        imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
+        isGenerating.value = false;
+    };
+
+    logo.onerror = () => {
+        // If logo fails to load, still generate the image without it
+        console.warn('Logo failed to load, generating image without logo');
+        imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
+        isGenerating.value = false;
+    };
+
+    // Set logo source - using the imported logo
+    logo.src = LogoImage;
 }
 
 function changeBackground() {
