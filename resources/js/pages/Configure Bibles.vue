@@ -30,7 +30,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { bible_create, bible_edit, bibles_configure } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Edit, Plus, Trash2 } from 'lucide-vue-next';
+import { Database, Edit, Plus, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -60,6 +60,7 @@ const alertSuccess = ref(false);
 const alertError = ref(false);
 const alertInfo = ref(false);
 const deleteDialogOpen = ref(false);
+const bootupDialogOpen = ref(false);
 const bibleToDelete = ref<number | null>(null);
 
 if (success) {
@@ -96,6 +97,18 @@ function deleteBible() {
             },
         });
     }
+}
+
+function confirmBootup() {
+    bootupDialogOpen.value = true;
+}
+
+function bootupBibles() {
+    router.post('/bibles/bootup', {}, {
+        onSuccess: () => {
+            bootupDialogOpen.value = false;
+        },
+    });
 }
 </script>
 
@@ -164,6 +177,29 @@ function deleteBible() {
         </AlertDialogContent>
     </AlertDialog>
 
+    <AlertDialog
+        :open="bootupDialogOpen"
+        @update:open="bootupDialogOpen = $event"
+    >
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Install All Bibles and References?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This will install all Bible translations from the resources
+                    directory and all references for the first Bible. This is a
+                    heavy operation that will run in the background. You will be
+                    notified when it completes. Are you sure you want to proceed?
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction @click="bootupBibles"
+                    >Install</AlertDialogAction
+                >
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
@@ -178,10 +214,16 @@ function deleteBible() {
                                 update, or delete</CardDescription
                             >
                         </div>
-                        <Button @click="createBible">
-                            <Plus class="mr-2 h-4 w-4" />
-                            Upload New Bible
-                        </Button>
+                        <div class="flex gap-2">
+                            <Button variant="outline" @click="confirmBootup">
+                                <Database class="mr-2 h-4 w-4" />
+                                Boot Up All Bibles
+                            </Button>
+                            <Button @click="createBible">
+                                <Plus class="mr-2 h-4 w-4" />
+                                Upload New Bible
+                            </Button>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>

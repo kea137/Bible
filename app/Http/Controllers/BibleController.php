@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBibleRequest;
 use App\Http\Requests\UpdateBibleRequest;
+use App\Jobs\BootupBiblesAndReferences;
 use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Role;
@@ -207,5 +208,20 @@ class BibleController extends Controller
     public function apiBiblesIndex()
     {
         return response()->json(Bible::all());
+    }
+
+    /**
+     * Boot up all Bibles and References
+     * This method dispatches a job to install all Bibles from resources/Bibles
+     * and all References for the first Bible from resources/References
+     */
+    public function bootup()
+    {
+        Gate::authorize('create', Role::class);
+
+        // Dispatch the job to queue
+        BootupBiblesAndReferences::dispatch();
+
+        return redirect()->route('bibles_configure')->with('success', 'Bible and reference installation has been queued. You will be notified when it completes.');
     }
 }
