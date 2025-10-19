@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import Button from '@/components/ui/button/Button.vue';
 import {
     Card,
@@ -16,16 +26,6 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bible_create, bible_edit, bibles_configure } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -142,18 +142,24 @@ function deleteBible() {
         "
     />
 
-    <AlertDialog :open="deleteDialogOpen" @update:open="deleteDialogOpen = $event">
+    <AlertDialog
+        :open="deleteDialogOpen"
+        @update:open="deleteDialogOpen = $event"
+    >
         <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This will permanently delete this Bible and all its associated
-                    books, chapters, and verses. This action cannot be undone.
+                    This will permanently delete this Bible and all its
+                    associated books, chapters, and verses. This action cannot
+                    be undone.
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction @click="deleteBible">Delete</AlertDialogAction>
+                <AlertDialogAction @click="deleteBible"
+                    >Delete</AlertDialogAction
+                >
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -168,8 +174,8 @@ function deleteBible() {
                         <div>
                             <CardTitle>Configure Bibles</CardTitle>
                             <CardDescription
-                                >Manage your Bible translations - create, update,
-                                or delete</CardDescription
+                                >Manage your Bible translations - create,
+                                update, or delete</CardDescription
                             >
                         </div>
                         <Button @click="createBible">
@@ -187,7 +193,9 @@ function deleteBible() {
                                     <TableHead>Abbreviation</TableHead>
                                     <TableHead>Language</TableHead>
                                     <TableHead>Version</TableHead>
-                                    <TableHead class="text-right">Actions</TableHead>
+                                    <TableHead class="text-right"
+                                        >Actions</TableHead
+                                    >
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -198,7 +206,9 @@ function deleteBible() {
                                     <TableCell class="font-medium">{{
                                         bible.name
                                     }}</TableCell>
-                                    <TableCell>{{ bible.abbreviation }}</TableCell>
+                                    <TableCell>{{
+                                        bible.abbreviation
+                                    }}</TableCell>
                                     <TableCell>{{ bible.language }}</TableCell>
                                     <TableCell>{{ bible.version }}</TableCell>
                                     <TableCell class="text-right">
@@ -223,11 +233,11 @@ function deleteBible() {
                             </TableBody>
                         </Table>
                     </div>
-                    <div
-                        v-else
-                        class="py-8 text-center text-muted-foreground"
-                    >
-                        <p>No Bibles found. Upload your first Bible to get started.</p>
+                    <div v-else class="py-8 text-center text-muted-foreground">
+                        <p>
+                            No Bibles found. Upload your first Bible to get
+                            started.
+                        </p>
                     </div>
                 </CardContent>
             </Card>

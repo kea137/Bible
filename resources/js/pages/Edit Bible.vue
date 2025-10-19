@@ -128,7 +128,8 @@ if (info) {
                         <CardHeader>
                             <CardTitle>Edit Bible</CardTitle>
                             <CardDescription
-                                >Update the Bible information below.</CardDescription
+                                >Update the Bible information
+                                below.</CardDescription
                             >
                         </CardHeader>
                         <CardContent>
@@ -171,7 +172,10 @@ if (info) {
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
                                     <Label for="language">Language</Label>
-                                    <Select name="language" :default-value="bible.language">
+                                    <Select
+                                        name="language"
+                                        :default-value="bible.language"
+                                    >
                                         <SelectTrigger id="language">
                                             <SelectValue
                                                 placeholder="Select Language"

@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import Button from '@/components/ui/button/Button.vue';
 import {
     Card,
@@ -16,18 +26,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { references_create, references_configure } from '@/routes';
+import { references_configure, references_create } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Plus, Trash2 } from 'lucide-vue-next';
@@ -137,7 +137,10 @@ function deleteReferences() {
         "
     />
 
-    <AlertDialog :open="deleteDialogOpen" @update:open="deleteDialogOpen = $event">
+    <AlertDialog
+        :open="deleteDialogOpen"
+        @update:open="deleteDialogOpen = $event"
+    >
         <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -148,7 +151,9 @@ function deleteReferences() {
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction @click="deleteReferences">Delete</AlertDialogAction>
+                <AlertDialogAction @click="deleteReferences"
+                    >Delete</AlertDialogAction
+                >
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -163,7 +168,8 @@ function deleteReferences() {
                         <div>
                             <CardTitle>Configure References</CardTitle>
                             <CardDescription
-                                >Manage Bible verse references - upload or delete</CardDescription
+                                >Manage Bible verse references - upload or
+                                delete</CardDescription
                             >
                         </div>
                         <Button @click="createReferences">
@@ -181,7 +187,9 @@ function deleteReferences() {
                                     <TableHead>Abbreviation</TableHead>
                                     <TableHead>Language</TableHead>
                                     <TableHead>Reference Count</TableHead>
-                                    <TableHead class="text-right">Actions</TableHead>
+                                    <TableHead class="text-right"
+                                        >Actions</TableHead
+                                    >
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -192,16 +200,22 @@ function deleteReferences() {
                                     <TableCell class="font-medium">{{
                                         bible.name
                                     }}</TableCell>
-                                    <TableCell>{{ bible.abbreviation }}</TableCell>
+                                    <TableCell>{{
+                                        bible.abbreviation
+                                    }}</TableCell>
                                     <TableCell>{{ bible.language }}</TableCell>
-                                    <TableCell>{{ bible.reference_count }}</TableCell>
+                                    <TableCell>{{
+                                        bible.reference_count
+                                    }}</TableCell>
                                     <TableCell class="text-right">
                                         <div class="flex justify-end gap-2">
                                             <Button
                                                 size="sm"
                                                 variant="destructive"
                                                 @click="confirmDelete(bible.id)"
-                                                :disabled="bible.reference_count === 0"
+                                                :disabled="
+                                                    bible.reference_count === 0
+                                                "
                                             >
                                                 <Trash2 class="h-4 w-4" />
                                             </Button>
@@ -211,11 +225,11 @@ function deleteReferences() {
                             </TableBody>
                         </Table>
                     </div>
-                    <div
-                        v-else
-                        class="py-8 text-center text-muted-foreground"
-                    >
-                        <p>No Bibles with references found. Upload references to get started.</p>
+                    <div v-else class="py-8 text-center text-muted-foreground">
+                        <p>
+                            No Bibles with references found. Upload references
+                            to get started.
+                        </p>
                     </div>
                 </CardContent>
             </Card>
