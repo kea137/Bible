@@ -122,7 +122,7 @@ if (info) {
             <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-4">
                 <Card class="col-span-1 md:col-span-4">
                     <Form
-                        v-bind="BibleController.update.form()"
+                        v-bind="BibleController.update.form(bible.id)"
                         v-slot="{ errors, processing }"
                     >
                         <CardHeader>
@@ -146,7 +146,7 @@ if (info) {
                                         :tabindex="1"
                                         type="text"
                                         placeholder="Name of the Bible"
-                                        :value="bible.name"
+                                        v-model="bible.name"
                                     />
                                     <InputError :message="errors.name" />
                                 </div>
@@ -162,7 +162,7 @@ if (info) {
                                         :tabindex="1"
                                         type="text"
                                         placeholder="Abbreviation of the Bible"
-                                        :value="bible.abbreviation"
+                                        v-model="bible.abbreviation"
                                     />
                                     <InputError
                                         :message="errors.abbreviation"
@@ -207,7 +207,7 @@ if (info) {
                                         :tabindex="1"
                                         type="text"
                                         placeholder="Version of the Bible"
-                                        :value="bible.version"
+                                        v-model="bible.version"
                                     />
                                     <InputError :message="errors.version" />
                                 </div>
@@ -220,7 +220,7 @@ if (info) {
                                         name="description"
                                         :tabindex="1"
                                         placeholder="Description of the Bible"
-                                        :value="bible.description"
+                                        v-model="bible.description"
                                     />
                                     <InputError :message="errors.description" />
                                 </div>
