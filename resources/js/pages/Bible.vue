@@ -39,6 +39,7 @@ import {
     CheckCircle,
     ChevronLeft,
     ChevronRight,
+    Share2,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
@@ -376,6 +377,12 @@ function studyVerse(verseId: number) {
 function openNotesDialog(verse: any) {
     selectedVerseForNote.value = verse;
     notesDialogOpen.value = true;
+}
+
+function shareVerse(verse: any) {
+    const verseReference = `${loadedChapter.value.book?.title} ${loadedChapter.value.chapter_number}:${verse.verse_number}`;
+    const verseText = verse.text;
+    window.location.href = `/share?reference=${encodeURIComponent(verseReference)}&text=${encodeURIComponent(verseText)}&verseId=${verse.id}`;
 }
 
 function handleNoteSaved() {
@@ -719,6 +726,16 @@ if (props.initialChapter?.id) {
                                             @click="openNotesDialog(verse)"
                                         >
                                             Put Note on this Verse
+                                        </DropdownMenuItem>
+                                        <DropdownMenuLabel
+                                            >Share</DropdownMenuLabel
+                                        >
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="shareVerse(verse)"
+                                        >
+                                            <Share2 class="mr-2 h-4 w-4" />
+                                            Share this Verse
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
