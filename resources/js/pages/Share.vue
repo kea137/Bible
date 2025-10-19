@@ -28,6 +28,7 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 const imageDataUrl = ref<string>('');
 const currentBackgroundIndex = ref(0);
 const isGenerating = ref(false);
+const shareError = ref<string>('');
 
 // Beautiful background gradients with heavenly/pure essence
 const backgrounds = [
@@ -72,8 +73,17 @@ function wrapText(
     text: string,
     maxWidth: number,
 ): string[] {
+    if (!text || text.trim() === '') {
+        return [''];
+    }
+
     const words = text.split(' ');
     const lines: string[] = [];
+
+    if (words.length === 0) {
+        return [''];
+    }
+
     let currentLine = words[0];
 
     for (let i = 1; i < words.length; i++) {
@@ -181,6 +191,7 @@ function downloadImage(platform?: string) {
 }
 
 async function shareImage() {
+    shareError.value = '';
     try {
         // Convert data URL to blob
         const response = await fetch(imageDataUrl.value);
@@ -196,11 +207,20 @@ async function shareImage() {
             });
         } else {
             // Fallback: just download
+            shareError.value =
+                'Native sharing not supported on this device. Downloading image instead.';
             downloadImage();
         }
     } catch (error) {
         console.error('Error sharing:', error);
-        // Fallback to download
+        if (error instanceof Error && error.name === 'AbortError') {
+            // User cancelled the share, no error message needed
+            return;
+        }
+        // Show error and fallback to download
+        shareError.value =
+            'Failed to share image. Downloading instead. Error: ' +
+            (error instanceof Error ? error.message : 'Unknown error');
         downloadImage();
     }
 }
@@ -345,6 +365,12 @@ onMounted(() => {
                                     <Share2 class="mr-2 h-4 w-4" />
                                     Share Image
                                 </Button>
+                                <p
+                                    v-if="shareError"
+                                    class="mt-2 text-sm text-yellow-600 dark:text-yellow-400"
+                                >
+                                    {{ shareError }}
+                                </p>
                             </div>
 
                             <div class="rounded-lg border p-4">

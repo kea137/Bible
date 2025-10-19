@@ -33,7 +33,7 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
     CheckCircle,
@@ -382,7 +382,9 @@ function openNotesDialog(verse: any) {
 function shareVerse(verse: any) {
     const verseReference = `${loadedChapter.value.book?.title} ${loadedChapter.value.chapter_number}:${verse.verse_number}`;
     const verseText = verse.text;
-    window.location.href = `/share?reference=${encodeURIComponent(verseReference)}&text=${encodeURIComponent(verseText)}&verseId=${verse.id}`;
+    router.visit(
+        `/share?reference=${encodeURIComponent(verseReference)}&text=${encodeURIComponent(verseText)}&verseId=${verse.id}`,
+    );
 }
 
 function handleNoteSaved() {
