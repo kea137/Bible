@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class BootupBiblesAndReferences implements ShouldQueue
@@ -30,10 +31,6 @@ class BootupBiblesAndReferences implements ShouldQueue
     {
         Log::info('Starting Bible and References bootup process...');
 
-        // First, migrate fresh the Bible table and their relations
-        Log::info('Migrating fresh Bible tables and relations...');
-        $this->migrateBibleTables();
-
         // Then, install all Bibles
         InstallAllBibles::dispatchSync();
 
@@ -43,21 +40,4 @@ class BootupBiblesAndReferences implements ShouldQueue
         Log::info('Bible and References bootup process completed.');
     }
 
-    /**
-     * Migrate fresh the Bible tables and their relations
-     */
-    private function migrateBibleTables(): void
-    {
-        try {
-            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
-                '--force' => true,
-                '--path' => 'database/migrations',
-            ]);
-
-            Log::info('Bible tables migrated fresh successfully.');
-        } catch (\Exception $e) {
-            Log::error('Error migrating Bible tables: '.$e->getMessage());
-            throw $e;
-        }
-    }
 }

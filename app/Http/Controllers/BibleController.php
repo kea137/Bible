@@ -11,7 +11,8 @@ use App\Models\Role;
 use App\Services\BibleJsonParser;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
-
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 class BibleController extends Controller
 {
     /**
@@ -219,9 +220,26 @@ class BibleController extends Controller
     {
         Gate::authorize('create', Role::class);
 
+        $this->migrateBibleTables();
+
         // Dispatch the job to queue
         BootupBiblesAndReferences::dispatch();
 
         return redirect()->route('bibles_configure')->with('success', 'Bible and reference installation has been queued. You will be notified when it completes.');
+    }
+
+        /**
+     * Migrate fresh the Bible tables and their relations
+     */
+    private function migrateBibleTables(): void
+    {
+        try {
+            Artisan::call('seed:admin');
+
+            Log::info('Bible tables migrated fresh successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error migrating Bible tables: '.$e->getMessage());
+            throw $e;
+        }
     }
 }
