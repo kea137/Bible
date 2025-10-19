@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         // Get the user's role numbers (they may have multiple roles)
-        $roleNumbers = $request->user() 
+        $roleNumbers = $request->user()
             ? $request->user()->roles()->pluck('role_number')->toArray()
             : [];
 
