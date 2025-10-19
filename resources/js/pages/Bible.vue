@@ -33,12 +33,13 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
+    Share2,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
@@ -376,6 +377,14 @@ function studyVerse(verseId: number) {
 function openNotesDialog(verse: any) {
     selectedVerseForNote.value = verse;
     notesDialogOpen.value = true;
+}
+
+function shareVerse(verse: any) {
+    const verseReference = `${loadedChapter.value.book?.title} ${loadedChapter.value.chapter_number}:${verse.verse_number}`;
+    const verseText = verse.text;
+    router.visit(
+        `/share?reference=${encodeURIComponent(verseReference)}&text=${encodeURIComponent(verseText)}&verseId=${verse.id}`,
+    );
 }
 
 function handleNoteSaved() {
@@ -719,6 +728,16 @@ if (props.initialChapter?.id) {
                                             @click="openNotesDialog(verse)"
                                         >
                                             Put Note on this Verse
+                                        </DropdownMenuItem>
+                                        <DropdownMenuLabel
+                                            >Share</DropdownMenuLabel
+                                        >
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="shareVerse(verse)"
+                                        >
+                                            <Share2 class="mr-2 h-4 w-4" />
+                                            Share this Verse
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

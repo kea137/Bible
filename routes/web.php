@@ -6,6 +6,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ReadingProgressController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ShareController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\VerseHighlightController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,8 @@ Route::get('/license', function () {
 Route::get('/documentation', function () {
     return Inertia::render('Documentation');
 })->name('documentation');
+// Share verse routes
+Route::get('/share', [ShareController::class, 'index'])->name('share');
 
 // Sitemap for SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
