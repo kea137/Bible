@@ -19,7 +19,6 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Download, Palette, Share2, Type } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
-import LogoImage from '/resources/images/logo-small.png';
 
 const props = defineProps<{
     verseReference: string;
@@ -180,19 +179,13 @@ function wrapText(
 }
 
 function generateImage() {
-    if (!canvasRef.value) {
-        isGenerating.value = false;
-        return;
-    }
+    if (!canvasRef.value) return;
 
     isGenerating.value = true;
 
     const canvas = canvasRef.value;
     const ctx = canvas.getContext('2d');
-    if (!ctx) {
-        isGenerating.value = false;
-        return;
-    }
+    if (!ctx) return;
 
     // Set canvas size (1080x1080 for Instagram, good for most platforms)
     canvas.width = 1080;
@@ -250,73 +243,9 @@ function generateImage() {
     ctx.lineTo(canvas.width - decorPadding, y + 120);
     ctx.stroke();
 
-    // Load and draw logo badge at bottom right corner
-    const logo = new Image();
-    logo.onload = () => {
-        // Logo size (small rounded square badge)
-        const logoSize = 80;
-        const margin = 30;
-        const logoX = canvas.width - logoSize - margin;
-        const logoY = canvas.height - logoSize - margin;
-        const borderRadius = 15;
-
-        // Reset shadow for logo
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-
-        // Draw semi-transparent white background for logo
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.beginPath();
-        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
-        ctx.fill();
-
-        // Add subtle shadow around logo background
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 2;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.beginPath();
-        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
-        ctx.fill();
-
-        // Reset shadow for drawing logo
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-
-        // Draw logo with some padding inside the rounded square
-        const logoPadding = 10;
-        ctx.save();
-        ctx.beginPath();
-        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
-        ctx.clip();
-        ctx.drawImage(
-            logo,
-            logoX + logoPadding,
-            logoY + logoPadding,
-            logoSize - logoPadding * 2,
-            logoSize - logoPadding * 2,
-        );
-        ctx.restore();
-
-        // Convert to data URL after logo is drawn
-        imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-        isGenerating.value = false;
-    };
-
-    logo.onerror = () => {
-        // If logo fails to load, still generate the image without it
-        console.warn('Logo failed to load, generating image without logo');
-        imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-        isGenerating.value = false;
-    };
-
-    // Set logo source - using the imported logo
-    logo.src = LogoImage;
+    // Convert to data URL
+    imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
+    isGenerating.value = false;
 }
 
 function changeBackground() {
@@ -533,12 +462,9 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                     Download for Platforms
                                 </h3>
                                 <p class="mb-4 text-sm text-muted-foreground">
-                                    Download optimized images for different
-                                    social media platforms
+                                    Download optimized images for social media
                                 </p>
-                                <div
-                                    class="grid grid-cols-2 gap-2 sm:grid-cols-3"
-                                >
+                                <div class="grid grid-cols-3 gap-2">
                                     <Button
                                         @click="downloadImage('instagram')"
                                         variant="outline"
@@ -558,15 +484,6 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                         WhatsApp
                                     </Button>
                                     <Button
-                                        @click="downloadImage('twitter')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        X/Twitter
-                                    </Button>
-                                    <Button
                                         @click="downloadImage('facebook')"
                                         variant="outline"
                                         size="sm"
@@ -574,24 +491,6 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                     >
                                         <Download class="mr-2 h-4 w-4" />
                                         Facebook
-                                    </Button>
-                                    <Button
-                                        @click="downloadImage('snapchat')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        Snapchat
-                                    </Button>
-                                    <Button
-                                        @click="downloadImage('tiktok')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        TikTok
                                     </Button>
                                 </div>
                             </div>
