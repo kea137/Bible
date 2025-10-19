@@ -37,9 +37,6 @@ onMounted(() => {
     handleSuccess();
 });
 
-onUnmounted(() => {
-    router.off('success', handleSuccess);
-});
 </script>
 
 <template>
