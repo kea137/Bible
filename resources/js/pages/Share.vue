@@ -533,9 +533,12 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                     Download for Platforms
                                 </h3>
                                 <p class="mb-4 text-sm text-muted-foreground">
-                                    Download optimized images for social media
+                                    Download optimized images for different
+                                    social media platforms
                                 </p>
-                                <div class="grid grid-cols-3 gap-2">
+                                <div
+                                    class="grid grid-cols-2 gap-2 sm:grid-cols-3"
+                                >
                                     <Button
                                         @click="downloadImage('instagram')"
                                         variant="outline"
@@ -555,6 +558,15 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                         WhatsApp
                                     </Button>
                                     <Button
+                                        @click="downloadImage('twitter')"
+                                        variant="outline"
+                                        size="sm"
+                                        :disabled="!imageDataUrl"
+                                    >
+                                        <Download class="mr-2 h-4 w-4" />
+                                        X/Twitter
+                                    </Button>
+                                    <Button
                                         @click="downloadImage('facebook')"
                                         variant="outline"
                                         size="sm"
@@ -562,6 +574,24 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                     >
                                         <Download class="mr-2 h-4 w-4" />
                                         Facebook
+                                    </Button>
+                                    <Button
+                                        @click="downloadImage('snapchat')"
+                                        variant="outline"
+                                        size="sm"
+                                        :disabled="!imageDataUrl"
+                                    >
+                                        <Download class="mr-2 h-4 w-4" />
+                                        Snapchat
+                                    </Button>
+                                    <Button
+                                        @click="downloadImage('tiktok')"
+                                        variant="outline"
+                                        size="sm"
+                                        :disabled="!imageDataUrl"
+                                    >
+                                        <Download class="mr-2 h-4 w-4" />
+                                        TikTok
                                     </Button>
                                 </div>
                             </div>
