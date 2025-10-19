@@ -98,7 +98,7 @@ if (info) {
 </script>
 
 <template>
-    <Head title="Create Reports" />
+    <Head title="Create Bible" />
     <AlertUser
         v-if="alertSuccess"
         :open="true"
