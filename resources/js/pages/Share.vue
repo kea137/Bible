@@ -73,17 +73,12 @@ function wrapText(
     text: string,
     maxWidth: number,
 ): string[] {
-    if (!text || text.trim() === '') {
+    if (!text?.trim()) {
         return [''];
     }
 
     const words = text.split(' ');
     const lines: string[] = [];
-
-    if (words.length === 0) {
-        return [''];
-    }
-
     let currentLine = words[0];
 
     for (let i = 1; i < words.length; i++) {
