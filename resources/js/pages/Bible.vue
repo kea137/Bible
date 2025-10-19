@@ -621,7 +621,11 @@ if (props.initialChapter?.id) {
                                             <HoverCardTrigger>
                                                 <span
                                                     class="cursor-pointer font-semibold text-primary hover:underline"
-                                                    @click.stop="handleVerseClick(verse.id)"
+                                                    @click.stop="
+                                                        handleVerseClick(
+                                                            verse.id,
+                                                        )
+                                                    "
                                                     >{{
                                                         verse.verse_number
                                                     }}.</span
@@ -770,8 +774,12 @@ if (props.initialChapter?.id) {
                             >Cross References</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            ><span class="hidden sm:inline">Hover over verse numbers to see references</span
-                            ><span class="sm:hidden">Tap verse numbers to see references</span></CardDescription
+                            ><span class="hidden sm:inline"
+                                >Hover over verse numbers to see
+                                references</span
+                            ><span class="sm:hidden"
+                                >Tap verse numbers to see references</span
+                            ></CardDescription
                         >
                     </CardHeader>
                     <CardContent
@@ -804,8 +812,14 @@ if (props.initialChapter?.id) {
                             </div>
                         </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
-                            <span class="hidden sm:inline">Hover over a verse number to see its cross-references</span>
-                            <span class="sm:hidden">Tap a verse number to see its cross-references</span>
+                            <span class="hidden sm:inline"
+                                >Hover over a verse number to see its
+                                cross-references</span
+                            >
+                            <span class="sm:hidden"
+                                >Tap a verse number to see its
+                                cross-references</span
+                            >
                         </p>
                     </CardContent>
                 </Card>

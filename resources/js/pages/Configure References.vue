@@ -164,17 +164,26 @@ function deleteReferences() {
         >
             <Card>
                 <CardHeader>
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div
+                        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
                         <div>
-                            <CardTitle class="text-base sm:text-lg">Configure References</CardTitle>
+                            <CardTitle class="text-base sm:text-lg"
+                                >Configure References</CardTitle
+                            >
                             <CardDescription class="text-xs sm:text-sm"
                                 >Manage Bible verse references - upload or
                                 delete</CardDescription
                             >
                         </div>
-                        <Button @click="createReferences" class="w-full sm:w-auto">
+                        <Button
+                            @click="createReferences"
+                            class="w-full sm:w-auto"
+                        >
                             <Plus class="mr-2 h-4 w-4" />
-                            <span class="hidden sm:inline">Upload New References</span>
+                            <span class="hidden sm:inline"
+                                >Upload New References</span
+                            >
                             <span class="sm:hidden">Upload References</span>
                         </Button>
                     </div>
@@ -184,11 +193,21 @@ function deleteReferences() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead class="text-xs sm:text-sm">Bible Name</TableHead>
-                                    <TableHead class="text-xs sm:text-sm">Abbreviation</TableHead>
-                                    <TableHead class="hidden md:table-cell text-xs sm:text-sm">Language</TableHead>
-                                    <TableHead class="text-xs sm:text-sm">Reference Count</TableHead>
-                                    <TableHead class="text-right text-xs sm:text-sm"
+                                    <TableHead class="text-xs sm:text-sm"
+                                        >Bible Name</TableHead
+                                    >
+                                    <TableHead class="text-xs sm:text-sm"
+                                        >Abbreviation</TableHead
+                                    >
+                                    <TableHead
+                                        class="hidden text-xs sm:text-sm md:table-cell"
+                                        >Language</TableHead
+                                    >
+                                    <TableHead class="text-xs sm:text-sm"
+                                        >Reference Count</TableHead
+                                    >
+                                    <TableHead
+                                        class="text-right text-xs sm:text-sm"
                                         >Actions</TableHead
                                     >
                                 </TableRow>
@@ -198,18 +217,24 @@ function deleteReferences() {
                                     v-for="bible in props.bibles"
                                     :key="bible.id"
                                 >
-                                    <TableCell class="font-medium text-xs sm:text-sm">{{
-                                        bible.name
-                                    }}</TableCell>
+                                    <TableCell
+                                        class="text-xs font-medium sm:text-sm"
+                                        >{{ bible.name }}</TableCell
+                                    >
                                     <TableCell class="text-xs sm:text-sm">{{
                                         bible.abbreviation
                                     }}</TableCell>
-                                    <TableCell class="hidden md:table-cell text-xs sm:text-sm">{{ bible.language }}</TableCell>
+                                    <TableCell
+                                        class="hidden text-xs sm:text-sm md:table-cell"
+                                        >{{ bible.language }}</TableCell
+                                    >
                                     <TableCell class="text-xs sm:text-sm">{{
                                         bible.reference_count
                                     }}</TableCell>
                                     <TableCell class="text-right">
-                                        <div class="flex justify-end gap-1 sm:gap-2">
+                                        <div
+                                            class="flex justify-end gap-1 sm:gap-2"
+                                        >
                                             <Button
                                                 size="sm"
                                                 variant="destructive"
@@ -218,7 +243,9 @@ function deleteReferences() {
                                                     bible.reference_count === 0
                                                 "
                                             >
-                                                <Trash2 class="h-3 w-3 sm:h-4 sm:w-4" />
+                                                <Trash2
+                                                    class="h-3 w-3 sm:h-4 sm:w-4"
+                                                />
                                             </Button>
                                         </div>
                                     </TableCell>
