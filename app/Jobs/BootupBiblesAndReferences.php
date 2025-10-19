@@ -58,6 +58,9 @@ class BootupBiblesAndReferences implements ShouldQueue
             $connection = DB::connection();
             $driver = $connection->getDriverName();
 
+            // Define tables to drop in correct order (reverse of foreign key dependencies)
+            $tablesToDrop = ['references', 'verses', 'chapters', 'books', 'bibles'];
+
             // For SQLite, we need to handle foreign keys differently
             if ($driver === 'sqlite') {
                 // Get PDO directly for SQLite
@@ -65,9 +68,6 @@ class BootupBiblesAndReferences implements ShouldQueue
 
                 // Turn off foreign key constraints
                 $pdo->exec('PRAGMA foreign_keys = OFF');
-
-                // Drop tables in the correct order (reverse of foreign key dependencies)
-                $tablesToDrop = ['references', 'verses', 'chapters', 'books', 'bibles'];
 
                 foreach ($tablesToDrop as $table) {
                     if (Schema::hasTable($table)) {
@@ -82,8 +82,6 @@ class BootupBiblesAndReferences implements ShouldQueue
                 // For MySQL/PostgreSQL, use Schema facade
                 Schema::disableForeignKeyConstraints();
 
-                $tablesToDrop = ['references', 'verses', 'chapters', 'books', 'bibles'];
-
                 foreach ($tablesToDrop as $table) {
                     if (Schema::hasTable($table)) {
                         Schema::dropIfExists($table);
@@ -94,31 +92,24 @@ class BootupBiblesAndReferences implements ShouldQueue
                 Schema::enableForeignKeyConstraints();
             }
 
+            // Define migrations to run in dependency order
+            // Note: These paths are relative to database/migrations directory
+            // If migration files are renamed or moved, update these paths accordingly
+            $migrations = [
+                '2025_10_14_114100_create_bibles_table.php',
+                '2025_10_15_114153_create_books_table.php',
+                '2025_10_15_114311_create_chapters_table.php',
+                '2025_10_15_114346_create_verses_table.php',
+                '2025_10_15_115145_create_references_table.php',
+            ];
+
             // Run migrations to recreate the tables
-            Artisan::call('migrate', [
-                '--path' => 'database/migrations/2025_10_14_114100_create_bibles_table.php',
-                '--force' => true,
-            ]);
-
-            Artisan::call('migrate', [
-                '--path' => 'database/migrations/2025_10_15_114153_create_books_table.php',
-                '--force' => true,
-            ]);
-
-            Artisan::call('migrate', [
-                '--path' => 'database/migrations/2025_10_15_114311_create_chapters_table.php',
-                '--force' => true,
-            ]);
-
-            Artisan::call('migrate', [
-                '--path' => 'database/migrations/2025_10_15_114346_create_verses_table.php',
-                '--force' => true,
-            ]);
-
-            Artisan::call('migrate', [
-                '--path' => 'database/migrations/2025_10_15_115145_create_references_table.php',
-                '--force' => true,
-            ]);
+            foreach ($migrations as $migration) {
+                Artisan::call('migrate', [
+                    '--path' => "database/migrations/{$migration}",
+                    '--force' => true,
+                ]);
+            }
 
             Log::info('Successfully migrated fresh bibles tables.');
         } catch (\Exception $e) {
