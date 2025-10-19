@@ -192,7 +192,12 @@ function generateImage() {
     canvas.height = 1080;
 
     // Create gradient background
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+    );
     const colors = currentBackground.value.colors;
     colors.forEach((color, index) => {
         gradient.addColorStop(index / (colors.length - 1), color);
@@ -377,9 +382,12 @@ onMounted(() => {
 });
 
 // Watch for changes in customization options
-watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () => {
-    generateImage();
-});
+watch(
+    [customColor1, customColor2, customColor3, selectedFont, isBoldText],
+    () => {
+        generateImage();
+    },
+);
 </script>
 
 <template>
@@ -399,9 +407,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                     >
                 </CardHeader>
                 <CardContent>
-                    <div
-                        class="grid gap-6 lg:grid-cols-2"
-                    >
+                    <div class="grid gap-6 lg:grid-cols-2">
                         <!-- Canvas Preview -->
                         <div class="flex flex-col gap-4">
                             <div
@@ -488,7 +494,9 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                 </div>
                                 <div class="space-y-3">
                                     <div>
-                                        <Label class="text-sm">Font Family</Label>
+                                        <Label class="text-sm"
+                                            >Font Family</Label
+                                        >
                                         <Select v-model="selectedFont">
                                             <SelectTrigger class="w-full">
                                                 <SelectValue
@@ -588,7 +596,9 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                             </div>
 
                             <div class="rounded-lg border p-4">
-                                <h3 class="mb-2 font-semibold">Verse Details</h3>
+                                <h3 class="mb-2 font-semibold">
+                                    Verse Details
+                                </h3>
                                 <div class="space-y-2 text-sm">
                                     <div>
                                         <span class="font-semibold"

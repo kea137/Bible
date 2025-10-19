@@ -164,7 +164,9 @@ function deleteReferences() {
         >
             <Card>
                 <CardHeader>
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
                         <div>
                             <CardTitle>Configure References</CardTitle>
                             <CardDescription
@@ -172,22 +174,36 @@ function deleteReferences() {
                                 delete</CardDescription
                             >
                         </div>
-                        <Button @click="createReferences">
+                        <Button
+                            @click="createReferences"
+                            class="w-full sm:w-auto"
+                        >
                             <Plus class="mr-2 h-4 w-4" />
-                            Upload New References
+                            <span class="hidden sm:inline"
+                                >Upload New References</span
+                            >
+                            <span class="sm:hidden">Upload</span>
                         </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="props.bibles.length > 0">
+                    <div v-if="props.bibles.length > 0" class="overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Bible Name</TableHead>
-                                    <TableHead>Abbreviation</TableHead>
-                                    <TableHead>Language</TableHead>
-                                    <TableHead>Reference Count</TableHead>
-                                    <TableHead class="text-right"
+                                    <TableHead class="min-w-[150px]"
+                                        >Bible Name</TableHead
+                                    >
+                                    <TableHead class="min-w-[100px]"
+                                        >Abbreviation</TableHead
+                                    >
+                                    <TableHead class="min-w-[100px]"
+                                        >Language</TableHead
+                                    >
+                                    <TableHead class="min-w-[120px]"
+                                        >Reference Count</TableHead
+                                    >
+                                    <TableHead class="min-w-[100px] text-right"
                                         >Actions</TableHead
                                     >
                                 </TableRow>

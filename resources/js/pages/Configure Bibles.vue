@@ -104,11 +104,15 @@ function confirmBootup() {
 }
 
 function bootupBibles() {
-    router.post('/bibles/bootup', {}, {
-        onSuccess: () => {
-            bootupDialogOpen.value = false;
+    router.post(
+        '/bibles/bootup',
+        {},
+        {
+            onSuccess: () => {
+                bootupDialogOpen.value = false;
+            },
         },
-    });
+    );
 }
 </script>
 
@@ -183,12 +187,15 @@ function bootupBibles() {
     >
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>Install All Bibles and References?</AlertDialogTitle>
+                <AlertDialogTitle
+                    >Install All Bibles and References?</AlertDialogTitle
+                >
                 <AlertDialogDescription>
                     This will install all Bible translations from the resources
                     directory and all references for the first Bible. This is a
                     heavy operation that will run in the background. You will be
-                    notified when it completes. Are you sure you want to proceed?
+                    notified when it completes. Are you sure you want to
+                    proceed?
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -206,7 +213,9 @@ function bootupBibles() {
         >
             <Card>
                 <CardHeader>
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
                         <div>
                             <CardTitle>Configure Bibles</CardTitle>
                             <CardDescription
@@ -214,28 +223,49 @@ function bootupBibles() {
                                 update, or delete</CardDescription
                             >
                         </div>
-                        <div class="flex gap-2">
-                            <Button variant="outline" @click="confirmBootup">
+                        <div class="flex flex-col gap-2 sm:flex-row">
+                            <Button
+                                variant="outline"
+                                @click="confirmBootup"
+                                class="w-full sm:w-auto"
+                            >
                                 <Database class="mr-2 h-4 w-4" />
-                                Boot Up All Bibles
+                                <span class="hidden sm:inline"
+                                    >Boot Up All Bibles</span
+                                >
+                                <span class="sm:hidden">Boot Up</span>
                             </Button>
-                            <Button @click="createBible">
+                            <Button
+                                @click="createBible"
+                                class="w-full sm:w-auto"
+                            >
                                 <Plus class="mr-2 h-4 w-4" />
-                                Upload New Bible
+                                <span class="hidden sm:inline"
+                                    >Upload New Bible</span
+                                >
+                                <span class="sm:hidden">Upload</span>
                             </Button>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="props.bibles.length > 0">
+                    <div v-if="props.bibles.length > 0" class="overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Abbreviation</TableHead>
-                                    <TableHead>Language</TableHead>
-                                    <TableHead>Version</TableHead>
-                                    <TableHead class="text-right"
+                                    <TableHead class="min-w-[150px]"
+                                        >Name</TableHead
+                                    >
+                                    <TableHead class="min-w-[100px]"
+                                        >Abbreviation</TableHead
+                                    >
+                                    <TableHead class="min-w-[100px]"
+                                        >Language</TableHead
+                                    >
+                                    <TableHead class="min-w-[100px]"
+                                        >Version</TableHead
+                                    >
+                                    <TableHead class="min-w-[100px] text-right"
                                         >Actions</TableHead
                                     >
                                 </TableRow>
