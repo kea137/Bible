@@ -21,7 +21,26 @@ class ReferenceController extends Controller
      */
     public function index()
     {
-        //
+        Gate::authorize('create', Role::class);
+
+        // Get all Bibles with their reference counts
+        $bibles = Bible::withCount('references')
+            ->select('id', 'name', 'abbreviation', 'language')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($bible) {
+                return [
+                    'id' => $bible->id,
+                    'name' => $bible->name,
+                    'abbreviation' => $bible->abbreviation,
+                    'language' => $bible->language,
+                    'reference_count' => $bible->references_count ?? 0,
+                ];
+            });
+
+        return Inertia::render('Configure References', [
+            'bibles' => $bibles->toArray(),
+        ]);
     }
 
     /**
@@ -108,10 +127,15 @@ class ReferenceController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove all references for a specific Bible.
      */
-    public function destroy(Reference $reference)
+    public function destroy(Bible $bible)
     {
-        //
+        Gate::authorize('create', Role::class);
+
+        // Delete all references for this Bible
+        Reference::where('bible_id', $bible->id)->delete();
+
+        return redirect()->route('references_configure')->with('success', 'References deleted successfully.');
     }
 }

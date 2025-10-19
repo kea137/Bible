@@ -29,6 +29,22 @@ class BibleController extends Controller
     }
 
     /**
+     * Display the configuration page for managing Bibles.
+     */
+    public function configure()
+    {
+        Gate::authorize('create', Role::class);
+
+        $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version', 'description')
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('Configure Bibles', [
+            'bibles' => $bibles->toArray(),
+        ]);
+    }
+
+    /**
      * Display parallel bibles view
      */
     public function parallel()
@@ -145,7 +161,11 @@ class BibleController extends Controller
      */
     public function edit(Bible $bible)
     {
-        //
+        Gate::authorize('create', Role::class);
+
+        return Inertia::render('Edit Bible', [
+            'bible' => $bible->only(['id', 'name', 'abbreviation', 'language', 'version', 'description']),
+        ]);
     }
 
     /**
@@ -153,7 +173,19 @@ class BibleController extends Controller
      */
     public function update(UpdateBibleRequest $request, Bible $bible)
     {
-        //
+        Gate::authorize('create', Role::class);
+
+        $validated = $request->validated();
+
+        $bible->update([
+            'name' => $validated['name'],
+            'abbreviation' => $validated['abbreviation'],
+            'language' => $validated['language'],
+            'version' => $validated['version'],
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        return redirect()->route('bibles_configure')->with('success', 'Bible updated successfully.');
     }
 
     /**
@@ -161,7 +193,12 @@ class BibleController extends Controller
      */
     public function destroy(Bible $bible)
     {
-        //
+        Gate::authorize('create', Role::class);
+
+        // Delete the Bible and all associated data (cascading delete)
+        $bible->delete();
+
+        return redirect()->route('bibles_configure')->with('success', 'Bible deleted successfully.');
     }
 
     /**

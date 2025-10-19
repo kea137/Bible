@@ -14,15 +14,15 @@ import {
     SidebarSeparator,
 } from '@/components/ui/sidebar';
 import {
-    bible_create,
     bibles,
+    bibles_configure,
     bibles_parallel,
     dashboard,
     highlighted_verses_page,
     license,
     notes,
     reading_plan,
-    references_create,
+    references_configure,
     role_management,
 } from '@/routes';
 import { type NavItem } from '@/types';
@@ -85,20 +85,20 @@ const mainNavItems: NavItem[] = [
 const footerNavItems = computed(() => {
     const items: NavItem[] = [];
 
-    // Upload Bibles - only for role numbers 1 & 2 (admin & editor)
+    // Configure Bibles - only for role numbers 1 & 2 (admin & editor)
     if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
         items.push({
-            title: 'Upload Bibles',
-            href: bible_create(),
+            title: 'Configure Bibles',
+            href: bibles_configure(),
             icon: CogIcon,
         });
     }
 
-    // Create References - only for role numbers 1 & 2 (admin & editor)
+    // Configure References - only for role numbers 1 & 2 (admin & editor)
     if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
         items.push({
-            title: 'Create References',
-            href: references_create(),
+            title: 'Configure References',
+            href: references_configure(),
             icon: BookOpen,
         });
     }

@@ -26,9 +26,13 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles');
 Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel');
+Route::get('/bibles/configure', [BibleController::class, 'configure'])->name('bibles_configure')->middleware(['auth', 'can:update,App\\Models\\Bible']);
 Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show');
 Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create')->middleware(['auth', 'can:update,App\\Models\\Bible']);
 Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store')->middleware(['auth', 'can:update,App\\Models\\Bible']);
+Route::get('/bibles/{bible}/edit', [BibleController::class, 'edit'])->name('bible_edit')->middleware(['auth', 'can:update,App\\Models\\Bible']);
+Route::put('/bibles/{bible}', [BibleController::class, 'update'])->name('bible_update')->middleware(['auth', 'can:update,App\\Models\\Bible']);
+Route::delete('/bibles/{bible}', [BibleController::class, 'destroy'])->name('bible_destroy')->middleware(['auth', 'can:update,App\\Models\\Bible']);
 Route::get('/api/bibles', [BibleController::class, 'apiBiblesIndex'])->name('api_bibles');
 Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'showChapter'])->name('bible_show_chapter');
 
@@ -38,8 +42,10 @@ Route::put('/users/{user}/roles', [RoleController::class, 'updateRoles'])->name(
 Route::delete('/users/{user}', [RoleController::class, 'deleteUser'])->name('delete_user')->middleware(['auth', 'can:delete,user']);
 
 // Reference routes
+Route::get('/references/configure', [ReferenceController::class, 'index'])->name('references_configure')->middleware(['auth', 'can:update,App\\Models\\Reference']);
 Route::get('/create/references', [ReferenceController::class, 'create'])->name('references_create')->middleware(['auth', 'can:update,App\\Models\\Reference']);
 Route::post('/references/store', [ReferenceController::class, 'store'])->name('references_store')->middleware(['auth', 'can:update,App\\Models\\Reference']);
+Route::delete('/references/{bible}', [ReferenceController::class, 'destroy'])->name('references_destroy')->middleware(['auth', 'can:update,App\\Models\\Reference']);
 Route::get('/api/verses/{verse}/references', [ReferenceController::class, 'getVerseReferences'])->name('verse_references');
 Route::get('/verses/{verse}/study', [ReferenceController::class, 'studyVerse'])->name('verse_study');
 

@@ -11,7 +11,7 @@ class UpdateBibleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdateBibleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'abbreviation' => ['required', 'string', 'max:10'],
+            'language' => ['required', 'string', 'max:100'],
+            'version' => ['required', 'string', 'max:100'],
+            'description' => ['nullable', 'string'],
         ];
     }
 }
