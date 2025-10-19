@@ -19,7 +19,8 @@ class VerseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'verse_number' => fake()->numberBetween(1, 176),
+            'text' => fake()->paragraph(),
         ];
     }
 }

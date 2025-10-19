@@ -17,7 +17,7 @@ class ChapterFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'chapter_number' => fake()->numberBetween(1, 150),
         ];
     }
 }
