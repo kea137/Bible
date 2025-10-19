@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
@@ -53,14 +54,44 @@ class BootupBiblesAndReferences implements ShouldQueue
         Log::info('Migrating fresh bibles tables...');
 
         try {
-            // Drop tables in the correct order (reverse of foreign key dependencies)
-            $tablesToDrop = ['references', 'verses', 'chapters', 'books', 'bibles'];
+            // Get database connection
+            $connection = DB::connection();
+            $driver = $connection->getDriverName();
 
-            foreach ($tablesToDrop as $table) {
-                if (Schema::hasTable($table)) {
-                    Schema::dropIfExists($table);
-                    Log::info("Dropped table: {$table}");
+            // For SQLite, we need to handle foreign keys differently
+            if ($driver === 'sqlite') {
+                // Get PDO directly for SQLite
+                $pdo = $connection->getPdo();
+
+                // Turn off foreign key constraints
+                $pdo->exec('PRAGMA foreign_keys = OFF');
+
+                // Drop tables in the correct order (reverse of foreign key dependencies)
+                $tablesToDrop = ['references', 'verses', 'chapters', 'books', 'bibles'];
+
+                foreach ($tablesToDrop as $table) {
+                    if (Schema::hasTable($table)) {
+                        $pdo->exec("DROP TABLE IF EXISTS \"{$table}\"");
+                        Log::info("Dropped table: {$table}");
+                    }
                 }
+
+                // Turn foreign key constraints back on
+                $pdo->exec('PRAGMA foreign_keys = ON');
+            } else {
+                // For MySQL/PostgreSQL, use Schema facade
+                Schema::disableForeignKeyConstraints();
+
+                $tablesToDrop = ['references', 'verses', 'chapters', 'books', 'bibles'];
+
+                foreach ($tablesToDrop as $table) {
+                    if (Schema::hasTable($table)) {
+                        Schema::dropIfExists($table);
+                        Log::info("Dropped table: {$table}");
+                    }
+                }
+
+                Schema::enableForeignKeyConstraints();
             }
 
             // Run migrations to recreate the tables
