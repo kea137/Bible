@@ -17,7 +17,11 @@ class ReferenceFactory extends Factory
     public function definition(): array
     {
         return [
-            'verse_reference' => fake()->word(),
+            'verse_reference' => json_encode([
+                fake()->randomElement(['Genesis', 'Exodus', 'John', 'Psalm']).' '.
+                fake()->numberBetween(1, 150).':'.
+                fake()->numberBetween(1, 50),
+            ]),
         ];
     }
 }
