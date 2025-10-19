@@ -18,6 +18,7 @@ import {
     bibles_configure,
     bibles_parallel,
     dashboard,
+    documentation,
     highlighted_verses_page,
     license,
     notes,
@@ -30,6 +31,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookCopy,
     BookOpen,
+    BookText,
     CogIcon,
     FileText,
     Highlighter,
@@ -111,6 +113,13 @@ const footerNavItems = computed(() => {
             icon: UserCog2,
         });
     }
+
+    // Documentation - available to everyone
+    items.push({
+        title: 'Documentation',
+        href: documentation(),
+        icon: BookText,
+    });
 
     // License - available to everyone
     items.push({

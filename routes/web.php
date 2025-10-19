@@ -21,6 +21,10 @@ Route::get('/license', function () {
     return Inertia::render('License');
 })->name('license');
 
+Route::get('/documentation', function () {
+    return Inertia::render('Documentation');
+})->name('documentation');
+
 // Sitemap for SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
