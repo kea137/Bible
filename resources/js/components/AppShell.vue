@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { SidebarProvider } from '@/components/ui/sidebar';
 import Sonner from '@/components/ui/sonner/Sonner.vue';
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { toast } from 'vue-sonner';
-import { watch } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 
 interface Props {
     variant?: 'header' | 'sidebar';
@@ -14,22 +14,32 @@ defineProps<Props>();
 const isOpen = usePage().props.sidebarOpen;
 const page = usePage();
 
-// Watch for flash messages and display them using Sonner
-watch(
-    () => page.props,
-    (props: any) => {
-        if (props.success) {
-            toast.success(props.success);
-        }
-        if (props.error) {
-            toast.error(props.error);
-        }
-        if (props.info) {
-            toast.info(props.info);
-        }
-    },
-    { immediate: true, deep: true },
-);
+// Handle flash messages on page navigation
+const handleSuccess = () => {
+    const props = page.props as any;
+    
+    if (props.success) {
+        toast.success(props.success);
+    }
+    if (props.error) {
+        toast.error(props.error);
+    }
+    if (props.info) {
+        toast.info(props.info);
+    }
+};
+
+onMounted(() => {
+    // Listen for Inertia navigation events
+    router.on('success', handleSuccess);
+    
+    // Handle initial page load
+    handleSuccess();
+});
+
+onUnmounted(() => {
+    router.off('success', handleSuccess);
+});
 </script>
 
 <template>
