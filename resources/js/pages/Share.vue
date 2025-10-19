@@ -5,11 +5,20 @@ import CardContent from '@/components/ui/card/CardContent.vue';
 import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
+import Label from '@/components/ui/label/Label.vue';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { Download, Share2 } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { Download, Palette, Share2, Type } from 'lucide-vue-next';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     verseReference: string;
@@ -29,6 +38,24 @@ const imageDataUrl = ref<string>('');
 const currentBackgroundIndex = ref(0);
 const isGenerating = ref(false);
 const shareError = ref<string>('');
+const customColor1 = ref('#667eea');
+const customColor2 = ref('#764ba2');
+const customColor3 = ref('#f093fb');
+const useCustomColors = ref(false);
+const selectedFont = ref('serif');
+const isBoldText = ref(false);
+
+// Font options
+const fontOptions = [
+    { value: 'serif', label: 'Serif (Classic)' },
+    { value: 'sans-serif', label: 'Sans Serif (Modern)' },
+    { value: 'cursive', label: 'Cursive (Elegant)' },
+    { value: 'monospace', label: 'Monospace (Clean)' },
+    { value: 'Georgia', label: 'Georgia' },
+    { value: 'Times New Roman', label: 'Times New Roman' },
+    { value: 'Arial', label: 'Arial' },
+    { value: 'Verdana', label: 'Verdana' },
+];
 
 // Beautiful background gradients with heavenly/pure essence
 const backgrounds = [
@@ -62,11 +89,67 @@ const backgrounds = [
         colors: ['#ffecd2', '#fcb69f', '#a1c4fd'],
         name: 'Serenity',
     },
+    {
+        type: 'gradient',
+        colors: ['#ee9ca7', '#ffdde1', '#fbc2eb'],
+        name: 'Rose Garden',
+    },
+    {
+        type: 'gradient',
+        colors: ['#2193b0', '#6dd5ed', '#c2e9fb'],
+        name: 'Ocean Breeze',
+    },
+    {
+        type: 'gradient',
+        colors: ['#fc4a1a', '#f7b733', '#fceabb'],
+        name: 'Sunset Glory',
+    },
+    {
+        type: 'gradient',
+        colors: ['#4776e6', '#8e54e9', '#c471ed'],
+        name: 'Cosmic Purple',
+    },
+    {
+        type: 'gradient',
+        colors: ['#00c6ff', '#0072ff', '#00d4ff'],
+        name: 'Sky Blue',
+    },
+    {
+        type: 'gradient',
+        colors: ['#f857a6', '#ff5858', '#ffb88c'],
+        name: 'Coral Sunset',
+    },
+    {
+        type: 'gradient',
+        colors: ['#56ab2f', '#a8e063', '#d4fc79'],
+        name: 'Fresh Green',
+    },
+    {
+        type: 'gradient',
+        colors: ['#eb3349', '#f45c43', '#fbb034'],
+        name: 'Fiery Love',
+    },
+    {
+        type: 'gradient',
+        colors: ['#8e2de2', '#4a00e0', '#da22ff'],
+        name: 'Royal Purple',
+    },
 ];
 
-const currentBackground = computed(
-    () => backgrounds[currentBackgroundIndex.value],
-);
+const currentBackground = computed(() => {
+    if (useCustomColors.value) {
+        return {
+            type: 'gradient',
+            colors: [
+                customColor1.value,
+                customColor2.value,
+                customColor3.value,
+            ],
+            name: 'Custom',
+        };
+    }
+    return backgrounds[currentBackgroundIndex.value];
+});
 
 function wrapText(
     ctx: CanvasRenderingContext2D,
@@ -134,7 +217,8 @@ function generateImage() {
     const maxWidth = canvas.width - 200;
     const lineHeight = 60;
     const fontSize = 48;
-    ctx.font = `${fontSize}px serif`;
+    const fontWeight = isBoldText.value ? 'bold' : 'normal';
+    ctx.font = `${fontWeight} ${fontSize}px ${selectedFont.value}`;
 
     const lines = wrapText(ctx, props.verseText, maxWidth);
     const totalTextHeight = lines.length * lineHeight;
@@ -146,7 +230,7 @@ function generateImage() {
     });
 
     // Draw reference
-    ctx.font = 'bold 36px sans-serif';
+    ctx.font = `bold 36px ${selectedFont.value}`;
     ctx.fillText(props.verseReference, canvas.width / 2, y + 80);
 
     // Draw decorative elements
@@ -223,6 +307,11 @@ async function shareImage() {
 onMounted(() => {
     generateImage();
 });
+
+// Watch for changes in customization options
+watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () => {
+    generateImage();
+});
 </script>
 
 <template>
@@ -256,6 +345,8 @@ onMounted(() => {
                                     style="display: block"
                                 ></canvas>
                             </div>
+
+                            <!-- Background Style Selection -->
                             <div class="flex flex-col gap-2">
                                 <p class="text-sm text-muted-foreground">
                                     Current Style:
@@ -266,11 +357,101 @@ onMounted(() => {
                                 <Button
                                     @click="changeBackground"
                                     variant="outline"
-                                    :disabled="isGenerating"
+                                    :disabled="isGenerating || useCustomColors"
                                     class="w-full"
                                 >
                                     Change Background Style
                                 </Button>
+                            </div>
+
+                            <!-- Custom Colors -->
+                            <div class="rounded-lg border p-4">
+                                <div class="mb-3 flex items-center gap-2">
+                                    <Palette class="h-4 w-4" />
+                                    <h3 class="font-semibold">Custom Colors</h3>
+                                </div>
+                                <div class="mb-3 flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        v-model="useCustomColors"
+                                        id="useCustomColors"
+                                        class="h-4 w-4"
+                                    />
+                                    <Label for="useCustomColors"
+                                        >Use custom color mix</Label
+                                    >
+                                </div>
+                                <div
+                                    v-if="useCustomColors"
+                                    class="grid grid-cols-3 gap-2"
+                                >
+                                    <div>
+                                        <Label class="text-xs">Color 1</Label>
+                                        <input
+                                            type="color"
+                                            v-model="customColor1"
+                                            class="h-10 w-full cursor-pointer rounded border"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label class="text-xs">Color 2</Label>
+                                        <input
+                                            type="color"
+                                            v-model="customColor2"
+                                            class="h-10 w-full cursor-pointer rounded border"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label class="text-xs">Color 3</Label>
+                                        <input
+                                            type="color"
+                                            v-model="customColor3"
+                                            class="h-10 w-full cursor-pointer rounded border"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Font Selection -->
+                            <div class="rounded-lg border p-4">
+                                <div class="mb-3 flex items-center gap-2">
+                                    <Type class="h-4 w-4" />
+                                    <h3 class="font-semibold">Text Style</h3>
+                                </div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <Label class="text-sm">Font Family</Label>
+                                        <Select v-model="selectedFont">
+                                            <SelectTrigger class="w-full">
+                                                <SelectValue
+                                                    placeholder="Select a font"
+                                                />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectItem
+                                                        v-for="font in fontOptions"
+                                                        :key="font.value"
+                                                        :value="font.value"
+                                                    >
+                                                        {{ font.label }}
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            v-model="isBoldText"
+                                            id="boldText"
+                                            class="h-4 w-4"
+                                        />
+                                        <Label for="boldText"
+                                            >Use bold text</Label
+                                        >
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -281,12 +462,9 @@ onMounted(() => {
                                     Download for Platforms
                                 </h3>
                                 <p class="mb-4 text-sm text-muted-foreground">
-                                    Download optimized images for different
-                                    social media platforms
+                                    Download optimized images for social media
                                 </p>
-                                <div
-                                    class="grid grid-cols-2 gap-2 sm:grid-cols-3"
-                                >
+                                <div class="grid grid-cols-3 gap-2">
                                     <Button
                                         @click="downloadImage('instagram')"
                                         variant="outline"
@@ -306,15 +484,6 @@ onMounted(() => {
                                         WhatsApp
                                     </Button>
                                     <Button
-                                        @click="downloadImage('twitter')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        X/Twitter
-                                    </Button>
-                                    <Button
                                         @click="downloadImage('facebook')"
                                         variant="outline"
                                         size="sm"
@@ -322,24 +491,6 @@ onMounted(() => {
                                     >
                                         <Download class="mr-2 h-4 w-4" />
                                         Facebook
-                                    </Button>
-                                    <Button
-                                        @click="downloadImage('snapchat')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        Snapchat
-                                    </Button>
-                                    <Button
-                                        @click="downloadImage('tiktok')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        TikTok
                                     </Button>
                                 </div>
                             </div>
