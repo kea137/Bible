@@ -202,40 +202,42 @@ function bootupBibles() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-2 sm:p-4"
         >
             <Card>
                 <CardHeader>
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <CardTitle>Configure Bibles</CardTitle>
-                            <CardDescription
+                            <CardTitle class="text-base sm:text-lg">Configure Bibles</CardTitle>
+                            <CardDescription class="text-xs sm:text-sm"
                                 >Manage your Bible translations - create,
                                 update, or delete</CardDescription
                             >
                         </div>
-                        <div class="flex gap-2">
-                            <Button variant="outline" @click="confirmBootup">
+                        <div class="flex flex-col gap-2 sm:flex-row sm:gap-2">
+                            <Button variant="outline" @click="confirmBootup" class="w-full sm:w-auto">
                                 <Database class="mr-2 h-4 w-4" />
-                                Boot Up All Bibles
+                                <span class="hidden sm:inline">Boot Up All Bibles</span>
+                                <span class="sm:hidden">Boot Up Bibles</span>
                             </Button>
-                            <Button @click="createBible">
+                            <Button @click="createBible" class="w-full sm:w-auto">
                                 <Plus class="mr-2 h-4 w-4" />
-                                Upload New Bible
+                                <span class="hidden sm:inline">Upload New Bible</span>
+                                <span class="sm:hidden">Upload Bible</span>
                             </Button>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="props.bibles.length > 0">
+                    <div v-if="props.bibles.length > 0" class="overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Abbreviation</TableHead>
-                                    <TableHead>Language</TableHead>
-                                    <TableHead>Version</TableHead>
-                                    <TableHead class="text-right"
+                                    <TableHead class="text-xs sm:text-sm">Name</TableHead>
+                                    <TableHead class="text-xs sm:text-sm">Abbreviation</TableHead>
+                                    <TableHead class="hidden md:table-cell text-xs sm:text-sm">Language</TableHead>
+                                    <TableHead class="hidden lg:table-cell text-xs sm:text-sm">Version</TableHead>
+                                    <TableHead class="text-right text-xs sm:text-sm"
                                         >Actions</TableHead
                                     >
                                 </TableRow>
@@ -245,29 +247,29 @@ function bootupBibles() {
                                     v-for="bible in props.bibles"
                                     :key="bible.id"
                                 >
-                                    <TableCell class="font-medium">{{
+                                    <TableCell class="font-medium text-xs sm:text-sm">{{
                                         bible.name
                                     }}</TableCell>
-                                    <TableCell>{{
+                                    <TableCell class="text-xs sm:text-sm">{{
                                         bible.abbreviation
                                     }}</TableCell>
-                                    <TableCell>{{ bible.language }}</TableCell>
-                                    <TableCell>{{ bible.version }}</TableCell>
+                                    <TableCell class="hidden md:table-cell text-xs sm:text-sm">{{ bible.language }}</TableCell>
+                                    <TableCell class="hidden lg:table-cell text-xs sm:text-sm">{{ bible.version }}</TableCell>
                                     <TableCell class="text-right">
-                                        <div class="flex justify-end gap-2">
+                                        <div class="flex justify-end gap-1 sm:gap-2">
                                             <Button
                                                 size="sm"
                                                 variant="outline"
                                                 @click="editBible(bible.id)"
                                             >
-                                                <Edit class="h-4 w-4" />
+                                                <Edit class="h-3 w-3 sm:h-4 sm:w-4" />
                                             </Button>
                                             <Button
                                                 size="sm"
                                                 variant="destructive"
                                                 @click="confirmDelete(bible.id)"
                                             >
-                                                <Trash2 class="h-4 w-4" />
+                                                <Trash2 class="h-3 w-3 sm:h-4 sm:w-4" />
                                             </Button>
                                         </div>
                                     </TableCell>
@@ -276,7 +278,7 @@ function bootupBibles() {
                         </Table>
                     </div>
                     <div v-else class="py-8 text-center text-muted-foreground">
-                        <p>
+                        <p class="text-xs sm:text-sm">
                             No Bibles found. Upload your first Bible to get
                             started.
                         </p>

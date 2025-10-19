@@ -96,6 +96,7 @@ const verseHighlights = ref<Record<number, any>>({});
 const notesDialogOpen = ref(false);
 const selectedVerseForNote = ref<any>(null);
 const chapterCompleted = ref(false);
+const clickedVerseId = ref<number | null>(null);
 
 const currentBook = computed(() =>
     props.bible.books.find((book) => book.id === Number(selectedBookId.value)),
@@ -366,6 +367,17 @@ async function handleVerseHover(verseId: number) {
     }
 }
 
+async function handleVerseClick(verseId: number) {
+    // Toggle: if clicking the same verse, close it
+    if (clickedVerseId.value === verseId) {
+        clickedVerseId.value = null;
+        hoveredVerseReferences.value = [];
+    } else {
+        clickedVerseId.value = verseId;
+        await handleVerseHover(verseId);
+    }
+}
+
 async function handleReferenceClick(reference: any) {
     selectedReferenceVerse.value = reference.verse;
 }
@@ -598,6 +610,7 @@ if (props.initialChapter?.id) {
                                     <DropdownMenuTrigger
                                         class="w-full cursor-default"
                                     >
+                                        <!-- Mobile: Click for references, Desktop: Hover for references -->
                                         <HoverCard
                                             @update:open="
                                                 (open) =>
@@ -608,6 +621,7 @@ if (props.initialChapter?.id) {
                                             <HoverCardTrigger>
                                                 <span
                                                     class="cursor-pointer font-semibold text-primary hover:underline"
+                                                    @click.stop="handleVerseClick(verse.id)"
                                                     >{{
                                                         verse.verse_number
                                                     }}.</span
@@ -756,8 +770,8 @@ if (props.initialChapter?.id) {
                             >Cross References</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            >Hover over verse numbers to see
-                            references</CardDescription
+                            ><span class="hidden sm:inline">Hover over verse numbers to see references</span
+                            ><span class="sm:hidden">Tap verse numbers to see references</span></CardDescription
                         >
                     </CardHeader>
                     <CardContent
@@ -790,8 +804,8 @@ if (props.initialChapter?.id) {
                             </div>
                         </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
-                            Hover over a verse number to see its
-                            cross-references
+                            <span class="hidden sm:inline">Hover over a verse number to see its cross-references</span>
+                            <span class="sm:hidden">Tap a verse number to see its cross-references</span>
                         </p>
                     </CardContent>
                 </Card>

@@ -30,12 +30,34 @@ class BootupBiblesAndReferences implements ShouldQueue
     {
         Log::info('Starting Bible and References bootup process...');
 
-        // First, install all Bibles
+        // First, migrate fresh the Bible table and their relations
+        Log::info('Migrating fresh Bible tables and relations...');
+        $this->migrateBibleTables();
+
+        // Then, install all Bibles
         InstallAllBibles::dispatchSync();
 
-        // Then, install references for the first Bible
+        // Finally, install references for the first Bible
         InstallReferencesForFirstBible::dispatchSync();
 
         Log::info('Bible and References bootup process completed.');
+    }
+
+    /**
+     * Migrate fresh the Bible tables and their relations
+     */
+    private function migrateBibleTables(): void
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+                '--force' => true,
+                '--path' => 'database/migrations',
+            ]);
+
+            Log::info('Bible tables migrated fresh successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error migrating Bible tables: '.$e->getMessage());
+            throw $e;
+        }
     }
 }
