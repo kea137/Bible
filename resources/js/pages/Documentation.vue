@@ -866,7 +866,7 @@ php artisan serve</code></pre>
                                 </h3>
                                 <div class="grid gap-2 text-sm sm:grid-cols-2">
                                     <div>
-                                        <strong>Backend:</strong> Laravel 11
+                                        <strong>Backend:</strong> Laravel 12
                                     </div>
                                     <div>
                                         <strong>Frontend:</strong> Vue.js 3 +
@@ -1036,8 +1036,8 @@ php artisan serve</code></pre>
                                         class="text-sm font-semibold text-primary"
                                     >
                                         GET
-                                        /api/{'{'}language{'}'}/{'{'}version{'}'}/{'{'}references{'}'}/{'{'}book{'}'}/{'{'}chapter{'}'}/{'{'}verse?{'}'}
-                                    </code>
+                                        / api / {language} / {version} / {references} /{book} / {chapter} / {verse?}
+                                    </code> 
                                 </div>
                                 <p class="mb-3 text-sm text-foreground">
                                     This standardized URL structure makes it easy
