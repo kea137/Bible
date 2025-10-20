@@ -7,14 +7,15 @@ Welcome to the Bible Application documentation. This guide covers all features a
 1. [Overview](#overview)
 2. [Getting Started](#getting-started)
 3. [Features](#features)
-4. [Bible Reading](#bible-reading)
-5. [Cross-Reference System](#cross-reference-system)
-6. [Highlighting & Notes](#highlighting--notes)
-7. [Reading Plan](#reading-plan)
-8. [Parallel Bibles](#parallel-bibles)
-9. [User Management](#user-management)
-10. [Configuration](#configuration)
-11. [Developer Guide](#developer-guide)
+4. [Public Bible API](#public-bible-api)
+5. [Bible Reading](#bible-reading)
+6. [Cross-Reference System](#cross-reference-system)
+7. [Highlighting & Notes](#highlighting--notes)
+8. [Reading Plan](#reading-plan)
+9. [Parallel Bibles](#parallel-bibles)
+10. [User Management](#user-management)
+11. [Configuration](#configuration)
+12. [Developer Guide](#developer-guide)
 
 ---
 
@@ -100,6 +101,231 @@ Browse all available Bible translations:
 - Filter by language
 - Search by name
 - Quick access to continue reading where you left off
+
+---
+
+## Public Bible API
+
+### Overview
+
+The Public Bible API provides a simple, RESTful interface for fetching Bible verses without requiring authentication. It's designed for developers who want to integrate Bible content into their applications, websites, or services.
+
+### Key Features
+
+- **No Authentication Required**: Access Bible verses without creating an account
+- **Rate Limited**: 30 requests per minute to ensure fair usage
+- **Standardized URL**: Easy-to-remember path-based structure
+- **Flexible Querying**: Filter by language, version, book, chapter, and verse
+- **Cross-References**: Optional inclusion of verse cross-references
+- **Multiple Formats**: Support for book names and numbers
+- **JSON Response**: Clean, structured JSON format
+
+### Quick Start
+
+**Basic Request:**
+```bash
+curl "https://yourdomain.com/api/English/KJV/false/John/3/16"
+```
+
+**Response:**
+```json
+{
+  "bible": {
+    "name": "King James Version",
+    "abbreviation": "KJV",
+    "language": "English",
+    "version": "King James Version"
+  },
+  "book": {
+    "name": "John",
+    "number": 43
+  },
+  "chapter": {
+    "number": 3
+  },
+  "verses": [
+    {
+      "number": 16,
+      "text": "For God so loved the world, that he gave his only begotten Son..."
+    }
+  ],
+  "count": 1
+}
+```
+
+### API Endpoint
+
+**URL Format:** `GET /api/{language}/{version}/{references}/{book}/{chapter}/{verse?}`
+
+This standardized URL structure makes it easy to remember and construct API requests.
+
+### Path Parameters
+
+| Parameter | Type | Required | Description | Example |
+|-----------|------|----------|-------------|---------|
+| `language` | string | Yes | Bible language | `English`, `Swahili` |
+| `version` | string | Yes | Bible version/abbreviation | `KJV`, `NIV`, `NKJV` |
+| `references` | boolean | Yes | Include cross-references | `true`, `false`, `1`, `0` |
+| `book` | string/integer | Yes | Book name or number | `Genesis`, `John`, `1` |
+| `chapter` | integer | Yes | Chapter number | `1`, `3`, `150` |
+| `verse` | integer | No | Specific verse number | `16`, `1` |
+
+### Usage Examples
+
+**1. Get an entire chapter:**
+```bash
+curl "https://yourdomain.com/api/English/KJV/false/Psalm/23"
+```
+
+**2. Get a specific verse:**
+```bash
+curl "https://yourdomain.com/api/English/NIV/false/Romans/8/28"
+```
+
+**3. Get verses with cross-references:**
+```bash
+curl "https://yourdomain.com/api/English/KJV/true/John/1/1"
+```
+
+**4. Filter by language:**
+```bash
+curl "https://yourdomain.com/api/English/KJV/false/Matthew/5"
+```
+
+**5. Use book numbers:**
+```bash
+curl "https://yourdomain.com/api/English/KJV/false/1/1"
+```
+*Note: Book numbers follow the standard Bible order (1=Genesis, 40=Matthew, etc.)*
+
+**6. Partial book name matching:**
+```bash
+curl "https://yourdomain.com/api/English/KJV/false/Gen/1"
+```
+*Note: The API supports partial book names (e.g., 'Gen' for 'Genesis', 'Matt' for 'Matthew')*
+
+### Response Format
+
+**Success Response (200 OK):**
+```json
+{
+  "bible": {
+    "name": "Bible translation name",
+    "abbreviation": "Abbreviation",
+    "language": "Language",
+    "version": "Version string"
+  },
+  "book": {
+    "name": "Book name",
+    "number": 1
+  },
+  "chapter": {
+    "number": 1
+  },
+  "verses": [
+    {
+      "number": 1,
+      "text": "Verse text content"
+    }
+  ],
+  "count": 1
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "Error type",
+  "message": "Detailed error message"
+}
+```
+
+**Rate Limit Error (429 Too Many Requests):**
+```json
+{
+  "message": "Too Many Requests"
+}
+```
+
+### Error Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | Success |
+| 404 | Bible, book, chapter, or verse not found |
+| 429 | Rate limit exceeded (30 requests per minute) |
+
+### Rate Limiting
+
+The API is rate-limited to **30 requests per minute** to ensure fair usage and system stability. When you exceed this limit:
+
+- You'll receive a `429 Too Many Requests` response
+- Wait for the rate limit window to reset (1 minute)
+- Consider caching responses in your application
+
+**Headers:**
+The API includes rate limit information in response headers:
+- `X-RateLimit-Limit`: Maximum requests per minute (30)
+- `X-RateLimit-Remaining`: Remaining requests in current window
+- `Retry-After`: Seconds to wait before retrying (if rate limited)
+
+### Best Practices
+
+1. **Cache Responses**: Bible text rarely changes, so cache API responses in your application
+2. **Batch Requests**: Fetch entire chapters instead of individual verses when possible
+3. **Error Handling**: Always handle 404 errors gracefully
+4. **Respect Rate Limits**: Implement backoff strategies if you hit rate limits
+5. **Use Specific Versions**: Specify version in the URL for consistent results
+6. **Book Numbers**: Use book numbers (1-66) for more reliable lookups
+
+### Integration Examples
+
+**JavaScript/Fetch:**
+```javascript
+fetch('https://yourdomain.com/api/English/KJV/false/John/3/16')
+  .then(response => response.json())
+  .then(data => {
+    console.log(data.verses[0].text);
+  })
+  .catch(error => console.error('Error:', error));
+```
+
+**Python/Requests:**
+```python
+import requests
+
+response = requests.get('https://yourdomain.com/api/English/KJV/false/John/3/16')
+        'version': 'KJV',
+        'book': 'John',
+
+data = response.json()
+print(data['verses'][0]['text'])
+```
+
+**cURL:**
+```bash
+curl -X GET "https://yourdomain.com/api/English/KJV/false/John/3/16" \
+     -H "Accept: application/json"
+```
+
+### Available Bible Versions
+
+The available Bible versions depend on what has been installed in your instance. Common versions include:
+
+- **KJV** - King James Version (English)
+- **NIV** - New International Version (English)
+- **NKJV** - New King James Version (English)
+- **ESV** - English Standard Version (English)
+- **NASB** - New American Standard Bible (English)
+- And many more...
+
+To see all available versions, you can use the existing `/api/bibles` endpoint (which is also public).
+
+### Support
+
+For issues, questions, or feature requests:
+- Open an issue on [GitHub](https://github.com/kea137/Bible/issues)
+- Check the full [Developer Guide](#developer-guide) for more details
 
 ---
 
@@ -497,6 +723,72 @@ For administrators to quickly populate the database:
 ```
 
 ### API Endpoints
+
+**Public Bible API (No Authentication Required):**
+
+The Public Bible API allows anyone to fetch Bible verses without authentication. The API is rate-limited to 60 requests per minute to prevent abuse.
+
+```
+GET /api/verses
+```
+
+**Query Parameters:**
+- `language` (optional): Filter by Bible language (e.g., 'English', 'Swahili')
+- `version` (optional): Filter by Bible version/abbreviation (e.g., 'KJV', 'NIV')
+- `references` (optional): Boolean to include cross-references (default: false)
+- `book` (required): Book name or number (e.g., 'Genesis' or '1')
+- `chapter` (required): Chapter number
+- `verse` (optional): Specific verse number (if omitted, returns all verses in the chapter)
+
+**Examples:**
+
+Get all verses from Genesis chapter 1 in KJV:
+```
+GET /api/verses?version=KJV&book=Genesis&chapter=1
+```
+
+Get John 3:16 with cross-references:
+```
+GET /api/verses?version=KJV&book=John&chapter=3&verse=16&references=true
+```
+
+Get verses in a specific language:
+```
+GET /api/verses?language=English&book=1&chapter=1
+```
+
+**Response Format:**
+```json
+{
+  "bible": {
+    "name": "King James Version",
+    "abbreviation": "KJV",
+    "language": "English",
+    "version": "King James Version"
+  },
+  "book": {
+    "name": "Genesis",
+    "number": 1
+  },
+  "chapter": {
+    "number": 1
+  },
+  "verses": [
+    {
+      "number": 1,
+      "text": "In the beginning God created the heaven and the earth."
+    },
+    {
+      "number": 2,
+      "text": "And the earth was without form, and void..."
+    }
+  ],
+  "count": 2
+}
+```
+
+**Rate Limiting:**
+The API is throttled to 60 requests per minute. If you exceed this limit, you'll receive a 429 (Too Many Requests) response.
 
 **Bible Endpoints:**
 ```

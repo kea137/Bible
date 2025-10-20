@@ -5,6 +5,7 @@ import {
     BookOpen,
     Code,
     Database,
+    Globe,
     Highlighter,
     Map,
     Settings,
@@ -184,6 +185,23 @@ import {
                                 Technical documentation
                             </p>
                         </a>
+
+                        <a
+                            href="#public-api"
+                            class="group block rounded-lg border border-border p-4 transition-colors hover:border-primary hover:bg-accent"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <Globe class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-base font-semibold text-foreground"
+                                >
+                                    Public API
+                                </h3>
+                            </div>
+                            <p class="m-0 text-sm text-muted-foreground">
+                                External API access
+                            </p>
+                        </a>
                     </div>
 
                     <!-- Overview Section -->
@@ -211,6 +229,7 @@ import {
                             </h3>
                             <ul class="space-y-2 text-sm text-foreground">
                                 <li>✅ Multiple Bible Translations</li>
+                                <li>✅ Public API for external integrations</li>
                                 <li>✅ Cross-Reference System</li>
                                 <li>✅ Verse Highlighting with color codes</li>
                                 <li>✅ Personal Notes</li>
@@ -847,7 +866,7 @@ php artisan serve</code></pre>
                                 </h3>
                                 <div class="grid gap-2 text-sm sm:grid-cols-2">
                                     <div>
-                                        <strong>Backend:</strong> Laravel 11
+                                        <strong>Backend:</strong> Laravel 12
                                     </div>
                                     <div>
                                         <strong>Frontend:</strong> Vue.js 3 +
@@ -935,6 +954,489 @@ php artisan serve</code></pre>
                                         worker
                                     </code>
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Public API Section -->
+                    <section id="public-api" class="mb-12">
+                        <h2 class="mb-4 text-2xl font-bold text-foreground">
+                            Public Bible API
+                        </h2>
+
+                        <div
+                            class="mb-6 rounded-lg border-2 border-primary/20 bg-primary/5 p-4"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <Globe class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-lg font-semibold text-foreground"
+                                >
+                                    Overview
+                                </h3>
+                            </div>
+                            <p class="text-sm text-foreground">
+                                The Public Bible API provides a simple, RESTful
+                                interface for fetching Bible verses without
+                                requiring authentication. Perfect for developers
+                                who want to integrate Bible content into their
+                                applications, websites, or services.
+                            </p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div
+                                class="rounded-lg border border-border bg-muted/30 p-4"
+                            >
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Key Features
+                                </h3>
+                                <ul class="space-y-2 text-sm text-foreground">
+                                    <li>
+                                        🔓 <strong>No Authentication:</strong>
+                                        Access Bible verses without creating an
+                                        account
+                                    </li>
+                                    <li>
+                                        ⚡ <strong>Rate Limited:</strong> 30
+                                        requests per minute for fair usage
+                                    </li>
+                                    <li>
+                                        🔗
+                                        <strong>Standardized URL:</strong>
+                                        Easy-to-remember path-based structure
+                                    </li>
+                                    <li>
+                                        📖 <strong>Flexible:</strong> Support for
+                                        book names, numbers, and partial matching
+                                    </li>
+                                    <li>
+                                        🔀
+                                        <strong>Cross-References:</strong>
+                                        Optional inclusion of verse
+                                        cross-references
+                                    </li>
+                                    <li>
+                                        📊 <strong>JSON Response:</strong> Clean,
+                                        structured JSON format
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    URL Format
+                                </h3>
+                                <div class="mb-3 rounded bg-muted p-3">
+                                    <code
+                                        class="text-sm font-semibold text-primary"
+                                    >
+                                        GET
+                                        / api / {language} / {version} / {references} /{book} / {chapter} / {verse?}
+                                    </code> 
+                                </div>
+                                <p class="mb-3 text-sm text-foreground">
+                                    This standardized URL structure makes it easy
+                                    to remember and construct API requests.
+                                </p>
+
+                                <div class="space-y-2">
+                                    <h4 class="font-semibold text-foreground">
+                                        Path Parameters:
+                                    </h4>
+                                    <div
+                                        class="grid gap-2 text-sm sm:grid-cols-2"
+                                    >
+                                        <div
+                                            class="rounded border border-border p-2"
+                                        >
+                                            <code
+                                                class="font-semibold text-primary"
+                                                >language</code
+                                            >
+                                            <span class="text-muted-foreground">
+                                                - Bible language (English,
+                                                Swahili)</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="rounded border border-border p-2"
+                                        >
+                                            <code
+                                                class="font-semibold text-primary"
+                                                >version</code
+                                            >
+                                            <span class="text-muted-foreground">
+                                                - Bible version (KJV, NIV)</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="rounded border border-border p-2"
+                                        >
+                                            <code
+                                                class="font-semibold text-primary"
+                                                >references</code
+                                            >
+                                            <span class="text-muted-foreground">
+                                                - Include refs (true/false)</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="rounded border border-border p-2"
+                                        >
+                                            <code
+                                                class="font-semibold text-primary"
+                                                >book</code
+                                            >
+                                            <span class="text-muted-foreground">
+                                                - Book name or number</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="rounded border border-border p-2"
+                                        >
+                                            <code
+                                                class="font-semibold text-primary"
+                                                >chapter</code
+                                            >
+                                            <span class="text-muted-foreground">
+                                                - Chapter number</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="rounded border border-border p-2"
+                                        >
+                                            <code
+                                                class="font-semibold text-primary"
+                                                >verse</code
+                                            >
+                                            <span class="text-muted-foreground">
+                                                - Verse number (optional)</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="rounded-lg border border-border bg-accent/50 p-4"
+                            >
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Usage Examples
+                                </h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <p
+                                            class="mb-1 text-sm font-semibold text-foreground"
+                                        >
+                                            1. Get a specific verse:
+                                        </p>
+                                        <div class="rounded bg-muted p-2">
+                                            <code
+                                                class="text-xs text-foreground"
+                                            >
+                                                /api/English/KJV/false/John/3/16
+                                            </code>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            class="mb-1 text-sm font-semibold text-foreground"
+                                        >
+                                            2. Get an entire chapter:
+                                        </p>
+                                        <div class="rounded bg-muted p-2">
+                                            <code
+                                                class="text-xs text-foreground"
+                                            >
+                                                /api/English/KJV/false/Genesis/1
+                                            </code>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            class="mb-1 text-sm font-semibold text-foreground"
+                                        >
+                                            3. With cross-references:
+                                        </p>
+                                        <div class="rounded bg-muted p-2">
+                                            <code
+                                                class="text-xs text-foreground"
+                                            >
+                                                /api/English/KJV/true/John/1/1
+                                            </code>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            class="mb-1 text-sm font-semibold text-foreground"
+                                        >
+                                            4. Using book numbers:
+                                        </p>
+                                        <div class="rounded bg-muted p-2">
+                                            <code
+                                                class="text-xs text-foreground"
+                                            >
+                                                /api/English/KJV/false/1/1
+                                            </code>
+                                        </div>
+                                        <p
+                                            class="mt-1 text-xs text-muted-foreground"
+                                        >
+                                            (1=Genesis, 40=Matthew, etc.)
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            class="mb-1 text-sm font-semibold text-foreground"
+                                        >
+                                            5. Partial book name:
+                                        </p>
+                                        <div class="rounded bg-muted p-2">
+                                            <code
+                                                class="text-xs text-foreground"
+                                            >
+                                                /api/English/KJV/false/Gen/1
+                                            </code>
+                                        </div>
+                                        <p
+                                            class="mt-1 text-xs text-muted-foreground"
+                                        >
+                                            (Supports 'Gen' for 'Genesis', 'Matt'
+                                            for 'Matthew')
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Response Format
+                                </h3>
+                                <div class="rounded bg-muted p-3">
+                                    <pre
+                                        class="overflow-x-auto text-xs"
+                                    ><code>{
+  "bible": {
+    "name": "King James Version",
+    "abbreviation": "KJV",
+    "language": "English",
+    "version": "King James Version"
+  },
+  "book": {
+    "name": "John",
+    "number": 43
+  },
+  "chapter": {
+    "number": 3
+  },
+  "verses": [
+    {
+      "number": 16,
+      "text": "For God so loved the world..."
+    }
+  ],
+  "count": 1
+}</code></pre>
+                                </div>
+                            </div>
+
+                            <div
+                                class="rounded-lg border border-border bg-muted/50 p-4"
+                            >
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Integration Examples
+                                </h3>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <h4
+                                            class="mb-2 font-semibold text-foreground"
+                                        >
+                                            JavaScript/Fetch:
+                                        </h4>
+                                        <div class="rounded bg-muted p-3">
+                                            <pre
+                                                class="overflow-x-auto text-xs"
+                                            ><code>fetch('/api/English/KJV/false/John/3/16')
+  .then(response => response.json())
+  .then(data => {
+    console.log(data.verses[0].text);
+  });</code></pre>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4
+                                            class="mb-2 font-semibold text-foreground"
+                                        >
+                                            Python:
+                                        </h4>
+                                        <div class="rounded bg-muted p-3">
+                                            <pre
+                                                class="overflow-x-auto text-xs"
+                                            ><code>import requests
+
+url = 'https://domain.com/api/English/KJV/false/John/3/16'
+response = requests.get(url)
+data = response.json()
+print(data['verses'][0]['text'])</code></pre>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4
+                                            class="mb-2 font-semibold text-foreground"
+                                        >
+                                            cURL:
+                                        </h4>
+                                        <div class="rounded bg-muted p-3">
+                                            <pre
+                                                class="overflow-x-auto text-xs"
+                                            ><code>curl "https://domain.com/api/English/KJV/false/John/3/16"</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="rounded-lg border-2 border-yellow-500/30 bg-yellow-500/10 p-4"
+                            >
+                                <h3
+                                    class="mb-2 flex items-center gap-2 text-lg font-semibold text-foreground"
+                                >
+                                    <span class="text-yellow-600">⚠️</span>
+                                    Rate Limiting
+                                </h3>
+                                <p class="mb-2 text-sm text-foreground">
+                                    The API is rate-limited to
+                                    <strong>30 requests per minute</strong> to
+                                    ensure fair usage and system stability.
+                                </p>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>
+                                        • Exceeding the limit returns a 429 error
+                                    </li>
+                                    <li>
+                                        • Wait for the rate limit window to reset
+                                        (1 minute)
+                                    </li>
+                                    <li>
+                                        • Consider caching responses in your
+                                        application
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Best Practices
+                                </h3>
+                                <ul class="space-y-2 text-sm text-foreground">
+                                    <li>
+                                        ✅ <strong>Cache Responses:</strong> Bible
+                                        text rarely changes, so cache API
+                                        responses
+                                    </li>
+                                    <li>
+                                        ✅ <strong>Batch Requests:</strong> Fetch
+                                        entire chapters instead of individual
+                                        verses
+                                    </li>
+                                    <li>
+                                        ✅
+                                        <strong>Error Handling:</strong> Always
+                                        handle 404 errors gracefully
+                                    </li>
+                                    <li>
+                                        ✅
+                                        <strong>Respect Rate Limits:</strong>
+                                        Implement backoff strategies
+                                    </li>
+                                    <li>
+                                        ✅ <strong>Use Specific Versions:</strong>
+                                        Specify version in URL for consistency
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div
+                                class="rounded-lg border border-border bg-primary/5 p-4"
+                            >
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Error Codes
+                                </h3>
+                                <div
+                                    class="grid gap-2 text-sm sm:grid-cols-2"
+                                >
+                                    <div class="flex items-start gap-2">
+                                        <code
+                                            class="rounded bg-green-500/20 px-2 py-1 font-semibold text-green-700 dark:text-green-400"
+                                            >200</code
+                                        >
+                                        <span class="text-muted-foreground"
+                                            >Success</span
+                                        >
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <code
+                                            class="rounded bg-red-500/20 px-2 py-1 font-semibold text-red-700 dark:text-red-400"
+                                            >404</code
+                                        >
+                                        <span class="text-muted-foreground"
+                                            >Bible, book, chapter, or verse not
+                                            found</span
+                                        >
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <code
+                                            class="rounded bg-yellow-500/20 px-2 py-1 font-semibold text-yellow-700 dark:text-yellow-400"
+                                            >429</code
+                                        >
+                                        <span class="text-muted-foreground"
+                                            >Rate limit exceeded</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="rounded-lg border border-border bg-accent/30 p-4"
+                            >
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Need More Details?
+                                </h3>
+                                <p class="text-sm text-muted-foreground">
+                                    For comprehensive API documentation including
+                                    advanced usage, see the
+                                    <code
+                                        class="rounded bg-muted px-1 py-0.5 text-foreground"
+                                        >DOCUMENTATION.md</code
+                                    >
+                                    file in the repository.
+                                </p>
                             </div>
                         </div>
                     </section>
