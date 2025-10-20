@@ -9,6 +9,7 @@ use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Role;
 use App\Services\BibleJsonParser;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Artisan;
@@ -101,7 +102,30 @@ class BibleController extends Controller
     {
         Gate::authorize('create', Role::class);
 
-        return Inertia::render('Create Bible');
+        return Inertia::render('Create Bible', [
+            'languages' => [
+                ['id' => 1, 'name' => 'English', 'code' => 'en'],
+                ['id' => 2, 'name' => 'Swahili', 'code' => 'sw'],
+                ['id' => 3, 'name' => 'French', 'code' => 'fr'],
+                ['id' => 4, 'name' => 'Spanish', 'code' => 'es'],
+                ['id' => 5, 'name' => 'German', 'code' => 'de'],
+                ['id' => 6, 'name' => 'Portuguese', 'code' => 'pt'],
+                ['id' => 7, 'name' => 'Italian', 'code' => 'it'],
+                ['id' => 8, 'name' => 'Russian', 'code' => 'ru'],
+                ['id' => 9, 'name' => 'Chinese', 'code' => 'zh'],
+                ['id' => 10, 'name' => 'Japanese', 'code' => 'ja'],
+                ['id' => 11, 'name' => 'Arabic', 'code' => 'ar'],
+                ['id' => 12, 'name' => 'Hindi', 'code' => 'hi'],
+                ['id' => 13, 'name' => 'Bengali', 'code' => 'bn'],
+                ['id' => 14, 'name' => 'Punjabi', 'code' => 'pa'],
+                ['id' => 15, 'name' => 'Javanese', 'code' => 'jv'],
+                ['id' => 16, 'name' => 'Korean', 'code' => 'ko'],
+                ['id' => 17, 'name' => 'Vietnamese', 'code' => 'vi'],
+                ['id' => 18, 'name' => 'Telugu', 'code' => 'te'],
+                ['id' => 19, 'name' => 'Marathi', 'code' => 'mr'],
+                ['id' => 20, 'name' => 'Tamil', 'code' => 'ta'],
+            ],
+        ]);
     }
 
     /**
@@ -109,7 +133,6 @@ class BibleController extends Controller
      */
     public function store(StoreBibleRequest $request, BibleJsonParser $parser)
     {
-
         Gate::authorize('create', Role::class);
 
         $validated = $request->validated();

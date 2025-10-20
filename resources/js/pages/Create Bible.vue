@@ -42,6 +42,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const props = defineProps<{
+    languages: {
+        id: number;
+        name: string;
+        code: string;
+    }[];
+}>();
+
 const isDragActive = ref(false);
 const selectedFiles = ref<File[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -204,12 +212,11 @@ if (info) {
                                                 <SelectLabel
                                                     >Languages</SelectLabel
                                                 >
-                                                <SelectItem value="English"
-                                                    >English</SelectItem
-                                                >
-                                                <SelectItem value="Swahili"
-                                                    >Swahili</SelectItem
-                                                >
+                                                <template v-for="language in props.languages" :key="language.id">
+                                                    <SelectItem :value="language.name">
+                                                        {{ language.name }}
+                                                    </SelectItem>
+                                                </template>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

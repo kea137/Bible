@@ -905,7 +905,7 @@ php artisan serve</code></pre>
                                         >
                                             GET /api/bibles<br />
                                             GET
-                                            /api/bibles/books/chapters/{'{'}chapter{'}'}
+                                            /api/bibles/books/chapters/{chapter}
                                         </code>
                                     </div>
                                     <div>
@@ -916,8 +916,8 @@ php artisan serve</code></pre>
                                             class="mt-1 block text-xs text-muted-foreground"
                                         >
                                             GET
-                                            /api/verses/{'{'}verse{'}'}/references<br />
-                                            GET /verses/{'{'}verse{'}'}/study
+                                            /api/verses/{Verse}/references<br />
+                                            GET /verses/{Verse}/study
                                         </code>
                                     </div>
                                     <div>
@@ -930,7 +930,7 @@ php artisan serve</code></pre>
                                             POST /api/verse-highlights<br />
                                             GET /api/verse-highlights<br />
                                             DELETE
-                                            /api/verse-highlights/{'{'}verse{'}'}
+                                            /api/verse-highlights/{verse}
                                         </code>
                                     </div>
                                 </div>
