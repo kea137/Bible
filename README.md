@@ -5,6 +5,7 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 ## Features
 
 - Browse and read different Bible translations
+- **Public API for Bible verses** (no authentication required, rate-limited)
 - User authentication and role management
 - Two-factor authentication support
 - Dark mode support
@@ -30,6 +31,27 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 - Run tests: `php artisan test`
 - Lint code: `npm run lint`
 - Format code: `npm run format`
+
+## Public API
+
+The application includes a public API for fetching Bible verses without authentication:
+
+```bash
+# Example: Get John 3:16 from KJV
+curl "http://your-domain.com/api/verses?version=KJV&book=John&chapter=3&verse=16"
+```
+
+**Parameters:**
+- `language` (optional): Bible language filter
+- `version` (optional): Bible version/abbreviation
+- `references` (optional): Include cross-references (true/false)
+- `book` (required): Book name or number
+- `chapter` (required): Chapter number
+- `verse` (optional): Specific verse number
+
+**Rate Limit:** 60 requests per minute
+
+For detailed API documentation, see [DOCUMENTATION.md](DOCUMENTATION.md#public-bible-api).
 
 ## Credits & Acknowledgments
 
