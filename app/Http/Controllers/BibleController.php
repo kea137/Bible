@@ -220,10 +220,30 @@ class BibleController extends Controller
     {
         Gate::authorize('create', Role::class);
 
+        // First, migrate the Bible tables fresh
+        Log::info('Starting Bible tables migration...');
+        $this->migrateBibleTables();
+
+
         // Dispatch the job to queue
         BootupBiblesAndReferences::dispatch();
 
         return redirect()->route('bibles_configure')->with('success', 'Bible and reference installation has been queued. You will be notified when it completes.');
+    }
+
+    /**
+     * Migrate fresh the Bible tables and their relations
+     */
+    private function migrateBibleTables(): void
+    {
+        try {
+            Artisan::call('seed:admin');
+
+            Log::info('Bible tables migrated fresh successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error migrating Bible tables: '.$e->getMessage());
+            throw $e;
+        }
     }
 
 }
