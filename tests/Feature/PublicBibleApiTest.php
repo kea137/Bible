@@ -48,7 +48,7 @@ beforeEach(function () {
 });
 
 test('public api can fetch verses without authentication', function () {
-    $response = $this->getJson('/api/verses?version=KJV&book=Genesis&chapter=1');
+    $response = $this->getJson('/api/English/KJV/false/Genesis/1');
 
     $response->assertStatus(200)
         ->assertJsonStructure([
@@ -65,7 +65,7 @@ test('public api can fetch verses without authentication', function () {
 });
 
 test('public api can fetch specific verse', function () {
-    $response = $this->getJson('/api/verses?version=KJV&book=Genesis&chapter=1&verse=1');
+    $response = $this->getJson('/api/English/KJV/false/Genesis/1/1');
 
     $response->assertStatus(200);
     expect($response->json('count'))->toBe(1);
@@ -73,14 +73,14 @@ test('public api can fetch specific verse', function () {
 });
 
 test('public api can filter by language', function () {
-    $response = $this->getJson('/api/verses?language=English&book=Genesis&chapter=1');
+    $response = $this->getJson('/api/English/KJV/false/Genesis/1');
 
     $response->assertStatus(200);
     expect($response->json('bible')['language'])->toBe('English');
 });
 
 test('public api returns error for non-existent Bible version', function () {
-    $response = $this->getJson('/api/verses?version=NONEXISTENT&book=Genesis&chapter=1');
+    $response = $this->getJson('/api/English/NONEXISTENT/false/Genesis/1');
 
     $response->assertStatus(404)
         ->assertJson([
@@ -89,7 +89,7 @@ test('public api returns error for non-existent Bible version', function () {
 });
 
 test('public api returns error for non-existent book', function () {
-    $response = $this->getJson('/api/verses?version=KJV&book=NonExistentBook&chapter=1');
+    $response = $this->getJson('/api/English/KJV/false/NonExistentBook/1');
 
     $response->assertStatus(404)
         ->assertJson([
@@ -98,7 +98,7 @@ test('public api returns error for non-existent book', function () {
 });
 
 test('public api returns error for non-existent chapter', function () {
-    $response = $this->getJson('/api/verses?version=KJV&book=Genesis&chapter=999');
+    $response = $this->getJson('/api/English/KJV/false/Genesis/999');
 
     $response->assertStatus(404)
         ->assertJson([
@@ -106,41 +106,45 @@ test('public api returns error for non-existent chapter', function () {
         ]);
 });
 
-test('public api requires book parameter', function () {
-    $response = $this->getJson('/api/verses?version=KJV&chapter=1');
-
-    $response->assertStatus(422);
-});
-
-test('public api requires chapter parameter', function () {
-    $response = $this->getJson('/api/verses?version=KJV&book=Genesis');
-
-    $response->assertStatus(422);
-});
-
 test('public api can find book by number', function () {
-    $response = $this->getJson('/api/verses?version=KJV&book=1&chapter=1');
+    $response = $this->getJson('/api/English/KJV/false/1/1');
 
     $response->assertStatus(200);
     expect($response->json('book')['name'])->toBe('Genesis');
 });
 
 test('public api supports partial book name matching', function () {
-    $response = $this->getJson('/api/verses?version=KJV&book=Gen&chapter=1');
+    $response = $this->getJson('/api/English/KJV/false/Gen/1');
 
     $response->assertStatus(200);
     expect($response->json('book')['name'])->toBe('Genesis');
 });
 
-test('public api is throttled', function () {
-    // Make 61 requests (one more than the limit of 60 per minute)
-    for ($i = 0; $i < 61; $i++) {
-        $response = $this->getJson('/api/verses?version=KJV&book=Genesis&chapter=1');
+test('public api can include references', function () {
+    $response = $this->getJson('/api/English/KJV/true/Genesis/1/1');
+
+    $response->assertStatus(200);
+    expect($response->json('verses')[0])->toHaveKey('text');
+    // References key will only exist if there are actual references in the database
+});
+
+test('public api handles references parameter as boolean string', function () {
+    $response1 = $this->getJson('/api/English/KJV/true/Genesis/1/1');
+    $response2 = $this->getJson('/api/English/KJV/false/Genesis/1/1');
+
+    $response1->assertStatus(200);
+    $response2->assertStatus(200);
+});
+
+test('public api is throttled to 30 requests per minute', function () {
+    // Make 31 requests (one more than the limit of 30 per minute)
+    for ($i = 0; $i < 31; $i++) {
+        $response = $this->getJson('/api/English/KJV/false/Genesis/1');
         
-        if ($i < 60) {
+        if ($i < 30) {
             $response->assertStatus(200);
         } else {
-            // The 61st request should be throttled
+            // The 31st request should be throttled
             $response->assertStatus(429);
         }
     }

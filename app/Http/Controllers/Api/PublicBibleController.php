@@ -10,46 +10,38 @@ use Illuminate\Http\Request;
 class PublicBibleController extends Controller
 {
     /**
-     * Fetch Bible verses with optional filters
+     * Fetch Bible verses using standardized URL path
      * 
-     * Query parameters:
-     * - language: Filter by Bible language (e.g., 'English', 'Swahili')
-     * - version: Filter by Bible version/abbreviation (e.g., 'KJV', 'NIV')
-     * - references: Boolean to include cross-references (default: false)
+     * URL Format: /api/{language}/{version}/{references}/{book}/{chapter}/{verse?}
+     * 
+     * Path parameters:
+     * - language: Bible language (e.g., 'English', 'Swahili')
+     * - version: Bible version/abbreviation (e.g., 'KJV', 'NIV')
+     * - references: Include cross-references ('true' or 'false', or '1' or '0')
      * - book: Book name or number (e.g., 'Genesis' or '1')
      * - chapter: Chapter number
      * - verse: Specific verse number (optional)
      * 
      * Examples:
-     * /api/public/verses?language=English&version=KJV&book=Genesis&chapter=1
-     * /api/public/verses?version=KJV&book=John&chapter=3&verse=16&references=true
+     * /api/English/KJV/false/Genesis/1
+     * /api/English/KJV/true/John/3/16
+     * /api/English/NIV/false/1/1/1
      */
-    public function verses(Request $request)
+    public function versesPath($language, $version, $references, $book, $chapter, $verse = null)
     {
-        $request->validate([
-            'language' => 'nullable|string',
-            'version' => 'nullable|string',
-            'references' => 'nullable|boolean',
-            'book' => 'required|string',
-            'chapter' => 'required|integer|min:1',
-            'verse' => 'nullable|integer|min:1',
-        ]);
-
         // Build Bible query
         $bibleQuery = Bible::query();
 
-        if ($request->has('language')) {
-            $bibleQuery->where('language', $request->language);
-        }
+        // Filter by language
+        $bibleQuery->where('language', $language);
 
-        if ($request->has('version')) {
-            $bibleQuery->where(function ($query) use ($request) {
-                $query->where('abbreviation', $request->version)
-                    ->orWhere('version', $request->version);
-            });
-        }
+        // Filter by version
+        $bibleQuery->where(function ($query) use ($version) {
+            $query->where('abbreviation', $version)
+                ->orWhere('version', $version);
+        });
 
-        // Get the Bible (use first match or default to first available)
+        // Get the Bible (use first match)
         $bible = $bibleQuery->first();
 
         if (!$bible) {
@@ -60,14 +52,18 @@ class PublicBibleController extends Controller
         }
 
         // Find the book (by name or number)
-        $book = $bible->books()
-            ->where(function ($query) use ($request) {
-                $query->where('title', 'LIKE', $request->book . '%')
-                    ->orWhere('book_number', $request->book);
-            })
-            ->first();
+        $bookQuery = $bible->books();
+        
+        // Check if book is numeric
+        if (is_numeric($book)) {
+            $bookQuery->where('book_number', $book);
+        } else {
+            $bookQuery->where('title', 'LIKE', $book . '%');
+        }
+        
+        $bookModel = $bookQuery->first();
 
-        if (!$book) {
+        if (!$bookModel) {
             return response()->json([
                 'error' => 'Book not found',
                 'message' => 'The specified book does not exist in this Bible version'
@@ -75,11 +71,11 @@ class PublicBibleController extends Controller
         }
 
         // Find the chapter
-        $chapter = $book->chapters()
-            ->where('chapter_number', $request->chapter)
+        $chapterModel = $bookModel->chapters()
+            ->where('chapter_number', $chapter)
             ->first();
 
-        if (!$chapter) {
+        if (!$chapterModel) {
             return response()->json([
                 'error' => 'Chapter not found',
                 'message' => 'The specified chapter does not exist in this book'
@@ -87,16 +83,17 @@ class PublicBibleController extends Controller
         }
 
         // Build verse query
-        $versesQuery = $chapter->verses()
+        $versesQuery = $chapterModel->verses()
             ->orderBy('verse_number');
 
         // If specific verse is requested
-        if ($request->has('verse')) {
-            $versesQuery->where('verse_number', $request->verse);
+        if ($verse !== null) {
+            $versesQuery->where('verse_number', $verse);
         }
 
         // Load references if requested
-        if ($request->boolean('references')) {
+        $includeReferences = in_array(strtolower($references), ['true', '1']);
+        if ($includeReferences) {
             $versesQuery->with('references');
         }
 
@@ -118,20 +115,20 @@ class PublicBibleController extends Controller
                 'version' => $bible->version,
             ],
             'book' => [
-                'name' => $book->title,
-                'number' => $book->book_number,
+                'name' => $bookModel->title,
+                'number' => $bookModel->book_number,
             ],
             'chapter' => [
-                'number' => $chapter->chapter_number,
+                'number' => $chapterModel->chapter_number,
             ],
-            'verses' => $verses->map(function ($verse) use ($request) {
+            'verses' => $verses->map(function ($verse) use ($includeReferences) {
                 $verseData = [
                     'number' => $verse->verse_number,
                     'text' => $verse->text,
                 ];
 
                 // Include references if requested
-                if ($request->boolean('references') && $verse->references) {
+                if ($includeReferences && $verse->references) {
                     $verseData['references'] = $verse->references->map(function ($ref) {
                         return [
                             'verse' => $ref->verse,

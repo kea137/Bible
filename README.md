@@ -37,19 +37,21 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 The application includes a public API for fetching Bible verses without authentication:
 
 ```bash
-# Example: Get John 3:16 from KJV
-curl "http://your-domain.com/api/verses?version=KJV&book=John&chapter=3&verse=16"
+# Example: Get John 3:16 from KJV in English (without cross-references)
+curl "http://your-domain.com/api/English/KJV/false/John/3/16"
 ```
 
-**Parameters:**
-- `language` (optional): Bible language filter
-- `version` (optional): Bible version/abbreviation
-- `references` (optional): Include cross-references (true/false)
-- `book` (required): Book name or number
-- `chapter` (required): Chapter number
+**URL Format:** `/api/{language}/{version}/{references}/{book}/{chapter}/{verse?}`
+
+**Path Parameters:**
+- `language`: Bible language (e.g., `English`, `Swahili`)
+- `version`: Bible version/abbreviation (e.g., `KJV`, `NIV`)
+- `references`: Include cross-references (`true`, `false`, `1`, or `0`)
+- `book`: Book name or number (e.g., `Genesis` or `1`)
+- `chapter`: Chapter number
 - `verse` (optional): Specific verse number
 
-**Rate Limit:** 60 requests per minute
+**Rate Limit:** 30 requests per minute
 
 For detailed API documentation, see [DOCUMENTATION.md](DOCUMENTATION.md#public-bible-api).
 

@@ -113,7 +113,8 @@ The Public Bible API provides a simple, RESTful interface for fetching Bible ver
 ### Key Features
 
 - **No Authentication Required**: Access Bible verses without creating an account
-- **Rate Limited**: 60 requests per minute to ensure fair usage
+- **Rate Limited**: 30 requests per minute to ensure fair usage
+- **Standardized URL**: Easy-to-remember path-based structure
 - **Flexible Querying**: Filter by language, version, book, chapter, and verse
 - **Cross-References**: Optional inclusion of verse cross-references
 - **Multiple Formats**: Support for book names and numbers
@@ -123,7 +124,7 @@ The Public Bible API provides a simple, RESTful interface for fetching Bible ver
 
 **Basic Request:**
 ```bash
-curl "https://yourdomain.com/api/verses?version=KJV&book=John&chapter=3&verse=16"
+curl "https://yourdomain.com/api/English/KJV/false/John/3/16"
 ```
 
 **Response:**
@@ -154,15 +155,17 @@ curl "https://yourdomain.com/api/verses?version=KJV&book=John&chapter=3&verse=16
 
 ### API Endpoint
 
-**URL:** `GET /api/verses`
+**URL Format:** `GET /api/{language}/{version}/{references}/{book}/{chapter}/{verse?}`
 
-### Parameters
+This standardized URL structure makes it easy to remember and construct API requests.
+
+### Path Parameters
 
 | Parameter | Type | Required | Description | Example |
 |-----------|------|----------|-------------|---------|
-| `language` | string | No | Filter by Bible language | `English`, `Swahili` |
-| `version` | string | No | Filter by Bible version/abbreviation | `KJV`, `NIV`, `NKJV` |
-| `references` | boolean | No | Include cross-references (default: false) | `true`, `false` |
+| `language` | string | Yes | Bible language | `English`, `Swahili` |
+| `version` | string | Yes | Bible version/abbreviation | `KJV`, `NIV`, `NKJV` |
+| `references` | boolean | Yes | Include cross-references | `true`, `false`, `1`, `0` |
 | `book` | string/integer | Yes | Book name or number | `Genesis`, `John`, `1` |
 | `chapter` | integer | Yes | Chapter number | `1`, `3`, `150` |
 | `verse` | integer | No | Specific verse number | `16`, `1` |
@@ -171,33 +174,33 @@ curl "https://yourdomain.com/api/verses?version=KJV&book=John&chapter=3&verse=16
 
 **1. Get an entire chapter:**
 ```bash
-curl "https://yourdomain.com/api/verses?version=KJV&book=Psalm&chapter=23"
+curl "https://yourdomain.com/api/English/KJV/false/Psalm/23"
 ```
 
 **2. Get a specific verse:**
 ```bash
-curl "https://yourdomain.com/api/verses?version=NIV&book=Romans&chapter=8&verse=28"
+curl "https://yourdomain.com/api/English/NIV/false/Romans/8/28"
 ```
 
 **3. Get verses with cross-references:**
 ```bash
-curl "https://yourdomain.com/api/verses?version=KJV&book=John&chapter=1&verse=1&references=true"
+curl "https://yourdomain.com/api/English/KJV/true/John/1/1"
 ```
 
 **4. Filter by language:**
 ```bash
-curl "https://yourdomain.com/api/verses?language=English&book=Matthew&chapter=5"
+curl "https://yourdomain.com/api/English/KJV/false/Matthew/5"
 ```
 
 **5. Use book numbers:**
 ```bash
-curl "https://yourdomain.com/api/verses?version=KJV&book=1&chapter=1"
+curl "https://yourdomain.com/api/English/KJV/false/1/1"
 ```
 *Note: Book numbers follow the standard Bible order (1=Genesis, 40=Matthew, etc.)*
 
 **6. Partial book name matching:**
 ```bash
-curl "https://yourdomain.com/api/verses?version=KJV&book=Gen&chapter=1"
+curl "https://yourdomain.com/api/English/KJV/false/Gen/1"
 ```
 *Note: The API supports partial book names (e.g., 'Gen' for 'Genesis', 'Matt' for 'Matthew')*
 
@@ -237,16 +240,6 @@ curl "https://yourdomain.com/api/verses?version=KJV&book=Gen&chapter=1"
 }
 ```
 
-**Validation Error (422 Unprocessable Entity):**
-```json
-{
-  "message": "The book field is required.",
-  "errors": {
-    "book": ["The book field is required."]
-  }
-}
-```
-
 **Rate Limit Error (429 Too Many Requests):**
 ```json
 {
@@ -260,12 +253,11 @@ curl "https://yourdomain.com/api/verses?version=KJV&book=Gen&chapter=1"
 |------|-------------|
 | 200 | Success |
 | 404 | Bible, book, chapter, or verse not found |
-| 422 | Validation error - missing or invalid parameters |
-| 429 | Rate limit exceeded (60 requests per minute) |
+| 429 | Rate limit exceeded (30 requests per minute) |
 
 ### Rate Limiting
 
-The API is rate-limited to **60 requests per minute** to ensure fair usage and system stability. When you exceed this limit:
+The API is rate-limited to **30 requests per minute** to ensure fair usage and system stability. When you exceed this limit:
 
 - You'll receive a `429 Too Many Requests` response
 - Wait for the rate limit window to reset (1 minute)
@@ -273,7 +265,7 @@ The API is rate-limited to **60 requests per minute** to ensure fair usage and s
 
 **Headers:**
 The API includes rate limit information in response headers:
-- `X-RateLimit-Limit`: Maximum requests per minute (60)
+- `X-RateLimit-Limit`: Maximum requests per minute (30)
 - `X-RateLimit-Remaining`: Remaining requests in current window
 - `Retry-After`: Seconds to wait before retrying (if rate limited)
 
@@ -281,16 +273,16 @@ The API includes rate limit information in response headers:
 
 1. **Cache Responses**: Bible text rarely changes, so cache API responses in your application
 2. **Batch Requests**: Fetch entire chapters instead of individual verses when possible
-3. **Error Handling**: Always handle 404 and 422 errors gracefully
+3. **Error Handling**: Always handle 404 errors gracefully
 4. **Respect Rate Limits**: Implement backoff strategies if you hit rate limits
-5. **Use Specific Versions**: Specify `version` parameter for consistent results
+5. **Use Specific Versions**: Specify version in the URL for consistent results
 6. **Book Numbers**: Use book numbers (1-66) for more reliable lookups
 
 ### Integration Examples
 
 **JavaScript/Fetch:**
 ```javascript
-fetch('https://yourdomain.com/api/verses?version=KJV&book=John&chapter=3&verse=16')
+fetch('https://yourdomain.com/api/English/KJV/false/John/3/16')
   .then(response => response.json())
   .then(data => {
     console.log(data.verses[0].text);
@@ -302,15 +294,9 @@ fetch('https://yourdomain.com/api/verses?version=KJV&book=John&chapter=3&verse=1
 ```python
 import requests
 
-response = requests.get(
-    'https://yourdomain.com/api/verses',
-    params={
+response = requests.get('https://yourdomain.com/api/English/KJV/false/John/3/16')
         'version': 'KJV',
         'book': 'John',
-        'chapter': 3,
-        'verse': 16
-    }
-)
 
 data = response.json()
 print(data['verses'][0]['text'])
@@ -318,7 +304,7 @@ print(data['verses'][0]['text'])
 
 **cURL:**
 ```bash
-curl -X GET "https://yourdomain.com/api/verses?version=KJV&book=John&chapter=3&verse=16" \
+curl -X GET "https://yourdomain.com/api/English/KJV/false/John/3/16" \
      -H "Accept: application/json"
 ```
 
