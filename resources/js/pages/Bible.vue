@@ -30,6 +30,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import VerseDialog from '@/components/VerseDialog.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -87,6 +88,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const page = usePage();
 const selectedBookId = ref(props.initialChapter.book.id);
 const selectedChapterId = ref(props.initialChapter.id);
 const loadedChapter = ref(props.initialChapter);
@@ -94,9 +96,14 @@ const hoveredVerseReferences = ref<any[]>([]);
 const selectedReferenceVerse = ref<any>(null);
 const verseHighlights = ref<Record<number, any>>({});
 const notesDialogOpen = ref(false);
+const verseDialogOpen = ref(false);
 const selectedVerseForNote = ref<any>(null);
+const selectedVerseForEdit = ref<any>(null);
 const chapterCompleted = ref(false);
 const clickedVerseId = ref<number | null>(null);
+const auth = computed(() => page.props.auth);
+const roleNumbers = computed(() => auth.value?.roleNumbers || []);
+
 
 const currentBook = computed(() =>
     props.bible.books.find((book) => book.id === Number(selectedBookId.value)),
@@ -108,6 +115,12 @@ const currentChapterIndex = computed(
             (ch) => ch.id === Number(selectedChapterId.value),
         ) ?? -1,
 );
+
+const canUpdate = computed(() => {
+    return (
+        roleNumbers.value.includes(1) || roleNumbers.value.includes(2)
+    );
+});
 
 const hasPreviousChapter = computed(() => {
     if (!currentBook.value) return false;
@@ -391,6 +404,11 @@ function openNotesDialog(verse: any) {
     notesDialogOpen.value = true;
 }
 
+function openVerseDialog(verse: any) {
+    selectedVerseForEdit.value = verse;
+    verseDialogOpen.value = true;
+}
+
 function shareVerse(verse: any) {
     const verseReference = `${loadedChapter.value.book?.title} ${loadedChapter.value.chapter_number}:${verse.verse_number}`;
     const verseText = verse.text;
@@ -404,13 +422,17 @@ function handleNoteSaved() {
     alertSuccess.value = true;
 }
 
+function handleVerseSaved() {
+    // Optionally reload highlights or show a success message
+    alertSuccess.value = true;
+}
+
 watch(selectedChapterId, (newChapterId) => {
     if (newChapterId) {
         loadChapter(newChapterId);
     }
 });
 
-const page = usePage();
 const success = page.props.success;
 const error = page.props.error;
 const info = page.props.info;
@@ -747,6 +769,12 @@ if (props.initialChapter?.id) {
                                         >
                                             Put Note on this Verse
                                         </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            v-if="canUpdate"
+                                            @click="openVerseDialog(verse)"
+                                        >
+                                            Edit Verse Text
+                                        </DropdownMenuItem>
                                         <DropdownMenuLabel
                                             >Share</DropdownMenuLabel
                                         >
@@ -867,6 +895,17 @@ if (props.initialChapter?.id) {
             :verse-text="selectedVerseForNote.text"
             :verse-reference="`${loadedChapter.book?.title} ${loadedChapter.chapter_number}:${selectedVerseForNote.verse_number}`"
             @saved="handleNoteSaved"
+        />
+
+        <!-- Notes Dialog -->
+        <VerseDialog
+            v-if="selectedVerseForEdit && canUpdate"
+            :open="verseDialogOpen"
+            @update:open="verseDialogOpen = $event"
+            :verse-id="selectedVerseForEdit.id"
+            :verse-text="selectedVerseForEdit.text"
+            :verse-reference="`${loadedChapter.book?.title} ${loadedChapter.chapter_number}:${selectedVerseForEdit.verse_number}`"
+            @saved="handleVerseSaved"
         />
     </AppLayout>
 </template>

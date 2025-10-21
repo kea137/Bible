@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVerseRequest;
 use App\Http\Requests\UpdateVerseRequest;
 use App\Models\Verse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class VerseController extends Controller
 {
@@ -51,9 +53,21 @@ class VerseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateVerseRequest $request, Verse $verse)
+    public function update(UpdateVerseRequest $request, Verse $verse) : JsonResponse
     {
-        //
+        Gate::authorize('update', Verse::class);
+
+        $request->validated;
+
+        Verse::where('id', $request->verse_id)->update([
+            'text' => $request->text,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Verse updated successfully',
+            'verse' => $verse,
+        ], 200);
     }
 
     /**

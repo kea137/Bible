@@ -11,7 +11,7 @@ class UpdateVerseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateVerseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'verse_id' => ['required', 'integer', 'exists:verses,id'],
+            'text' => ['required', 'string'],
         ];
     }
 }

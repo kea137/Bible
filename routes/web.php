@@ -8,6 +8,7 @@ use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShareController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\VerseController;
 use App\Http\Controllers\VerseHighlightController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -63,6 +64,7 @@ Route::delete('/api/verse-highlights/{verse}', [VerseHighlightController::class,
 Route::get('/api/verse-highlights', [VerseHighlightController::class, 'index'])->name('verse_highlights_index')->middleware('auth');
 Route::get('/api/verse-highlights/chapter', [VerseHighlightController::class, 'getForChapter'])->name('verse_highlights_chapter')->middleware('auth');
 Route::get('/highlighted-verses', [VerseHighlightController::class, 'highlightedVersesPage'])->name('highlighted_verses_page')->middleware('auth');
+Route::put('/api/verse/{verse}', [VerseController::class, 'update'])->name('verse_update')->middleware('auth');
 
 // Note routes
 Route::get('/notes', [NoteController::class, 'index'])->name('notes')->middleware('auth');
