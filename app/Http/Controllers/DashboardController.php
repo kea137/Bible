@@ -21,26 +21,54 @@ class DashboardController extends Controller
         $languageMap = [
             'en' => 'English',
             'sw' => 'Swahili',
+            'fr' => 'French',
+            'es' => 'Spanish',
+            'de' => 'German',
+            'pt' => 'Portuguese',
+            'it' => 'Italian',
+            'ru' => 'Russian',
+            'zh' => 'Chinese',
+            'ja' => 'Japanese',
+            'ar' => 'Arabic',
+            'hi' => 'Hindi',
+            'bn' => 'Bengali',
+            'pa' => 'Punjabi',
+            'jv' => 'Javanese',
+            'ko' => 'Korean',
+            'vi' => 'Vietnamese',
+            'te' => 'Telugu',
+            'mr' => 'Marathi',
+            'ta' => 'Tamil',
         ];
 
         $languageName = $languageMap[$userLanguage] ?? 'English';
 
-        // Get random verse of the day with eager loading to prevent N+1 queries
-        $randomVerse = Verse::with(['bible', 'book', 'chapter'])
+        // Get random verse of the day with only needed fields
+        $randomVerse = Verse::with([
+                'bible:id,name,language',
+                'book:id,title',
+                'chapter:id,chapter_number'
+            ])
             ->whereHas('bible', function ($query) use ($languageName) {
                 $query->where('language', $languageName);
             })
+            ->select('id', 'bible_id', 'book_id', 'chapter_id', 'verse_number', 'text')
             ->inRandomOrder()
             ->first();
 
         // Get total Bibles in user's language
         $totalBibles = Bible::where('language', $languageName)->count();
 
-        // Get last reading from reading progress with eager loading
+        // Get last reading from reading progress with only needed fields
         $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
-            ->with(['bible', 'chapter.book'])
+            ->with([
+                'bible:id,name',
+                'chapter:id,book_id,chapter_number',
+                'chapter.book:id,title'
+            ])
             ->latest('completed_at')
+            ->select('id', 'user_id', 'bible_id', 'chapter_id', 'completed_at')
             ->first();
 
         $lastReading = null;
@@ -53,21 +81,21 @@ class DashboardController extends Controller
             ];
         }
 
-        // Get reading stats with accurate verse counts - optimized query
+        // Get reading stats
         $totalChaptersCompleted = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->count();
 
-        // Get chapters read today with their actual verse counts - eager load verses
-        $chaptersReadToday = \App\Models\ReadingProgress::where('user_id', $user->id)
+        // Get chapters read today with only IDs, then sum verses via DB
+        $chapterIdsToday = \App\Models\ReadingProgress::where('user_id', $user->id)
             ->where('completed', true)
             ->whereDate('completed_at', today())
-            ->with('chapter.verses')
-            ->get();
+            ->pluck('chapter_id');
 
-        $versesReadToday = $chaptersReadToday->sum(function ($progress) {
-            return $progress->chapter->verses->count();
-        });
+        $versesReadToday = 0;
+        if ($chapterIdsToday->isNotEmpty()) {
+            $versesReadToday = \App\Models\Verse::whereIn('chapter_id', $chapterIdsToday)->count();
+        }
 
         $readingStats = [
             'total_bibles' => $totalBibles,
@@ -75,8 +103,25 @@ class DashboardController extends Controller
             'chapters_completed' => $totalChaptersCompleted,
         ];
 
+        // Only send minimal data to frontend
         return Inertia::render('Dashboard', [
-            'verseOfTheDay' => $randomVerse,
+            'verseOfTheDay' => $randomVerse ? [
+                'id' => $randomVerse->id,
+                'text' => $randomVerse->text,
+                'verse_number' => $randomVerse->verse_number,
+                'bible' => [
+                    'id' => $randomVerse->bible->id,
+                    'name' => $randomVerse->bible->name,
+                ],
+                'book' => [
+                    'id' => $randomVerse->book->id,
+                    'title' => $randomVerse->book->title,
+                ],
+                'chapter' => [
+                    'id' => $randomVerse->chapter->id,
+                    'chapter_number' => $randomVerse->chapter->chapter_number,
+                ],
+            ] : null,
             'lastReading' => $lastReading,
             'readingStats' => $readingStats,
             'userName' => $user->name,

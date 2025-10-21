@@ -57,15 +57,40 @@ class BibleController extends Controller
         $languageMap = [
             'en' => 'English',
             'sw' => 'Swahili',
+            'fr' => 'French',
+            'es' => 'Spanish',
+            'de' => 'German',
+            'pt' => 'Portuguese',
+            'it' => 'Italian',
+            'ru' => 'Russian',
+            'zh' => 'Chinese',
+            'ja' => 'Japanese',
+            'ar' => 'Arabic',
+            'hi' => 'Hindi',
+            'bn' => 'Bengali',
+            'pa' => 'Punjabi',
+            'jv' => 'Javanese',
+            'ko' => 'Korean',
+            'vi' => 'Vietnamese',
+            'te' => 'Telugu',
+            'mr' => 'Marathi',
+            'ta' => 'Tamil',
         ];
 
         $languageName = $languageMap[$userLanguage] ?? 'English';
 
-        // Filter bibles by language
-        $bibles_preffered = Bible::with('books.chapters')
+        // Filter bibles by language, only eager load books (not chapters) for faster response
+        $bibles_preffered = Bible::select('id', 'name', 'abbreviation', 'language', 'version')
+            ->with('books.chapters') // Avoid loading chapters unless needed
             ->where('language', $languageName)
+            ->limit(5)
             ->get();
-        $bibles_other = Bible::with('books.chapters')
+
+        // Exclude preferred language from "other" bibles, and only eager load books
+        $bibles_other = Bible::select('id', 'name', 'abbreviation', 'language', 'version')
+            ->with('books.chapters')
+            ->where('language', 'English')
+            ->limit(5)
             ->get();
 
         return Inertia::render('Parallel Bibles', [
@@ -190,6 +215,28 @@ class BibleController extends Controller
 
         return Inertia::render('Edit Bible', [
             'bible' => $bible->only(['id', 'name', 'abbreviation', 'language', 'version', 'description']),
+            'languages' => [
+                ['id' => 1, 'name' => 'English', 'code' => 'en'],
+                ['id' => 2, 'name' => 'Swahili', 'code' => 'sw'],
+                ['id' => 3, 'name' => 'French', 'code' => 'fr'],
+                ['id' => 4, 'name' => 'Spanish', 'code' => 'es'],
+                ['id' => 5, 'name' => 'German', 'code' => 'de'],
+                ['id' => 6, 'name' => 'Portuguese', 'code' => 'pt'],
+                ['id' => 7, 'name' => 'Italian', 'code' => 'it'],
+                ['id' => 8, 'name' => 'Russian', 'code' => 'ru'],
+                ['id' => 9, 'name' => 'Chinese', 'code' => 'zh'],
+                ['id' => 10, 'name' => 'Japanese', 'code' => 'ja'],
+                ['id' => 11, 'name' => 'Arabic', 'code' => 'ar'],
+                ['id' => 12, 'name' => 'Hindi', 'code' => 'hi'],
+                ['id' => 13, 'name' => 'Bengali', 'code' => 'bn'],
+                ['id' => 14, 'name' => 'Punjabi', 'code' => 'pa'],
+                ['id' => 15, 'name' => 'Javanese', 'code' => 'jv'],
+                ['id' => 16, 'name' => 'Korean', 'code' => 'ko'],
+                ['id' => 17, 'name' => 'Vietnamese', 'code' => 'vi'],
+                ['id' => 18, 'name' => 'Telugu', 'code' => 'te'],
+                ['id' => 19, 'name' => 'Marathi', 'code' => 'mr'],
+                ['id' => 20, 'name' => 'Tamil', 'code' => 'ta'],
+            ],
         ]);
     }
 

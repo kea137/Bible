@@ -15,6 +15,12 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
+import Pagination from '@/components/ui/pagination/Pagination.vue';
+import PaginationContent from '@/components/ui/pagination/PaginationContent.vue';
+import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue';
+import PaginationItem from '@/components/ui/pagination/PaginationItem.vue';
+import PaginationNext from '@/components/ui/pagination/PaginationNext.vue';
+import PaginationPrevious from '@/components/ui/pagination/PaginationPrevious.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -48,6 +54,18 @@ const props = defineProps<{
         }[];
     }[];
 }>();
+
+const pageSize = 5;
+const currentPage = ref(1);
+
+const paginatedBibles = computed(() => {
+    const start = (currentPage.value - 1) * pageSize;
+    return props.biblesList.slice(start, start + pageSize);
+});
+
+function handlePageChange(page: number) {
+    currentPage.value = page;
+}
 
 const searchOpen = ref(false);
 const searchQuery = ref('');
@@ -168,11 +186,11 @@ if (info) {
                 </CardHeader>
                 <CardContent>
                     <div
-                        v-if="filteredBibles.length > 0"
+                        v-if="paginatedBibles.length > 0"
                         class="space-y-2 sm:space-y-3"
                     >
                         <div
-                            v-for="bible in filteredBibles"
+                            v-for="bible in paginatedBibles"
                             :key="bible.id"
                             class="flex cursor-pointer items-center justify-between rounded-lg border border-border p-2 transition-colors hover:bg-accent/50 sm:p-3"
                             @click="viewBible(bible.id)"
@@ -197,6 +215,28 @@ if (info) {
                     </div>
                 </CardContent>
             </Card>
+            <div class="mt-8 w-full">
+                <Pagination :items-per-page="pageSize" :total="biblesList.length" :default-page="1" @update:page="handlePageChange">
+                    <PaginationContent v-slot="{ items }">
+                        <PaginationPrevious />
+
+                        <template v-for="(item, index) in items" :key="index">
+                            <PaginationItem
+                                v-if="item.type === 'page'"
+                                :value="item.value"
+                                :is-active="item.value === currentPage"
+                                @click="handlePageChange(item.value)"
+                            >
+                                {{ item.value }}
+                            </PaginationItem>
+                        </template>
+
+                        <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+
+                        <PaginationNext />
+                    </PaginationContent>
+                </Pagination>
+            </div>
 
             <!-- Search Dialog -->
             <CommandDialog
@@ -216,6 +256,7 @@ if (info) {
                                 :key="bible.id"
                                 :value="bible.name"
                                 @select="viewBible(bible.id)"
+                                class="cursor-pointer"
                             >
                                 <div class="flex flex-col">
                                     <span class="font-medium">{{

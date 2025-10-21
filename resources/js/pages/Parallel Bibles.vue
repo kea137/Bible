@@ -47,7 +47,6 @@ const props = defineProps<{
         id: number;
         name: string;
         abbreviation: string;
-        description: string;
         language: string;
         version: string;
         books: {
@@ -64,7 +63,6 @@ const props = defineProps<{
         id: number;
         name: string;
         abbreviation: string;
-        description: string;
         language: string;
         version: string;
         books: {
@@ -717,7 +715,7 @@ if (info) {
                             class="h-98 space-y-2 text-sm leading-relaxed sm:text-base"
                         >
                             <h3 class="mb-4 text-base font-semibold sm:text-lg">
-                                {{ loadedChapter1.book?.title }}
+                                {{ loadedChapter1.book?.name }}
                                 {{ loadedChapter1.chapter_number }}
                             </h3>
                             <p
@@ -1022,7 +1020,7 @@ if (info) {
                             class="h-98 space-y-2 text-sm leading-relaxed sm:text-base"
                         >
                             <h3 class="mb-4 text-base font-semibold sm:text-lg">
-                                {{ loadedChapter2.book?.title }}
+                                {{ loadedChapter2.book?.name }}
                                 {{ loadedChapter2.chapter_number }}
                             </h3>
                             <p
@@ -1197,7 +1195,7 @@ if (info) {
             @update:open="notesDialogOpen = $event"
             :verse-id="selectedVerseForNote.id"
             :verse-text="selectedVerseForNote.text"
-            :verse-reference="`${selectedVerseChapterInfo.book?.title} ${selectedVerseChapterInfo.chapter_number}:${selectedVerseForNote.verse_number}`"
+            :verse-reference="`${selectedVerseChapterInfo.book?.name} ${selectedVerseChapterInfo.chapter_number}:${selectedVerseForNote.verse_number}`"
             @saved="handleNoteSaved"
         />
     </AppLayout>

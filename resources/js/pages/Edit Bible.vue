@@ -39,6 +39,11 @@ const props = defineProps<{
         version: string;
         description: string;
     };
+    languages: {
+        id: number;
+        code: string;
+        name: string;
+    }[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -186,11 +191,11 @@ if (info) {
                                                 <SelectLabel
                                                     >Languages</SelectLabel
                                                 >
-                                                <SelectItem value="English"
+                                                <SelectItem v-for="lang in languages" :key="lang.id" :value="lang.name">
+                                                    {{ lang.name }}
+                                                </SelectItem>
+                                                <SelectItem value="en"
                                                     >English</SelectItem
-                                                >
-                                                <SelectItem value="Swahili"
-                                                    >Swahili</SelectItem
                                                 >
                                             </SelectGroup>
                                         </SelectContent>

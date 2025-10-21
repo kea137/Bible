@@ -18,6 +18,12 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import Pagination from '@/components/ui/pagination/Pagination.vue';
+import PaginationContent from '@/components/ui/pagination/PaginationContent.vue';
+import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue';
+import PaginationItem from '@/components/ui/pagination/PaginationItem.vue';
+import PaginationNext from '@/components/ui/pagination/PaginationNext.vue';
+import PaginationPrevious from '@/components/ui/pagination/PaginationPrevious.vue';
 import {
     Table,
     TableBody,
@@ -31,7 +37,7 @@ import { bible_create, bible_edit, bibles_configure } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Database, Edit, Plus, Trash2 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -101,6 +107,18 @@ function deleteBible() {
 
 function confirmBootup() {
     bootupDialogOpen.value = true;
+}
+
+const pageSize = 5;
+const currentPage = ref(1);
+
+const paginatedBibles = computed(() => {
+    const start = (currentPage.value - 1) * pageSize;
+    return props.bibles.slice(start, start + pageSize);
+});
+
+function handlePageChange(page: number) {
+    currentPage.value = page;
 }
 
 function bootupBibles() {
@@ -277,7 +295,7 @@ function bootupBibles() {
                             </TableHeader>
                             <TableBody>
                                 <TableRow
-                                    v-for="bible in props.bibles"
+                                    v-for="bible in paginatedBibles"
                                     :key="bible.id"
                                 >
                                     <TableCell
@@ -328,6 +346,28 @@ function bootupBibles() {
                             No Bibles found. Upload your first Bible to get
                             started.
                         </p>
+                    </div>
+                    <div class="mt-8 w-full">
+                        <Pagination :items-per-page="pageSize" :total="bibles.length" :default-page="1" @update:page="handlePageChange">
+                            <PaginationContent v-slot="{ items }">
+                                <PaginationPrevious />
+
+                                <template v-for="(item, index) in items" :key="index">
+                                    <PaginationItem
+                                        v-if="item.type === 'page'"
+                                        :value="item.value"
+                                        :is-active="item.value === currentPage"
+                                        @click="handlePageChange(item.value)"
+                                    >
+                                        {{ item.value }}
+                                    </PaginationItem>
+                                </template>
+
+                                <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+
+                                <PaginationNext />
+                            </PaginationContent>
+                        </Pagination>
                     </div>
                 </CardContent>
             </Card>
