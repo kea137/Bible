@@ -142,7 +142,7 @@ function bootupBibles() {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        :message="success"
+        message="Operation was Successful!"
         variant="success"
         @update:open="
             () => {
@@ -155,24 +155,11 @@ function bootupBibles() {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        :message="error"
+        message="Operation Failed. Try again later!"
         variant="error"
         @update:open="
             () => {
                 alertError = false;
-            }
-        "
-    />
-    <AlertUser
-        v-if="alertInfo"
-        :open="true"
-        title="Information"
-        :confirmButtonText="'OK'"
-        :message="info"
-        variant="info"
-        @update:open="
-            () => {
-                alertInfo = false;
             }
         "
     />

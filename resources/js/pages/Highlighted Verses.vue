@@ -21,7 +21,7 @@ import { highlighted_verses_page } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { BookOpen, Highlighter, MoreVertical } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -34,9 +34,11 @@ const highlights = ref<any[]>([]);
 const notesDialogOpen = ref(false);
 const selectedVerseForNote = ref<any>(null);
 const page = usePage();
-
-const alertSuccess = ref(false);
-const alertError = ref(false);
+const successMessage = computed(() => page.props.success as string);
+const errorMessage = computed(() => page.props.error as string);
+const alertSuccess = ref(!!successMessage.value);
+const alertError = ref(!!errorMessage.value);
+const alertErrorMessage = ref('');
 
 async function loadHighlights() {
     try {
@@ -127,18 +129,18 @@ function handleNoteSaved() {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        message="Operation completed successfully!"
+        :message="successMessage || 'Note saved successfully'"
         variant="success"
-        @update:open="alertSuccess = false"
+        @update:open="() => (alertSuccess = false)"
     />
     <AlertUser
         v-if="alertError"
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        message="Failed to complete the operation."
+        :message="errorMessage || alertErrorMessage"
         variant="error"
-        @update:open="alertError = false"
+        @update:open="() => (alertError = false)"
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">

@@ -510,9 +510,11 @@ watch(selectedChapter2, (newChapterId) => {
 const success = page.props.success;
 const error = page.props.error;
 const info = page.props.info;
-
-const alertSuccess = ref(false);
-const alertError = ref(false);
+const successMessage = computed(() => page.props.success as string);
+const errorMessage = computed(() => page.props.error as string);
+const alertSuccess = ref(!!successMessage.value);
+const alertError = ref(!!errorMessage.value);
+const alertErrorMessage = ref('');
 const alertInfo = ref(false);
 
 if (success) {
@@ -536,39 +538,18 @@ if (info) {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        :message="success"
+        :message="successMessage || 'Note saved successfully'"
         variant="success"
-        @update:open="
-            () => {
-                alertSuccess = false;
-            }
-        "
+        @update:open="() => (alertSuccess = false)"
     />
     <AlertUser
         v-if="alertError"
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        :message="error"
+        :message="errorMessage || alertErrorMessage"
         variant="error"
-        @update:open="
-            () => {
-                alertError = false;
-            }
-        "
-    />
-    <AlertUser
-        v-if="alertInfo"
-        :open="true"
-        title="Information"
-        :confirmButtonText="'OK'"
-        :message="info"
-        variant="info"
-        @update:open="
-            () => {
-                alertInfo = false;
-            }
-        "
+        @update:open="() => (alertError = false)"
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">

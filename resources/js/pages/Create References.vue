@@ -26,7 +26,7 @@ import { references_configure, references_create } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { LoaderCircle, UploadCloudIcon } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps<{
     bibles: Array<{
@@ -85,25 +85,12 @@ const handleFileChange = (event: Event) => {
 };
 
 const page = usePage();
-const success = page.props.success;
-const error = page.props.error;
-const info = page.props.info;
+const successMessage = computed(() => page.props.success as string);
+const errorMessage = computed(() => page.props.error as string);
+const alertSuccess = ref(!!successMessage.value);
+const alertError = ref(!!errorMessage.value);
+const alertErrorMessage = ref('');
 
-const alertSuccess = ref(false);
-const alertError = ref(false);
-const alertInfo = ref(false);
-
-if (success) {
-    alertSuccess.value = true;
-}
-
-if (error) {
-    alertError.value = true;
-}
-
-if (info) {
-    alertInfo.value = true;
-}
 </script>
 
 <template>
@@ -113,40 +100,21 @@ if (info) {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        :message="success"
+        :message="successMessage || 'Note saved successfully'"
         variant="success"
-        @update:open="
-            () => {
-                alertSuccess = false;
-            }
-        "
+        @update:open="() => (alertSuccess = false)"
     />
+
     <AlertUser
         v-if="alertError"
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        :message="error"
+        :message="errorMessage || alertErrorMessage"
         variant="error"
-        @update:open="
-            () => {
-                alertError = false;
-            }
-        "
+        @update:open="() => (alertError = false)"
     />
-    <AlertUser
-        v-if="alertInfo"
-        :open="true"
-        title="Information"
-        :confirmButtonText="'OK'"
-        :message="info"
-        variant="info"
-        @update:open="
-            () => {
-                alertInfo = false;
-            }
-        "
-    />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"

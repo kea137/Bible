@@ -112,7 +112,7 @@ if (info) {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        :message="success"
+        message="Operation was Successful"
         variant="success"
         @update:open="
             () => {
@@ -125,7 +125,7 @@ if (info) {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        :message="error"
+        message="Operation Failed. Try again later!"
         variant="error"
         @update:open="
             () => {
@@ -133,19 +133,7 @@ if (info) {
             }
         "
     />
-    <AlertUser
-        v-if="alertInfo"
-        :open="true"
-        title="Information"
-        :confirmButtonText="'OK'"
-        :message="info"
-        variant="info"
-        @update:open="
-            () => {
-                alertInfo = false;
-            }
-        "
-    />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"

@@ -12,7 +12,6 @@ const languages = [
     { value: 'fr', label: 'Français' },
     { value: 'es', label: 'Español' },
     { value: 'de', label: 'Deutsch' },
-    { value: 'pt', label: 'Português' },
     { value: 'it', label: 'Italiano' },
     { value: 'ru', label: 'Русский' },
     { value: 'zh', label: '中文' },

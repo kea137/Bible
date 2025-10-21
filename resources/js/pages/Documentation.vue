@@ -13,12 +13,21 @@ import {
     Users,
     Zap,
 } from 'lucide-vue-next';
+import { type BreadcrumbItem } from '@/types';
+import { documentation } from '@/routes';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Documentation',
+        href: documentation().url,
+    },
+];
 </script>
 
 <template>
     <Head title="Documentation" />
 
-    <AppLayout :breadcrumbs="[{ label: 'Documentation', href: '' }]">
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div class="rounded-xl bg-card p-6 shadow-sm">
                 <div class="mb-8 border-b border-border pb-6">

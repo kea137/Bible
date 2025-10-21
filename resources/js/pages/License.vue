@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { type BreadcrumbItem } from '@/types';
+import { license } from '@/routes';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'License',
+        href: license().url,
+    },
+];
 </script>
 
 <template>
     <Head title="License" />
 
-    <AppLayout :breadcrumbs="[{ label: 'License', href: '' }]">
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div class="rounded-xl bg-card p-6 shadow-sm">
                 <h1 class="mb-6 text-3xl font-semibold text-foreground">

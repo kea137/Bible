@@ -6,6 +6,7 @@ use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
 use App\Models\Note;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,7 +18,7 @@ class NoteController extends Controller
     public function index(): JsonResponse|Response
     {
         $notes = Note::with(['verse.book', 'verse.chapter'])
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -37,7 +38,7 @@ class NoteController extends Controller
     public function store(StoreNoteRequest $request): JsonResponse
     {
         $note = Note::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'verse_id' => $request->verse_id,
             'title' => $request->title,
             'content' => $request->content,
@@ -57,7 +58,7 @@ class NoteController extends Controller
      */
     public function show(Note $note): JsonResponse
     {
-        if ($note->user_id !== auth()->id()) {
+        if ($note->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -90,7 +91,7 @@ class NoteController extends Controller
      */
     public function destroy(Note $note): JsonResponse
     {
-        if ($note->user_id !== auth()->id()) {
+        if ($note->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
