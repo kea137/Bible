@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 class BibleController extends Controller
 {
@@ -106,9 +107,24 @@ class BibleController extends Controller
     {
         $bible->load('books.chapters');
 
-        // Get the first book and first chapter
-        $firstBook = $bible->books->first();
-        $firstChapter = $firstBook ? $firstBook->chapters->first() : null;
+        $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', Auth::id())
+            ->where('completed', true)
+            ->with([
+                'bible:id,name',
+                'chapter:id,book_id,chapter_number',
+                'chapter.book:id,title'
+            ])
+            ->latest('completed_at')
+            ->select('id', 'user_id', 'bible_id', 'chapter_id', 'completed_at')
+            ->first();
+
+        // Get the last reading point or first book and first chapter 
+        $firstBook = $lastReadingProgress && $lastReadingProgress->bible_id === $bible->id
+            ? $bible->books->firstWhere('id', $lastReadingProgress->chapter->book_id)
+            : $bible->books->first();
+        $firstChapter = $lastReadingProgress && $lastReadingProgress->bible_id === $bible->id
+            ? $firstBook->chapters->firstWhere('id', $lastReadingProgress->chapter_id)
+            : $firstBook->chapters->first();
 
         if ($firstChapter) {
             $firstChapter->load('verses', 'book');
