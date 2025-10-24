@@ -1,4 +1,12 @@
 {
+
+    "Create Bible": "Создать Библию",
+    "file selected": "файл выбран",
+    "file or click to upload": "файл или нажмите для загрузки",
+    "Drag & drop the Bible json": "Перетащите и отпустите JSON-файл Библии",
+    "Drop your files here!": "Перетащите ваши файлы сюда!",
+    "Create a new Bible by filling out the form below.": "Создайте новую Библию, заполнив форму ниже.",
+
     "Your email address is unverified.": "Ваш адрес электронной почты не подтверждён.",
     "Click here to resend the verification email.": "Нажмите здесь, чтобы повторно отправить письмо для подтверждения.",
     "A new verification link has been sent to your email": "Новая ссылка для подтверждения отправлена на вашу электронную почту",

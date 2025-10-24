@@ -137,14 +137,14 @@ function bootupBibles() {
 </script>
 
 <template>
-    <Head title="{{t('Configure Bibles')}}" />
+    <Head :title="t('Configure Bibles')" />
 
     <AlertUser
         v-if="alertSuccess"
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        message="{{t('Operation was Successful!')}}"
+        :message="t('Operation was Successful!')"
         variant="success"
         @update:open="
             () => {
@@ -157,7 +157,7 @@ function bootupBibles() {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        message="{{t('Operation Failed. Try again later!')}}"
+        :message="t('Operation Failed. Try again later!')"
         variant="error"
         @update:open="
             () => {

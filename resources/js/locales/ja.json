@@ -1,4 +1,10 @@
 {
+    "Create Bible": "聖書を作成",
+    "file selected": "ファイルが選択されました",
+    "file or click to upload": "ファイルまたはクリックしてアップロード",
+    "Drag & drop the Bible json": "聖書のJSONファイルをドラッグ＆ドロップ",
+    "Drop your files here!": "ここにファイルをドロップ！",
+    "Create a new Bible by filling out the form below.": "下記のフォームに入力して新しい聖書を作成してください。",
 
     "Your email address is unverified.": "あなたのメールアドレスは未確認です。",
     "Click here to resend the verification email.": "確認メールを再送するにはこちらをクリックしてください。",

@@ -1,4 +1,10 @@
 {
+    "Create Bible": "创建圣经",
+    "file selected": "文件已选择",
+    "file or click to upload": "文件或点击上传",
+    "Drag & drop the Bible json": "拖放圣经json文件",
+    "Drop your files here!": "将你的文件拖到这里！",
+    "Create a new Bible by filling out the form below.": "通过填写下方表单创建新圣经。",
 
     "Your email address is unverified.": "你的电子邮件地址尚未验证。",
     "Click here to resend the verification email.": "点击这里重新发送验证邮件。",

@@ -1,4 +1,10 @@
 {
+    "Create Bible": "성경 만들기",
+    "file selected": "파일이 선택되었습니다",
+    "file or click to upload": "파일 또는 클릭하여 업로드",
+    "Drag & drop the Bible json": "성경 JSON 파일을 드래그 앤 드롭하세요",
+    "Drop your files here!": "여기에 파일을 놓으세요!",
+    "Create a new Bible by filling out the form below.": "아래 양식을 작성하여 새 성경을 만드세요.",
 
     "Your email address is unverified.": "이메일 주소가 인증되지 않았습니다.",
     "Click here to resend the verification email.": "인증 이메일을 다시 보내려면 여기를 클릭하세요.",

@@ -470,7 +470,7 @@ if (props.initialChapter?.id) {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        message="{{t ('Operation was successful!') }}"
+        :message="t('Operation was successful!')"
         variant="success"
         @update:open="
             () => {
@@ -483,7 +483,7 @@ if (props.initialChapter?.id) {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        message="{{t ('Operation failed! Please try again.') }}"
+        :message="t('Operation failed! Please try again.')"
         variant="error"
         @update:open="
             () => {

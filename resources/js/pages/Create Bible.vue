@@ -29,15 +29,17 @@ import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { LoaderCircle, UploadCloudIcon } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Configure Bibles',
+        title: t('Configure Bibles'),
         href: bibles_configure().url,
     },
 
     {
-        title: 'Create Bible',
+        title: t('Create Bible'),
         href: bible_create().url,
     },
 ];
@@ -106,13 +108,13 @@ if (info) {
 </script>
 
 <template>
-    <Head title="Create Bible" />
+    <Head :title="t('Create Bible')" />
     <AlertUser
         v-if="alertSuccess"
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        message="Operation was Successful"
+        :message="t('Operation was Successful')"
         variant="success"
         @update:open="
             () => {
@@ -125,7 +127,7 @@ if (info) {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        message="Operation Failed. Try again later!"
+        :message="t('Operation Failed. Try again later!')"
         variant="error"
         @update:open="
             () => {
@@ -145,10 +147,9 @@ if (info) {
                         v-slot="{ errors, processing }"
                     >
                         <CardHeader>
-                            <CardTitle>Create Bible</CardTitle>
+                            <CardTitle>{{ t('Create Bible') }}</CardTitle>
                             <CardDescription
-                                >Create a new Bible by filling out the form
-                                below.</CardDescription
+                                >{{ t('Create a new Bible by filling out the form below.') }}</CardDescription
                             >
                         </CardHeader>
                         <CardContent>
@@ -158,28 +159,26 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="name">Name</Label>
+                                    <Label for="name">{{ t('Name') }}</Label>
                                     <Input
                                         id="name"
                                         name="name"
                                         :tabindex="1"
                                         type="text"
-                                        placeholder="Name of the Course"
+                                        :placeholder="t('Name of the Bible')"
                                     />
                                     <InputError :message="errors.name" />
                                 </div>
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="abbreviation"
-                                        >Abbreviation</Label
-                                    >
+                                    <Label for="abbreviation">{{ t('Abbreviation') }}</Label>
                                     <Input
                                         id="abbreviation"
                                         name="abbreviation"
                                         :tabindex="1"
                                         type="text"
-                                        placeholder="Abbreviation of the Bible"
+                                        :placeholder="t('Abbreviation of the Bible')"
                                     />
                                     <InputError
                                         :message="errors.abbreviation"
@@ -188,18 +187,16 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="language">Language</Label>
+                                    <Label for="language">{{ t('Language') }}</Label>
                                     <Select name="language">
                                         <SelectTrigger id="language">
                                             <SelectValue
-                                                placeholder="Select Language"
+                                                :placeholder="t('Select Language')"
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectLabel
-                                                    >Languages</SelectLabel
-                                                >
+                                                <SelectLabel>{{ t('Languages') }}</SelectLabel>
                                                 <template v-for="language in props.languages" :key="language.id">
                                                     <SelectItem :value="language.name">
                                                         {{ language.name }}
@@ -213,7 +210,7 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="version">Version</Label>
+                                    <Label for="version">{{ t('Version') }}</Label>
                                     <Input
                                         id="version"
                                         name="version"
@@ -226,12 +223,12 @@ if (info) {
                                 <div
                                     class="col-span-2 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="description">Description</Label>
+                                    <Label for="description">{{ t('Description') }}</Label>
                                     <Textarea
                                         id="description"
                                         name="description"
                                         :tabindex="1"
-                                        placeholder="Description of the Bible"
+                                        :placeholder="t('Description of the Bible')"
                                     />
                                     <InputError :message="errors.description" />
                                 </div>
@@ -263,7 +260,7 @@ if (info) {
                                             <p
                                                 class="text-lg font-medium text-primary"
                                             >
-                                                Drop your files here!
+                                                {{ t('Drop your files here!') }}
                                             </p>
                                         </template>
                                         <template v-else>
@@ -276,8 +273,8 @@ if (info) {
                                                 <p
                                                     class="text-base font-medium text-gray-700 dark:text-white"
                                                 >
-                                                    Drag & drop the Bible json
-                                                    file or click to upload
+                                                    {{ t('Drag & drop the Bible json') }}
+                                                    {{ t('file or click to upload') }}
                                                 </p>
                                             </div>
                                             <p
@@ -285,7 +282,7 @@ if (info) {
                                                 class="mt-2 text-sm text-gray-500 dark:text-gray-400"
                                             >
                                                 {{ selectedFiles.length }}
-                                                file selected
+                                                {{ t('file selected') }}
                                             </p>
                                         </template>
                                     </div>
@@ -302,7 +299,7 @@ if (info) {
                                     v-if="processing"
                                     class="h-4 w-4 animate-spin"
                                 />
-                                Create Bible
+                                {{ t('Create Bible') }}
                             </Button>
                         </CardFooter>
                     </Form>

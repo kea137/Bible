@@ -1,5 +1,12 @@
 {
 
+    "Create Bible": "Crear Biblia",
+    "file selected": "archivo seleccionado",
+    "file or click to upload": "archivo o haz clic para subir",
+    "Drag & drop the Bible json": "Arrastra y suelta el archivo json de la Biblia",
+    "Drop your files here!": "¡Suelta tus archivos aquí!",
+    "Create a new Bible by filling out the form below.": "Crea una nueva Biblia completando el formulario a continuación.",
+
     "Your email address is unverified.": "Tu dirección de correo electrónico no está verificada.",
     "Click here to resend the verification email.": "Haz clic aquí para reenviar el correo de verificación.",
     "A new verification link has been sent to your email": "Se ha enviado un nuevo enlace de verificación a tu correo electrónico",

@@ -1,4 +1,10 @@
 {
+    "Create Bible": "إنشاء كتاب مقدس",
+    "file selected": "تم اختيار الملف",
+    "file or click to upload": "ملف أو انقر للرفع",
+    "Drag & drop the Bible json": "اسحب وأفلت ملف الكتاب المقدس بصيغة JSON",
+    "Drop your files here!": "أسقط ملفاتك هنا!",
+    "Create a new Bible by filling out the form below.": "أنشئ كتاباً مقدساً جديداً بملء النموذج أدناه.",
 
     "Your email address is unverified.": "عنوان بريدك الإلكتروني غير موثق.",
     "Click here to resend the verification email.": "انقر هنا لإعادة إرسال رسالة التحقق.",
