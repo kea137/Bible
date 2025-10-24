@@ -17,8 +17,6 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::get('/license', function () {
     return Inertia::render('License');
 })->name('license');
@@ -26,11 +24,17 @@ Route::get('/license', function () {
 Route::get('/documentation', function () {
     return Inertia::render('Documentation');
 })->name('documentation');
+
+Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
 // Share verse routes
 Route::get('/share', [ShareController::class, 'index'])->name('share');
 
 // Sitemap for SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+// Store user's locale preference
+Route::post('/api/user/locale', [DashboardController::class, 'updateLocale'])->name('update_locale')->middleware('auth');
 
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles')->middleware('auth');
 Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel')->middleware('auth');

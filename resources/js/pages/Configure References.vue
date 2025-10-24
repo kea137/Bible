@@ -38,10 +38,12 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Plus, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Configure References',
+        title: t('Configure References'),
         href: references_configure().url,
     },
 ];
@@ -113,14 +115,14 @@ function deleteReferences() {
 </script>
 
 <template>
-    <Head title="Configure References" />
+    <Head :title="t('Configure References')" />
 
     <AlertUser
         v-if="alertSuccess"
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        message="Operation was Successful"
+        :message="t('Operation was Successful')"
         variant="success"
         @update:open="
             () => {
@@ -133,7 +135,7 @@ function deleteReferences() {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        message="Operation Failed. Try again later!"
+        :message="t('Operation Failed. Try again later!')"
         variant="error"
         @update:open="
             () => {
@@ -148,16 +150,16 @@ function deleteReferences() {
     >
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogTitle>{{t('Are you sure?')}}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This will permanently delete all references for this Bible.
-                    This action cannot be undone.
+                    {{t('This will permanently delete all references for this Bible.')}}
+                    {{t('This action cannot be undone.')}}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{{t('Cancel')}}</AlertDialogCancel>
                 <AlertDialogAction @click="deleteReferences"
-                    >Delete</AlertDialogAction
+                    >{{t('Delete')}}</AlertDialogAction
                 >
             </AlertDialogFooter>
         </AlertDialogContent>
@@ -174,11 +176,10 @@ function deleteReferences() {
                     >
                         <div>
                             <CardTitle class="text-base sm:text-lg"
-                                >Configure References</CardTitle
+                                >{{t('Configure References')}}</CardTitle
                             >
                             <CardDescription class="text-xs sm:text-sm"
-                                >Manage Bible verse references - upload or
-                                delete</CardDescription
+                                >{{t('Manage Bible verse references - upload or delete')}}</CardDescription
                             >
                         </div>
                         <Button
@@ -187,9 +188,9 @@ function deleteReferences() {
                         >
                             <Plus class="mr-2 h-4 w-4" />
                             <span class="hidden sm:inline"
-                                >Upload New References</span
+                                >{{t('Upload New References')}}</span
                             >
-                            <span class="sm:hidden">Upload References</span>
+                            <span class="sm:hidden">{{t('Upload References')}}</span>
                         </Button>
                     </div>
                 </CardHeader>
@@ -199,21 +200,21 @@ function deleteReferences() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead class="text-xs sm:text-sm"
-                                        >Bible Name</TableHead
+                                        >{{t('Bible Name')}}</TableHead
                                     >
                                     <TableHead class="text-xs sm:text-sm"
-                                        >Abbreviation</TableHead
+                                        >{{t('Abbreviation')}}</TableHead
                                     >
                                     <TableHead
                                         class="hidden text-xs sm:text-sm md:table-cell"
-                                        >Language</TableHead
+                                        >{{t('Language')}}</TableHead
                                     >
                                     <TableHead class="text-xs sm:text-sm"
-                                        >Reference Count</TableHead
+                                        >{{t('Reference Count')}}</TableHead
                                     >
                                     <TableHead
                                         class="text-right text-xs sm:text-sm"
-                                        >Actions</TableHead
+                                        >{{t('Actions')}}</TableHead
                                     >
                                 </TableRow>
                             </TableHeader>
@@ -260,8 +261,8 @@ function deleteReferences() {
                     </div>
                     <div v-else class="py-8 text-center text-muted-foreground">
                         <p class="text-xs sm:text-sm">
-                            No Bibles with references found. Upload references
-                            to get started.
+                            {{t('No Bibles with references found. Upload references')}}
+                            {{t('to get started.')}}
                         </p>
                     </div>
                     <div class="mt-8 w-full">

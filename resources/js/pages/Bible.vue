@@ -43,7 +43,9 @@ import {
     Share2,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps<{
     bible: {
         id: number;
@@ -79,7 +81,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Bibles',
+        title: t('Bibles'),
         href: bibles().url,
     },
     {
@@ -468,7 +470,7 @@ if (props.initialChapter?.id) {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        message="Operation was successful!"
+        message="{{t ('Operation was successful!') }}"
         variant="success"
         @update:open="
             () => {
@@ -481,7 +483,7 @@ if (props.initialChapter?.id) {
         :open="true"
         title="Error"
         :confirmButtonText="'OK'"
-        message="Operation failed! Please try again."
+        message="{{t ('Operation failed! Please try again.') }}"
         variant="error"
         @update:open="
             () => {
@@ -519,12 +521,12 @@ if (props.initialChapter?.id) {
                                 <Select v-model="selectedBookId">
                                     <SelectTrigger class="w-full sm:w-40">
                                         <SelectValue
-                                            placeholder="Select a book"
+                                            :placeholder="t('Select a book')"
                                         />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>Books</SelectLabel>
+                                            <SelectLabel>{{t ('Books') }}</SelectLabel>
                                             <SelectItem
                                                 v-for="book in bible.books"
                                                 :key="book.id"
@@ -537,11 +539,11 @@ if (props.initialChapter?.id) {
                                 </Select>
                                 <Select v-model="selectedChapterId">
                                     <SelectTrigger class="w-full sm:w-28">
-                                        <SelectValue placeholder="Chapter" />
+                                        <SelectValue :placeholder="t('Chapter')" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>Chapters</SelectLabel>
+                                            <SelectLabel>{{ t ('Chapters') }}</SelectLabel>
                                             <SelectItem
                                                 v-for="chapter in bible.books.find(
                                                     (book) =>
@@ -571,7 +573,7 @@ if (props.initialChapter?.id) {
                                 class="w-full sm:w-auto"
                             >
                                 <ChevronLeft class="mr-1 h-4 w-4" />
-                                Previous
+                                {{ t('Previous') }}
                             </Button>
                             <Button
                                 v-if="page.props.auth?.user"
@@ -585,8 +587,8 @@ if (props.initialChapter?.id) {
                                 <CheckCircle class="mr-1 h-4 w-4" />
                                 {{
                                     chapterCompleted
-                                        ? 'Completed'
-                                        : 'Mark as Read'
+                                        ? t('Completed')
+                                        : t('Mark as Read')
                                 }}
                             </Button>
                             <Button
@@ -596,7 +598,7 @@ if (props.initialChapter?.id) {
                                 :disabled="!hasNextChapter"
                                 class="w-full sm:w-auto"
                             >
-                                Next
+                                {{ t('Next') }}
                                 <ChevronRight class="ml-1 h-4 w-4" />
                             </Button>
                         </div>
@@ -651,7 +653,7 @@ if (props.initialChapter?.id) {
                                                     <p
                                                         class="text-sm font-semibold"
                                                     >
-                                                        Cross References:
+                                                        {{ t('Cross References') }}:
                                                     </p>
                                                     <div
                                                         class="space-y-1 text-sm"
@@ -683,7 +685,7 @@ if (props.initialChapter?.id) {
                                                                 hoveredVerseReferences.length -
                                                                 3
                                                             }}
-                                                            more references
+                                                            {{ t('more references') }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -691,8 +693,8 @@ if (props.initialChapter?.id) {
                                                     v-else
                                                     class="text-sm text-muted-foreground"
                                                 >
-                                                    No cross-references
-                                                    available
+                                                    {{ t('No cross-references') }}
+                                                    {{ t('available') }}
                                                 </p>
                                             </HoverCardContent>
                                         </HoverCard>
@@ -700,7 +702,7 @@ if (props.initialChapter?.id) {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
                                         <DropdownMenuLabel
-                                            >Highlight</DropdownMenuLabel
+                                            >{{ t('Highlight') }}</DropdownMenuLabel
                                         >
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
@@ -717,7 +719,7 @@ if (props.initialChapter?.id) {
                                                 <span
                                                     class="h-4 w-4 rounded bg-yellow-300"
                                                 ></span>
-                                                Highlight - Yellow
+                                                {{ t('Highlight - Yellow') }}
                                             </span>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -734,43 +736,43 @@ if (props.initialChapter?.id) {
                                                 <span
                                                     class="h-4 w-4 rounded bg-green-300"
                                                 ></span>
-                                                Highlight - Green
+                                                {{ t('Highlight - Green') }}
                                             </span>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="removeHighlight(verse.id)"
                                         >
-                                            Remove Highlight
+                                            {{t('Remove Highlight')}}
                                         </DropdownMenuItem>
                                         <DropdownMenuLabel
-                                            >Learn More</DropdownMenuLabel
+                                            >{{ t('Learn More') }}</DropdownMenuLabel
                                         >
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="studyVerse(verse.id)"
                                         >
-                                            Study this Verse
+                                            {{ t('Study this Verse') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="openNotesDialog(verse)"
                                         >
-                                            Put Note on this Verse
+                                            {{ t('Put Note on this Verse') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="canUpdate"
                                             @click="openVerseDialog(verse)"
                                         >
-                                            Edit Verse Text
+                                            {{ t('Edit Verse Text') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuLabel
-                                            >Share</DropdownMenuLabel
+                                            >{{ t('Share') }}</DropdownMenuLabel
                                         >
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="shareVerse(verse)"
                                         >
                                             <Share2 class="mr-2 h-4 w-4" />
-                                            Share this Verse
+                                            {{ t('Share this Verse') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -786,14 +788,14 @@ if (props.initialChapter?.id) {
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >Cross References</CardTitle
+                            >{{ t('Cross References') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
                             ><span class="hidden sm:inline"
-                                >Hover over verse numbers to see
-                                references</span
+                                >{{ t('Hover over verse numbers to see') }}
+                                {{ t('references') }}</span
                             ><span class="sm:hidden"
-                                >Tap verse numbers to see references</span
+                                >{{ t('Tap verse numbers to see references') }}</span
                             ></CardDescription
                         >
                     </CardHeader>
@@ -828,12 +830,12 @@ if (props.initialChapter?.id) {
                         </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
                             <span class="hidden sm:inline"
-                                >Hover over a verse number to see its
-                                cross-references</span
+                                >{{ t('Hover over a verse number to see its') }}
+                                {{ t('cross-references') }}</span
                             >
                             <span class="sm:hidden"
-                                >Tap a verse number to see its
-                                cross-references</span
+                                >{{ t('Tap a verse number to see its') }}
+                                {{ t('cross-references') }}</span
                             >
                         </p>
                     </CardContent>
@@ -843,11 +845,11 @@ if (props.initialChapter?.id) {
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >Selected Reference</CardTitle
+                            >{{ t('Selected Reference') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            >Click a reference above to view full
-                            verse</CardDescription
+                            >{{ t('Click a reference above to view full') }}
+                            {{ t('verse') }}</CardDescription
                         >
                     </CardHeader>
                     <CardContent
@@ -866,7 +868,7 @@ if (props.initialChapter?.id) {
                             </p>
                         </div>
                         <p v-else class="text-sm text-muted-foreground italic">
-                            Click on a reference to view the full verse
+                            {{ t('Click on a reference to view the full verse') }}
                         </p>
                     </CardContent>
                 </Card>

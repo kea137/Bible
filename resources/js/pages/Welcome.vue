@@ -12,47 +12,49 @@ import {
     SplitSquareHorizontal,
 } from 'lucide-vue-next';
 import Logo from '/resources/images/logo.png';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const imageUrl = Logo;
-
 const features = [
     {
         icon: BookOpen,
-        title: 'Multiple Bible Translations',
+        title: t('Multiple Bible Translations'),
     },
     {
         icon: SplitSquareHorizontal,
-        title: 'Parallel Bible Reading',
+        title: t('Parallel Bible Reading'),
     },
     {
         icon: Highlighter,
-        title: 'Highlight & Bookmark',
+        title: t('Highlight & Bookmark'),
     },
     {
         icon: NotebookPen,
-        title: 'Personal Notes',
+        title: t('Personal Notes'),
     },
     {
         icon: Calendar,
-        title: 'Reading Plans',
+        title: t('Reading Plans'),
     },
     {
         icon: Link2,
-        title: 'Cross References',
+        title: t('Cross References'),
     },
     {
         icon: Library,
-        title: 'Verse Study Tools',
+        title: t('Verse Study Tools'),
     },
     {
         icon: Moon,
-        title: 'Dark Mode',
+        title: t('Dark Mode'),
     },
 ];
 </script>
 
 <template>
-    <Head title="Welcome">
+    <Head :title="t('Welcome')">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
@@ -68,20 +70,20 @@ const features = [
                     :href="dashboard()"
                     class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                 >
-                    Dashboard
+                    {{t('Dashboard')}}
                 </Link>
                 <template v-else>
                     <Link
                         :href="login()"
                         class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                     >
-                        Log in
+                        {{t('Log in')}}
                     </Link>
                     <Link
                         :href="register()"
                         class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                     >
-                        Register
+                        {{t('Register')}}
                     </Link>
                 </template>
             </nav>
@@ -96,18 +98,18 @@ const features = [
                     class="flex-1 rounded-br-lg rounded-bl-lg bg-white p-4 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
                 >
                     <h1 class="mb-2 text-2xl font-semibold">
-                        Welcome to Bible App
+                        {{t('Welcome to Bible App')}}
                     </h1>
                     <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
-                        A comprehensive platform for studying God's Word with
-                        powerful tools.
+                        {{t('A comprehensive platform for studying God\'s Word with')}}
+                        {{t('powerful tools.')}}
                     </p>
 
                     <div class="mb-2">
                         <h2
                             class="mb-4 text-sm font-semibold tracking-wide text-[#706f6c] uppercase dark:text-[#A1A09A]"
                         >
-                            Features
+                            {{t('Features')}}
                         </h2>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div
@@ -140,14 +142,14 @@ const features = [
                             :href="register()"
                             class="inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                         >
-                            Get Started
+                            {{t('Get Started')}}
                         </Link>
                         <Link
                             v-else
                             :href="dashboard()"
                             class="mt-4 inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
                         >
-                            Go to Dashboard
+                            {{t('Go to Dashboard')}}
                         </Link>
                     </div>
                 </div>

@@ -201,6 +201,7 @@ class ReferenceService
             ->where('verse_number', $verse->verse_number)
             ->where('bible_id', '!=', $verse->bible_id)
             ->with(['bible'])
+            ->limit(5)
             ->get();
 
         return \Inertia\Inertia::render('Verse Study', [

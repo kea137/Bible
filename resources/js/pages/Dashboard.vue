@@ -28,10 +28,12 @@ import {
     TrendingUp,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: t('Dashboard'),
         href: dashboard().url,
     },
 ];
@@ -159,7 +161,7 @@ function getHighlightColorClass(color: string): string {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head :title="t('Dashboard')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
@@ -171,10 +173,10 @@ function getHighlightColorClass(color: string): string {
             >
                 <div>
                     <h1 class="text-xl font-bold text-foreground sm:text-2xl">
-                        Welcome back, {{ userName }}!
+                        {{t('Welcome back,')}} {{ userName }}!
                     </h1>
                     <p class="text-sm text-muted-foreground sm:text-base">
-                        Continue your spiritual journey
+                        {{t('Continue your spiritual journey')}}
                     </p>
                 </div>
                 <Button
@@ -183,7 +185,7 @@ function getHighlightColorClass(color: string): string {
                     class="w-full sm:w-auto"
                 >
                     <Search class="mr-2 h-4 w-4" />
-                    Search
+                    {{t('Search')}}
                 </Button>
             </div>
 
@@ -195,7 +197,7 @@ function getHighlightColorClass(color: string): string {
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Bibles Available</CardTitle
+                                >{{t('Bibles Available')}}</CardTitle
                             >
                             <Library
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
@@ -207,7 +209,7 @@ function getHighlightColorClass(color: string): string {
                             {{ readingStats.total_bibles }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            In your language
+                            {{t('In your language')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -216,7 +218,7 @@ function getHighlightColorClass(color: string): string {
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Verses Today</CardTitle
+                                >{{t('Verses Today')}}</CardTitle
                             >
                             <BookOpen
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
@@ -228,7 +230,7 @@ function getHighlightColorClass(color: string): string {
                             {{ readingStats.verses_read_today }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            Keep reading!
+                            {{t('Keep reading!')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -237,7 +239,7 @@ function getHighlightColorClass(color: string): string {
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Progress</CardTitle
+                                >{{t('Progress')}}</CardTitle
                             >
                             <TrendingUp
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
@@ -249,7 +251,7 @@ function getHighlightColorClass(color: string): string {
                             {{ readingStats.chapters_completed }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            Chapters completed
+                            {{t('Chapters completed')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -263,7 +265,7 @@ function getHighlightColorClass(color: string): string {
                         <div class="flex items-center gap-2">
                             <Quote class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
                             <CardTitle class="text-base sm:text-lg"
-                                >Verse of the Day</CardTitle
+                                >{{t('Verse of the Day')}}</CardTitle
                             >
                         </div>
                     </CardHeader>
@@ -294,8 +296,8 @@ function getHighlightColorClass(color: string): string {
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
                         <p>
-                            No verse available. Start reading to discover
-                            inspiring passages!
+                            {{t('No verse available. Start reading to discover')}}
+                            {{t('inspiring passages!')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -304,10 +306,10 @@ function getHighlightColorClass(color: string): string {
                 <Card v-if="lastReading">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-base sm:text-lg"
-                            >Continue Reading</CardTitle
+                            >{{t('Continue Reading')}}</CardTitle
                         >
                         <CardDescription class="text-xs sm:text-sm"
-                            >Pick up where you left off</CardDescription
+                            >{{t('Pick up where you left off')}}</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
@@ -324,7 +326,7 @@ function getHighlightColorClass(color: string): string {
                                 </p>
                             </div>
                             <Button @click="continueLast" class="w-full">
-                                Continue Reading
+                                {{t('Continue Reading')}}
                             </Button>
                         </div>
                     </CardContent>
@@ -334,10 +336,10 @@ function getHighlightColorClass(color: string): string {
                 <Card :class="lastReading ? '' : 'lg:col-span-2'">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-base sm:text-lg"
-                            >Quick Actions</CardTitle
+                            >{{t('Quick Actions')}}</CardTitle
                         >
                         <CardDescription class="text-xs sm:text-sm"
-                            >Start your study session</CardDescription
+                            >{{t('Start your study session')}}</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
@@ -348,7 +350,7 @@ function getHighlightColorClass(color: string): string {
                                 class="w-full justify-start"
                             >
                                 <BookOpen class="mr-2 h-4 w-4" />
-                                Browse Bibles
+                                {{t('Browse Bibles')}}
                             </Button>
                             <Button
                                 @click="router.visit('/bibles/parallel')"
@@ -356,7 +358,7 @@ function getHighlightColorClass(color: string): string {
                                 class="w-full justify-start"
                             >
                                 <Library class="mr-2 h-4 w-4" />
-                                Compare Translations
+                                {{t('Compare Translations')}}
                             </Button>
                         </div>
                     </CardContent>
@@ -373,11 +375,11 @@ function getHighlightColorClass(color: string): string {
                     >
                         <div>
                             <h3 class="mb-1 text-sm font-semibold sm:text-base">
-                                Make Reading a Habit
+                                {{t('Make Reading a Habit')}}
                             </h3>
                             <p class="text-xs text-muted-foreground sm:text-sm">
-                                Set aside time each day to read and reflect on
-                                the Word
+                                {{t('Set aside time each day to read and reflect on')}}
+                                {{t('the Word')}}
                             </p>
                         </div>
                         <BookOpen
@@ -395,11 +397,11 @@ function getHighlightColorClass(color: string): string {
                             class="h-4 w-4 text-primary sm:h-5 sm:w-5"
                         />
                         <CardTitle class="text-base sm:text-lg"
-                            >Your Highlighted Verses</CardTitle
+                            >{{t('Your Highlighted Verses')}}</CardTitle
                         >
                     </div>
                     <CardDescription class="text-xs sm:text-sm"
-                        >Recent verses you've marked</CardDescription
+                        >{{t('Recent verses you\'ve marked')}}</CardDescription
                     >
                 </CardHeader>
                 <CardContent>
@@ -427,7 +429,7 @@ function getHighlightColorClass(color: string): string {
                                 v-if="highlight.note"
                                 class="mt-1 text-xs text-muted-foreground italic"
                             >
-                                Note: {{ highlight.note }}
+                                {{t('Note:')}} {{ highlight.note }}
                             </p>
                         </div>
                         <Link :href="highlighted_verses_page()">
@@ -436,7 +438,7 @@ function getHighlightColorClass(color: string): string {
                                 variant="outline"
                                 class="mt-4 w-full"
                             >
-                                View All {{ highlights.length }} Highlights
+                                {{t('View All')}} {{ highlights.length }} {{t('Highlights')}}
                             </Button>
                         </Link>
                     </div>
@@ -452,11 +454,11 @@ function getHighlightColorClass(color: string): string {
                     placeholder="Search bibles, verses, or highlighted passages..."
                 />
                 <CommandList>
-                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandEmpty>{{t('No results found.')}}</CommandEmpty>
 
                     <CommandGroup
                         v-if="filteredBibles.length > 0"
-                        heading="Bibles"
+                        heading="{{t('Bibles')}}"
                     >
                         <CommandItem
                             v-for="bible in filteredBibles.slice(0, 5)"
@@ -485,7 +487,7 @@ function getHighlightColorClass(color: string): string {
 
                     <CommandGroup
                         v-if="filteredHighlights.length > 0"
-                        heading="Highlighted Verses"
+                        heading="{{t('Highlighted Verses')}}"
                     >
                         <CommandItem
                             v-for="highlight in filteredHighlights.slice(0, 5)"

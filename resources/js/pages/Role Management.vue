@@ -30,14 +30,15 @@ import TableCell from '@/components/ui/table/TableCell.vue';
 import TableHead from '@/components/ui/table/TableHead.vue';
 import TableHeader from '@/components/ui/table/TableHeader.vue';
 import TableRow from '@/components/ui/table/TableRow.vue';
-// import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { delete_user, role_management, update_roles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Save, Trash2, UserCog } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const page = usePage();
 const auth = computed(() => page.props.auth);
 const roleNumbers = computed(() => auth.value?.roleNumbers || []);
@@ -45,7 +46,7 @@ const isAdmin = computed(() => roleNumbers.value.includes(1));
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Role Management',
+        title: t('Role Management'),
         href: role_management().url,
     },
 ];
@@ -151,7 +152,7 @@ function handlePageChange(page: number) {
 </script>
 
 <template>
-    <Head title="Role Management" />
+    <Head :title="t('Role Management')" />
 
     <AlertUser
         v-if="alertSuccess"
@@ -181,22 +182,22 @@ function handlePageChange(page: number) {
                 <CardHeader>
                     <div class="flex items-center gap-2">
                         <UserCog class="h-6 w-6" />
-                        <CardTitle>User Role Management</CardTitle>
+                        <CardTitle>{{t('User Role Management')}}</CardTitle>
                     </div>
                     <CardDescription
-                        >Assign and manage user roles in the
-                        system</CardDescription
+                        >{{t('Assign and manage user roles in the system')}}
+                        </CardDescription
                     >
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Current Roles</TableHead>
-                                <TableHead>Assign Roles</TableHead>
-                                <TableHead>Actions</TableHead>
+                                <TableHead>{{t('Name')}}</TableHead>
+                                <TableHead>{{t('Email')}}</TableHead>
+                                <TableHead>{{t('Current Roles')}}</TableHead>
+                                <TableHead>{{t('Assign Roles')}}</TableHead>
+                                <TableHead>{{t('Actions')}}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -249,7 +250,7 @@ function handlePageChange(page: number) {
                                             @click="saveUserRoles(user.id)"
                                         >
                                             <Save class="h-4 w-4" />
-                                            Save
+                                            {{t('Save')}}
                                         </Button>
                                         <Button
                                             v-if="
@@ -266,7 +267,7 @@ function handlePageChange(page: number) {
                                             "
                                         >
                                             <Trash2 class="h-4 w-4" />
-                                            Delete
+                                            {{t('Delete')}}
                                         </Button>
                                     </div>
                                 </TableCell>
@@ -303,22 +304,22 @@ function handlePageChange(page: number) {
         <AlertDialog v-model:open="showDeleteDialog">
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Delete User</AlertDialogTitle>
+                    <AlertDialogTitle>{{t('Delete User')}}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to delete user
+                        {{t('Are you sure you want to delete user')}}
                         <strong>{{ userToDelete?.name }}</strong
-                        >? This action cannot be undone.
+                        >? {{t('This action cannot be undone.')}}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel @click="cancelDelete">
-                        Cancel
+                        {{t('Cancel')}}
                     </AlertDialogCancel>
                     <AlertDialogAction
                         @click="confirmDelete"
                         class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        Delete
+                        {{t('Delete')}}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

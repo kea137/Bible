@@ -1,14 +1,69 @@
 <script setup lang="ts">
 import { useSidebar } from '@/components/ui/sidebar';
-import { useLanguage } from '@/composables/useLanguage';
+import { useLocale } from '@/composables/useLocale';
 import { Languages } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
-const { language, updateLanguage } = useLanguage();
+const { locale, changeLocale, t } = useLocale();
 const { state } = useSidebar();
+const page = usePage();
+const userLanguage = computed(() => page.props.language as string);
+
+// store language in database when changed
+async function updateLocale(newLocale: any) {
+    // Change locale in frontend
+    changeLocale(newLocale);
+
+    if (!page.props.auth?.user) {
+        alert('Please log in to change your language');
+        return;
+    }
+
+    try {
+        // Get CSRF token
+        let csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        if (!csrfToken) {
+            alert('CSRF token not found. Refreshing page to fix authentication...');
+            window.location.reload();
+            return;
+        }
+
+        // Post new language to user's database data
+        const response = await fetch('/api/user/locale', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                locale: newLocale,
+            }),
+        });
+
+        const result = await response.json();
+        if (response.ok && result?.success) {
+            // Optionally show success message
+        } else {
+            alert(result?.message || 'Failed to update language.');
+        }
+    } catch (error) {
+        alert('Failed to update language.');
+        console.error(error);
+    }
+
+    window.location.reload();
+}
 
 const languages = [
     { value: 'en', label: 'English' },
-    { value: 'sw', label: 'Kiswahili' },
+    { value: 'sw', label: 'Swahili' },
     { value: 'fr', label: 'Français' },
     { value: 'es', label: 'Español' },
     { value: 'de', label: 'Deutsch' },
@@ -18,14 +73,8 @@ const languages = [
     { value: 'ja', label: '日本語' },
     { value: 'ar', label: 'العربية' },
     { value: 'hi', label: 'हिन्दी' },
-    { value: 'bn', label: 'বাংলা' },
-    { value: 'pa', label: 'ਪੰਜਾਬੀ' },
-    { value: 'jv', label: 'Basa Jawa' },
     { value: 'ko', label: '한국어' },
-    { value: 'vi', label: 'Tiếng Việt' },
-    { value: 'te', label: 'తెలుగు' },
-    { value: 'mr', label: 'मराठी' },
-    { value: 'ta', label: 'தமிழ்' },
+
 ] as const;
 </script>
 
@@ -36,12 +85,12 @@ const languages = [
         <button
             v-for="{ value, label } in languages"
             :key="value"
-            @click="updateLanguage(value)"
+            @click="updateLocale(value)"
             :class="[
                 'flex items-center rounded-md transition-colors flex-shrink-0',
                 'whitespace-nowrap',
                 state === 'collapsed' ? 'px-2 py-1.5' : 'px-3.5 py-1.5',
-                language === value
+                locale === value
                     ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
                     : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
             ]"

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bible;
 use App\Models\Verse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -17,44 +18,23 @@ class DashboardController extends Controller
         $user = $request->user();
 
         // Get user's preferred language
-        $userLanguage = $request->cookie('language', 'en');
+        $userLanguage = $request->user()->language;
         $languageMap = [
             'en' => 'English',
             'sw' => 'Swahili',
             'fr' => 'French',
             'es' => 'Spanish',
             'de' => 'German',
-            'pt' => 'Portuguese',
             'it' => 'Italian',
             'ru' => 'Russian',
             'zh' => 'Chinese',
             'ja' => 'Japanese',
             'ar' => 'Arabic',
             'hi' => 'Hindi',
-            'bn' => 'Bengali',
-            'pa' => 'Punjabi',
-            'jv' => 'Javanese',
             'ko' => 'Korean',
-            'vi' => 'Vietnamese',
-            'te' => 'Telugu',
-            'mr' => 'Marathi',
-            'ta' => 'Tamil',
         ];
 
         $languageName = $languageMap[$userLanguage] ?? 'English';
-
-        // Get random verse of the day with only needed fields
-        $randomVerse = Verse::with([
-                'bible:id,name,language',
-                'book:id,title',
-                'chapter:id,chapter_number'
-            ])
-            ->whereHas('bible', function ($query) use ($languageName) {
-                $query->where('language', $languageName);
-            })
-            ->select('id', 'bible_id', 'book_id', 'chapter_id', 'verse_number', 'text')
-            ->inRandomOrder()
-            ->first();
 
         // Get total Bibles in user's language
         $totalBibles = Bible::where('language', $languageName)->count();
@@ -69,6 +49,19 @@ class DashboardController extends Controller
             ])
             ->latest('completed_at')
             ->select('id', 'user_id', 'bible_id', 'chapter_id', 'completed_at')
+            ->first();
+
+        // Get random verse of the day with only needed fields
+        $randomVerse = Verse::with([
+                'bible:id,name,language',
+                'book:id,title',
+                'chapter:id,chapter_number'
+            ])
+            ->whereHas('bible', function ($query) use ($languageName) {
+                $query->where('language', $languageName);
+            })
+            ->select('id', 'bible_id', 'book_id', 'chapter_id', 'verse_number', 'text')
+            ->inRandomOrder()
             ->first();
 
         $lastReading = null;
@@ -126,5 +119,24 @@ class DashboardController extends Controller
             'readingStats' => $readingStats,
             'userName' => $user->name,
         ]);
+    }
+
+    public function updateLocale(){
+        $userId = Auth::id();
+        $user = \App\Models\User::find($userId);
+
+        //update users language data
+        request()->validate([
+            'locale' => 'required|string|max:5',
+        ]);
+
+        $locale = request('locale');
+
+        if ($user) {
+            $user->language = $locale;
+            $user->save();
+        }
+
+        return response()->json(['success' => true, 'locale' => $locale]);
     }
 }

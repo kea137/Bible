@@ -27,10 +27,12 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { LibraryBigIcon, Search } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Bibles',
+        title: t('Bibles'),
         href: bibles().url,
     },
 ];
@@ -104,16 +106,16 @@ const alertErrorMessage = ref('');
     <AlertUser
         v-if="alertSuccess"
         :open="true"
-        title="Success"
+        title="{{ t('Success') }}"
         :confirmButtonText="'OK'"
-        :message="successMessage || 'Note saved successfully'"
+        :message="successMessage || t('Note saved successfully')"
         variant="success"
         @update:open="() => (alertSuccess = false)"
     />
     <AlertUser
         v-if="alertError"
         :open="true"
-        title="Error"
+        title="{{ t('Error') }}"
         :confirmButtonText="'OK'"
         :message="errorMessage || alertErrorMessage"
         variant="error"
@@ -134,10 +136,10 @@ const alertErrorMessage = ref('');
                                 class="flex items-center gap-2 text-base sm:text-lg"
                             >
                                 <LibraryBigIcon class="h-4 w-4 sm:h-5 sm:w-5" />
-                                Bibles
+                                {{t('Bibles')}}
                             </CardTitle>
                             <CardDescription class="text-xs sm:text-sm"
-                                >Available Bibles</CardDescription
+                                >{{t('Available Bibles')}}</CardDescription
                             >
                         </div>
                         <Button
@@ -146,7 +148,7 @@ const alertErrorMessage = ref('');
                             class="w-full sm:w-auto"
                         >
                             <Search class="mr-2 h-4 w-4" />
-                            Search Bibles
+                            {{t('Search Bibles')}}
                         </Button>
                     </div>
                 </CardHeader>
@@ -177,7 +179,7 @@ const alertErrorMessage = ref('');
                         v-else
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
-                        <p>No Bibles Available</p>
+                        <p>{{t('No Bibles Available')}}</p>
                     </div>
                 </CardContent>
             </Card>
@@ -215,7 +217,7 @@ const alertErrorMessage = ref('');
                         placeholder="Search bibles by name, language, or version..."
                     />
                     <CommandList>
-                        <CommandEmpty>No bibles found.</CommandEmpty>
+                        <CommandEmpty>{{t('No bibles found.')}}</CommandEmpty>
                         <CommandGroup heading="Bibles">
                             <CommandItem
                                 v-for="bible in filteredBibles"

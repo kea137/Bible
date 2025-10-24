@@ -29,7 +29,9 @@ import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps<{
     bible: {
         id: number;
@@ -48,11 +50,11 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Configure Bibles',
+        title: t('Configure Bibles'),
         href: bibles_configure().url,
     },
     {
-        title: 'Edit Bible',
+        title: t('Edit Bible'),
         href: bible_edit({ bible: props.bible.id }).url,
     },
 ];
@@ -99,10 +101,10 @@ const alertErrorMessage = ref('');
                         v-slot="{ errors, processing }"
                     >
                         <CardHeader>
-                            <CardTitle>Edit Bible</CardTitle>
+                            <CardTitle>{{ t('Edit Bible') }}</CardTitle>
                             <CardDescription
-                                >Update the Bible information
-                                below.</CardDescription
+                                >{{t('Update the Bible information')}}
+                                {{t('below.')}}</CardDescription
                             >
                         </CardHeader>
                         <CardContent>
@@ -112,13 +114,13 @@ const alertErrorMessage = ref('');
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="name">Name</Label>
+                                    <Label for="name">{{t('Name')}}</Label>
                                     <Input
                                         id="name"
                                         name="name"
                                         :tabindex="1"
                                         type="text"
-                                        placeholder="Name of the Bible"
+                                        :placeholder="t('Name of the Bible')"
                                         v-model="bible.name"
                                     />
                                     <InputError :message="errors.name" />
@@ -127,14 +129,14 @@ const alertErrorMessage = ref('');
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
                                     <Label for="abbreviation"
-                                        >Abbreviation</Label
+                                        >{{t('Abbreviation')}}</Label
                                     >
                                     <Input
                                         id="abbreviation"
                                         name="abbreviation"
                                         :tabindex="1"
                                         type="text"
-                                        placeholder="Abbreviation of the Bible"
+                                        :placeholder="t('Abbreviation of the Bible')"
                                         v-model="bible.abbreviation"
                                     />
                                     <InputError
@@ -144,27 +146,24 @@ const alertErrorMessage = ref('');
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="language">Language</Label>
+                                    <Label for="language">{{t('Language')}}</Label>
                                     <Select
                                         name="language"
                                         :default-value="bible.language"
                                     >
                                         <SelectTrigger id="language">
                                             <SelectValue
-                                                placeholder="Select Language"
+                                                :placeholder="t('Select Language')"
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel
-                                                    >Languages</SelectLabel
+                                                    >{{t('Languages')}}</SelectLabel
                                                 >
                                                 <SelectItem v-for="lang in languages" :key="lang.id" :value="lang.name">
                                                     {{ lang.name }}
                                                 </SelectItem>
-                                                <SelectItem value="en"
-                                                    >English</SelectItem
-                                                >
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -173,13 +172,13 @@ const alertErrorMessage = ref('');
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="version">Version</Label>
+                                    <Label for="version">{{t('Version')}}</Label>
                                     <Input
                                         id="version"
                                         name="version"
                                         :tabindex="1"
                                         type="text"
-                                        placeholder="Version of the Bible"
+                                        :placeholder="t('Version of the Bible')"
                                         v-model="bible.version"
                                     />
                                     <InputError :message="errors.version" />
@@ -187,12 +186,12 @@ const alertErrorMessage = ref('');
                                 <div
                                     class="col-span-4 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="description">Description</Label>
+                                    <Label for="description">{{t('Description')}}</Label>
                                     <Textarea
                                         id="description"
                                         name="description"
                                         :tabindex="1"
-                                        placeholder="Description of the Bible"
+                                        :placeholder="t('Description of the Bible')"
                                         v-model="bible.description"
                                     />
                                     <InputError :message="errors.description" />
@@ -209,7 +208,7 @@ const alertErrorMessage = ref('');
                                     v-if="processing"
                                     class="mr-2 h-4 w-4 animate-spin"
                                 />
-                                Update Bible
+                                {{t('Update Bible')}}
                             </Button>
                         </CardFooter>
                     </Form>

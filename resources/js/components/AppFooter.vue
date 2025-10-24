@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { license } from '@/routes';
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -16,7 +19,7 @@ import { Link } from '@inertiajs/vue3';
                     :href="license()"
                     class="transition-colors hover:text-foreground"
                 >
-                    License
+                    {{ t('License') }}
                 </Link>
                 <a
                     href="https://github.com/kea137/Bible"

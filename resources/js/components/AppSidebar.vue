@@ -45,39 +45,42 @@ import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 import AppearanceSideBar from './AppearanceSideBar.vue';
 import LanguageSelectorSideBar from './LanguageSelectorSideBar.vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const page = usePage();
 const auth = computed(() => page.props.auth);
+const language = computed(() => page.props.language);
 const roleNumbers = computed(() => auth.value?.roleNumbers || []);
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: t('Dashboard'),
         href: dashboard(),
         icon: LayoutGrid,
     },
     {
-        title: 'Bibles',
+        title: t('Bibles'),
         href: bibles(),
         icon: LibraryBig,
     },
     {
-        title: 'Parallel Bibles',
+        title: t('Parallel Bibles'),
         href: bibles_parallel(),
         icon: BookCopy,
     },
     {
-        title: 'Reading Plan',
+        title: t('Reading Plan'),
         href: reading_plan(),
         icon: Target,
     },
     {
-        title: 'Highlights',
+        title: t('Highlights'),
         href: highlighted_verses_page(),
         icon: Highlighter,
     },
     {
-        title: 'Notes',
+        title: t('Notes'),
         href: notes(),
         icon: StickyNote,
     },
@@ -90,7 +93,7 @@ const footerNavItems = computed(() => {
     // Configure Bibles - only for role numbers 1 & 2 (admin & editor)
     if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
         items.push({
-            title: 'Configure Bibles',
+            title: t('Configure Bibles'),
             href: bibles_configure(),
             icon: CogIcon,
         });
@@ -99,7 +102,7 @@ const footerNavItems = computed(() => {
     // Configure References - only for role numbers 1 & 2 (admin & editor)
     if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
         items.push({
-            title: 'Configure References',
+            title: t('Configure References'),
             href: references_configure(),
             icon: BookOpen,
         });
@@ -108,7 +111,7 @@ const footerNavItems = computed(() => {
     // Role Management - only for role number 1 (admin)
     if (roleNumbers.value.includes(1)) {
         items.push({
-            title: 'Role Management',
+            title: t('Role Management'),
             href: role_management(),
             icon: UserCog2,
         });
@@ -116,14 +119,14 @@ const footerNavItems = computed(() => {
 
     // Documentation - available to everyone
     items.push({
-        title: 'Documentation',
+        title: t('Documentation'),
         href: documentation(),
         icon: BookText,
     });
 
     // License - available to everyone
     items.push({
-        title: 'License',
+        title: t('License'),
         href: license(),
         icon: FileText,
     });
@@ -154,7 +157,7 @@ const footerNavItems = computed(() => {
             <SidebarGroup class="px-2 py-0">
                 <div class="mr-4 space-y-3 py-2">
                     <div class="space-y-1">
-                        <LanguageSelectorSideBar />
+                        <LanguageSelectorSideBar v-if="!(language === 'en')"/>
                     </div>
                     <div class="space-y-1">
                         <AppearanceSideBar />

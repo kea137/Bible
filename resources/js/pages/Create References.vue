@@ -27,7 +27,9 @@ import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { LoaderCircle, UploadCloudIcon } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps<{
     bibles: Array<{
         id: number;
@@ -43,11 +45,11 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Configure References',
+        title: t('Configure References'),
         href: references_configure().url,
     },
     {
-        title: 'Upload References',
+        title: t('Upload References'),
         href: references_create().url,
     },
 ];
@@ -94,13 +96,13 @@ const alertErrorMessage = ref('');
 </script>
 
 <template>
-    <Head title="Create References" />
+    <Head :title="t('Create References')" />
     <AlertUser
         v-if="alertSuccess"
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        :message="successMessage || 'Note saved successfully'"
+        :message="t('Operation was successful')"
         variant="success"
         @update:open="() => (alertSuccess = false)"
     />
@@ -126,11 +128,11 @@ const alertErrorMessage = ref('');
                         v-slot="{ errors, processing }"
                     >
                         <CardHeader>
-                            <CardTitle>Upload References</CardTitle>
+                            <CardTitle>{{t('Upload References')}}</CardTitle>
                             <CardDescription>
-                                Upload a JSON file containing verse references
-                                for {{ selected_bible.name }}. Ensure the file
-                                is properly formatted.
+                                {{t('Upload a JSON file containing verse references')}}.
+                                {{t('Ensure the file')}}
+                                {{t('is properly formatted.')}}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -140,17 +142,17 @@ const alertErrorMessage = ref('');
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="bible_id">Select Bible</Label>
+                                    <Label for="bible_id">{{t('Select Bible')}}</Label>
                                     <Select v-model="selectedBibleId">
                                         <SelectTrigger>
                                             <SelectValue
-                                                placeholder="Select a Bible"
+                                                :placeholder="t('Select a Bible')"
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel
-                                                    >Bibles</SelectLabel
+                                                    >{{t('Bibles')}}</SelectLabel
                                                 >
                                                 <SelectItem
                                                     v-for="bible in props.bibles"
@@ -199,7 +201,7 @@ const alertErrorMessage = ref('');
                                             <p
                                                 class="text-lg font-medium text-primary"
                                             >
-                                                Drop your JSON file here!
+                                                {{t('Drop your JSON file here!')}}
                                             </p>
                                         </template>
                                         <template v-else>
@@ -212,8 +214,8 @@ const alertErrorMessage = ref('');
                                                 <p
                                                     class="text-base font-medium text-gray-700 dark:text-white"
                                                 >
-                                                    Drag & drop JSON file or
-                                                    click to upload
+                                                    {{t('Drag & drop JSON file or')}}
+                                                    {{t('click to upload')}}
                                                 </p>
                                             </div>
                                             <p
@@ -241,7 +243,7 @@ const alertErrorMessage = ref('');
                                     v-if="processing"
                                     class="mr-2 h-4 w-4 animate-spin"
                                 />
-                                Upload References
+                                {{t('Upload References')}}
                             </Button>
                         </CardFooter>
                     </Form>

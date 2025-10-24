@@ -12,9 +12,11 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { BookOpen, ExternalLink, Languages, StickyNote } from 'lucide-vue-next';
+import { BookOpen, ExternalLink, Languages, Share2, StickyNote } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 interface Verse {
     id: number;
     verse_number: number;
@@ -47,6 +49,14 @@ interface Reference {
     };
 }
 
+function shareVerse(verse: any) {
+    const verseReference = `${verse.book.title} ${verse.chapter.chapter_number}:${verse.verse_number}`;
+    const verseText = verse.text;
+    router.visit(
+        `/share?reference=${encodeURIComponent(verseReference)}&text=${encodeURIComponent(verseText)}&verseId=${verse.id}`,
+    );
+}
+
 interface Props {
     verse: Verse;
     references: Reference[];
@@ -57,7 +67,7 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Bibles',
+        title: t('Bibles'),
         href: bibles().url,
     },
     {
@@ -65,7 +75,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: `/bibles/${props.verse.bible.id}`,
     },
     {
-        title: 'Verse Study',
+        title: t('Verse Study'),
         href: `/verses/${props.verse.id}/study`,
     },
 ];
@@ -97,7 +107,7 @@ function handleNoteSaved() {
         :open="true"
         title="Success"
         :confirmButtonText="'OK'"
-        message="Note saved successfully!"
+        :message="t('Operation was successful')"
         variant="success"
         @update:open="alertSuccess = false"
     />
@@ -137,8 +147,18 @@ function handleNoteSaved() {
                             class="w-full flex-shrink-0 sm:w-auto"
                         >
                             <StickyNote class="mr-2 h-4 w-4" />
-                            Add Note
+                            {{t('Add Note')}}
                         </Button>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            class="w-full flex-shrink-0 sm:w-auto"
+                            @click="shareVerse(verse)"
+                        >
+                            <Share2 class="mr-2 h-4 w-4" />
+                            {{ t('Share this Verse') }}
+                        </Button>
+
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -158,20 +178,20 @@ function handleNoteSaved() {
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Cross References</CardTitle
+                                >{{t('Cross References')}}</CardTitle
                             >
                             <ExternalLink
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
                         </div>
                         <CardDescription class="text-xs sm:text-sm"
-                            >Related verses from scripture</CardDescription
+                            >{{t('Related verses from scripture')}}</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
                         <ScrollArea
                             v-if="references.length > 0"
-                            class="h-60 space-y-3 sm:space-y-4"
+                            class="h-100 space-y-3 sm:space-y-4"
                         >
                             <div
                                 v-for="ref in references"
@@ -193,7 +213,7 @@ function handleNoteSaved() {
                             v-else
                             class="text-xs text-muted-foreground italic sm:text-sm"
                         >
-                            No cross-references available for this verse.
+                            {{t('No cross-references available for this verse.')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -203,21 +223,23 @@ function handleNoteSaved() {
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Other Translations</CardTitle
+                                >{{t('Other Translations')}}</CardTitle
                             >
                             <Languages
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
                         </div>
                         <CardDescription class="text-xs sm:text-sm"
-                            >Same verse in different Bibles</CardDescription
+                            >{{t('Same verse in different Bibles')}}</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
+                        
                         <div
                             v-if="otherVersions.length > 0"
                             class="max-h-[60vh] space-y-3 overflow-y-auto sm:space-y-4"
                         >
+                        <ScrollArea class=" h-100">
                             <div
                                 v-for="version in otherVersions"
                                 :key="version.id"
@@ -247,12 +269,13 @@ function handleNoteSaved() {
                                     {{ version.text }}
                                 </p>
                             </div>
+                        </ScrollArea>
                         </div>
                         <p
                             v-else
                             class="text-xs text-muted-foreground italic sm:text-sm"
                         >
-                            No other translations available for this verse.
+                            {{t('No other translations available for this verse.')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -266,7 +289,7 @@ function handleNoteSaved() {
                     class="w-full sm:w-auto"
                 >
                     <BookOpen class="mr-2 h-4 w-4" />
-                    Return to Bible
+                    {{t('Return to Bible')}}
                 </Button>
             </div>
         </div>

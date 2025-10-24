@@ -9,14 +9,17 @@ import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { Form, Head } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 </script>
 
 <template>
     <AuthBase
-        title="Create an account"
-        description="Enter your details below to create your account"
+        :title="t('Create an account')"
+        :description="t('Enter your details below to create your account')"
     >
-        <Head title="Register" />
+        <Head :title="t('Register')" />
 
         <Form
             v-bind="RegisteredUserController.store.form()"
@@ -26,7 +29,7 @@ import { LoaderCircle } from 'lucide-vue-next';
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="name">Name</Label>
+                    <Label for="name">{{ t('Name')}}</Label>
                     <Input
                         id="name"
                         type="text"
@@ -35,13 +38,13 @@ import { LoaderCircle } from 'lucide-vue-next';
                         :tabindex="1"
                         autocomplete="name"
                         name="name"
-                        placeholder="Full name"
+                        :placeholder="t('Full name')"
                     />
                     <InputError :message="errors.name" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email">{{ t('Email address') }}</Label>
                     <Input
                         id="email"
                         type="email"
@@ -55,7 +58,7 @@ import { LoaderCircle } from 'lucide-vue-next';
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Password</Label>
+                    <Label for="password">{{ t('Password') }}</Label>
                     <Input
                         id="password"
                         type="password"
@@ -63,13 +66,13 @@ import { LoaderCircle } from 'lucide-vue-next';
                         :tabindex="3"
                         autocomplete="new-password"
                         name="password"
-                        placeholder="Password"
+                        :placeholder="t('Password')"
                     />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
+                    <Label for="password_confirmation">{{ t('Confirm password') }}</Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -77,7 +80,7 @@ import { LoaderCircle } from 'lucide-vue-next';
                         :tabindex="4"
                         autocomplete="new-password"
                         name="password_confirmation"
-                        placeholder="Confirm password"
+                        :placeholder="t('Confirm password')"
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
@@ -93,17 +96,17 @@ import { LoaderCircle } from 'lucide-vue-next';
                         v-if="processing"
                         class="h-4 w-4 animate-spin"
                     />
-                    Create account
+                    {{t('Create account')}}
                 </Button>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">
-                Already have an account?
+                {{t('Already have an account?')}}
                 <TextLink
                     :href="login()"
                     class="underline underline-offset-4"
                     :tabindex="6"
-                    >Log in</TextLink
+                    >{{t('Log in')}}</TextLink
                 >
             </div>
         </Form>

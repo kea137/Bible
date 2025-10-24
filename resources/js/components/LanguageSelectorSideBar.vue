@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { useSidebar } from '@/components/ui/sidebar';
-import { useLanguage } from '@/composables/useLanguage';
+import { useLocale } from '@/composables/useLocale';
 import { Languages } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
-const { language, updateLanguage } = useLanguage();
+const { locale, changeLocale, t } = useLocale();
 const { state } = useSidebar();
-const otherLanguageCode = ref('sw');
-const otherLanguageName = ref('Kiswahili');
+const page = usePage();
+const userLanguage = computed(() => page.props.language as string);
 
 const other_languages = [
     { value: 'en', label: 'English' },
@@ -15,33 +16,30 @@ const other_languages = [
     { value: 'fr', label: 'Français' },
     { value: 'es', label: 'Español' },
     { value: 'de', label: 'Deutsch' },
-    { value: 'pt', label: 'Português' },
     { value: 'it', label: 'Italiano' },
     { value: 'ru', label: 'Русский' },
     { value: 'zh', label: '中文' },
     { value: 'ja', label: '日本語' },
     { value: 'ar', label: 'العربية' },
     { value: 'hi', label: 'हिन्दी' },
-    { value: 'bn', label: 'বাংলা' },
-    { value: 'pa', label: 'ਪੰਜਾਬੀ' },
-    { value: 'jv', label: 'Basa Jawa' },
     { value: 'ko', label: '한국어' },
-    { value: 'vi', label: 'Tiếng Việt' },
-    { value: 'te', label: 'తెలుగు' },
-    { value: 'mr', label: 'मराठी' },
-    { value: 'ta', label: 'தமிழ்' },
 ] as const;
 
 const languages = computed(() => {
-    // Always include English
+    // Always show English and the user's language (even if user's language is English)
     const langs = [{ value: 'en', label: 'English' }];
-    // Add the current language if it's not English
-    if (language.value !== 'en') {
-        const found = other_languages.find(lang => lang.value === language.value);
-        langs.push(found || { value: language.value, label: language.value });
+    if (userLanguage.value && userLanguage.value !== 'en') {
+        const found = other_languages.find(lang => lang.value === userLanguage.value);
+        langs.push(found || { value: userLanguage.value, label: userLanguage.value });
     }
+    // If user's language is English, only show English
     return langs;
 });
+
+function handleLanguageChange(value: string) {
+    changeLocale(value);
+    window.location.reload();
+}
 </script>
 
 <template>
@@ -54,11 +52,11 @@ const languages = computed(() => {
         <button
             v-for="{ value, label } in languages"
             :key="value"
-            @click="updateLanguage(value)"
+            @click="handleLanguageChange(value)"
             :class="[
                 'flex items-center rounded-md transition-colors',
                 state === 'collapsed' ? 'px-2 py-1.5' : 'px-3.5 py-1.5',
-                language === value
+                locale === value
                     ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
                     : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
             ]"

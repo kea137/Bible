@@ -17,14 +17,33 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 class BibleController extends Controller
 {
+    public $languageMap = [
+            'en' => 'English',
+            'sw' => 'Swahili',
+            'fr' => 'French',
+            'es' => 'Spanish',
+            'de' => 'German',
+            'it' => 'Italian',
+            'ru' => 'Russian',
+            'zh' => 'Chinese',
+            'ja' => 'Japanese',
+            'ar' => 'Arabic',
+            'hi' => 'Hindi',
+            'ko' => 'Korean',
+        ];
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         // Only load the necessary fields for the index page to reduce memory usage
+        $userLanguage = request()->user()->language ?? 'en';
+
+        $languageName = $this->languageMap[$userLanguage] ?? 'English';
+
         $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version', 'description')
-            ->orderBy('name')
+            ->orderByRaw("language = ? DESC, name ASC", $languageName) // change as per user's preferences
             ->get();
 
         return Inertia::render('Bibles', [
@@ -55,30 +74,8 @@ class BibleController extends Controller
     {
         // Get user's preferred language from cookie or default to 'en'
         $userLanguage = request()->user()->language ?? 'en';
-        $languageMap = [
-            'en' => 'English',
-            'sw' => 'Swahili',
-            'fr' => 'French',
-            'es' => 'Spanish',
-            'de' => 'German',
-            'pt' => 'Portuguese',
-            'it' => 'Italian',
-            'ru' => 'Russian',
-            'zh' => 'Chinese',
-            'ja' => 'Japanese',
-            'ar' => 'Arabic',
-            'hi' => 'Hindi',
-            'bn' => 'Bengali',
-            'pa' => 'Punjabi',
-            'jv' => 'Javanese',
-            'ko' => 'Korean',
-            'vi' => 'Vietnamese',
-            'te' => 'Telugu',
-            'mr' => 'Marathi',
-            'ta' => 'Tamil',
-        ];
 
-        $languageName = $languageMap[$userLanguage] ?? 'English';
+        $languageName = $this->languageMap[$userLanguage] ?? 'English';
 
         // Filter bibles by language, only eager load books (not chapters) for faster response
         $bibles_preffered = Bible::select('id', 'name', 'abbreviation', 'language', 'version')

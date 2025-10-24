@@ -27,7 +27,9 @@ import {
     TrendingUp,
 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps<{
     totalChapters: number;
     completedChapters: number;
@@ -55,7 +57,7 @@ watch(selectedBibleId, (newBibleId) => {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Reading Plan',
+        title: t('Reading Plan'),
         href: reading_plan().url,
     },
 ];
@@ -64,25 +66,25 @@ const breadcrumbs: BreadcrumbItem[] = [
 const remainingChapters = props.totalChapters - props.completedChapters;
 const readingPlans = [
     {
-        name: 'Intensive Plan',
+        name: t('Intensive Plan'),
         chaptersPerDay: 10,
         days: Math.ceil(remainingChapters / 10),
         description: 'Complete the Bible in about 4 months',
     },
     {
-        name: 'Standard Plan',
+        name: t('Standard Plan'),
         chaptersPerDay: 4,
         days: Math.ceil(remainingChapters / 4),
         description: 'Complete the Bible in about 10 months',
     },
     {
-        name: 'Leisurely Plan',
+        name: t('Leisurely Plan'),
         chaptersPerDay: 2,
         days: Math.ceil(remainingChapters / 2),
         description: 'Complete the Bible in about 20 months',
     },
     {
-        name: 'Year Plan',
+        name: t('Year Plan'),
         chaptersPerDay: 3,
         days: Math.ceil(remainingChapters / 3),
         description: 'Complete the Bible in about one year',
@@ -91,7 +93,7 @@ const readingPlans = [
 </script>
 
 <template>
-    <Head title="Reading Plan" />
+    <Head title="{{t('Reading Plan')}}" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
@@ -103,21 +105,21 @@ const readingPlans = [
             >
                 <div>
                     <h1 class="text-xl font-bold text-foreground sm:text-2xl">
-                        Your Bible Reading Journey
+                        {{t('Your Bible Reading Journey')}}
                     </h1>
                     <p class="text-sm text-muted-foreground sm:text-base">
-                        Track your progress and stay motivated as you read
-                        through the Bible
+                        {{t('Track your progress and stay motivated as you read')}}
+                        {{t('through the Bible')}}
                     </p>
                 </div>
                 <div class="w-full sm:w-64">
                     <Select v-model="selectedBibleId">
                         <SelectTrigger>
-                            <SelectValue placeholder="Select Bible" />
+                            <SelectValue placeholder="{{t('Select Bible')}}" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectLabel>Select Bible</SelectLabel>
+                                <SelectLabel>{{t('Select Bible')}}</SelectLabel>
                                 <SelectItem
                                     v-for="bible in allBibles"
                                     :key="bible.id"
@@ -140,11 +142,11 @@ const readingPlans = [
                         >
                             <div>
                                 <CardTitle class="text-base sm:text-lg"
-                                    >Overall Progress</CardTitle
+                                    >{{t('Overall Progress')}}</CardTitle
                                 >
                                 <CardDescription class="text-xs sm:text-sm">
-                                    {{ completedChapters }} of
-                                    {{ totalChapters }} chapters completed
+                                    {{ completedChapters }} {{t('of')}}
+                                    {{ totalChapters }} {{t('chapters completed')}}
                                 </CardDescription>
                             </div>
                             <TrendingUp
@@ -171,7 +173,7 @@ const readingPlans = [
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Today</CardTitle
+                                >{{t('Today')}}</CardTitle
                             >
                             <Calendar
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
@@ -183,7 +185,7 @@ const readingPlans = [
                             {{ chaptersReadToday }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            Chapters read
+                            {{t('Chapters read')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -192,7 +194,7 @@ const readingPlans = [
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Completed</CardTitle
+                                >{{t('Completed')}}</CardTitle
                             >
                             <CheckCircle2
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
@@ -204,7 +206,7 @@ const readingPlans = [
                             {{ completedChapters }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            Chapters done
+                            {{t('Chapters done')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -213,7 +215,7 @@ const readingPlans = [
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Remaining</CardTitle
+                                >{{t('Remaining')}}</CardTitle
                             >
                             <BookMarked
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
@@ -225,7 +227,7 @@ const readingPlans = [
                             {{ remainingChapters }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            Chapters left
+                            {{t('Chapters left')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -234,7 +236,7 @@ const readingPlans = [
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg"
-                                >Total</CardTitle
+                                >{{t('Total')}}</CardTitle
                             >
                             <BookOpen
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
@@ -246,7 +248,7 @@ const readingPlans = [
                             {{ totalChapters }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            Total chapters
+                            {{t('Total chapters')}}
                         </p>
                     </CardContent>
                 </Card>
@@ -258,11 +260,11 @@ const readingPlans = [
                     <div class="flex items-center gap-2">
                         <Target class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
                         <CardTitle class="text-base sm:text-lg"
-                            >Suggested Reading Plans</CardTitle
+                            >{{t('Suggested Reading Plans')}}</CardTitle
                         >
                     </div>
                     <CardDescription class="text-xs sm:text-sm">
-                        Choose a pace that works for you
+                        {{t('Choose a pace that works for you')}}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -286,7 +288,7 @@ const readingPlans = [
                                         plan.chaptersPerDay
                                     }}</span>
                                     <span class="text-muted-foreground">
-                                        chapters/day</span
+                                        {{t('chapters/day')}}</span
                                     >
                                 </div>
                                 <div>
@@ -294,7 +296,7 @@ const readingPlans = [
                                         >~{{ plan.days }}</span
                                     >
                                     <span class="text-muted-foreground">
-                                        days</span
+                                        {{t('days')}}</span
                                     >
                                 </div>
                             </div>
@@ -306,9 +308,9 @@ const readingPlans = [
             <!-- Reading Guidelines -->
             <Card>
                 <CardHeader>
-                    <CardTitle>How to Use Reading Progress Tracking</CardTitle>
+                    <CardTitle>{{t('How to Use Reading Progress Tracking')}}</CardTitle>
                     <CardDescription>
-                        Simple steps to track your Bible reading journey
+                        {{t('Simple steps to track your Bible reading journey')}}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -321,11 +323,11 @@ const readingPlans = [
                             </div>
                             <div>
                                 <h4 class="font-medium">
-                                    Open Any Bible Chapter
+                                    {{t('Open Any Bible Chapter')}}
                                 </h4>
                                 <p class="text-sm text-muted-foreground">
-                                    Navigate to the Bible you want to read and
-                                    select a book and chapter.
+                                    {{t('Navigate to the Bible you want to read and')}}
+                                    {{t('select a book and chapter.')}}
                                 </p>
                             </div>
                         </div>
@@ -337,12 +339,12 @@ const readingPlans = [
                             </div>
                             <div>
                                 <h4 class="font-medium">
-                                    Read Through the Chapter
+                                    {{t('Read Through the Chapter')}}
                                 </h4>
                                 <p class="text-sm text-muted-foreground">
-                                    Take your time to read and understand the
-                                    chapter. Highlight important verses and add
-                                    notes.
+                                    {{t('Take your time to read and understand the')}}
+                                    {{t('chapter. Highlight important verses and add')}}
+                                    {{t('notes.')}}
                                 </p>
                             </div>
                         </div>
@@ -353,10 +355,10 @@ const readingPlans = [
                                 3
                             </div>
                             <div>
-                                <h4 class="font-medium">Mark as Read</h4>
+                                <h4 class="font-medium">{{t('Mark as Read')}}</h4>
                                 <p class="text-sm text-muted-foreground">
-                                    Click the "Mark as Read" button between the
-                                    navigation arrows to track your progress.
+                                    {{t('Click the "Mark as Read" button between the')}}
+                                    {{t('navigation arrows to track your progress.')}}
                                 </p>
                             </div>
                         </div>
@@ -367,11 +369,11 @@ const readingPlans = [
                                 4
                             </div>
                             <div>
-                                <h4 class="font-medium">Track Your Progress</h4>
+                                <h4 class="font-medium">{{t('Track Your Progress')}}</h4>
                                 <p class="text-sm text-muted-foreground">
-                                    View your progress on this page and the
-                                    dashboard. The system will track chapters
-                                    completed and update your statistics.
+                                    {{t('View your progress on this page and the')}}
+                                    {{t('dashboard. The system will track chapters')}}
+                                    {{t('completed and update your statistics.')}}
                                 </p>
                             </div>
                         </div>
@@ -384,50 +386,50 @@ const readingPlans = [
                 class="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
             >
                 <CardHeader>
-                    <CardTitle>Tips for Consistent Bible Reading</CardTitle>
+                    <CardTitle>{{t('Tips for Consistent Bible Reading')}}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ul class="space-y-2 text-sm">
                         <li class="flex gap-2">
                             <span class="text-primary">•</span>
                             <span
-                                >Set a specific time each day for reading
-                                (morning or evening works best)</span
+                                >{{t('Set a specific time each day for reading')}}
+                                {{t('(morning or evening works best)')}}</span
                             >
                         </li>
                         <li class="flex gap-2">
                             <span class="text-primary">•</span>
                             <span
-                                >Start with smaller goals and gradually increase
-                                your reading pace</span
+                                >{{t('Start with smaller goals and gradually increase')}}
+                                {{t('your reading pace')}}</span
                             >
                         </li>
                         <li class="flex gap-2">
                             <span class="text-primary">•</span>
                             <span
-                                >Use the highlight feature to mark verses that
-                                speak to you</span
+                                >{{t('Use the highlight feature to mark verses that')}}
+                                {{t('speak to you')}}</span
                             >
                         </li>
                         <li class="flex gap-2">
                             <span class="text-primary">•</span>
                             <span
-                                >Add notes to capture insights and
-                                reflections</span
+                                >{{t('Add notes to capture insights and')}}
+                                {{t('reflections')}}</span
                             >
                         </li>
                         <li class="flex gap-2">
                             <span class="text-primary">•</span>
                             <span
-                                >Don't worry about perfection - consistency is
-                                more important than speed</span
+                                >{{t('Don\'t worry about perfection - consistency is')}}
+                                {{t('more important than speed')}}</span
                             >
                         </li>
                         <li class="flex gap-2">
                             <span class="text-primary">•</span>
                             <span
-                                >Study cross-references to deepen your
-                                understanding</span
+                                >{{t('Study cross-references to deepen your')}}
+                                {{t('understanding')}}</span
                             >
                         </li>
                     </ul>

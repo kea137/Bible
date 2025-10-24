@@ -20,7 +20,9 @@ import { Head } from '@inertiajs/vue3';
 import { Download, Palette, Share2, Type } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import LogoImage from '/resources/images/logo-small.png';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps<{
     verseReference: string;
     verseText: string;
@@ -29,7 +31,7 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Share Verse',
+        title: t('Share Verse'),
         href: '/share',
     },
 ];
@@ -44,94 +46,115 @@ const customColor2 = ref('#764ba2');
 const customColor3 = ref('#f093fb');
 const useCustomColors = ref(false);
 const selectedFont = ref('serif');
+const selectedFontSize = ref(48);
 const isBoldText = ref(false);
 
 // Font options
 const fontOptions = [
-    { value: 'serif', label: 'Serif (Classic)' },
-    { value: 'sans-serif', label: 'Sans Serif (Modern)' },
     { value: 'monospace', label: 'Monospace (Clean)' },
     { value: 'Georgia', label: 'Georgia' },
-    { value: 'Times New Roman', label: 'Times New Roman' },
     { value: 'Arial', label: 'Arial' },
     { value: 'Verdana', label: 'Verdana' },
+    { value: 'Courier New', label: 'Courier New' },
+    { value: 'Comic Sans MS', label: 'Comic Sans (Fun)' },
+    { value: 'Trebuchet MS', label: 'Trebuchet MS' },
+    { value: 'Impact', label: 'Impact' },
+    { value: 'Lucida Console', label: 'Lucida Console' },
+    { value: 'Papyrus', label: 'Papyrus (Artistic)' },
+    { value: 'Brush Script MT', label: 'Brush Script (Handwritten)' },
+    { value: 'Tahoma', label: 'Tahoma' },
+    { value: 'Garamond', label: 'Garamond' },
+    { value: 'Copperplate', label: 'Copperplate' },
+    { value: 'Futura', label: 'Futura' },
+    { value: 'Franklin Gothic Medium', label: 'Franklin Gothic' },
+    { value: 'Gill Sans', label: 'Gill Sans' },
+    { value: 'Optima', label: 'Optima' },
+];
+
+// Font Size options
+const fontSize_Options = [
+    { value: 32, label: 'Medium (32px)' },
+    { value: 40, label: 'Large (40px)' },
+    { value: 48, label: 'Extra Large (48px)' },
+    { value: 56, label: 'Huge (56px)' },
+    { value: 64, label: 'Massive (64px)' },
 ];
 
 // Beautiful background gradients with heavenly/pure essence
 const backgrounds = [
     {
         type: 'gradient',
-        colors: ['#667eea', '#764ba2', '#f093fb'],
+        colors: ['#3a2e5d', '#4b326e', '#2d1b3a'],
         name: 'Divine Purple',
     },
     {
         type: 'gradient',
-        colors: ['#4facfe', '#00f2fe', '#43e97b'],
+        colors: ['#1a2a6c', '#1e3c72', '#2a5298'],
         name: 'Heavenly Blue',
     },
     {
         type: 'gradient',
-        colors: ['#fa709a', '#fee140', '#fbc2eb'],
+        colors: ['#6a0572', '#ab2187', '#430a5d'],
         name: 'Grace Pink',
     },
     {
         type: 'gradient',
-        colors: ['#a8edea', '#fed6e3', '#ffecd2'],
+        colors: ['#232526', '#414345', '#2c3e50'],
         name: 'Soft Heaven',
     },
     {
         type: 'gradient',
-        colors: ['#ff9a9e', '#fecfef', '#ffecd2'],
+        colors: ['#3a6186', '#89253e', '#1f1c2c'],
         name: 'Peaceful Dawn',
     },
     {
         type: 'gradient',
-        colors: ['#ffecd2', '#fcb69f', '#a1c4fd'],
+        colors: ['#232526', '#414345', '#434343'],
         name: 'Serenity',
     },
     {
         type: 'gradient',
-        colors: ['#ee9ca7', '#ffdde1', '#fbc2eb'],
+        colors: ['#42275a', '#734b6d', '#2b5876'],
         name: 'Rose Garden',
     },
     {
         type: 'gradient',
-        colors: ['#2193b0', '#6dd5ed', '#c2e9fb'],
+        colors: ['#16222a', '#3a6073', '#1a2980'],
         name: 'Ocean Breeze',
     },
     {
         type: 'gradient',
-        colors: ['#fc4a1a', '#f7b733', '#fceabb'],
+        colors: ['#2c3e50', '#fd746c', '#1a1a1a'],
         name: 'Sunset Glory',
     },
     {
         type: 'gradient',
-        colors: ['#4776e6', '#8e54e9', '#c471ed'],
+        colors: ['#41295a', '#2F0743', '#1e1e2f'],
         name: 'Cosmic Purple',
     },
     {
         type: 'gradient',
-        colors: ['#00c6ff', '#0072ff', '#00d4ff'],
+        colors: ['#232526', '#1a2980', '#283e51'],
         name: 'Sky Blue',
     },
     {
         type: 'gradient',
-        colors: ['#f857a6', '#ff5858', '#ffb88c'],
+        colors: ['#ff5858', '#6a0572', '#2c3e50'],
         name: 'Coral Sunset',
     },
     {
         type: 'gradient',
-        colors: ['#56ab2f', '#a8e063', '#d4fc79'],
+        colors: ['#134E5E', '#71B280', '#0f2027'],
         name: 'Fresh Green',
     },
     {
         type: 'gradient',
-        colors: ['#eb3349', '#f45c43', '#fbb034'],
+        colors: ['#cb2d3e', '#ef473a', '#232526'],
         name: 'Fiery Love',
     },
     {
         type: 'gradient',
-        colors: ['#8e2de2', '#4a00e0', '#da22ff'],
+        colors: ['#4a00e0', '#8e2de2', '#2c3e50'],
         name: 'Royal Purple',
     },
 ];
@@ -218,7 +241,7 @@ function generateImage() {
     const lineHeight = 60;
     const fontSize = 48;
     const fontWeight = isBoldText.value ? 'bold' : 'normal';
-    ctx.font = `${fontWeight} ${fontSize}px ${selectedFont.value}`;
+    ctx.font = `${fontWeight} ${selectedFontSize.value}px ${selectedFont.value}`;
 
     const lines = wrapText(ctx, props.verseText, maxWidth);
     const totalTextHeight = lines.length * lineHeight;
@@ -230,7 +253,7 @@ function generateImage() {
     });
 
     // Draw reference
-    ctx.font = `bold 36px ${selectedFont.value}`;
+    ctx.font = `bold ${selectedFontSize.value}px ${selectedFont.value}`;
     ctx.fillText(props.verseReference, canvas.width / 2, y + 80);
 
     // Draw decorative elements
@@ -377,13 +400,13 @@ onMounted(() => {
 });
 
 // Watch for changes in customization options
-watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () => {
+watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize, isBoldText], () => {
     generateImage();
 });
 </script>
 
 <template>
-    <Head title="Share Verse" />
+    <Head :title="t('Share Verse')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 p-4">
@@ -391,11 +414,11 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                 <CardHeader>
                     <CardTitle class="flex items-center gap-2">
                         <Share2 class="h-5 w-5" />
-                        Share Verse
+                        {{t('Share Verse')}}
                     </CardTitle>
                     <CardDescription
-                        >Create a beautiful image to share your favorite
-                        verse</CardDescription
+                        >{{t('Create a beautiful image to share your favorite')}}
+                        {{t('verse')}}</CardDescription
                     >
                 </CardHeader>
                 <CardContent>
@@ -417,7 +440,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                             <!-- Background Style Selection -->
                             <div class="flex flex-col gap-2">
                                 <p class="text-sm text-muted-foreground">
-                                    Current Style:
+                                    {{t('Current Style:')}}
                                     <span class="font-semibold">{{
                                         currentBackground.name
                                     }}</span>
@@ -428,7 +451,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                     :disabled="isGenerating || useCustomColors"
                                     class="w-full"
                                 >
-                                    Change Background Style
+                                    {{t('Change Background Style')}}
                                 </Button>
                             </div>
 
@@ -436,7 +459,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                             <div class="rounded-lg border p-4">
                                 <div class="mb-3 flex items-center gap-2">
                                     <Palette class="h-4 w-4" />
-                                    <h3 class="font-semibold">Custom Colors</h3>
+                                    <h3 class="font-semibold">{{t('Custom Colors')}}</h3>
                                 </div>
                                 <div class="mb-3 flex items-center gap-2">
                                     <input
@@ -446,7 +469,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                         class="h-4 w-4"
                                     />
                                     <Label for="useCustomColors"
-                                        >Use custom color mix</Label
+                                        >{{t('Use custom color mix')}}</Label
                                     >
                                 </div>
                                 <div
@@ -454,7 +477,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                     class="grid grid-cols-3 gap-2"
                                 >
                                     <div>
-                                        <Label class="text-xs">Color 1</Label>
+                                        <Label class="text-xs">{{t('Color 1')}}</Label>
                                         <input
                                             type="color"
                                             v-model="customColor1"
@@ -462,7 +485,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                         />
                                     </div>
                                     <div>
-                                        <Label class="text-xs">Color 2</Label>
+                                        <Label class="text-xs">{{t('Color 2')}}</Label>
                                         <input
                                             type="color"
                                             v-model="customColor2"
@@ -470,7 +493,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                         />
                                     </div>
                                     <div>
-                                        <Label class="text-xs">Color 3</Label>
+                                        <Label class="text-xs">{{t('Color 3')}}</Label>
                                         <input
                                             type="color"
                                             v-model="customColor3"
@@ -484,29 +507,53 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                             <div class="rounded-lg border p-4">
                                 <div class="mb-3 flex items-center gap-2">
                                     <Type class="h-4 w-4" />
-                                    <h3 class="font-semibold">Text Style</h3>
+                                    <h3 class="font-semibold">{{t('Text Style')}}</h3>
                                 </div>
                                 <div class="space-y-3">
-                                    <div>
-                                        <Label class="text-sm">Font Family</Label>
-                                        <Select v-model="selectedFont">
-                                            <SelectTrigger class="w-full">
-                                                <SelectValue
-                                                    placeholder="Select a font"
-                                                />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectItem
-                                                        v-for="font in fontOptions"
-                                                        :key="font.value"
-                                                        :value="font.value"
-                                                    >
-                                                        {{ font.label }}
-                                                    </SelectItem>
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
+                                    <div class="flex flex-row">
+                                        <div class="w-full">
+                                            <Label class="text-sm">{{t('Font Family')}}</Label>
+                                            <Select v-model="selectedFont">
+                                                <SelectTrigger class="w-full">
+                                                    <SelectValue
+                                                        :placeholder="t('Select a font')"
+                                                    />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectItem
+                                                            v-for="font in fontOptions"
+                                                            :key="font.value"
+                                                            :value="font.value"
+                                                        >
+                                                            {{ font.label }}
+                                                        </SelectItem>
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div class="w-full mx-4">
+                                            <Label class="text-sm">{{t('Font Size')}}</Label>
+                                            <Select v-model="selectedFontSize">
+                                                <SelectTrigger class="w-full">
+                                                    <SelectValue
+                                                        :placeholder="t('Select size')"
+                                                    />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectItem
+                                                            v-for="font in fontSize_Options"
+                                                            :key="font.value"
+                                                            :value="font.value"
+                                                        >
+                                                            {{ font.label }}
+                                                        </SelectItem>
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <input
@@ -516,7 +563,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                             class="h-4 w-4"
                                         />
                                         <Label for="boldText"
-                                            >Use bold text</Label
+                                            >{{t('Use bold text')}}</Label
                                         >
                                     </div>
                                 </div>
@@ -527,12 +574,12 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                         <div class="flex flex-col gap-4">
                             <div>
                                 <h3 class="mb-2 font-semibold">
-                                    Download for Platforms
+                                    {{t('Download for Platforms')}}
                                 </h3>
                                 <p class="mb-4 text-sm text-muted-foreground">
-                                    Download optimized images for social media
+                                    {{t('Download optimized images for social media')}}
                                 </p>
-                                <div class="grid grid-cols-3 gap-2">
+                                <div class="grid grid-cols-1 gap-2">
                                     <Button
                                         @click="downloadImage('instagram')"
                                         variant="outline"
@@ -540,36 +587,18 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                         :disabled="!imageDataUrl"
                                     >
                                         <Download class="mr-2 h-4 w-4" />
-                                        Instagram
-                                    </Button>
-                                    <Button
-                                        @click="downloadImage('whatsapp')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        WhatsApp
-                                    </Button>
-                                    <Button
-                                        @click="downloadImage('facebook')"
-                                        variant="outline"
-                                        size="sm"
-                                        :disabled="!imageDataUrl"
-                                    >
-                                        <Download class="mr-2 h-4 w-4" />
-                                        Facebook
+                                        {{t('Download Image')}}
                                     </Button>
                                 </div>
                             </div>
 
                             <div class="rounded-lg border p-4">
                                 <h3 class="mb-2 font-semibold">
-                                    Share Directly
+                                    {{t('Share Directly')}}
                                 </h3>
                                 <p class="mb-4 text-sm text-muted-foreground">
-                                    Share the image directly from your device
-                                    using the native share menu
+                                    {{t('Share the image directly from your device')}}
+                                    {{t('using the native share menu')}}
                                 </p>
                                 <Button
                                     @click="shareImage"
@@ -577,7 +606,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                                     :disabled="!imageDataUrl"
                                 >
                                     <Share2 class="mr-2 h-4 w-4" />
-                                    Share Image
+                                    {{t('Share Image')}}
                                 </Button>
                                 <p
                                     v-if="shareError"
@@ -588,16 +617,16 @@ watch([customColor1, customColor2, customColor3, selectedFont, isBoldText], () =
                             </div>
 
                             <div class="rounded-lg border p-4">
-                                <h3 class="mb-2 font-semibold">Verse Details</h3>
+                                <h3 class="mb-2 font-semibold">{{t('Verse Details')}}</h3>
                                 <div class="space-y-2 text-sm">
                                     <div>
                                         <span class="font-semibold"
-                                            >Reference:</span
+                                            >{{t('Reference:')}}</span
                                         >
                                         {{ verseReference }}
                                     </div>
                                     <div>
-                                        <span class="font-semibold">Text:</span>
+                                        <span class="font-semibold">{{t('Text:')}}</span>
                                         <p class="mt-1 text-muted-foreground">
                                             {{ verseText }}
                                         </p>

@@ -14,7 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { usePage } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const props = defineProps<{
     open: boolean;
     verseId: number;
@@ -45,7 +47,7 @@ watch(
 
 async function saveNote() {
     if (!noteContent.value.trim()) {
-        alert('Please enter a note');
+        alert(t('Please enter a note'));
         return;
     }
 
@@ -105,7 +107,7 @@ function closeDialog() {
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent class="sm:max-w-[525px]">
             <DialogHeader>
-                <DialogTitle>Add Note to Verse</DialogTitle>
+                <DialogTitle>{{ t('Add Note to Verse') }}</DialogTitle>
                 <DialogDescription>
                     {{ verseReference }}
                 </DialogDescription>
@@ -115,21 +117,21 @@ function closeDialog() {
                     <p class="text-sm italic">"{{ verseText }}"</p>
                 </div>
                 <div class="grid gap-2">
-                    <Label for="note-title"> Title (Optional) </Label>
+                    <Label for="note-title"> {{t('Title (Optional)')}} </Label>
                     <Input
                         id="note-title"
                         v-model="noteTitle"
-                        placeholder="Enter a title for your note..."
+                        :placeholder="t('Enter a title for your note...')"
                     />
                 </div>
                 <div class="grid gap-2">
                     <Label for="note-content">
-                        Note <span class="text-destructive">*</span>
+                        {{t('Note')}} <span class="text-destructive">*</span>
                     </Label>
                     <Textarea
                         id="note-content"
                         v-model="noteContent"
-                        placeholder="Write your thoughts, insights, or reflections..."
+                        :placeholder="t('Write your thoughts, insights, or reflections...')"
                         rows="6"
                     />
                 </div>
@@ -140,14 +142,14 @@ function closeDialog() {
                     @click="closeDialog"
                     :disabled="saving"
                 >
-                    Cancel
+                    {{t('Cancel')}}
                 </Button>
                 <Button @click="saveNote" :disabled="saving">
                     <LoaderCircle
                         v-if="saving"
                         class="mr-2 h-4 w-4 animate-spin"
                     />
-                    Save Note
+                    {{t('Save Note')}}
                 </Button>
             </DialogFooter>
         </DialogContent>

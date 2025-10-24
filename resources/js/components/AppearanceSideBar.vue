@@ -2,7 +2,9 @@
 import { useSidebar } from '@/components/ui/sidebar';
 import { useAppearance } from '@/composables/useAppearance';
 import { Moon, Sun } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const { appearance, updateAppearance } = useAppearance();
 const { state } = useSidebar();
 
@@ -37,7 +39,7 @@ const tabs = [
                 :class="state === 'collapsed' ? 'h-4 w-4' : '-ml-1 h-4 w-4'"
             />
             <span v-if="state !== 'collapsed'" class="ml-1.5 text-sm">{{
-                label
+                t(label)
             }}</span>
         </button>
     </div>
