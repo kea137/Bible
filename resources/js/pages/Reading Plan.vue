@@ -93,7 +93,7 @@ const readingPlans = [
 </script>
 
 <template>
-    <Head title="{{t('Reading Plan')}}" />
+    <Head :title="t('Reading Plan')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
@@ -115,7 +115,7 @@ const readingPlans = [
                 <div class="w-full sm:w-64">
                     <Select v-model="selectedBibleId">
                         <SelectTrigger>
-                            <SelectValue placeholder="{{t('Select Bible')}}" />
+                            <SelectValue :placeholder="t('Select Bible')" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>

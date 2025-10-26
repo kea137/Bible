@@ -83,6 +83,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage();
 const notesDialogOpen = ref(false);
 const alertSuccess = ref(false);
+const alertError = ref(false);
 
 function navigateToVerse(verse: Verse) {
     router.visit(`/bibles/${verse.bible.id}`);
@@ -105,11 +106,25 @@ function handleNoteSaved() {
     <AlertUser
         v-if="alertSuccess"
         :open="true"
-        title="Success"
+        :title="t('Success')"
         :confirmButtonText="'OK'"
         :message="t('Operation was successful')"
         variant="success"
         @update:open="alertSuccess = false"
+    />
+
+    <AlertUser
+        v-if="alertError"
+        :open="true"
+        :title="t('Error')"
+        :confirmButtonText="'OK'"
+        :message="t('Operation failed! Please try again.')"
+        variant="error"
+        @update:open="
+            () => {
+                alertError = false;
+            }
+        "
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">

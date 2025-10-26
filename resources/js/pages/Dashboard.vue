@@ -451,14 +451,14 @@ function getHighlightColorClass(color: string): string {
             <Command>
                 <CommandInput
                     v-model="searchQuery"
-                    placeholder="Search bibles, verses, or highlighted passages..."
+                    :placeholder="t('Search bibles, verses, or highlighted passages...')"
                 />
                 <CommandList>
                     <CommandEmpty>{{t('No results found.')}}</CommandEmpty>
 
                     <CommandGroup
                         v-if="filteredBibles.length > 0"
-                        heading="{{t('Bibles')}}"
+                        :heading="t('Bibles')"
                     >
                         <CommandItem
                             v-for="bible in filteredBibles.slice(0, 5)"
@@ -487,7 +487,7 @@ function getHighlightColorClass(color: string): string {
 
                     <CommandGroup
                         v-if="filteredHighlights.length > 0"
-                        heading="{{t('Highlighted Verses')}}"
+                        :heading="t('Highlighted Verses')"
                     >
                         <CommandItem
                             v-for="highlight in filteredHighlights.slice(0, 5)"

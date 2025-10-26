@@ -468,7 +468,7 @@ if (props.initialChapter?.id) {
     <AlertUser
         v-if="alertSuccess"
         :open="true"
-        title="Success"
+        :title="t('Success')"
         :confirmButtonText="'OK'"
         :message="t('Operation was successful!')"
         variant="success"
@@ -481,7 +481,7 @@ if (props.initialChapter?.id) {
     <AlertUser
         v-if="alertError"
         :open="true"
-        title="Error"
+        :title="t('Error')"
         :confirmButtonText="'OK'"
         :message="t('Operation failed! Please try again.')"
         variant="error"

@@ -19,10 +19,10 @@ defineProps<{
 
 <template>
     <AuthLayout
-        title="{{ t('Forgot password') }}"
-        description="{{ t('Enter your email to receive a password reset link') }}"
+        :title="t('Forgot password')"
+        :description="t('Enter your email to receive a password reset link')"
     >
-        <Head title="{{ t('Forgot password') }}" />
+        <Head :title="t('Forgot password')" />
 
         <div
             v-if="status"

@@ -142,7 +142,7 @@ function bootupBibles() {
     <AlertUser
         v-if="alertSuccess"
         :open="true"
-        title="Success"
+        :title="t('Success')"
         :confirmButtonText="'OK'"
         :message="t('Operation was Successful!')"
         variant="success"

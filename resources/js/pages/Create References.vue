@@ -97,24 +97,29 @@ const alertErrorMessage = ref('');
 
 <template>
     <Head :title="t('Create References')" />
+
     <AlertUser
         v-if="alertSuccess"
         :open="true"
-        title="Success"
+        :title="t('Success')"
         :confirmButtonText="'OK'"
         :message="t('Operation was successful')"
         variant="success"
-        @update:open="() => (alertSuccess = false)"
+        @update:open="alertSuccess = false"
     />
 
     <AlertUser
         v-if="alertError"
         :open="true"
-        title="Error"
+        :title="t('Error')"
         :confirmButtonText="'OK'"
-        :message="errorMessage || alertErrorMessage"
+        :message="t('Operation failed! Please try again.')"
         variant="error"
-        @update:open="() => (alertError = false)"
+        @update:open="
+            () => {
+                alertError = false;
+            }
+        "
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">
