@@ -16,19 +16,63 @@ import {
     CommandSeparator,
 } from '@/components/ui/command';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, dashboard, highlighted_verses_page } from '@/routes';
+import { bibles, dashboard, highlighted_verses_page, verse_study } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import {
     BookOpen,
     Highlighter,
     Library,
+    PenTool,
     Quote,
     Search,
     TrendingUp,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { MeiliSearch } from 'meilisearch';
+
+onMounted(() => {
+    searchVerses();
+});
+
+const searchQuery = ref('');
+const client = new MeiliSearch({
+  host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
+  apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
+});
+
+const index = client.index('verses'); // Replace with your Meilisearch index name
+
+const searchVerses = async () => {
+    if (searchQuery.value.trim() === '') {
+        // Fetch all highlights and bibles if search query is empty
+        await loadHighlights();
+        await loadBibles();
+    } else {
+        // Search verses from Meilisearch
+        const response = await index.search(searchQuery.value, {
+            limit: 10,
+        });
+        // Map Meilisearch hits to a format similar to highlights
+        const verseResults = response.hits.map((hit: any) => ({
+            verse: {
+                id: hit.id,
+                text: hit.text,
+                verse_number: hit.verse_number,
+            },
+        }));
+        // Merge highlights and verse search results
+        highlights.value = verseResults;
+        console.log('Search Results:', verseResults);
+        // Optionally, search bibles by name/language/version
+        const bibleResponse = await fetch(`/api/bibles?search=${encodeURIComponent(searchQuery.value)}`);
+        if (bibleResponse.ok) {
+            availableBibles.value = await bibleResponse.json();
+        }
+    }
+};
+
 
 const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
@@ -71,7 +115,6 @@ const props = defineProps<Props>();
 
 const highlights = ref<any[]>([]);
 const searchOpen = ref(false);
-const searchQuery = ref('');
 const availableBibles = ref<any[]>([]);
 
 async function loadHighlights() {
@@ -451,6 +494,7 @@ function getHighlightColorClass(color: string): string {
             <Command>
                 <CommandInput
                     v-model="searchQuery"
+                    @input="searchVerses()"
                     :placeholder="t('Search bibles, verses, or highlighted passages...')"
                 />
                 <CommandList>
@@ -488,14 +532,15 @@ function getHighlightColorClass(color: string): string {
                     <CommandGroup
                         v-if="filteredHighlights.length > 0"
                         :heading="t('Highlighted Verses')"
-                    >
+                    >         
                         <CommandItem
-                            v-for="highlight in filteredHighlights.slice(0, 5)"
+                            v-for="highlight in filteredHighlights.slice(0, 10)"
                             :key="highlight.id"
                             :value="highlight.verse.text"
                             @select="viewHighlight(highlight.verse.id)"
                         >
-                            <Highlighter class="mr-2 h-4 w-4" />
+                            <PenTool class="mr-2 h-4 w-4" />
+                            <Link :href="verse_study(highlight.verse.id)">
                             <div class="flex flex-col">
                                 <span class="line-clamp-1 text-sm">{{
                                     highlight.verse.text
@@ -507,6 +552,7 @@ function getHighlightColorClass(color: string): string {
                                     }}:{{ highlight.verse.verse_number }}
                                 </span>
                             </div>
+                            </Link>
                         </CommandItem>
                     </CommandGroup>
                 </CommandList>

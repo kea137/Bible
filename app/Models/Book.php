@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Book extends Model
 {
+    use Searchable;
+
     /** @use HasFactory<\Database\Factories\BookFactory> */
     use HasFactory;
 
