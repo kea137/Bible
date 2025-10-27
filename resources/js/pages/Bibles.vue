@@ -25,9 +25,11 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { LibraryBigIcon, Search } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { LibraryBigIcon, PenTool, Search } from 'lucide-vue-next';
+import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { MeiliSearch } from 'meilisearch';
+import { Link } from '@inertiajs/vue3';
 
 const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
@@ -70,7 +72,6 @@ function handlePageChange(page: number) {
 }
 
 const searchOpen = ref(false);
-const searchQuery = ref('');
 
 const filteredBibles = computed(() => {
     if (!searchQuery.value) {
@@ -97,6 +98,99 @@ const errorMessage = computed(() => page.props.error as string);
 const alertSuccess = ref(!!successMessage.value);
 const alertError = ref(!!errorMessage.value);
 const alertErrorMessage = ref('');
+
+
+onMounted(() => {
+    searchVerses();
+});
+
+// Stub for highlights
+const highlights = ref<any[]>([]);
+
+// Stub for availableBibles
+const availableBibles = ref<any[]>([]);
+
+// Method to handle highlight selection
+function viewHighlight(verseId: number) {
+    router.visit(`/verses/${verseId}/study`);
+    searchOpen.value = false;
+}
+
+// Method to generate verse study link
+function verse_study(verseId: number) {
+    return `/verses/${verseId}/study`;
+}
+
+async function loadHighlights() {
+    try {
+        const response = await fetch('/api/verse-highlights');
+        if (response.ok) {
+            highlights.value = await response.json();
+        }
+    } catch (error) {
+        console.error('Failed to load highlights:', error);
+    }
+}
+
+async function loadBibles() {
+    try {
+        const response = await fetch('/api/bibles');
+        if (response.ok) {
+            availableBibles.value = await response.json();
+        }
+    } catch (error) {
+        console.error('Failed to load bibles:', error);
+    }
+}
+
+const filteredHighlights = computed(() => {
+    if (!searchQuery.value) {
+        return highlights.value;
+    }
+    const query = searchQuery.value.toLowerCase();
+    return highlights.value.filter(
+        (h) =>
+            h.verse.text.toLowerCase().includes(query) ||
+            h.verse.book?.title.toLowerCase().includes(query),
+    );
+});
+
+const searchQuery = ref('');
+const client = new MeiliSearch({
+  host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
+  apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
+});
+
+const index = client.index('verses'); // Replace with your Meilisearch index name
+
+const searchVerses = async () => {
+    if (searchQuery.value.trim() === '') {
+        // Fetch all highlights and bibles if search query is empty
+        await loadHighlights();
+        await loadBibles();
+    } else {
+        // Search verses from Meilisearch
+        const response = await index.search(searchQuery.value, {
+            limit: 10,
+        });
+        // Map Meilisearch hits to a format similar to highlights
+        const verseResults = response.hits.map((hit: any) => ({
+            verse: {
+                id: hit.id,
+                text: hit.text,
+                verse_number: hit.verse_number,
+            },
+        }));
+        // Merge highlights and verse search results
+        highlights.value = verseResults;
+        console.log('Search Results:', verseResults);
+        // Optionally, search bibles by name/language/version
+        const bibleResponse = await fetch(`/api/bibles?search=${encodeURIComponent(searchQuery.value)}`);
+        if (bibleResponse.ok) {
+            availableBibles.value = await bibleResponse.json();
+        }
+    }
+};
 
 </script>
 
@@ -214,6 +308,7 @@ const alertErrorMessage = ref('');
                 <Command>
                     <CommandInput
                         v-model="searchQuery"
+                        @input="searchVerses()"
                         placeholder="Search bibles by name, language, or version..."
                     />
                     <CommandList>
@@ -235,6 +330,32 @@ const alertErrorMessage = ref('');
                                         {{ bible.version }}
                                     </span>
                                 </div>
+                            </CommandItem>
+                        </CommandGroup>
+                        <CommandGroup
+                        v-if="filteredHighlights.length > 0"
+                        :heading="t('Highlighted Verses')"
+                        >         
+                            <CommandItem
+                                v-for="highlight in filteredHighlights.slice(0, 10)"
+                                :key="highlight.id"
+                                :value="highlight.verse.text"
+                                @select="viewHighlight(highlight.verse.id)"
+                            >
+                                <PenTool class="mr-2 h-4 w-4" />
+                                <Link :href="verse_study(highlight.verse.id)">
+                                <div class="flex flex-col">
+                                    <span class="line-clamp-1 text-sm">{{
+                                        highlight.verse.text
+                                    }}</span>
+                                    <span class="text-xs text-muted-foreground">
+                                        {{ highlight.verse.book?.title }}
+                                        {{
+                                            highlight.verse.chapter?.chapter_number
+                                        }}:{{ highlight.verse.verse_number }}
+                                    </span>
+                                </div>
+                                </Link>
                             </CommandItem>
                         </CommandGroup>
                     </CommandList>

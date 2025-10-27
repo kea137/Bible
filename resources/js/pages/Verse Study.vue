@@ -9,9 +9,9 @@ import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles } from '@/routes';
+import { bibles, verse_study } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { BookOpen, ExternalLink, Languages, Share2, StickyNote } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -86,7 +86,7 @@ const alertSuccess = ref(false);
 const alertError = ref(false);
 
 function navigateToVerse(verse: Verse) {
-    router.visit(`/bibles/${verse.bible.id}`);
+    router.visit(`/verses/${verse.id}/study`);
 }
 
 function openNotesDialog() {
@@ -95,6 +95,18 @@ function openNotesDialog() {
 
 function handleNoteSaved() {
     alertSuccess.value = true;
+}
+
+function translateReference(ref: string): string {
+    // translate EXO 12 12 to other lannguage e.g KUT 12:12
+    const parts = ref.split(' ');
+    if (parts.length !== 3) {
+        return ref; // return original if format is unexpected
+    }
+    const bookCode = parts[0];
+    const chapter = parts[1];
+    const verse = parts[2];
+    return `${t(`${bookCode}`)} ${chapter}:${verse}`;
 }
 </script>
 
@@ -208,21 +220,21 @@ function handleNoteSaved() {
                             v-if="references.length > 0"
                             class="h-100 space-y-3 sm:space-y-4"
                         >
-                            <div
-                                v-for="ref in references"
-                                :key="ref.id"
-                                class="mt-2 cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
-                                @click="navigateToVerse(ref.verse)"
-                            >
-                                <p
-                                    class="mb-2 text-xs font-semibold text-primary sm:text-sm"
+                                <div
+                                    v-for="ref in references"
+                                    :key="ref.id"
+                                    class="mt-2 cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
+                                    @click="navigateToVerse(ref.verse)"
                                 >
-                                    {{ ref.reference }}
-                                </p>
-                                <p class="text-xs sm:text-sm">
-                                    {{ ref.verse.text }}
-                                </p>
-                            </div>
+                                    <p
+                                        class="mb-2 text-xs font-semibold text-primary sm:text-sm"
+                                    >
+                                        {{ translateReference(ref.reference) }}
+                                    </p>
+                                    <p class="text-xs sm:text-sm">
+                                        {{ ref.verse.text }}
+                                    </p>
+                                </div>
                         </ScrollArea>
                         <p
                             v-else

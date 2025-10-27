@@ -155,7 +155,7 @@ function bootupBibles() {
     <AlertUser
         v-if="alertError"
         :open="true"
-        title="Error"
+        :title="t('Error')"
         :confirmButtonText="'OK'"
         :message="t('Operation Failed. Try again later!')"
         variant="error"

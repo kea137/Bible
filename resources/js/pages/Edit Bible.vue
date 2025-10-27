@@ -69,7 +69,7 @@ const alertErrorMessage = ref('');
 </script>
 
 <template>
-    <Head title="Edit Bible" />
+    <Head :title="t('Edit Bible')" />
 
     <AlertUser
         v-if="alertSuccess"

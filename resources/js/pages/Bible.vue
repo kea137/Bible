@@ -32,18 +32,30 @@ import {
 } from '@/components/ui/select';
 import VerseDialog from '@/components/VerseDialog.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles } from '@/routes';
+import { bibles, verse_study } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
+    PenTool,
+    Search,
     Share2,
 } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import {
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/components/ui/command';
+import { MeiliSearch } from 'meilisearch';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -460,6 +472,94 @@ if (props.initialChapter?.id) {
     loadChapterHighlights(props.initialChapter.id);
     loadChapterProgress(props.initialChapter.id);
 }
+
+const searchOpen = ref(false);
+
+onMounted(() => {
+    searchVerses();
+});
+
+const highlights = ref<any[]>([]);
+const searchQuery = ref('');
+const client = new MeiliSearch({
+  host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
+  apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
+});
+
+const index = client.index('verses'); // Replace with your Meilisearch index name
+
+const searchVerses = async () => {
+    if (searchQuery.value.trim() === '') {
+        // Fetch all highlights and bibles if search query is empty
+        await loadHighlights();
+    } else {
+        // Search verses from Meilisearch
+        const response = await index.search(searchQuery.value, {
+            limit: 10,
+        });
+        // Map Meilisearch hits to a format similar to highlights
+        const verseResults = response.hits.map((hit: any) => ({
+            verse: {
+                id: hit.id,
+                text: hit.text,
+                verse_number: hit.verse_number,
+                bible_id: hit.bible_id,
+            },
+        }));
+        
+        // Merge highlights and verse search results
+        // Filter out verse with bible id matching current bible
+        const filteredResults = verseResults.filter(
+            (vr: any) => vr.verse.bible_id === props.bible.id,
+        );
+
+        highlights.value = filteredResults;
+    }
+};
+
+async function loadHighlights() {
+    try {
+        const response = await fetch('/api/verse-highlights');
+        if (response.ok) {
+            highlights.value = await response.json();
+        }
+    } catch (error) {
+        console.error('Failed to load highlights:', error);
+    }
+}
+
+const filteredHighlights = computed(() => {
+    if (!searchQuery.value) {
+        return highlights.value;
+    }
+    const query = searchQuery.value.toLowerCase();
+    return highlights.value.filter(
+        (h) =>
+            h.verse.text.toLowerCase().includes(query) ||
+            h.verse.book?.title.toLowerCase().includes(query),
+    );
+});
+
+function viewHighlight(verseId: number) {
+    // Navigate to the verse's bible page
+    const highlight = highlights.value.find((h) => h.verse.id === verseId);
+    if (highlight && highlight.verse.chapter?.bible_id) {
+        router.visit(`/bibles/${highlight.verse.chapter.bible_id}`);
+        searchOpen.value = false;
+    }
+}
+
+function translateReference(ref: string): string {
+    // translate EXO 12 12 to other lannguage e.g KUT 12:12
+    const parts = ref.split(' ');
+    if (parts.length !== 3) {
+        return ref; // return original if format is unexpected
+    }
+    const bookCode = parts[0];
+    const chapter = parts[1];
+    const verse = parts[2];
+    return `${t(`${bookCode}`)} ${chapter}:${verse}`;
+}
 </script>
 
 <template>
@@ -558,6 +658,57 @@ if (props.initialChapter?.id) {
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
+
+                                <Button
+                                    @click="searchOpen = true"
+                                    variant="outline"
+                                    class="w-full sm:w-auto"
+                                >
+                                    <Search class="mr-2 h-4 w-4" />
+                                    {{t('Search')}}
+                                </Button>
+
+                                <CommandDialog
+                                    :open="searchOpen"
+                                    @update:open="searchOpen = $event"
+                                >
+                                    <Command>
+                                        <CommandInput
+                                            v-model="searchQuery"
+                                            @input="searchVerses()"
+                                            :placeholder="t('Search verses...')"
+                                        />
+                                        <CommandList>
+                                            <CommandEmpty>{{t('No Verses found.')}}</CommandEmpty>
+                                            <CommandGroup
+                                            v-if="filteredHighlights.length > 0"
+                                            :heading="t('Highlighted Verses')"
+                                            >         
+                                                <CommandItem
+                                                    v-for="highlight in filteredHighlights.slice(0, 10)"
+                                                    :key="highlight.id"
+                                                    :value="highlight.verse.text"
+                                                    @select="viewHighlight(highlight.verse.id)"
+                                                >
+                                                    <PenTool class="mr-2 h-4 w-4"/>
+                                                    <Link :href="verse_study(highlight.verse.id)">
+                                                    <div class="flex flex-col">
+                                                        <span class="line-clamp-1 text-sm">{{
+                                                            highlight.verse.text
+                                                        }}</span>
+                                                        <span class="text-xs text-muted-foreground">
+                                                            {{ highlight.verse.book?.title }}
+                                                            {{
+                                                                highlight.verse.chapter?.chapter_number
+                                                            }}:{{ highlight.verse.verse_number }}
+                                                        </span>
+                                                    </div>
+                                                    </Link>
+                                                </CommandItem>
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </CommandDialog>
                             </div>
                         </div>
                     </CardHeader>
@@ -666,7 +817,7 @@ if (props.initialChapter?.id) {
                                                             :key="ref.id"
                                                             class="text-muted-foreground"
                                                         >
-                                                            {{ ref.reference }}:
+                                                            {{ translateReference(ref.reference) }}:
                                                             {{
                                                                 ref.verse?.text?.substring(
                                                                     0,
@@ -816,7 +967,7 @@ if (props.initialChapter?.id) {
                                     <p
                                         class="text-sm font-semibold text-primary"
                                     >
-                                        {{ ref.reference }}
+                                        {{ translateReference(ref.reference) }}
                                     </p>
                                     <p
                                         class="mt-1 text-xs text-muted-foreground"

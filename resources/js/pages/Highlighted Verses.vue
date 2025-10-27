@@ -124,7 +124,7 @@ function handleNoteSaved() {
 </script>
 
 <template>
-    <Head title="Highlighted Verses" />
+    <Head :title="t('Highlighted Verses')" />
 
     <AlertUser
         v-if="alertSuccess"

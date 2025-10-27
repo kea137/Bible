@@ -141,7 +141,7 @@ return [
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
             'verses' => [
-                'filterableAttributes'=> ['text'],
+                'filterableAttributes'=> ['text', 'bible_id'],
             ],
         ],
     ],

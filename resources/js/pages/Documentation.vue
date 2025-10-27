@@ -15,7 +15,9 @@ import {
 } from 'lucide-vue-next';
 import { type BreadcrumbItem } from '@/types';
 import { documentation } from '@/routes';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Documentation',
@@ -25,7 +27,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
-    <Head title="Documentation" />
+    <Head :title="t('Documentation')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-4 p-4 pt-0">

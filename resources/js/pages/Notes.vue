@@ -187,7 +187,7 @@ async function deleteNote() {
 </script>
 
 <template>
-    <Head title="Notes" />
+    <Head :title="t('Notes')" />
 
     <AlertUser
         v-if="alertSuccess"
