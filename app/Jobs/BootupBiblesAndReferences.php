@@ -14,7 +14,7 @@ class BootupBiblesAndReferences implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 7200; // 2 hours timeout for very large operations
+    public $timeout = 72000; // 20 hours timeout for very large operations (this depends on server performance {30min for 8gb of ram})
 
     /**
      * Create a new job instance.
