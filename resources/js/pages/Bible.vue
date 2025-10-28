@@ -55,7 +55,7 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
-import { MeiliSearch } from 'meilisearch';
+// import { MeiliSearch } from 'meilisearch';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -481,12 +481,12 @@ onMounted(() => {
 
 const highlights = ref<any[]>([]);
 const searchQuery = ref('');
-const client = new MeiliSearch({
-  host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
-  apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
-});
+// const client = new MeiliSearch({
+//   host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
+//   apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
+// });
 
-const index = client.index('verses'); // Replace with your Meilisearch index name
+// const index = client.index('verses'); // Replace with your Meilisearch index name
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
@@ -494,26 +494,26 @@ const searchVerses = async () => {
         await loadHighlights();
     } else {
         // Search verses from Meilisearch
-        const response = await index.search(searchQuery.value, {
-            limit: 10,
-        });
+        // const response = await index.search(searchQuery.value, {
+        //     limit: 10,
+        // });
         // Map Meilisearch hits to a format similar to highlights
-        const verseResults = response.hits.map((hit: any) => ({
-            verse: {
-                id: hit.id,
-                text: hit.text,
-                verse_number: hit.verse_number,
-                bible_id: hit.bible_id,
-            },
-        }));
+        // const verseResults = response.hits.map((hit: any) => ({
+        //     verse: {
+        //         id: hit.id,
+        //         text: hit.text,
+        //         verse_number: hit.verse_number,
+        //         bible_id: hit.bible_id,
+        //     },
+        // }));
         
         // Merge highlights and verse search results
         // Filter out verse with bible id matching current bible
-        const filteredResults = verseResults.filter(
-            (vr: any) => vr.verse.bible_id === props.bible.id,
-        );
+        // const filteredResults = verseResults.filter(
+        //     (vr: any) => vr.verse.bible_id === props.bible.id,
+        // );
 
-        highlights.value = filteredResults;
+        // highlights.value = filteredResults;
     }
 };
 

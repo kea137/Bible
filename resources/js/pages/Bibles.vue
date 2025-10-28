@@ -28,7 +28,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { LibraryBigIcon, PenTool, Search } from 'lucide-vue-next';
 import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { MeiliSearch } from 'meilisearch';
+// import { MeiliSearch } from 'meilisearch';
 import { Link } from '@inertiajs/vue3';
 
 const { t } = useI18n();
@@ -156,12 +156,12 @@ const filteredHighlights = computed(() => {
 });
 
 const searchQuery = ref('');
-const client = new MeiliSearch({
-  host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
-  apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
-});
+// const client = new MeiliSearch({
+//   host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
+//   apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
+// });
 
-const index = client.index('verses'); // Replace with your Meilisearch index name
+// const index = client.index('verses'); // Replace with your Meilisearch index name
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
@@ -170,20 +170,20 @@ const searchVerses = async () => {
         await loadBibles();
     } else {
         // Search verses from Meilisearch
-        const response = await index.search(searchQuery.value, {
-            limit: 10,
-        });
+        // const response = await index.search(searchQuery.value, {
+        //     limit: 10,
+        // });
         // Map Meilisearch hits to a format similar to highlights
-        const verseResults = response.hits.map((hit: any) => ({
-            verse: {
-                id: hit.id,
-                text: hit.text,
-                verse_number: hit.verse_number,
-            },
-        }));
+        // const verseResults = response.hits.map((hit: any) => ({
+        //     verse: {
+        //         id: hit.id,
+        //         text: hit.text,
+        //         verse_number: hit.verse_number,
+        //     },
+        // }));
         // Merge highlights and verse search results
-        highlights.value = verseResults;
-        console.log('Search Results:', verseResults);
+        // highlights.value = verseResults;
+        // console.log('Search Results:', verseResults);
         // Optionally, search bibles by name/language/version
         const bibleResponse = await fetch(`/api/bibles?search=${encodeURIComponent(searchQuery.value)}`);
         if (bibleResponse.ok) {
