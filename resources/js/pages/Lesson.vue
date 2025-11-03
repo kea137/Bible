@@ -11,6 +11,7 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -91,12 +92,17 @@ async function toggleChapterCompletion() {
             },
         });
         
+        if (!response.ok) {
+            throw new Error('Failed to toggle completion');
+        }
+        
         const data = await response.json();
         if (data.success) {
             chapterCompleted.value = data.progress.completed;
         }
     } catch (error) {
         console.error('Failed to toggle lesson completion:', error);
+        alert('Failed to toggle lesson completion. Please try again.');
     }
 }
 
@@ -124,8 +130,33 @@ function handleReferenceClick(reference: any){
     selectedReferenceVerse.value = reference;
 }
 
-function formatParagraphText(paragraph: any): string {
+async function handleReferenceHover(reference: any) {
+    // Fetch cross-references for this verse from the database
+    try {
+        // First set the selected verse
+        selectedReferenceVerse.value = reference;
+        
+        // Then fetch cross-references if we have a verse with proper data
+        if (reference.verse_id) {
+            const response = await fetch(`/api/verses/${reference.verse_id}/references`);
+            const data = await response.json();
+            if (data && data.references) {
+                hoveredVerseReferences.value = data.references;
+            } else {
+                hoveredVerseReferences.value = [];
+            }
+        } else {
+            hoveredVerseReferences.value = [];
+        }
+    } catch {
+        hoveredVerseReferences.value = [];
+    }
+}
+
+function formatParagraphText(paragraph: any): any[] {
     let text = paragraph.text;
+    const textParts: any[] = [];
+    let lastIndex = 0;
     
     // Replace full verse references with their text
     if (paragraph.references) {
@@ -134,22 +165,52 @@ function formatParagraphText(paragraph: any): string {
                 text = text.replace(ref.original, `"${ref.text}"`);
             }
         });
+        
+        // Find all short reference positions and create text parts
+        const shortRefs = paragraph.references.filter((r: any) => r.type === 'short');
+        shortRefs.forEach((ref: any, idx: number) => {
+            const refPattern = new RegExp(ref.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            const match = refPattern.exec(text.substring(lastIndex));
+            
+            if (match) {
+                const matchIndex = lastIndex + match.index;
+                
+                // Add text before reference
+                if (matchIndex > lastIndex) {
+                    textParts.push({
+                        type: 'text',
+                        content: text.substring(lastIndex, matchIndex)
+                    });
+                }
+                
+                // Add reference as separate part
+                textParts.push({
+                    type: 'reference',
+                    content: ref
+                });
+                
+                lastIndex = matchIndex + ref.original.length;
+            }
+        });
     }
     
-    // Remove short reference markers for inline display
-    // text = text.replace(/'([A-Z0-9]{3})\s+(\d+):(\d+)'/g, '');
+    // Add remaining text
+    if (lastIndex < text.length) {
+        textParts.push({
+            type: 'text',
+            content: text.substring(lastIndex)
+        });
+    }
     
-    return text.trim();
-}
-
-function getInlineReferences(paragraph: any): any[] {
-    if (!paragraph.references) return [];
-    return paragraph.references.filter((r: any) => r.type === 'short');
-}
-
-function handleReferenceHover(reference: any) {
-    hoveredVerseReferences.value = [reference];
-    selectedReferenceVerse.value = reference;
+    // If no parts, just return the full text
+    if (textParts.length === 0) {
+        textParts.push({
+            type: 'text',
+            content: text.trim()
+        });
+    }
+    
+    return textParts;
 }
 
 function navigateToNextLesson() {
@@ -243,7 +304,7 @@ const hasPreviousLesson = computed(() => {
                         <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div v-if="lesson.series" class="text-sm text-muted-foreground">
                                 <span class="font-semibold">{{ t('Series') }}:</span> {{ lesson.series.title }}
-                                <span v-if="lesson.episode_number" class="ml-2">
+                                <span v-if="lesson.episode_number !== null && lesson.episode_number !== undefined" class="ml-2">
                                     {{ t('Episode') }} {{ lesson.episode_number }}
                                 </span>
                             </div>
@@ -287,38 +348,30 @@ const hasPreviousLesson = computed(() => {
                             <p
                                 v-for="paragraph in lesson.paragraphs"
                                 :key="paragraph.id"
-                                class="pl-6 text-justify"
+                                class="indent-6 text-justify"
                             >
-                                {{ formatParagraphText(paragraph) }}
-                                
-                                <!-- Inline scripture reference buttons -->
-                                <template v-if="getInlineReferences(paragraph).length > 0">
-                                    <span
-                                        v-for="(ref, idx) in getInlineReferences(paragraph)"
-                                        :key="idx"
-                                        class="ml-1"
-                                    >
-                                        <HoverCard @update:open="(open) => open && handleReferenceHover(ref)">
-                                            <HoverCardTrigger>
-                                                <span
-                                                    class="cursor-pointer font-semibold text-primary hover:underline"
-                                                    @click="handleReferenceClick(ref)"
-                                                >
-                                                    {{ ref.reference }}
-                                                </span>
-                                            </HoverCardTrigger>
-                                            <HoverCardContent class="w-80">
-                                                <div class="space-y-2">
-                                                    <p class="text-sm font-semibold text-primary">
-                                                        {{ ref.reference }}
-                                                    </p>
-                                                    <p class="text-sm">
-                                                        {{ ref.text }}
-                                                    </p>
-                                                </div>
-                                            </HoverCardContent>
-                                        </HoverCard>
-                                    </span>
+                                <template v-for="(part, idx) in formatParagraphText(paragraph)" :key="idx">
+                                    <template v-if="part.type === 'text'">{{ part.content }}</template>
+                                    <HoverCard v-else-if="part.type === 'reference'" @update:open="(open) => open && handleReferenceHover(part.content)">
+                                        <HoverCardTrigger>
+                                            <span
+                                                class="cursor-pointer font-semibold text-primary hover:underline"
+                                                @click="handleReferenceClick(part.content)"
+                                            >
+                                                {{ part.content.reference }}
+                                            </span>
+                                        </HoverCardTrigger>
+                                        <HoverCardContent class="w-80">
+                                            <div class="space-y-2">
+                                                <p class="text-sm font-semibold text-primary">
+                                                    {{ part.content.reference }}
+                                                </p>
+                                                <p class="text-sm">
+                                                    {{ part.content.text }}
+                                                </p>
+                                            </div>
+                                        </HoverCardContent>
+                                    </HoverCard>
                                 </template>
                             </p>
                         </div>
@@ -328,59 +381,71 @@ const hasPreviousLesson = computed(() => {
 
             <!-- References sidebar (1/3) - matching Bible cross-reference UI -->
             <div class="flex flex-[1] flex-col gap-3 lg:h-160 lg:gap-4">
-                <!-- Related references section -->
+                <!-- Top half - Cross References -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Related References') }}</CardTitle
+                            >{{ t('Cross References') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            >{{ t('Hover or click scripture references in the lesson') }}</CardDescription
+                            ><span class="hidden sm:inline"
+                                >{{ t('Hover over scripture references to see') }}
+                                {{ t('references') }}</span
+                            ><span class="sm:hidden"
+                                >{{ t('Tap scripture references to see references') }}</span
+                            ></CardDescription
                         >
                     </CardHeader>
-                    <CardContent class="max-h-[35vh] overflow-y-auto lg:max-h-[45vh]">
-                        <div v-if="hoveredVerseReferences.length > 0" class="space-y-2">
-                            <div
-                                v-for="ref in hoveredVerseReferences"
-                                :key="ref.reference"
-                                class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
-                                :class="{ 'bg-accent': ref.reference === selectedReferenceVerse?.reference }"
-                                @click="handleReferenceClick(ref)"
-                            >
-                                <p class="text-sm font-semibold text-primary">
-                                    {{ ref.reference }}
-                                </p>
-                                <p class="mt-1 text-xs text-muted-foreground line-clamp-2">
-                                    {{ ref.text }}
-                                </p>
+                    <CardContent class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]">
+                        <ScrollArea v-if="hoveredVerseReferences.length > 0" class="h-full">
+                            <div class="space-y-3">
+                                <div
+                                    v-for="ref in hoveredVerseReferences"
+                                    :key="ref.id"
+                                    class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
+                                    @click="handleReferenceClick(ref)"
+                                >
+                                    <p class="text-sm font-semibold text-primary">
+                                        {{ ref.reference }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-muted-foreground">
+                                        {{ ref.verse?.text?.substring(0, 100) }}...
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
-                            {{ t('Hover or click on a scripture reference to view related verses') }}
+                            <span class="hidden sm:inline"
+                                >{{ t('Hover over a scripture reference to see its') }}
+                                {{ t('cross-references') }}</span
+                            >
+                            <span class="sm:hidden"
+                                >{{ t('Tap a scripture reference to see its') }}
+                                {{ t('cross-references') }}</span
+                            >
                         </p>
                     </CardContent>
                 </Card>
 
-                <!-- Selected verse full text -->
+                <!-- Bottom half - Selected Reference Verse -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Selected Verse') }}</CardTitle
+                            >{{ t('Selected Reference') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            >{{ t('Full verse text') }}</CardDescription
+                            >{{ t('Click a reference above to view full') }}
+                            {{ t('verse') }}</CardDescription
                         >
                     </CardHeader>
-                    <CardContent class="max-h-[25vh] overflow-y-auto lg:max-h-[35vh]">
+                    <CardContent class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]">
                         <div v-if="selectedReferenceVerse" class="space-y-2">
-                            <p class="text-sm font-semibold text-primary">
-                                {{ selectedReferenceVerse.reference }}
+                            <p class="text-sm font-semibold">
+                                {{ selectedReferenceVerse.book_title || selectedReferenceVerse.verse?.book?.title }}
+                                {{ selectedReferenceVerse.chapter_number || selectedReferenceVerse.verse?.chapter?.chapter_number }}:{{ selectedReferenceVerse.verse_number || selectedReferenceVerse.verse?.verse_number }}
                             </p>
-                            <p class="text-sm leading-relaxed">
-                                {{ selectedReferenceVerse.text }}
-                            </p>
-                            <p v-if="selectedReferenceVerse.book_title" class="mt-2 text-xs text-muted-foreground">
-                                {{ selectedReferenceVerse.book_title }} {{ selectedReferenceVerse.chapter_number }}:{{ selectedReferenceVerse.verse_number }}
+                            <p class="text-sm">
+                                {{ selectedReferenceVerse.text || selectedReferenceVerse.verse?.text }}
                             </p>
                         </div>
                         <p v-else class="text-sm text-muted-foreground italic">
