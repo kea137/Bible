@@ -13,7 +13,7 @@ import PaginationItem from '@/components/ui/pagination/PaginationItem.vue';
 import PaginationNext from '@/components/ui/pagination/PaginationNext.vue';
 import PaginationPrevious from '@/components/ui/pagination/PaginationPrevious.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { lessons } from '@/routes';
+import { lessons as lessonsRoute } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { LibraryBigIcon, Search } from 'lucide-vue-next';
@@ -24,7 +24,7 @@ const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: t('Lessons'),
-        href: lessons().url,
+        href: lessonsRoute().url,
     },
 ];
 
@@ -119,23 +119,30 @@ const alertError = ref(!!errorMessage.value);
                 <CardContent>
                     <div
                         v-if="paginatedLessons.length > 0"
-                        class="space-y-2 sm:space-y-3"
+                        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
                     >
                         <div
                             v-for="lesson in paginatedLessons"
                             :key="lesson.id"
-                            class="flex cursor-pointer items-center justify-between rounded-lg border border-border p-2 transition-colors hover:bg-accent/50 sm:p-3"
+                            class="group relative cursor-pointer overflow-hidden rounded-lg border border-border transition-all hover:shadow-lg hover:scale-[1.02]"
                             @click="viewLesson(lesson.id)"
                         >
-                            <div class="flex-1">
-                                <p class="text-sm font-medium sm:text-base">
+                            <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
+                            <div class="relative p-4">
+                                <div class="mb-2 flex items-start justify-between">
+                                    <LibraryBigIcon class="h-8 w-8 text-primary/70 transition-colors group-hover:text-primary" />
+                                </div>
+                                <h3 class="mb-2 text-lg font-semibold line-clamp-2">
                                     {{ lesson.title }}
+                                </h3>
+                                <p class="mb-3 text-sm text-muted-foreground line-clamp-2">
+                                    {{ lesson.description }}
                                 </p>
-                                <p
-                                    class="text-xs text-muted-foreground sm:text-sm"
-                                >
-                                    {{ lesson.language }}
-                                </p>
+                                <div class="flex items-center justify-between text-xs text-muted-foreground">
+                                    <span class="rounded-full bg-primary/10 px-2 py-1">
+                                        {{ lesson.language }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -143,7 +150,9 @@ const alertError = ref(!!errorMessage.value);
                         v-else
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
+                        <LibraryBigIcon class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
                         <p>{{t('No Lessons Available')}}</p>
+                        <p class="mt-2 text-xs">{{t('Check back later for new lessons')}}</p>
                     </div>
                 </CardContent>
             </Card>

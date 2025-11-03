@@ -39,10 +39,10 @@ const props = defineProps<{
         name: string;
         code: string;
     }[];
-    lesson: lesson;
+    lesson: LessonType;
 }>();
 
-type lesson = {
+type LessonType = {
     id: number;
     title: string;
     description: string;
@@ -54,9 +54,11 @@ type lesson = {
     }[];
 }
 
+const editableLesson = ref<LessonType>({ ...props.lesson });
+
 watchEffect(() => {
-    while (props.lesson.paragraphs.length < props.lesson.no_paragraphs) {
-        props.lesson.paragraphs.push({ text: '' });
+    while (editableLesson.value.paragraphs.length < editableLesson.value.no_paragraphs) {
+        editableLesson.value.paragraphs.push({ text: '' });
     }
 });
 
@@ -151,7 +153,7 @@ if (info) {
                                         :tabindex="1"
                                         type="text"
                                         :placeholder="t('Title of the Lesson')"
-                                        v-model="lesson.title"
+                                        v-model="editableLesson.title"
                                     />
                                     <InputError :message="errors.title" />
                                 </div>
@@ -160,7 +162,7 @@ if (info) {
                                 >
                                     <Label for="language">{{ t('Language') }}</Label>
                                     <Select name="language"
-                                            :default-value="lesson.language"
+                                            :default-value="editableLesson.language"
                                     >
                                         <SelectTrigger id="language">
                                             <SelectValue
@@ -185,7 +187,7 @@ if (info) {
                                 >
                                     <Label for="readable">{{ t('Readable') }}</Label>
                                     <Select name="readable"
-                                            :default-value="lesson.readable ? 'True' : 'False'"
+                                            :default-value="editableLesson.readable ? 'True' : 'False'"
                                     >
                                         <SelectTrigger id="readable">
                                             <SelectValue
@@ -215,7 +217,7 @@ if (info) {
                                         name="no_paragraphs"
                                         :tabindex="2"
                                         type="number"
-                                        v-model="lesson.no_paragraphs"
+                                        v-model="editableLesson.no_paragraphs"
                                         placeholder="Number of Paragraphs"
                                     />
                                     <InputError :message="errors.no_paragraph" />
@@ -229,19 +231,38 @@ if (info) {
                                         name="description"
                                         :tabindex="3"
                                         :placeholder="t('Description of the Lesson')"
-                                        v-model="lesson.description"
+                                        v-model="editableLesson.description"
                                     />
                                     <InputError :message="errors.description" />
                                 </div>
-                                <div v-for="(paragraph, idx) in lesson.paragraphs" :key="`paragraph-${idx}`" class="col-span-3">
+                                
+                                <!-- Scripture Reference Help -->
+                                <div class="col-span-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
+                                    <h4 class="mb-2 font-semibold text-blue-900 dark:text-blue-100">
+                                        {{ t('Using Scripture References') }}
+                                    </h4>
+                                    <div class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                                        <p>
+                                            <strong>{{ t('Short References') }}:</strong> Use single quotes 'BOOK CHAPTER:VERSE' to add clickable references.
+                                        </p>
+                                        <p class="ml-4 italic">{{ t('Example') }}: 'GEN 1:1' or '2KI 2:2'</p>
+                                        <p class="mt-2">
+                                            <strong>{{ t('Full Verses') }}:</strong> Use triple quotes '''BOOK CHAPTER:VERSE''' to insert the full verse text.
+                                        </p>
+                                        <p class="ml-4 italic">{{ t('Example') }}: '''JHN 3:16''' will be replaced with the actual verse</p>
+                                    </div>
+                                </div>
+                                
+                                <div v-for="(paragraph, idx) in editableLesson.paragraphs" :key="`paragraph-${idx}`" class="col-span-3">
                                     <div class="col-span-2 flex flex-col space-y-1.5">
                                         <Label :for="`text-${idx}`">Paragraph {{ idx + 1 }}</Label>
                                         <Textarea
                                             :id="`text-${idx}`"
                                             :name="`paragraphs[${idx}][text]`"
                                             type="text"
-                                            placeholder="Paragraph Text goes here..."
-                                            v-model="lesson.paragraphs[idx].text"
+                                            placeholder="Paragraph Text goes here... You can use 'GEN 1:1' for short references or '''JHN 3:16''' for full verses."
+                                            v-model="editableLesson.paragraphs[idx].text"
+                                            rows="4"
                                         />
                                         <InputError :message="errors[`paragraphs.${idx}.text`]" />
                                     </div>

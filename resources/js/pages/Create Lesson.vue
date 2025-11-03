@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BibleController from '@/actions/App/Http/Controllers/BibleController';
 import LessonController from '@/actions/App/Http/Controllers/LessonController';
 import AlertUser from '@/components/AlertUser.vue';
 import InputError from '@/components/InputError.vue';
@@ -63,7 +62,6 @@ const alertSuccess = ref(false);
 const alertError = ref(false);
 const alertInfo = ref(false);
 const no_paragraphs = ref(1);
-const readable = ref(false);
 
 if (success) {
     alertSuccess.value = true;
@@ -211,6 +209,24 @@ if (info) {
                                     />
                                     <InputError :message="errors.description" />
                                 </div>
+                                
+                                <!-- Scripture Reference Help -->
+                                <div class="col-span-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
+                                    <h4 class="mb-2 font-semibold text-blue-900 dark:text-blue-100">
+                                        {{ t('Using Scripture References') }}
+                                    </h4>
+                                    <div class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                                        <p>
+                                            <strong>{{ t('Short References') }}:</strong> Use single quotes 'BOOK CHAPTER:VERSE' to add clickable references.
+                                        </p>
+                                        <p class="ml-4 italic">{{ t('Example') }}: 'GEN 1:1' or '2KI 2:2'</p>
+                                        <p class="mt-2">
+                                            <strong>{{ t('Full Verses') }}:</strong> Use triple quotes '''BOOK CHAPTER:VERSE''' to insert the full verse text.
+                                        </p>
+                                        <p class="ml-4 italic">{{ t('Example') }}: '''JHN 3:16''' will be replaced with the actual verse</p>
+                                    </div>
+                                </div>
+                                
                                 <div v-for="(paragraph, idx) in no_paragraphs" :key="`paragraph-${idx}`" class="col-span-3">
                                     <div class="col-span-2 flex flex-col space-y-1.5">
                                         <Label :for="`text-${idx}`">Paragraph {{ idx + 1 }}</Label>
@@ -218,7 +234,8 @@ if (info) {
                                             :id="`text-${idx}`"
                                             :name="`paragraphs[${idx}][text]`"
                                             type="text"
-                                            placeholder="Paragraph Text goes here..."
+                                            placeholder="Paragraph Text goes here... You can use 'GEN 1:1' for short references or '''JHN 3:16''' for full verses."
+                                            rows="4"
                                         />
                                         <InputError :message="errors[`paragraphs.${idx}.text`]" />
                                     </div>

@@ -83,7 +83,6 @@ const page = usePage();
 const hoveredVerseReferences = ref<any[]>([]);
 const selectedReferenceVerse = ref<any>(null);
 const chapterCompleted = ref(props.userProgress?.completed || false);
-const auth = computed(() => page.props.auth);
 
 async function toggleChapterCompletion() {
     try {
@@ -122,18 +121,6 @@ if (error) {
 
 if (info) {
     alertInfo.value = true;
-}
-
-function translateReference(ref: string): string {
-    // translate EXO 12 12 to other lannguage e.g KUT 12:12
-    const parts = ref.split(' ');
-    if (parts.length !== 3) {
-        return ref; // return original if format is unexpected
-    }
-    const bookCode = parts[0];
-    const chapter = parts[1];
-    const verse = parts[2];
-    return `${t(`${bookCode}`)} ${chapter}:${verse}`;
 }
 
 function handleVerseHover(paragraphId: number){
