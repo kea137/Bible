@@ -7,15 +7,10 @@ import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
 import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -24,7 +19,7 @@ import {
     BookOpen,
     CheckCircle,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -123,26 +118,13 @@ if (info) {
     alertInfo.value = true;
 }
 
-function handleVerseHover(paragraphId: number){
-    const paragraph = props.lesson.paragraphs.find(p => p.id === paragraphId);
-    if (paragraph && paragraph.references) {
-        hoveredVerseReferences.value = paragraph.references.filter(ref => ref.type === 'short');
-    }
-}
-
-function handleVerseClick(paragraphId: number){
-    const paragraph = props.lesson.paragraphs.find(p => p.id === paragraphId);
-    if (paragraph && paragraph.references) {
-        hoveredVerseReferences.value = paragraph.references.filter(ref => ref.type === 'short');
-    }
-}
-
 function handleReferenceClick(reference: any){
     selectedReferenceVerse.value = reference;
 }
 
-function formatParagraphText(paragraph: any): string {
+function formatParagraphText(paragraph: any): { text: string; hasReferences: boolean } {
     let text = paragraph.text;
+    let hasReferences = false;
     
     // Replace full verse references with their text
     if (paragraph.references) {
@@ -151,12 +133,20 @@ function formatParagraphText(paragraph: any): string {
                 text = text.replace(ref.original, `"${ref.text}"`);
             }
         });
+        hasReferences = paragraph.references.filter((r: any) => r.type === 'short').length > 0;
     }
     
-    // Remove short reference markers for display
-    text = text.replace(/'([A-Z0-9]{3})\s+(\d+):(\d+)'/g, '$1 $2:$3');
-    
-    return text;
+    return { text, hasReferences };
+}
+
+function getShortReferences(paragraph: any): any[] {
+    if (!paragraph.references) return [];
+    return paragraph.references.filter((r: any) => r.type === 'short');
+}
+
+function handleReferenceHover(reference: any) {
+    hoveredVerseReferences.value = [reference];
+    selectedReferenceVerse.value = reference;
 }
 
 </script>
@@ -259,84 +249,38 @@ function formatParagraphText(paragraph: any): string {
                                 :key="paragraph.id"
                                 class="mb-2 rounded px-2 py-1 transition-colors"
                             >
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger
-                                        class="w-full cursor-default"
+                                <span class="font-semibold text-primary">{{ paragraph.id }}.</span>
+                                {{ formatParagraphText(paragraph).text }}
+                                
+                                <!-- Display scripture references as tag-like elements -->
+                                <template v-if="getShortReferences(paragraph).length > 0">
+                                    <span
+                                        v-for="(ref, idx) in getShortReferences(paragraph)"
+                                        :key="idx"
+                                        class="ml-1"
                                     >
-                                        <!-- Mobile: Click for references, Desktop: Hover for references -->
-                                        <HoverCard
-                                            @update:open="
-                                                (open) =>
-                                                    open &&
-                                                    handleVerseHover(paragraph.id)
-                                            "
-                                        >
+                                        <HoverCard @update:open="(open) => open && handleReferenceHover(ref)">
                                             <HoverCardTrigger>
                                                 <span
-                                                    class="cursor-pointer font-semibold text-primary hover:underline"
-                                                    @click.stop="
-                                                        handleVerseClick(
-                                                            paragraph.id,
-                                                        )
-                                                    "
-                                                    >{{
-                                                        paragraph.id
-                                                    }}.</span
+                                                    class="inline-flex cursor-pointer items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20 transition-colors hover:bg-primary/20 hover:ring-primary/30"
+                                                    @click="handleReferenceClick(ref)"
                                                 >
+                                                    {{ ref.reference }}
+                                                </span>
                                             </HoverCardTrigger>
                                             <HoverCardContent class="w-80">
-                                                <div
-                                                    v-if="
-                                                        paragraph.references && paragraph.references.filter((r: any) => r.type === 'short').length > 0
-                                                    "
-                                                    class="space-y-2"
-                                                >
-                                                    <p
-                                                        class="text-sm font-semibold"
-                                                    >
-                                                        {{ t('Scripture References') }}:
+                                                <div class="space-y-2">
+                                                    <p class="text-sm font-semibold text-primary">
+                                                        {{ ref.reference }}
                                                     </p>
-                                                    <div
-                                                        class="space-y-1 text-sm"
-                                                    >
-                                                        <p
-                                                            v-for="ref in paragraph.references.filter((r: any) => r.type === 'short').slice(0, 3)"
-                                                            :key="ref.reference"
-                                                            class="text-muted-foreground"
-                                                        >
-                                                            {{ ref.reference }}:
-                                                            {{
-                                                                ref.text?.substring(
-                                                                    0,
-                                                                    80,
-                                                                )
-                                                            }}...
-                                                        </p>
-                                                        <p
-                                                            v-if="
-                                                                paragraph.references.filter((r: any) => r.type === 'short').length > 3
-                                                            "
-                                                            class="text-xs text-muted-foreground italic"
-                                                        >
-                                                            +{{
-                                                                paragraph.references.filter((r: any) => r.type === 'short').length - 3
-                                                            }}
-                                                            {{ t('more references') }}
-                                                        </p>
-                                                    </div>
+                                                    <p class="text-sm">
+                                                        {{ ref.text }}
+                                                    </p>
                                                 </div>
-                                                <p
-                                                    v-else
-                                                    class="text-sm text-muted-foreground"
-                                                >
-                                                    {{ t('No scripture references') }}
-                                                    {{ t('available') }}
-                                                </p>
                                             </HoverCardContent>
                                         </HoverCard>
-                                        {{ formatParagraphText(paragraph) }}
-                                    </DropdownMenuTrigger>
-                                </DropdownMenu>
+                                    </span>
+                                </template>
                             </p>
                         </ScrollArea>
                     </CardContent>
@@ -345,84 +289,83 @@ function formatParagraphText(paragraph: any): string {
 
             <!-- References sidebar (1/3) -->
             <div class="flex flex-[1] flex-col gap-3 lg:h-160 lg:gap-4">
-                <!-- Top half - Hovered verse references -->
+                <!-- Scripture reference card showing verse on hover/click -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Scripture References') }}</CardTitle
+                            >{{ t('Scripture Reference') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            ><span class="hidden sm:inline"
-                                >{{ t('Hover over paragraph numbers to see') }}
-                                {{ t('references') }}</span
-                            ><span class="sm:hidden"
-                                >{{ t('Tap paragraph numbers to see references') }}</span
-                            ></CardDescription
+                            >{{ t('Hover or click on reference tags to view verses') }}</CardDescription
                         >
                     </CardHeader>
                     <CardContent
-                        class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]"
+                        class="max-h-[35vh] overflow-y-auto lg:max-h-[45vh]"
                     >
-                        <ScrollArea
-                            v-if="hoveredVerseReferences.length > 0"
-                            class="h-full"
-                        >
-                            <div class="space-y-3">
-                                <div
-                                    v-for="ref in hoveredVerseReferences"
-                                    :key="ref.reference"
-                                    class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
-                                    @click="handleReferenceClick(ref)"
-                                >
-                                    <p
-                                        class="text-sm font-semibold text-primary"
+                        <div v-if="selectedReferenceVerse" class="space-y-3">
+                            <div class="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                                <p class="mb-2 text-sm font-semibold text-primary">
+                                    {{ selectedReferenceVerse.reference }}
+                                </p>
+                                <p class="text-sm leading-relaxed">
+                                    {{ selectedReferenceVerse.text }}
+                                </p>
+                            </div>
+                            
+                            <!-- Related references separator and list -->
+                            <div v-if="hoveredVerseReferences.length > 0" class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="h-px flex-1 bg-border"></div>
+                                    <span class="text-xs font-medium text-muted-foreground">{{ t('Related References') }}</span>
+                                    <div class="h-px flex-1 bg-border"></div>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <div
+                                        v-for="ref in hoveredVerseReferences"
+                                        :key="ref.reference"
+                                        class="cursor-pointer rounded-md border p-2 transition-all hover:border-primary/30 hover:bg-accent"
+                                        :class="{ 'border-primary/30 bg-accent': ref.reference === selectedReferenceVerse?.reference }"
+                                        @click="handleReferenceClick(ref)"
                                     >
-                                        {{ ref.reference }}
-                                    </p>
-                                    <p
-                                        class="mt-1 text-xs text-muted-foreground"
-                                    >
-                                        {{
-                                            ref.text?.substring(0, 100)
-                                        }}...
-                                    </p>
+                                        <p class="text-xs font-semibold text-primary">
+                                            {{ ref.reference }}
+                                        </p>
+                                        <p class="mt-1 text-xs text-muted-foreground line-clamp-2">
+                                            {{ ref.text }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </ScrollArea>
+                        </div>
                         <p v-else class="text-sm text-muted-foreground italic">
-                            <span class="hidden sm:inline"
-                                >{{ t('Hover over a paragraph number to see its') }}
-                                {{ t('scripture references') }}</span
-                            >
-                            <span class="sm:hidden"
-                                >{{ t('Tap a paragraph number to see its') }}
-                                {{ t('scripture references') }}</span
-                            >
+                            {{ t('Hover or click on a scripture reference tag to view the verse') }}
                         </p>
                     </CardContent>
                 </Card>
 
-                <!-- Bottom half - Selected reference verse -->
+                <!-- Additional selected reference details -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Selected Reference') }}</CardTitle
+                            >{{ t('Selected Verse Details') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            >{{ t('Click a reference above to view full') }}
-                            {{ t('verse') }}</CardDescription
+                            >{{ t('Full verse text and context') }}</CardDescription
                         >
                     </CardHeader>
                     <CardContent
-                        class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]"
+                        class="max-h-[25vh] overflow-y-auto lg:max-h-[35vh]"
                     >
                         <div v-if="selectedReferenceVerse" class="space-y-2">
-                            <p class="text-sm font-semibold">
-                                {{ selectedReferenceVerse.reference }}
-                            </p>
-                            <p class="text-sm">
-                                {{ selectedReferenceVerse.text }}
-                            </p>
+                            <div class="rounded-lg bg-muted p-3">
+                                <p class="mb-1 text-xs font-medium text-muted-foreground">
+                                    {{ selectedReferenceVerse.book_title }} {{ selectedReferenceVerse.chapter_number }}:{{ selectedReferenceVerse.verse_number }}
+                                </p>
+                                <p class="text-sm leading-relaxed">
+                                    {{ selectedReferenceVerse.text }}
+                                </p>
+                            </div>
                         </div>
                         <p v-else class="text-sm text-muted-foreground italic">
                             {{ t('Click on a reference to view the full verse') }}
