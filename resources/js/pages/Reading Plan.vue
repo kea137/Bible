@@ -45,6 +45,22 @@ const props = defineProps<{
         name: string;
         language: string;
     }>;
+    completedLessons?: Array<{
+        id: number;
+        completed: boolean;
+        completed_at: string;
+        lesson: {
+            id: number;
+            title: string;
+            series_id?: number;
+            episode_number?: number;
+            series?: {
+                id: number;
+                title: string;
+            };
+        };
+    }>;
+    lessonsReadToday?: number;
 }>();
 
 const selectedBibleId = ref(props.selectedBible.id.toString());
@@ -299,6 +315,59 @@ const readingPlans = [
                                         {{t('days')}}</span
                                     >
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <!-- Lesson Progress Section -->
+            <Card v-if="completedLessons && completedLessons.length > 0">
+                <CardHeader class="pb-3">
+                    <div class="flex items-center gap-2">
+                        <BookOpen class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                        <CardTitle class="text-base sm:text-lg"
+                            >{{t('Lesson Progress')}}</CardTitle
+                        >
+                    </div>
+                    <CardDescription class="text-xs sm:text-sm">
+                        {{t('Track your completed lessons and series')}}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div class="grid gap-3 sm:gap-4">
+                        <!-- Stats -->
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <div class="rounded-lg border p-3">
+                                <div class="text-2xl font-bold">{{ completedLessons.length }}</div>
+                                <p class="text-xs text-muted-foreground">{{t('Total Lessons Completed')}}</p>
+                            </div>
+                            <div class="rounded-lg border p-3">
+                                <div class="text-2xl font-bold">{{ lessonsReadToday || 0 }}</div>
+                                <p class="text-xs text-muted-foreground">{{t('Lessons Completed Today')}}</p>
+                            </div>
+                        </div>
+
+                        <!-- Completed Lessons List -->
+                        <div class="space-y-2">
+                            <h4 class="text-sm font-semibold">{{t('Recently Completed')}}</h4>
+                            <div
+                                v-for="progress in completedLessons.slice(0, 5)"
+                                :key="progress.id"
+                                class="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent"
+                            >
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium">
+                                        {{ progress.lesson.title }}
+                                    </p>
+                                    <p class="text-xs text-muted-foreground" v-if="progress.lesson.series">
+                                        {{ progress.lesson.series.title }} 
+                                        <span v-if="progress.lesson.episode_number">
+                                            - Episode {{ progress.lesson.episode_number }}
+                                        </span>
+                                    </p>
+                                </div>
+                                <CheckCircle2 class="h-4 w-4 text-green-600" />
                             </div>
                         </div>
                     </div>

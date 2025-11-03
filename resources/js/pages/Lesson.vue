@@ -34,12 +34,38 @@ const props = defineProps<{
         name: string;
         description: string;
         language: string;
+        series_id?: number;
+        episode_number?: number;
+        series?: {
+            id: number;
+            title: string;
+        };
         paragraphs: {
             id: number;
             title: string;
-            text: number;
+            text: string;
+            references: {
+                type: 'short' | 'full';
+                book_code: string;
+                chapter: number;
+                verse: number;
+                original: string;
+                text?: string;
+                book_title?: string;
+                reference?: string;
+            }[];
         }[];
     };
+    userProgress?: {
+        id: number;
+        completed: boolean;
+        completed_at: string | null;
+    } | null;
+    seriesLessons?: {
+        id: number;
+        title: string;
+        episode_number: number;
+    }[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -56,11 +82,26 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage();
 const hoveredVerseReferences = ref<any[]>([]);
 const selectedReferenceVerse = ref<any>(null);
-const chapterCompleted = ref(false);
+const chapterCompleted = ref(props.userProgress?.completed || false);
 const auth = computed(() => page.props.auth);
 
 async function toggleChapterCompletion() {
-    
+    try {
+        const response = await fetch(`/api/lessons/${props.lesson.id}/progress`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            },
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            chapterCompleted.value = data.progress.completed;
+        }
+    } catch (error) {
+        console.error('Failed to toggle lesson completion:', error);
+    }
 }
 
 const success = page.props.success;
@@ -95,16 +136,40 @@ function translateReference(ref: string): string {
     return `${t(`${bookCode}`)} ${chapter}:${verse}`;
 }
 
-function handleVerseHover(verse: number){
-
+function handleVerseHover(paragraphId: number){
+    const paragraph = props.lesson.paragraphs.find(p => p.id === paragraphId);
+    if (paragraph && paragraph.references) {
+        hoveredVerseReferences.value = paragraph.references.filter(ref => ref.type === 'short');
+    }
 }
 
-function handleVerseClick(verse: number){
-
+function handleVerseClick(paragraphId: number){
+    const paragraph = props.lesson.paragraphs.find(p => p.id === paragraphId);
+    if (paragraph && paragraph.references) {
+        hoveredVerseReferences.value = paragraph.references.filter(ref => ref.type === 'short');
+    }
 }
 
-function handleReferenceClick(verse: number){
+function handleReferenceClick(reference: any){
+    selectedReferenceVerse.value = reference;
+}
 
+function formatParagraphText(paragraph: any): string {
+    let text = paragraph.text;
+    
+    // Replace full verse references with their text
+    if (paragraph.references) {
+        paragraph.references.forEach((ref: any) => {
+            if (ref.type === 'full' && ref.text) {
+                text = text.replace(ref.original, `"${ref.text}"`);
+            }
+        });
+    }
+    
+    // Remove short reference markers for display
+    text = text.replace(/'([A-Z0-9]{3})\s+(\d+):(\d+)'/g, '$1 $2:$3');
+    
+    return text;
 }
 
 </script>
@@ -171,6 +236,12 @@ function handleReferenceClick(verse: number){
                         <div
                             class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                         >
+                            <div v-if="lesson.series" class="text-sm text-muted-foreground">
+                                <span class="font-semibold">{{ t('Series') }}:</span> {{ lesson.series.title }}
+                                <span v-if="lesson.episode_number" class="ml-2">
+                                    {{ t('Episode') }} {{ lesson.episode_number }}
+                                </span>
+                            </div>
                             <Button
                                 v-if="page.props.auth?.user"
                                 :variant="
@@ -194,13 +265,12 @@ function handleReferenceClick(verse: number){
                             <h3
                                 class="mb-4 text-center text-lg font-semibold sm:text-xl"
                             >
-                                
+                                {{ lesson.description }}
                             </h3>
                             <p
-                                v-for="verse in lesson.paragraphs"
-                                :key="verse.id"
+                                v-for="paragraph in lesson.paragraphs"
+                                :key="paragraph.id"
                                 class="mb-2 rounded px-2 py-1 transition-colors"
-                                
                             >
                                 <DropdownMenu>
                                     <DropdownMenuTrigger
@@ -211,7 +281,7 @@ function handleReferenceClick(verse: number){
                                             @update:open="
                                                 (open) =>
                                                     open &&
-                                                    handleVerseHover(verse.id)
+                                                    handleVerseHover(paragraph.id)
                                             "
                                         >
                                             <HoverCardTrigger>
@@ -219,41 +289,37 @@ function handleReferenceClick(verse: number){
                                                     class="cursor-pointer font-semibold text-primary hover:underline"
                                                     @click.stop="
                                                         handleVerseClick(
-                                                            verse.id,
+                                                            paragraph.id,
                                                         )
                                                     "
                                                     >{{
-                                                        verse.id
+                                                        paragraph.id
                                                     }}.</span
                                                 >
                                             </HoverCardTrigger>
                                             <HoverCardContent class="w-80">
                                                 <div
                                                     v-if="
-                                                        hoveredVerseReferences.length >
-                                                        0
+                                                        paragraph.references && paragraph.references.filter((r: any) => r.type === 'short').length > 0
                                                     "
                                                     class="space-y-2"
                                                 >
                                                     <p
                                                         class="text-sm font-semibold"
                                                     >
-                                                        {{ t('Cross References') }}:
+                                                        {{ t('Scripture References') }}:
                                                     </p>
                                                     <div
                                                         class="space-y-1 text-sm"
                                                     >
                                                         <p
-                                                            v-for="ref in hoveredVerseReferences.slice(
-                                                                0,
-                                                                3,
-                                                            )"
-                                                            :key="ref.id"
+                                                            v-for="ref in paragraph.references.filter((r: any) => r.type === 'short').slice(0, 3)"
+                                                            :key="ref.reference"
                                                             class="text-muted-foreground"
                                                         >
-                                                            {{ translateReference(ref.reference) }}:
+                                                            {{ ref.reference }}:
                                                             {{
-                                                                ref.verse?.text?.substring(
+                                                                ref.text?.substring(
                                                                     0,
                                                                     80,
                                                                 )
@@ -261,14 +327,12 @@ function handleReferenceClick(verse: number){
                                                         </p>
                                                         <p
                                                             v-if="
-                                                                hoveredVerseReferences.length >
-                                                                3
+                                                                paragraph.references.filter((r: any) => r.type === 'short').length > 3
                                                             "
                                                             class="text-xs text-muted-foreground italic"
                                                         >
                                                             +{{
-                                                                hoveredVerseReferences.length -
-                                                                3
+                                                                paragraph.references.filter((r: any) => r.type === 'short').length - 3
                                                             }}
                                                             {{ t('more references') }}
                                                         </p>
@@ -278,12 +342,12 @@ function handleReferenceClick(verse: number){
                                                     v-else
                                                     class="text-sm text-muted-foreground"
                                                 >
-                                                    {{ t('No cross-references') }}
+                                                    {{ t('No scripture references') }}
                                                     {{ t('available') }}
                                                 </p>
                                             </HoverCardContent>
                                         </HoverCard>
-                                        {{ verse.text }}
+                                        {{ formatParagraphText(paragraph) }}
                                     </DropdownMenuTrigger>
                                 </DropdownMenu>
                             </p>
@@ -298,14 +362,14 @@ function handleReferenceClick(verse: number){
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Cross References') }}</CardTitle
+                            >{{ t('Scripture References') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
                             ><span class="hidden sm:inline"
-                                >{{ t('Hover over verse numbers to see') }}
+                                >{{ t('Hover over paragraph numbers to see') }}
                                 {{ t('references') }}</span
                             ><span class="sm:hidden"
-                                >{{ t('Tap verse numbers to see references') }}</span
+                                >{{ t('Tap paragraph numbers to see references') }}</span
                             ></CardDescription
                         >
                     </CardHeader>
@@ -319,20 +383,20 @@ function handleReferenceClick(verse: number){
                             <div class="space-y-3">
                                 <div
                                     v-for="ref in hoveredVerseReferences"
-                                    :key="ref.id"
+                                    :key="ref.reference"
                                     class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
                                     @click="handleReferenceClick(ref)"
                                 >
                                     <p
                                         class="text-sm font-semibold text-primary"
                                     >
-                                        {{ translateReference(ref.reference) }}
+                                        {{ ref.reference }}
                                     </p>
                                     <p
                                         class="mt-1 text-xs text-muted-foreground"
                                     >
                                         {{
-                                            ref.verse?.text?.substring(0, 100)
+                                            ref.text?.substring(0, 100)
                                         }}...
                                     </p>
                                 </div>
@@ -340,12 +404,12 @@ function handleReferenceClick(verse: number){
                         </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
                             <span class="hidden sm:inline"
-                                >{{ t('Hover over a verse number to see its') }}
-                                {{ t('cross-references') }}</span
+                                >{{ t('Hover over a paragraph number to see its') }}
+                                {{ t('scripture references') }}</span
                             >
                             <span class="sm:hidden"
-                                >{{ t('Tap a verse number to see its') }}
-                                {{ t('cross-references') }}</span
+                                >{{ t('Tap a paragraph number to see its') }}
+                                {{ t('scripture references') }}</span
                             >
                         </p>
                     </CardContent>
@@ -367,11 +431,7 @@ function handleReferenceClick(verse: number){
                     >
                         <div v-if="selectedReferenceVerse" class="space-y-2">
                             <p class="text-sm font-semibold">
-                                {{ selectedReferenceVerse.book?.title }}
-                                {{
-                                    selectedReferenceVerse.chapter
-                                        ?.chapter_number
-                                }}:{{ selectedReferenceVerse.verse_number }}
+                                {{ selectedReferenceVerse.reference }}
                             </p>
                             <p class="text-sm">
                                 {{ selectedReferenceVerse.text }}

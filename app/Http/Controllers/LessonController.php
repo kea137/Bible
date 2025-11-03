@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 use App\Models\Lesson;
+use App\Models\LessonProgress;
+use App\Models\LessonSeries;
+use App\Models\Bible;
+use App\Services\ScriptureReferenceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LessonController extends Controller
@@ -106,11 +111,59 @@ class LessonController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Lesson $lesson)
+    public function show(Lesson $lesson, ScriptureReferenceService $scriptureService)
     {
-        $lesson->load('paragraphs');
+        $lesson->load(['paragraphs', 'series']);
+        
+        // Get user's preferred Bible for fetching scripture references
+        $userBible = Auth::check() ? Auth::user()->bibles()->first() : Bible::first();
+        $bibleId = $userBible ? $userBible->id : null;
+        
+        // Parse and fetch scripture references from paragraphs
+        $paragraphsWithReferences = $lesson->paragraphs->map(function ($paragraph) use ($scriptureService, $bibleId) {
+            $references = $scriptureService->parseReferences($paragraph->text);
+            $fetchedReferences = [];
+            
+            if ($bibleId) {
+                foreach ($references as $ref) {
+                    $verseData = $scriptureService->fetchVerse($ref['book_code'], $ref['chapter'], $ref['verse'], $bibleId);
+                    if ($verseData) {
+                        $fetchedReferences[] = array_merge($ref, $verseData);
+                    }
+                }
+            }
+            
+            return [
+                'id' => $paragraph->id,
+                'title' => $paragraph->title,
+                'text' => $paragraph->text,
+                'references' => $fetchedReferences,
+            ];
+        });
+        
+        // Get user's progress for this lesson
+        $userProgress = null;
+        if (Auth::check()) {
+            $userProgress = LessonProgress::where('user_id', Auth::id())
+                ->where('lesson_id', $lesson->id)
+                ->first();
+        }
+        
+        // Get series lessons if this lesson is part of a series
+        $seriesLessons = [];
+        if ($lesson->series_id) {
+            $seriesLessons = Lesson::where('series_id', $lesson->series_id)
+                ->orderBy('episode_number')
+                ->get(['id', 'title', 'episode_number'])
+                ->toArray();
+        }
+        
         return Inertia::render('Lesson', [
-            'lesson' => $lesson->toArray()
+            'lesson' => array_merge($lesson->toArray(), [
+                'paragraphs' => $paragraphsWithReferences,
+            ]),
+            'userProgress' => $userProgress,
+            'seriesLessons' => $seriesLessons,
         ]);
     }
 
@@ -172,5 +225,33 @@ class LessonController extends Controller
         $lesson->delete();
 
         return redirect()->route('bibles')->with('success', 'Lesson deleted successfully');
+    }
+
+    /**
+     * Toggle lesson completion for the authenticated user
+     */
+    public function toggleProgress(Request $request, Lesson $lesson)
+    {
+        $progress = LessonProgress::where('user_id', Auth::id())
+            ->where('lesson_id', $lesson->id)
+            ->first();
+
+        if ($progress) {
+            $progress->completed = !$progress->completed;
+            $progress->completed_at = $progress->completed ? now() : null;
+            $progress->save();
+        } else {
+            $progress = LessonProgress::create([
+                'user_id' => Auth::id(),
+                'lesson_id' => $lesson->id,
+                'completed' => true,
+                'completed_at' => now(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'progress' => $progress,
+        ]);
     }
 }

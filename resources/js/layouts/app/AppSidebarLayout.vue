@@ -4,6 +4,7 @@ import AppFooter from '@/components/AppFooter.vue';
 import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
+import MobileFooter from '@/components/MobileFooter.vue';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -27,6 +28,7 @@ withDefaults(defineProps<Props>(), {
                 <slot />
             </div>
             <AppFooter />
+            <MobileFooter />
         </AppContent>
     </AppShell>
 </template>

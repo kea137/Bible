@@ -15,7 +15,9 @@ class Lesson extends Model
         'readable',
         'language',
         'user_id',
-        'no_paragraphs'
+        'no_paragraphs',
+        'series_id',
+        'episode_number',
     ];
 
     /** @use HasFactory<\Database\Factories\LessonFactory> */
@@ -28,5 +30,20 @@ class Lesson extends Model
 
     public function paragraphs(){
         return $this->hasMany(Paragraph::class);
+    }
+
+    public function series()
+    {
+        return $this->belongsTo(LessonSeries::class, 'series_id');
+    }
+
+    public function progress()
+    {
+        return $this->hasMany(LessonProgress::class);
+    }
+
+    public function userProgress($userId)
+    {
+        return $this->hasOne(LessonProgress::class)->where('user_id', $userId);
     }
 }

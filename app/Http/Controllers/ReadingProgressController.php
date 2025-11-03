@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\ReadingProgress;
+use App\Models\LessonProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -152,6 +153,17 @@ class ReadingProgressController extends Controller
 
         $progressPercentage = $totalChapters > 0 ? round(($completedChapters / $totalChapters) * 100, 1) : 0;
 
+        // Get lesson progress
+        $completedLessons = LessonProgress::where('user_id', $userId)
+            ->where('completed', true)
+            ->with('lesson.series')
+            ->get();
+
+        $lessonsReadToday = LessonProgress::where('user_id', $userId)
+            ->where('completed', true)
+            ->whereDate('completed_at', today())
+            ->count();
+
         return Inertia::render('Reading Plan', [
             'totalChapters' => $totalChapters,
             'completedChapters' => $completedChapters,
@@ -159,6 +171,8 @@ class ReadingProgressController extends Controller
             'chaptersReadToday' => $chaptersReadToday,
             'selectedBible' => $selectedBible,
             'allBibles' => $allBibles,
+            'completedLessons' => $completedLessons,
+            'lessonsReadToday' => $lessonsReadToday,
         ]);
     }
 }
