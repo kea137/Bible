@@ -14,12 +14,14 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, router } from '@inertiajs/vue3';
 import {
     BookOpen,
     CheckCircle,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -122,9 +124,8 @@ function handleReferenceClick(reference: any){
     selectedReferenceVerse.value = reference;
 }
 
-function formatParagraphText(paragraph: any): { text: string; hasReferences: boolean } {
+function formatParagraphText(paragraph: any): string {
     let text = paragraph.text;
-    let hasReferences = false;
     
     // Replace full verse references with their text
     if (paragraph.references) {
@@ -133,13 +134,15 @@ function formatParagraphText(paragraph: any): { text: string; hasReferences: boo
                 text = text.replace(ref.original, `"${ref.text}"`);
             }
         });
-        hasReferences = paragraph.references.filter((r: any) => r.type === 'short').length > 0;
     }
     
-    return { text, hasReferences };
+    // Remove short reference markers for inline display
+    text = text.replace(/'([A-Z0-9]{3})\s+(\d+):(\d+)'/g, '');
+    
+    return text.trim();
 }
 
-function getShortReferences(paragraph: any): any[] {
+function getInlineReferences(paragraph: any): any[] {
     if (!paragraph.references) return [];
     return paragraph.references.filter((r: any) => r.type === 'short');
 }
@@ -148,6 +151,38 @@ function handleReferenceHover(reference: any) {
     hoveredVerseReferences.value = [reference];
     selectedReferenceVerse.value = reference;
 }
+
+function navigateToNextLesson() {
+    if (!props.seriesLessons || !props.lesson.episode_number) return;
+    
+    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+    if (currentIndex < props.seriesLessons.length - 1) {
+        const nextLesson = props.seriesLessons[currentIndex + 1];
+        router.visit(`/lessons/show/${nextLesson.id}`);
+    }
+}
+
+function navigateToPreviousLesson() {
+    if (!props.seriesLessons || !props.lesson.episode_number) return;
+    
+    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+    if (currentIndex > 0) {
+        const previousLesson = props.seriesLessons[currentIndex - 1];
+        router.visit(`/lessons/show/${previousLesson.id}`);
+    }
+}
+
+const hasNextLesson = computed(() => {
+    if (!props.seriesLessons || !props.lesson.episode_number) return false;
+    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+    return currentIndex < props.seriesLessons.length - 1;
+});
+
+const hasPreviousLesson = computed(() => {
+    if (!props.seriesLessons || !props.lesson.episode_number) return false;
+    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+    return currentIndex > 0;
+});
 
 </script>
 
@@ -189,80 +224,84 @@ function handleReferenceHover(reference: any) {
             <div class="flex-[2]">
                 <Card>
                     <CardHeader class="pb-3">
-                        <div
-                            class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
-                        >
-                            <div class="flex-shrink-0">
-                                <CardTitle
-                                    class="flex items-center gap-2 text-base sm:text-lg"
-                                >
-                                    <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
-                                    {{ lesson.name }}
-                                </CardTitle>
-                                <CardDescription class="text-xs sm:text-sm"
-                                    >{{ lesson.language }}
-                                </CardDescription>
-                            </div>
-                            <div
-                                class="flex flex-col gap-2 sm:flex-row sm:gap-3"
-                            >
-                            </div>
+                        <!-- Title centered and bold at top -->
+                        <CardTitle class="text-center text-xl font-bold sm:text-2xl">
+                            {{ lesson.name }}
+                        </CardTitle>
+                        
+                        <!-- Description styled like verse of the day -->
+                        <div class="mt-4">
+                            <blockquote class="border-l-4 border-primary pl-3 italic sm:pl-4">
+                                <p class="text-base leading-relaxed sm:text-lg">
+                                    "{{ lesson.description }}"
+                                </p>
+                            </blockquote>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div
-                            class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
-                        >
+                        <!-- Series info and navigation buttons -->
+                        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div v-if="lesson.series" class="text-sm text-muted-foreground">
                                 <span class="font-semibold">{{ t('Series') }}:</span> {{ lesson.series.title }}
                                 <span v-if="lesson.episode_number" class="ml-2">
                                     {{ t('Episode') }} {{ lesson.episode_number }}
                                 </span>
                             </div>
-                            <Button
-                                v-if="page.props.auth?.user"
-                                :variant="
-                                    chapterCompleted ? 'default' : 'outline'
-                                "
-                                size="sm"
-                                @click="toggleChapterCompletion"
-                                class="w-full sm:w-auto"
-                            >
-                                <CheckCircle class="mr-1 h-4 w-4" />
-                                {{
-                                    chapterCompleted
-                                        ? t('Completed')
-                                        : t('Mark as Read')
-                                }}
-                            </Button>
+                            
+                            <!-- Navigation and action buttons for series lessons -->
+                            <div class="flex flex-wrap gap-2">
+                                <Button
+                                    v-if="lesson.series_id && hasPreviousLesson"
+                                    variant="outline"
+                                    size="sm"
+                                    @click="navigateToPreviousLesson"
+                                >
+                                    <ChevronLeft class="h-4 w-4" />
+                                    {{ t('Previous') }}
+                                </Button>
+                                
+                                <Button
+                                    v-if="page.props.auth?.user"
+                                    :variant="chapterCompleted ? 'default' : 'outline'"
+                                    size="sm"
+                                    @click="toggleChapterCompletion"
+                                >
+                                    <CheckCircle class="mr-1 h-4 w-4" />
+                                    {{ chapterCompleted ? t('Completed') : t('Mark as Read') }}
+                                </Button>
+                                
+                                <Button
+                                    v-if="lesson.series_id && hasNextLesson"
+                                    variant="outline"
+                                    size="sm"
+                                    @click="navigateToNextLesson"
+                                >
+                                    {{ t('Next') }}
+                                    <ChevronRight class="h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
-                        <ScrollArea
-                            class="mx-0 h-118 max-w-4xl space-y-2 text-justify text-base leading-relaxed sm:mx-30 sm:text-lg"
-                        >
-                            <h3
-                                class="mb-4 text-center text-lg font-semibold sm:text-xl"
-                            >
-                                {{ lesson.description }}
-                            </h3>
+
+                        <!-- Lesson content with indented paragraphs and inline references -->
+                        <div class="space-y-4 text-justify text-base leading-relaxed sm:text-lg">
                             <p
                                 v-for="paragraph in lesson.paragraphs"
                                 :key="paragraph.id"
-                                class="mb-2 rounded px-2 py-1 transition-colors"
+                                class="pl-6 text-justify"
                             >
-                                <span class="font-semibold text-primary">{{ paragraph.id }}.</span>
-                                {{ formatParagraphText(paragraph).text }}
+                                {{ formatParagraphText(paragraph) }}
                                 
-                                <!-- Display scripture references as tag-like elements -->
-                                <template v-if="getShortReferences(paragraph).length > 0">
+                                <!-- Inline scripture reference buttons -->
+                                <template v-if="getInlineReferences(paragraph).length > 0">
                                     <span
-                                        v-for="(ref, idx) in getShortReferences(paragraph)"
+                                        v-for="(ref, idx) in getInlineReferences(paragraph)"
                                         :key="idx"
                                         class="ml-1"
                                     >
                                         <HoverCard @update:open="(open) => open && handleReferenceHover(ref)">
                                             <HoverCardTrigger>
                                                 <span
-                                                    class="inline-flex cursor-pointer items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20 transition-colors hover:bg-primary/20 hover:ring-primary/30"
+                                                    class="cursor-pointer font-semibold text-primary hover:underline"
                                                     @click="handleReferenceClick(ref)"
                                                 >
                                                     {{ ref.reference }}
@@ -282,90 +321,67 @@ function handleReferenceHover(reference: any) {
                                     </span>
                                 </template>
                             </p>
-                        </ScrollArea>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
 
-            <!-- References sidebar (1/3) -->
+            <!-- References sidebar (1/3) - matching Bible cross-reference UI -->
             <div class="flex flex-[1] flex-col gap-3 lg:h-160 lg:gap-4">
-                <!-- Scripture reference card showing verse on hover/click -->
+                <!-- Related references section -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Scripture Reference') }}</CardTitle
+                            >{{ t('Related References') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            >{{ t('Hover or click on reference tags to view verses') }}</CardDescription
+                            >{{ t('Hover or click scripture references in the lesson') }}</CardDescription
                         >
                     </CardHeader>
-                    <CardContent
-                        class="max-h-[35vh] overflow-y-auto lg:max-h-[45vh]"
-                    >
-                        <div v-if="selectedReferenceVerse" class="space-y-3">
-                            <div class="rounded-lg border border-primary/20 bg-primary/5 p-3">
-                                <p class="mb-2 text-sm font-semibold text-primary">
-                                    {{ selectedReferenceVerse.reference }}
+                    <CardContent class="max-h-[35vh] overflow-y-auto lg:max-h-[45vh]">
+                        <div v-if="hoveredVerseReferences.length > 0" class="space-y-2">
+                            <div
+                                v-for="ref in hoveredVerseReferences"
+                                :key="ref.reference"
+                                class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
+                                :class="{ 'bg-accent': ref.reference === selectedReferenceVerse?.reference }"
+                                @click="handleReferenceClick(ref)"
+                            >
+                                <p class="text-sm font-semibold text-primary">
+                                    {{ ref.reference }}
                                 </p>
-                                <p class="text-sm leading-relaxed">
-                                    {{ selectedReferenceVerse.text }}
+                                <p class="mt-1 text-xs text-muted-foreground line-clamp-2">
+                                    {{ ref.text }}
                                 </p>
-                            </div>
-                            
-                            <!-- Related references separator and list -->
-                            <div v-if="hoveredVerseReferences.length > 0" class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="h-px flex-1 bg-border"></div>
-                                    <span class="text-xs font-medium text-muted-foreground">{{ t('Related References') }}</span>
-                                    <div class="h-px flex-1 bg-border"></div>
-                                </div>
-                                
-                                <div class="space-y-2">
-                                    <div
-                                        v-for="ref in hoveredVerseReferences"
-                                        :key="ref.reference"
-                                        class="cursor-pointer rounded-md border p-2 transition-all hover:border-primary/30 hover:bg-accent"
-                                        :class="{ 'border-primary/30 bg-accent': ref.reference === selectedReferenceVerse?.reference }"
-                                        @click="handleReferenceClick(ref)"
-                                    >
-                                        <p class="text-xs font-semibold text-primary">
-                                            {{ ref.reference }}
-                                        </p>
-                                        <p class="mt-1 text-xs text-muted-foreground line-clamp-2">
-                                            {{ ref.text }}
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <p v-else class="text-sm text-muted-foreground italic">
-                            {{ t('Hover or click on a scripture reference tag to view the verse') }}
+                            {{ t('Hover or click on a scripture reference to view related verses') }}
                         </p>
                     </CardContent>
                 </Card>
 
-                <!-- Additional selected reference details -->
+                <!-- Selected verse full text -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
                         <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Selected Verse Details') }}</CardTitle
+                            >{{ t('Selected Verse') }}</CardTitle
                         >
                         <CardDescription class="text-xs"
-                            >{{ t('Full verse text and context') }}</CardDescription
+                            >{{ t('Full verse text') }}</CardDescription
                         >
                     </CardHeader>
-                    <CardContent
-                        class="max-h-[25vh] overflow-y-auto lg:max-h-[35vh]"
-                    >
+                    <CardContent class="max-h-[25vh] overflow-y-auto lg:max-h-[35vh]">
                         <div v-if="selectedReferenceVerse" class="space-y-2">
-                            <div class="rounded-lg bg-muted p-3">
-                                <p class="mb-1 text-xs font-medium text-muted-foreground">
-                                    {{ selectedReferenceVerse.book_title }} {{ selectedReferenceVerse.chapter_number }}:{{ selectedReferenceVerse.verse_number }}
-                                </p>
-                                <p class="text-sm leading-relaxed">
-                                    {{ selectedReferenceVerse.text }}
-                                </p>
-                            </div>
+                            <p class="text-sm font-semibold text-primary">
+                                {{ selectedReferenceVerse.reference }}
+                            </p>
+                            <p class="text-sm leading-relaxed">
+                                {{ selectedReferenceVerse.text }}
+                            </p>
+                            <p v-if="selectedReferenceVerse.book_title" class="mt-2 text-xs text-muted-foreground">
+                                {{ selectedReferenceVerse.book_title }} {{ selectedReferenceVerse.chapter_number }}:{{ selectedReferenceVerse.verse_number }}
+                            </p>
                         </div>
                         <p v-else class="text-sm text-muted-foreground italic">
                             {{ t('Click on a reference to view the full verse') }}

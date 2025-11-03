@@ -55,8 +55,13 @@ class LessonController extends Controller
      */
     public function create()
     {
+        $series = LessonSeries::where('user_id', Auth::id())
+            ->orderBy('title')
+            ->get(['id', 'title', 'description']);
+            
         return Inertia::render('Create Lesson',[
-            'languages' => $this->languages
+            'languages' => $this->languages,
+            'series' => $series->toArray(),
         ]);
     }
 
@@ -86,6 +91,25 @@ class LessonController extends Controller
             function () use ($request) {
 
                 $validated = $request->validated();
+                
+                // Handle series creation or selection
+                $seriesId = null;
+                $episodeNumber = null;
+                
+                if ($request->has('new_series_title') && $request->input('new_series_title')) {
+                    // Create new series
+                    $series = LessonSeries::create([
+                        'title' => $request->input('new_series_title'),
+                        'description' => $request->input('new_series_description', ''),
+                        'language' => $validated['language'],
+                        'user_id' => Auth::id(),
+                    ]);
+                    $seriesId = $series->id;
+                    $episodeNumber = $request->input('episode_number', 1);
+                } elseif ($request->has('series_id') && $request->input('series_id')) {
+                    $seriesId = $request->input('series_id');
+                    $episodeNumber = $request->input('episode_number', 1);
+                }
             
                 $lesson = Lesson::create([
                     'title'=>$validated['title'],
@@ -94,6 +118,8 @@ class LessonController extends Controller
                     'readable'=>($validated['readable'] === 'False' ? false : true),
                     'no_paragraphs'=>$validated['no_paragraphs'],
                     'user_id'=>Auth::id(),
+                    'series_id'=>$seriesId,
+                    'episode_number'=>$episodeNumber,
                 ]);
 
                 foreach($validated['paragraphs'] as $paragraph) {
