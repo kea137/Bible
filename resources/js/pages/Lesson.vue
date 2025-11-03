@@ -28,7 +28,7 @@ const { t } = useI18n();
 const props = defineProps<{
     lesson: {
         id: number;
-        name: string;
+        title: string;
         description: string;
         language: string;
         series_id?: number;
@@ -71,7 +71,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: lessons().url,
     },
     {
-        title: props.lesson.name,
+        title: props.lesson.title,
         href: `/lessons/${props.lesson.id}`,
     },
 ];
@@ -137,7 +137,7 @@ function formatParagraphText(paragraph: any): string {
     }
     
     // Remove short reference markers for inline display
-    text = text.replace(/'([A-Z0-9]{3})\s+(\d+):(\d+)'/g, '');
+    // text = text.replace(/'([A-Z0-9]{3})\s+(\d+):(\d+)'/g, '');
     
     return text.trim();
 }
@@ -187,7 +187,7 @@ const hasPreviousLesson = computed(() => {
 </script>
 
 <template>
-    <Head :title="lesson.name" />
+    <Head :title="lesson.title" />
 
     <AlertUser
         v-if="alertSuccess"
@@ -226,7 +226,7 @@ const hasPreviousLesson = computed(() => {
                     <CardHeader class="pb-3">
                         <!-- Title centered and bold at top -->
                         <CardTitle class="text-center text-xl font-bold sm:text-2xl">
-                            {{ lesson.name }}
+                            {{ lesson.title }}
                         </CardTitle>
                         
                         <!-- Description styled like verse of the day -->
