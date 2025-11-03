@@ -63,6 +63,8 @@ const navItems = [
     },
 ];
 
+const MOBILE_NAV_ITEMS_LIMIT = 5;
+
 function isActive(href: string): boolean {
     return currentRoute.value.startsWith(href);
 }
@@ -73,7 +75,7 @@ function isActive(href: string): boolean {
     <div class="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background md:hidden">
         <div class="flex items-center justify-around px-2 py-2">
             <Link
-                v-for="item in navItems.slice(0, 5)"
+                v-for="item in navItems.slice(0, MOBILE_NAV_ITEMS_LIMIT)"
                 :key="item.title"
                 :href="item.href"
                 class="flex flex-col items-center gap-1 rounded-lg px-3 py-2 transition-colors"
