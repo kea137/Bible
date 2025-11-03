@@ -12,12 +12,14 @@ Lessons can include two types of scripture references:
 Use single quotes to add clickable scripture references:
 - Format: `'BOOK CHAPTER:VERSE'`
 - Examples: `'GEN 1:1'`, `'2KI 2:2'`, `'JHN 3:16'`
+- Supports both English codes (GEN, EXO, PSA) and localized codes (MWA, KUT, ZAB for Swahili)
 - These appear as clickable references that show the verse text in a hover card or sidebar
 
 #### Full Verses (Embedded)
 Use triple quotes to embed the full verse text in your lesson:
 - Format: `'''BOOK CHAPTER:VERSE'''`
-- Examples: `'''JHN 3:16'''`, `'''PSA 23:1'''`
+- Examples: `'''JHN 3:16'''`, `'''PSA 23:1'''`, `'''MWA 1:1'''` (Swahili for Genesis)
+- Supports both English and localized book codes
 - The system automatically fetches and displays the full verse text from your preferred Bible translation
 
 ### 2. Lesson Series
@@ -111,6 +113,8 @@ Handles parsing and fetching scripture references:
 - `parseReferences(text)`: Extracts all references from text
 - `fetchVerse(bookCode, chapter, verse, bibleId)`: Retrieves verse data
 - `replaceReferences(text, bibleId)`: Replaces full verse markers with actual text
+- Supports both English book codes (GEN, EXO, PSA, etc.) and localized codes (MWA, KUT, ZAB for Swahili, etc.)
+- Uses book_number (1-66) to query the database instead of non-existent code column
 
 ### Frontend Components
 - **Lesson.vue**: Main lesson display with scripture reference integration
@@ -121,7 +125,10 @@ Handles parsing and fetching scripture references:
 
 ## Best Practices
 
-1. **Scripture References**: Use book codes consistently (e.g., GEN for Genesis, JHN for John)
+1. **Scripture References**: Use book codes consistently
+   - English codes: GEN for Genesis, EXO for Exodus, JHN for John, etc.
+   - Localized codes: Users can use their language's book codes (e.g., MWA for Genesis in Swahili)
+   - Both English and localized codes are supported
 2. **Lesson Structure**: Break lessons into logical paragraphs for better readability
 3. **Series Organization**: Use meaningful episode numbers for series
 4. **Content Quality**: Write clear, engaging lesson content that flows naturally
