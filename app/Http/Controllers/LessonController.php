@@ -115,9 +115,9 @@ class LessonController extends Controller
     {
         $lesson->load(['paragraphs', 'series']);
         
-        // Get user's preferred Bible for fetching scripture references
-        $userBible = Auth::check() ? Auth::user()->bibles()->first() : Bible::first();
-        $bibleId = $userBible ? $userBible->id : null;
+        // Get the first available Bible for fetching scripture references
+        $bible = Bible::first();
+        $bibleId = $bible ? $bible->id : null;
         
         // Parse and fetch scripture references from paragraphs
         $paragraphsWithReferences = $lesson->paragraphs->map(function ($paragraph) use ($scriptureService, $bibleId) {
