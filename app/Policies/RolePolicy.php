@@ -13,7 +13,7 @@ class RolePolicy
     public function viewAny(User $user): bool
     {
         // All roles can view any roles
-        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class RolePolicy
     public function view(User $user, Role $role): bool
     {
         // All roles can view a role
-        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
+        return true;
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\ReadingProgress;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ReadingProgressController extends Controller
@@ -20,7 +21,7 @@ class ReadingProgressController extends Controller
             'bible_id' => 'required|exists:bibles,id',
         ]);
 
-        $progress = ReadingProgress::where('user_id', auth()->id())
+        $progress = ReadingProgress::where('user_id', Auth::id())
             ->where('chapter_id', $validated['chapter_id'])
             ->first();
 
@@ -32,7 +33,7 @@ class ReadingProgressController extends Controller
         } else {
             // Create new progress record
             $progress = ReadingProgress::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'bible_id' => $validated['bible_id'],
                 'chapter_id' => $validated['chapter_id'],
                 'completed' => true,
@@ -55,7 +56,7 @@ class ReadingProgressController extends Controller
             'bible_id' => 'required|exists:bibles,id',
         ]);
 
-        $progress = ReadingProgress::where('user_id', auth()->id())
+        $progress = ReadingProgress::where('user_id', Auth::id())
             ->where('bible_id', $validated['bible_id'])
             ->where('completed', true)
             ->with('chapter')
@@ -70,7 +71,7 @@ class ReadingProgressController extends Controller
      */
     public function getStatistics(Request $request)
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         // Total chapters completed across all Bibles
         $totalChaptersCompleted = ReadingProgress::where('user_id', $userId)
@@ -114,7 +115,7 @@ class ReadingProgressController extends Controller
      */
     public function readingPlan(Request $request)
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         // Get selected Bible ID from request or use the first Bible or last read Bible
         $selectedBibleId = $request->input('bible_id');

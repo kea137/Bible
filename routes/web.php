@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BibleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LessonController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ReadingProgressController;
 use App\Http\Controllers\ReferenceController;
@@ -83,6 +84,16 @@ Route::get('/reading-plan', [ReadingProgressController::class, 'readingPlan'])->
 Route::post('/api/reading-progress/toggle', [ReadingProgressController::class, 'toggleChapter'])->name('reading_progress_toggle')->middleware('auth');
 Route::get('/api/reading-progress/bible', [ReadingProgressController::class, 'getBibleProgress'])->name('reading_progress_bible')->middleware('auth');
 Route::get('/api/reading-progress/statistics', [ReadingProgressController::class, 'getStatistics'])->name('reading_progress_statistics')->middleware('auth');
+
+// Lesson
+Route::get('/create/lesson', [LessonController::class, 'create'])->name('create_lesson')->middleware('auth');
+Route::get('/edit/lesson/{lesson}', [LessonController::class, 'edit'])->name('edit_lesson')->middleware('auth');
+Route::get('/manage/lessons', [LessonController::class, 'manage'])->name('manage_lessons')->middleware('auth');
+Route::post('/create/lesson', [LessonController::class, 'store'])->name('store_lesson')->middleware('auth');
+Route::put('/update/lesson/{lesson}', [LessonController::class, 'update'])->name('update_lesson')->middleware('auth');
+Route::delete('/lessons/{lesson}', [LessonController::class, 'destroy'])->name('delete_lesson')->middleware('auth');
+Route::get('/lessons', [LessonController::class, 'index'])->name('lessons')->middleware('auth');
+Route::get('/lessons/show/{lesson}', [LessonController::class, 'show'])->name('show_lesson')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

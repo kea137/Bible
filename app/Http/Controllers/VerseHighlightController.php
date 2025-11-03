@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Verse;
 use App\Models\VerseHighlight;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VerseHighlightController extends Controller
 {
@@ -21,7 +22,7 @@ class VerseHighlightController extends Controller
 
         $highlight = VerseHighlight::updateOrCreate(
             [
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'verse_id' => $validated['verse_id'],
             ],
             [
@@ -41,7 +42,7 @@ class VerseHighlightController extends Controller
      */
     public function destroy(Verse $verse)
     {
-        VerseHighlight::where('user_id', auth()->id())
+        VerseHighlight::where('user_id', Auth::id())
             ->where('verse_id', $verse->id)
             ->delete();
 
@@ -55,7 +56,7 @@ class VerseHighlightController extends Controller
      */
     public function index()
     {
-        $highlights = VerseHighlight::where('user_id', auth()->id())
+        $highlights = VerseHighlight::where('user_id', Auth::id())
             ->with(['verse.book', 'verse.chapter'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -72,7 +73,7 @@ class VerseHighlightController extends Controller
             'chapter_id' => 'required|exists:chapters,id',
         ]);
 
-        $highlights = VerseHighlight::where('user_id', auth()->id())
+        $highlights = VerseHighlight::where('user_id', Auth::id())
             ->whereHas('verse', function ($query) use ($validated) {
                 $query->where('chapter_id', $validated['chapter_id']);
             })

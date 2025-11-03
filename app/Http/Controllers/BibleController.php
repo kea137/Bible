@@ -9,12 +9,11 @@ use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Role;
 use App\Services\BibleJsonParser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 class BibleController extends Controller
 {
     public $languageMap = [
@@ -175,14 +174,6 @@ class BibleController extends Controller
 
         $validated = $request->validated();
 
-        $bible = Bible::create([
-            'name' => $validated['name'],
-            'abbreviation' => $validated['abbreviation'],
-            'language' => $validated['language'],
-            'version' => $validated['version'],
-            'description' => $validated['description'] ?? null,
-        ]);
-
         // Handle file upload and parsing here
         if ($request->hasFile('file')) {
             $file = $request->file('file');
@@ -191,15 +182,28 @@ class BibleController extends Controller
             if ($file->getClientOriginalExtension() === 'json') {
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
 
-                try {
-                    // Use the parser service to handle different JSON formats
-                    $parser->parse($bible, $data);
-                } catch (\InvalidArgumentException $e) {
-                    // If parsing fails, delete the created Bible and return error
-                    $bible->delete();
+                DB::transaction(
+                    function() use ($validated, $parser, $data) {
+                        try {
+                            $bible = Bible::create([
+                                'name' => $validated['name'],
+                                'abbreviation' => $validated['abbreviation'],
+                                'language' => $validated['language'],
+                                'version' => $validated['version'],
+                                'description' => $validated['description'] ?? null,
+                            ]);
+                            // Use the parser service to handle different JSON formats
+                            $parser->parse($bible, $data);
+                        } catch (\InvalidArgumentException $e) {
+                            // If parsing fails, delete the created Bible and return error
+                            $bible->delete();
 
-                    return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: '.$e->getMessage());
-                }
+                            return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: '.$e->getMessage());
+                        }
+                    }
+                );
+                
+
             }
 
             // Process the file (e.g., parse and store books, chapters, verses)
@@ -260,15 +264,22 @@ class BibleController extends Controller
     {
         Gate::authorize('create', Role::class);
 
-        $validated = $request->validated();
+        DB::transaction(
 
-        $bible->update([
-            'name' => $validated['name'],
-            'abbreviation' => $validated['abbreviation'],
-            'language' => $validated['language'],
-            'version' => $validated['version'],
-            'description' => $validated['description'] ?? null,
-        ]);
+            function () use ($request, $bible) {
+
+                $validated = $request->validated();
+
+                $bible->update([
+                    'name' => $validated['name'],
+                    'abbreviation' => $validated['abbreviation'],
+                    'language' => $validated['language'],
+                    'version' => $validated['version'],
+                    'description' => $validated['description'] ?? null,
+                ]);
+                
+            }
+        );
 
         return redirect()->route('bibles_configure')->with('success', 'Bible updated successfully.');
     }

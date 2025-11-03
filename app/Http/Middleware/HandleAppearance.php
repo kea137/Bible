@@ -17,7 +17,8 @@ class HandleAppearance
     public function handle(Request $request, Closure $next): Response
     {
         View::share('appearance', $request->cookie('appearance') ?? 'system');
-
+        View::share('language', $request->cookie('language') ?? 'en');
+        
         return $next($request);
     }
 }

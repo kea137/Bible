@@ -13,7 +13,7 @@ class VersePolicy
     public function viewAny(User $user): bool
     {
         // All roles can view any Bibles
-        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class VersePolicy
     public function view(User $user): bool
     {
         // All roles can view a Bible
-        return $user->roles()->whereIn('role_number', [1, 2, 3])->exists();
+        return true;
     }
 
     /**

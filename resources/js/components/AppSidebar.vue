@@ -25,6 +25,8 @@ import {
     reading_plan,
     references_configure,
     role_management,
+    manage_lessons,
+    lessons,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -37,6 +39,8 @@ import {
     Highlighter,
     LayoutGrid,
     LibraryBig,
+    PencilRuler,
+    PenSquareIcon,
     StickyNote,
     Target,
     UserCog2,
@@ -68,6 +72,11 @@ const mainNavItems: NavItem[] = [
         title: t('Parallel Bibles'),
         href: bibles_parallel(),
         icon: BookCopy,
+    },
+    {
+        title: t('Lessons'),
+        href: lessons(),
+        icon: PencilRuler,
     },
     {
         title: t('Reading Plan'),
@@ -114,6 +123,14 @@ const footerNavItems = computed(() => {
             title: t('Role Management'),
             href: role_management(),
             icon: UserCog2,
+        });
+    }
+
+    if (roleNumbers.value.includes(1) || roleNumbers.value.includes(2)) {
+        items.push({
+            title: t('Lessons Management'),
+            href: manage_lessons(),
+            icon: PenSquareIcon,
         });
     }
 
