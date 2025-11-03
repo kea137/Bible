@@ -64,7 +64,7 @@ If your issue is not a security concern (bugs, feature requests, general support
 
 ## Contact & Escalation
 - Preferred: GitHub Security Advisories for this repository.
-- Alternative: security@your-domain.example (replace with a real contact)
+- Alternative: kearajab@gmail.com
 - Maintainer: @kea137 (GitHub account)
 
 If you do not receive an acknowledgement within 3 business days, please re-send or escalate via a different channel (e.g., add a private comment to the advisory or send a follow-up email).
