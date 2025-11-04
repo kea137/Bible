@@ -8,9 +8,8 @@ use Laravel\Scout\Searchable;
 
 class Verse extends Model
 {
-    use Searchable;
-
     use HasFactory;
+    use Searchable;
 
     protected $fillable = [
         'bible_id',
@@ -43,5 +42,22 @@ class Verse extends Model
     public function reference()
     {
         return $this->belongsTo(Reference::class);
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'text' => $this->text,
+            'verse_number' => $this->verse_number,
+            'bible_id' => $this->bible_id,
+            'book_id' => $this->book_id,
+            'chapter_id' => $this->chapter_id,
+        ];
     }
 }

@@ -140,7 +140,7 @@ test('public api is throttled to 30 requests per minute', function () {
     // Make 31 requests (one more than the limit of 30 per minute)
     for ($i = 0; $i < 31; $i++) {
         $response = $this->getJson('/api/English/KJV/false/Genesis/1');
-        
+
         if ($i < 30) {
             $response->assertStatus(200);
         } else {

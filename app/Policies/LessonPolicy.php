@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Lesson;
 use App\Models\User;
 
 class LessonPolicy
@@ -28,7 +27,7 @@ class LessonPolicy
      */
     public function create(User $user): bool
     {
-        return $user->roles()->whereIn('role_number', [ 2, 1])->exists();
+        return $user->roles()->whereIn('role_number', [2, 1])->exists();
     }
 
     /**
@@ -36,7 +35,7 @@ class LessonPolicy
      */
     public function update(User $user): bool
     {
-        return $user->roles()->whereIn('role_number', [ 2, 1])->exists();
+        return $user->roles()->whereIn('role_number', [2, 1])->exists();
     }
 
     /**
@@ -44,7 +43,7 @@ class LessonPolicy
      */
     public function delete(User $user): bool
     {
-        return $user->roles()->whereIn('role_number', [ 2, 1])->exists();
+        return $user->roles()->whereIn('role_number', [2, 1])->exists();
     }
 
     /**
@@ -52,7 +51,7 @@ class LessonPolicy
      */
     public function restore(User $user): bool
     {
-        return $user->roles()->whereIn('role_number', [ 2, 1])->exists();
+        return $user->roles()->whereIn('role_number', [2, 1])->exists();
     }
 
     /**
@@ -60,6 +59,6 @@ class LessonPolicy
      */
     public function forceDelete(User $user): bool
     {
-        return $user->roles()->whereIn('role_number', [ 2, 1])->exists();
+        return $user->roles()->whereIn('role_number', [2, 1])->exists();
     }
 }

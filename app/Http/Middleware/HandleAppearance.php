@@ -18,7 +18,7 @@ class HandleAppearance
     {
         View::share('appearance', $request->cookie('appearance') ?? 'system');
         View::share('language', $request->cookie('language') ?? 'en');
-        
+
         return $next($request);
     }
 }

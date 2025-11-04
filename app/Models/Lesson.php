@@ -8,7 +8,6 @@ use Laravel\Scout\Searchable;
 
 class Lesson extends Model
 {
-
     protected $fillable = [
         'title',
         'description',
@@ -22,13 +21,16 @@ class Lesson extends Model
 
     /** @use HasFactory<\Database\Factories\LessonFactory> */
     use HasFactory;
+
     use Searchable;
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function paragraphs(){
+    public function paragraphs()
+    {
         return $this->hasMany(Paragraph::class);
     }
 
@@ -45,5 +47,20 @@ class Lesson extends Model
     public function userProgress($userId)
     {
         return $this->hasOne(LessonProgress::class)->where('user_id', $userId);
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'language' => $this->language,
+        ];
     }
 }

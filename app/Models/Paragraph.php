@@ -16,11 +16,13 @@ class Paragraph extends Model
         'text',
     ];
 
-    public function lesson() {
+    public function lesson()
+    {
         return $this->belongsTo(Lesson::class);
     }
 
-    public function verses() {
+    public function verses()
+    {
         return $this->hasMany(Verse::class);
     }
 }
