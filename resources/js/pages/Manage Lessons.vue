@@ -36,7 +36,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { create_lesson, edit_lesson, manage_lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Database, Edit, Plus, Trash2 } from 'lucide-vue-next';
+import { Edit, Plus, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 

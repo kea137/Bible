@@ -17,7 +17,6 @@ import { lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage, router } from '@inertiajs/vue3';
 import {
-    BookOpen,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
@@ -168,7 +167,7 @@ function formatParagraphText(paragraph: any): any[] {
         
         // Find all short reference positions and create text parts
         const shortRefs = paragraph.references.filter((r: any) => r.type === 'short');
-        shortRefs.forEach((ref: any, idx: number) => {
+        shortRefs.forEach((ref: any) => {
             const refPattern = new RegExp(ref.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
             const match = refPattern.exec(text.substring(lastIndex));
             
