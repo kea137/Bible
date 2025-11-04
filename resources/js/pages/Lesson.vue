@@ -79,9 +79,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage();
 const hoveredVerseReferences = ref<any[]>([]);
 const selectedReferenceVerse = ref<any>(null);
-const chapterCompleted = ref(props.userProgress?.completed || false);
+const lessonCompleted = ref(props.userProgress?.completed || false);
 
-async function toggleChapterCompletion() {
+async function toggleLessonCompletion() {
     if (!page.props.auth?.user) {
         alert('Please log in to track reading progress');
         return;
@@ -117,7 +117,7 @@ async function toggleChapterCompletion() {
         
         const data = await response.json();
         if (data.success) {
-            chapterCompleted.value = data.progress.completed;
+            lessonCompleted.value = data.progress.completed;
         }
     } catch (error) {
         console.error('Failed to toggle lesson completion:', error);
@@ -342,12 +342,12 @@ const hasPreviousLesson = computed(() => {
                                 
                                 <Button
                                     v-if="page.props.auth?.user"
-                                    :variant="chapterCompleted ? 'default' : 'outline'"
+                                    :variant="lessonCompleted ? 'default' : 'outline'"
                                     size="sm"
-                                    @click="toggleChapterCompletion"
+                                    @click="toggleLessonCompletion"
                                 >
                                     <CheckCircle class="mr-1 h-4 w-4" />
-                                    {{ chapterCompleted ? t('Completed') : t('Mark as Read') }}
+                                    {{ lessonCompleted ? t('Completed') : t('Mark as Read') }}
                                 </Button>
                                 
                                 <Button
