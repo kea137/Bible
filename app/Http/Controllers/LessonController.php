@@ -145,6 +145,12 @@ class LessonController extends Controller
         $bible = Bible::first();
         $bibleId = $bible ? $bible->id : null;
         
+        // Process description for full verse references ('''BOOK CH:V''')
+        $processedDescription = $lesson->description;
+        if ($bibleId) {
+            $processedDescription = $scriptureService->replaceReferences($lesson->description, $bibleId);
+        }
+        
         // Parse and fetch scripture references from paragraphs
         $paragraphsWithReferences = $lesson->paragraphs->map(function ($paragraph) use ($scriptureService, $bibleId) {
             $references = $scriptureService->parseReferences($paragraph->text);
@@ -186,6 +192,7 @@ class LessonController extends Controller
         
         return Inertia::render('Lesson', [
             'lesson' => array_merge($lesson->toArray(), [
+                'description' => $processedDescription,
                 'paragraphs' => $paragraphsWithReferences,
             ]),
             'userProgress' => $userProgress,
@@ -200,9 +207,14 @@ class LessonController extends Controller
     {
         Gate::authorize('update', Lesson::class);
 
+        $series = LessonSeries::where('user_id', Auth::id())
+            ->orderBy('title')
+            ->get(['id', 'title', 'description']);
+
         return Inertia::render('Edit Lesson', [
             'lesson' => $lesson->with('paragraphs')->find($lesson->id)->toArray(),
-            'languages' => $this->languages
+            'languages' => $this->languages,
+            'series' => $series->toArray(),
         ]);
     }
 
@@ -217,7 +229,7 @@ class LessonController extends Controller
 
         DB::transaction(
 
-            function() use ($lesson, $validated) {
+            function() use ($lesson, $validated, $request) {
 
                 $lesson->paragraphs()->delete();
 
@@ -227,12 +239,33 @@ class LessonController extends Controller
                     ]);
                 }
                 
+                // Handle series creation or selection
+                $seriesId = null;
+                $episodeNumber = null;
+                
+                if ($request->has('new_series_title') && $request->input('new_series_title')) {
+                    // Create new series
+                    $series = LessonSeries::create([
+                        'title' => $request->input('new_series_title'),
+                        'description' => $request->input('new_series_description', ''),
+                        'language' => $validated['language'],
+                        'user_id' => Auth::id(),
+                    ]);
+                    $seriesId = $series->id;
+                    $episodeNumber = $request->input('episode_number', 1);
+                } elseif ($request->has('series_id') && $request->input('series_id')) {
+                    $seriesId = $request->input('series_id');
+                    $episodeNumber = $request->input('episode_number', 1);
+                }
+                
                 $lesson->update([
                     'title' => $validated['title'],
                     'description' => $validated['description'],
                     'readable'=>($validated['readable'] === 'False' ? false : true),
                     'language' => $validated['language'],
                     'no_paragraphs' => $validated['no_paragraphs'],
+                    'series_id' => $seriesId,
+                    'episode_number' => $episodeNumber,
                 ]);
 
             }

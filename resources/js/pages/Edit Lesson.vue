@@ -40,6 +40,11 @@ const props = defineProps<{
         code: string;
     }[];
     lesson: LessonType;
+    series?: {
+        id: number;
+        title: string;
+        description: string;
+    }[];
 }>();
 
 type LessonType = {
@@ -49,12 +54,17 @@ type LessonType = {
     language: string;
     readable: boolean;
     no_paragraphs: number;
+    series_id?: number | null;
+    episode_number?: number | null;
     paragraphs: {
         text: string;
     }[];
 }
 
 const editableLesson = ref<LessonType>({ ...props.lesson });
+const createNewSeries = ref(false);
+const newSeriesTitle = ref('');
+const newSeriesDescription = ref('');
 
 watchEffect(() => {
     while (editableLesson.value.paragraphs.length < editableLesson.value.no_paragraphs) {
@@ -234,6 +244,81 @@ if (info) {
                                         v-model="editableLesson.description"
                                     />
                                     <InputError :message="errors.description" />
+                                </div>
+                                
+                                <!-- Series Management -->
+                                <div class="col-span-4 space-y-3">
+                                    <div class="flex items-center space-x-2">
+                                        <input 
+                                            type="checkbox" 
+                                            id="create-new-series" 
+                                            v-model="createNewSeries"
+                                            class="h-4 w-4 rounded border-gray-300"
+                                        />
+                                        <Label for="create-new-series" class="cursor-pointer">
+                                            {{ t('Create New Series or Add to Existing') }}
+                                        </Label>
+                                    </div>
+                                    
+                                    <template v-if="createNewSeries">
+                                        <!-- Option to create new series or select existing -->
+                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            <div class="flex flex-col space-y-1.5">
+                                                <Label>{{ t('New Series Title') }}</Label>
+                                                <Input
+                                                    v-model="newSeriesTitle"
+                                                    placeholder="Enter new series title..."
+                                                />
+                                            </div>
+                                            <div class="flex flex-col space-y-1.5">
+                                                <Label>{{ t('Or Select Existing Series') }}</Label>
+                                                <Select name="series_id" :default-value="editableLesson.series_id?.toString()">
+                                                    <SelectTrigger>
+                                                        <SelectValue :placeholder="t('Select Series')" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>{{ t('Available Series') }}</SelectLabel>
+                                                            <template v-if="props.series && props.series.length > 0">
+                                                                <SelectItem 
+                                                                    v-for="s in props.series" 
+                                                                    :key="s.id" 
+                                                                    :value="s.id.toString()"
+                                                                >
+                                                                    {{ s.title }}
+                                                                </SelectItem>
+                                                            </template>
+                                                            <SelectItem v-else value="none" disabled>
+                                                                {{ t('No series available') }}
+                                                            </SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div v-if="newSeriesTitle" class="flex flex-col space-y-1.5">
+                                            <Label>{{ t('Series Description') }}</Label>
+                                            <Textarea
+                                                v-model="newSeriesDescription"
+                                                placeholder="Enter series description..."
+                                                rows="2"
+                                            />
+                                            <input type="hidden" name="new_series_title" :value="newSeriesTitle" />
+                                            <input type="hidden" name="new_series_description" :value="newSeriesDescription" />
+                                        </div>
+                                        
+                                        <div class="flex flex-col space-y-1.5">
+                                            <Label>{{ t('Episode Number') }}</Label>
+                                            <Input
+                                                type="number"
+                                                name="episode_number"
+                                                :placeholder="editableLesson.episode_number?.toString() || '1'"
+                                                :default-value="editableLesson.episode_number?.toString()"
+                                                min="1"
+                                            />
+                                        </div>
+                                    </template>
                                 </div>
                                 
                                 <!-- Scripture Reference Help -->

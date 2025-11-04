@@ -189,6 +189,7 @@ class ScriptureReferenceService
         }
 
         return [
+            'verse_id' => $verse->id,
             'text' => $verse->text,
             'book_code' => $bookCode,
             'book_title' => $book->title,
