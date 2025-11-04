@@ -55,6 +55,13 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
+import { AisInstantSearch, AisSearchBox, AisHits } from 'vue-instantsearch/vue3/es';
+import * as algoliasearch from 'algoliasearch/lite';
+
+export const searchClient = (algoliasearch as any)(
+  import.meta.env.VITE_ALGOLIA_APP_ID,
+  import.meta.env.VITE_ALGOLIA_SEARCH_KEY
+);
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -692,6 +699,17 @@ function translateReference(ref: string): string {
                                             </CommandGroup>
                                         </CommandList>
                                     </Command>
+                                    <!-- Algolia InstantSearch UI -->
+                                    <AisInstantSearch :search-client="searchClient" index-name="your_index_name">
+                                        <AisSearchBox />
+                                        <AisHits v-slot="{ items }">
+                                            <ul>
+                                                <li v-for="item in items" :key="item.objectID">
+                                                    {{ item.text }}
+                                                </li>
+                                            </ul>
+                                        </AisHits>
+                                    </AisInstantSearch>
                                 </CommandDialog>
                             </div>
                         </div>

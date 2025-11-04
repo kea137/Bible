@@ -18,10 +18,16 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .use(i18n)
-            .mount(el);
+            const vueApp = createApp({ render: () => h(App, props) });
+            // Import and use VueInstantSearch for Vue 3
+            // @ts-ignore
+            import('vue-instantsearch/vue3/es').then(({ default: VueInstantSearch }) => {
+                vueApp.use(VueInstantSearch);
+                vueApp
+                    .use(plugin)
+                    .use(i18n)
+                    .mount(el);
+            });
     },
     progress: {
         color: '#4B5563',
