@@ -289,10 +289,14 @@ class LessonController extends Controller
     /**
      * Toggle lesson completion for the authenticated user
      */
-    public function toggleProgress(Request $request, Lesson $lesson)
+    public function toggleProgress(Request $request)
     {
+        $validated = $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+        ]);
+
         $progress = LessonProgress::where('user_id', Auth::id())
-            ->where('lesson_id', $lesson->id)
+            ->where('lesson_id', $validated['lesson_id'])
             ->first();
 
         if ($progress) {
@@ -302,7 +306,7 @@ class LessonController extends Controller
         } else {
             $progress = LessonProgress::create([
                 'user_id' => Auth::id(),
-                'lesson_id' => $lesson->id,
+                'lesson_id' => $validated['lesson_id'],
                 'completed' => true,
                 'completed_at' => now(),
             ]);

@@ -94,7 +94,7 @@ Route::put('/update/lesson/{lesson}', [LessonController::class, 'update'])->name
 Route::delete('/lessons/{lesson}', [LessonController::class, 'destroy'])->name('delete_lesson')->middleware('auth');
 Route::get('/lessons', [LessonController::class, 'index'])->name('lessons')->middleware('auth');
 Route::get('/lessons/show/{lesson}', [LessonController::class, 'show'])->name('show_lesson')->middleware('auth');
-Route::post('/api/lessons/{lesson}/progress', [LessonController::class, 'toggleProgress'])->name('lesson_progress_toggle')->middleware('auth');
+Route::post('/api/lesson/progress', [LessonController::class, 'toggleProgress'])->name('lesson_progress_toggle')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

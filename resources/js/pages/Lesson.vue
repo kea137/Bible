@@ -102,26 +102,26 @@ async function toggleLessonCompletion() {
             return;
         }
 
-        const response = await fetch(`/api/lessons/${props.lesson.id}/progress`, {
+        const response = await fetch(`/api/lesson/progress`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken,
                 Accept: 'application/json',
             },
+            body: JSON.stringify({
+                lesson_id: props.lesson.id
+            }),
         });
-        
-        if (!response.ok) {
-            throw new Error('Failed to toggle completion');
-        }
-        
-        const data = await response.json();
-        if (data.success) {
-            lessonCompleted.value = data.progress.completed;
+
+        alert(csrfToken);
+
+        if (response.ok) {
+            const result = await response.json();
+            lessonCompleted.value = result.progress.completed;
         }
     } catch (error) {
-        console.error('Failed to toggle lesson completion:', error);
-        alert('Failed to toggle lesson completion. Please try again.');
+        console.error('Failed to toggle chapter completion:', error);
     }
 }
 
