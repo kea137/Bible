@@ -136,28 +136,28 @@ if (info) {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:gap-4 sm:p-4"
         >
-            <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-4">
-                <Card class="col-span-1 md:col-span-4">
+            <div class="grid w-full grid-cols-1 gap-3 sm:gap-4">
+                <Card>
                     <Form
                         v-bind="LessonController.update.form(props.lesson.id)"
                         v-slot="{ errors, processing }"
                     >
-                        <CardHeader>
-                            <CardTitle>{{ t('Edit Lesson') }}</CardTitle>
-                            <CardDescription
+                        <CardHeader class="pb-3 sm:pb-6">
+                            <CardTitle class="text-lg sm:text-xl">{{ t('Edit Lesson') }}</CardTitle>
+                            <CardDescription class="text-xs sm:text-sm"
                                 >{{ t('Edit Lesson by filling out the form below.') }}</CardDescription
                             >
                         </CardHeader>
                         <CardContent>
                             <div
-                                class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-4"
+                                class="mt-2 grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4"
                             >
                                 <div
-                                    class="col-span-1 flex flex-col space-y-1.5"
+                                    class="col-span-1 flex flex-col space-y-1.5 md:col-span-2 lg:col-span-1"
                                 >
-                                    <Label for="name">{{ t('Title') }}</Label>
+                                    <Label for="name" class="text-sm sm:text-base">{{ t('Title') }}</Label>
                                     <Input
                                         id="title"
                                         name="title"
@@ -171,7 +171,7 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="language">{{ t('Language') }}</Label>
+                                    <Label for="language" class="text-sm sm:text-base">{{ t('Language') }}</Label>
                                     <Select name="language"
                                             :default-value="editableLesson.language"
                                     >
@@ -196,7 +196,7 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="readable">{{ t('Readable') }}</Label>
+                                    <Label for="readable" class="text-sm sm:text-base">{{ t('Readable') }}</Label>
                                     <Select name="readable"
                                             :default-value="editableLesson.readable ? 'True' : 'False'"
                                     >
@@ -222,7 +222,7 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="no_paragraphs">{{ t('Number of Paragraphs') }}</Label>
+                                    <Label for="no_paragraphs" class="text-sm sm:text-base">{{ t('Number of Paragraphs') }}</Label>
                                     <Input
                                         id="no_paragraphs"
                                         name="no_paragraphs"
@@ -234,9 +234,9 @@ if (info) {
                                     <InputError :message="errors.no_paragraph" />
                                 </div>
                                 <div
-                                    class="col-span-2 flex flex-col space-y-1.5"
+                                    class="col-span-1 flex flex-col space-y-1.5 md:col-span-2 lg:col-span-4"
                                 >
-                                    <Label for="description">{{ t('Description') }}</Label>
+                                    <Label for="description" class="text-sm sm:text-base">{{ t('Description') }}</Label>
                                     <Textarea
                                         id="description"
                                         name="description"
@@ -248,7 +248,7 @@ if (info) {
                                 </div>
                                 
                                 <!-- Series Management -->
-                                <div class="col-span-4 space-y-3">
+                                <div class="col-span-1 space-y-3 md:col-span-2 lg:col-span-4">
                                     <div class="flex items-center space-x-2">
                                         <input 
                                             type="checkbox" 
@@ -256,23 +256,23 @@ if (info) {
                                             v-model="createNewSeries"
                                             class="h-4 w-4 rounded border-gray-300"
                                         />
-                                        <Label for="create-new-series" class="cursor-pointer">
+                                        <Label for="create-new-series" class="cursor-pointer text-sm sm:text-base">
                                             {{ t('Create New Series or Add to Existing') }}
                                         </Label>
                                     </div>
                                     
                                     <template v-if="createNewSeries">
                                         <!-- Option to create new series or select existing -->
-                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
                                             <div class="flex flex-col space-y-1.5">
-                                                <Label>{{ t('New Series Title') }}</Label>
+                                                <Label class="text-sm sm:text-base">{{ t('New Series Title') }}</Label>
                                                 <Input
                                                     v-model="newSeriesTitle"
                                                     placeholder="Enter new series title..."
                                                 />
                                             </div>
                                             <div class="flex flex-col space-y-1.5">
-                                                <Label>{{ t('Or Select Existing Series') }}</Label>
+                                                <Label class="text-sm sm:text-base">{{ t('Or Select Existing Series') }}</Label>
                                                 <Select v-model="selectedSeriesId">
                                                     <SelectTrigger>
                                                         <SelectValue :placeholder="t('Select Series')" />
@@ -300,7 +300,7 @@ if (info) {
                                         <input v-if="selectedSeriesId" type="hidden" name="series_id" :value="selectedSeriesId" />
                                         
                                         <div v-if="newSeriesTitle" class="flex flex-col space-y-1.5">
-                                            <Label>{{ t('Series Description') }}</Label>
+                                            <Label class="text-sm sm:text-base">{{ t('Series Description') }}</Label>
                                             <Textarea
                                                 v-model="newSeriesDescription"
                                                 placeholder="Enter series description..."
@@ -312,7 +312,7 @@ if (info) {
                                         <input v-if="newSeriesDescription" type="hidden" name="new_series_description" :value="newSeriesDescription" />
                                         
                                         <div class="flex flex-col space-y-1.5">
-                                            <Label>{{ t('Episode Number') }}</Label>
+                                            <Label class="text-sm sm:text-base">{{ t('Episode Number') }}</Label>
                                             <Input
                                                 type="number"
                                                 name="episode_number"
@@ -325,11 +325,11 @@ if (info) {
                                 </div>
                                 
                                 <!-- Scripture Reference Help -->
-                                <div class="col-span-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950">
-                                    <h4 class="mb-2 font-semibold text-blue-900 dark:text-blue-100">
+                                <div class="col-span-1 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950 sm:p-4 md:col-span-2 lg:col-span-4">
+                                    <h4 class="mb-2 text-sm font-semibold text-blue-900 dark:text-blue-100 sm:text-base">
                                         {{ t('Using Scripture References') }}
                                     </h4>
-                                    <div class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                                    <div class="space-y-2 text-xs text-blue-800 dark:text-blue-200 sm:text-sm">
                                         <p>
                                             <strong>{{ t('Short References') }}:</strong> Use single quotes 'BOOK CHAPTER:VERSE' to add clickable references.
                                         </p>
@@ -341,9 +341,9 @@ if (info) {
                                     </div>
                                 </div>
                                 
-                                <div v-for="(paragraph, idx) in editableLesson.paragraphs" :key="`paragraph-${idx}`" class="col-span-3">
-                                    <div class="col-span-2 flex flex-col space-y-1.5">
-                                        <Label :for="`text-${idx}`">Paragraph {{ idx + 1 }}</Label>
+                                <div v-for="(paragraph, idx) in editableLesson.paragraphs" :key="`paragraph-${idx}`" class="col-span-1 md:col-span-2 lg:col-span-4">
+                                    <div class="flex flex-col space-y-1.5">
+                                        <Label :for="`text-${idx}`" class="text-sm sm:text-base">Paragraph {{ idx + 1 }}</Label>
                                         <Textarea
                                             :id="`text-${idx}`"
                                             :name="`paragraphs[${idx}][text]`"
@@ -351,17 +351,19 @@ if (info) {
                                             placeholder="Paragraph Text goes here... You can use 'GEN 1:1' for short references or '''JHN 3:16''' for full verses."
                                             v-model="editableLesson.paragraphs[idx].text"
                                             rows="4"
+                                            class="text-sm sm:text-base"
                                         />
                                         <InputError :message="errors[`paragraphs.${idx}.text`]" />
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter class="mt-6 flex justify-between px-6 pb-4">
+                        <CardFooter class="mt-4 flex justify-between px-3 pb-3 sm:mt-6 sm:px-6 sm:pb-4">
                             <Button
                                 variant="outline"
                                 :class="{ 'opacity-25': processing }"
                                 :disabled="processing"
+                                class="text-sm sm:text-base"
                             >
                                 <LoaderCircle
                                     v-if="processing"
