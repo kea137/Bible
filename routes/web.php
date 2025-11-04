@@ -70,6 +70,7 @@ Route::get('/api/verse-highlights', [VerseHighlightController::class, 'index'])-
 Route::get('/api/verse-highlights/chapter', [VerseHighlightController::class, 'getForChapter'])->name('verse_highlights_chapter')->middleware('auth');
 Route::get('/highlighted-verses', [VerseHighlightController::class, 'highlightedVersesPage'])->name('highlighted_verses_page')->middleware('auth');
 Route::put('/api/verse/{verse}', [VerseController::class, 'update'])->name('verse_update')->middleware('auth');
+Route::get('/api/verses/search', [VerseController::class, 'search'])->name('verses_search')->middleware('auth');
 
 // Note routes
 Route::get('/notes', [NoteController::class, 'index'])->name('notes')->middleware('auth');

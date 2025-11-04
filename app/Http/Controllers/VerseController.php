@@ -6,6 +6,7 @@ use App\Http\Requests\StoreVerseRequest;
 use App\Http\Requests\UpdateVerseRequest;
 use App\Models\Verse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class VerseController extends Controller
@@ -16,6 +17,50 @@ class VerseController extends Controller
     public function index()
     {
         //
+    }
+
+    /**
+     * Search verses using Laravel Scout (Algolia/Meilisearch/Collection driver)
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $query = $request->input('query', '');
+        $limit = $request->input('limit', 10);
+
+        if (empty($query)) {
+            return response()->json([
+                'verses' => [],
+                'total' => 0,
+            ]);
+        }
+
+        // Use Laravel Scout to search verses
+        $verses = Verse::search($query)
+            ->query(function ($builder) {
+                $builder->with(['book:id,title', 'chapter:id,chapter_number']);
+            })
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'verses' => $verses->map(function ($verse) {
+                return [
+                    'id' => $verse->id,
+                    'text' => $verse->text,
+                    'verse_number' => $verse->verse_number,
+                    'bible_id' => $verse->bible_id,
+                    'book' => [
+                        'id' => $verse->book->id ?? null,
+                        'title' => $verse->book->title ?? '',
+                    ],
+                    'chapter' => [
+                        'id' => $verse->chapter->id ?? null,
+                        'chapter_number' => $verse->chapter->chapter_number ?? null,
+                    ],
+                ];
+            }),
+            'total' => $verses->count(),
+        ]);
     }
 
     /**

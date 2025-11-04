@@ -55,7 +55,6 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
-// import { MeiliSearch } from 'meilisearch';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -481,39 +480,28 @@ onMounted(() => {
 
 const highlights = ref<any[]>([]);
 const searchQuery = ref('');
-// const client = new MeiliSearch({
-//   host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
-//   apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
-// });
-
-// const index = client.index('verses'); // Replace with your Meilisearch index name
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
-        // Fetch all highlights and bibles if search query is empty
+        // Fetch all highlights if search query is empty
         await loadHighlights();
     } else {
-        // Search verses from Meilisearch
-        // const response = await index.search(searchQuery.value, {
-        //     limit: 10,
-        // });
-        // Map Meilisearch hits to a format similar to highlights
-        // const verseResults = response.hits.map((hit: any) => ({
-        //     verse: {
-        //         id: hit.id,
-        //         text: hit.text,
-        //         verse_number: hit.verse_number,
-        //         bible_id: hit.bible_id,
-        //     },
-        // }));
-        
-        // Merge highlights and verse search results
-        // Filter out verse with bible id matching current bible
-        // const filteredResults = verseResults.filter(
-        //     (vr: any) => vr.verse.bible_id === props.bible.id,
-        // );
-
-        // highlights.value = filteredResults;
+        // Search verses using the API endpoint
+        try {
+            const verseResponse = await fetch(`/api/verses/search?query=${encodeURIComponent(searchQuery.value)}&limit=10`);
+            if (verseResponse.ok) {
+                const verseData = await verseResponse.json();
+                // Map verse search results to highlights format and filter by current bible
+                highlights.value = verseData.verses
+                    .filter((verse: any) => verse.bible_id === props.bible.id)
+                    .map((verse: any) => ({
+                        id: verse.id,
+                        verse: verse,
+                    }));
+            }
+        } catch (error) {
+            console.error('Failed to search verses:', error);
+        }
     }
 };
 
@@ -541,12 +529,9 @@ const filteredHighlights = computed(() => {
 });
 
 function viewHighlight(verseId: number) {
-    // Navigate to the verse's bible page
-    const highlight = highlights.value.find((h) => h.verse.id === verseId);
-    if (highlight && highlight.verse.chapter?.bible_id) {
-        router.visit(`/bibles/${highlight.verse.chapter.bible_id}`);
-        searchOpen.value = false;
-    }
+    // Navigate to the verse study page
+    router.visit(`/verses/${verseId}/study`);
+    searchOpen.value = false;
 }
 
 function translateReference(ref: string): string {
