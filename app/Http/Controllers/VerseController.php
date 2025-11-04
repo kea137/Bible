@@ -79,7 +79,7 @@ class VerseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreVerseRequest $request)
+    public function store()
     {
         //
     }
