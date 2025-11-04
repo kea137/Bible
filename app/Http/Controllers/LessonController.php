@@ -254,8 +254,8 @@ class LessonController extends Controller
                     $seriesId = $series->id;
                     $episodeNumber = $request->input('episode_number', 1);
                 } elseif ($request->has('series_id') && $request->input('series_id')) {
-                    $seriesId = $request->input('series_id');
-                    $episodeNumber = $request->input('episode_number', 1);
+                    $seriesId = intval($request->input('series_id'));
+                    $episodeNumber = intval($request->input('episode_number', 1));
                 }
                 
                 $lesson->update([

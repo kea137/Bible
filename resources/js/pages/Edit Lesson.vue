@@ -65,6 +65,7 @@ const editableLesson = ref<LessonType>({ ...props.lesson });
 const createNewSeries = ref(false);
 const newSeriesTitle = ref('');
 const newSeriesDescription = ref('');
+const selectedSeriesId = ref<string | undefined>(props.lesson.series_id?.toString());
 
 watchEffect(() => {
     while (editableLesson.value.paragraphs.length < editableLesson.value.no_paragraphs) {
@@ -272,7 +273,7 @@ if (info) {
                                             </div>
                                             <div class="flex flex-col space-y-1.5">
                                                 <Label>{{ t('Or Select Existing Series') }}</Label>
-                                                <Select name="series_id" :default-value="editableLesson.series_id?.toString()">
+                                                <Select v-model="selectedSeriesId">
                                                     <SelectTrigger>
                                                         <SelectValue :placeholder="t('Select Series')" />
                                                     </SelectTrigger>
@@ -294,6 +295,7 @@ if (info) {
                                                         </SelectGroup>
                                                     </SelectContent>
                                                 </Select>
+                                                <input v-if="selectedSeriesId" type="hidden" name="series_id" :value="selectedSeriesId" />
                                             </div>
                                         </div>
                                         
@@ -304,9 +306,10 @@ if (info) {
                                                 placeholder="Enter series description..."
                                                 rows="2"
                                             />
-                                            <input type="hidden" name="new_series_title" :value="newSeriesTitle" />
-                                            <input type="hidden" name="new_series_description" :value="newSeriesDescription" />
                                         </div>
+                                        
+                                        <input v-if="newSeriesTitle" type="hidden" name="new_series_title" :value="newSeriesTitle" />
+                                        <input v-if="newSeriesTitle" type="hidden" name="new_series_description" :value="newSeriesDescription" />
                                         
                                         <div class="flex flex-col space-y-1.5">
                                             <Label>{{ t('Episode Number') }}</Label>

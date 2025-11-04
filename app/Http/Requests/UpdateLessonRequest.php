@@ -28,6 +28,10 @@ class UpdateLessonRequest extends FormRequest
             'language' => 'required|string',
             'no_paragraphs' => 'required|integer|min:1',
             'paragraphs.*.text' => 'required|string',
+            'new_series_title' => 'nullable|string|max:255',
+            'new_series_description' => 'nullable|string|max:1000',
+            'series_id' => 'nullable|integer|exists:lesson_series,id',
+            'episode_number' => 'nullable|integer|min:1',
         ];
     }
 }
