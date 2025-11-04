@@ -82,12 +82,32 @@ const selectedReferenceVerse = ref<any>(null);
 const chapterCompleted = ref(props.userProgress?.completed || false);
 
 async function toggleChapterCompletion() {
+    if (!page.props.auth?.user) {
+        alert('Please log in to track reading progress');
+        return;
+    }
+
     try {
+        let csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+        if (!csrfToken) {
+            alert(
+                'CSRF token not found. Refreshing page to fix authentication...',
+            );
+            window.location.reload();
+            return;
+        }
+
         const response = await fetch(`/api/lessons/${props.lesson.id}/progress`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-CSRF-TOKEN': csrfToken,
+                Accept: 'application/json',
             },
         });
         
