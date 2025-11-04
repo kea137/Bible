@@ -64,7 +64,7 @@ beforeEach(function () {
 
 test('verse model has searchable trait', function () {
     $traits = class_uses(Verse::class);
-    expect($traits)->toHaveKey('Laravel\Scout\Searchable');
+    expect($traits)->toContain('Laravel\Scout\Searchable');
 });
 
 test('verse model returns correct searchable array structure', function () {
