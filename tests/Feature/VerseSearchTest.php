@@ -141,3 +141,29 @@ test('verse search returns verses with book and chapter information', function (
         expect($verse['chapter'])->toHaveKeys(['id', 'chapter_number']);
     }
 });
+
+test('verse search validates query length', function () {
+    $longQuery = str_repeat('a', 300);
+
+    $response = actingAs($this->user)
+        ->getJson('/api/verses/search?query='.$longQuery);
+
+    $response->assertJsonValidationErrors(['query']);
+});
+
+test('verse search validates limit is a positive integer', function () {
+    actingAs($this->user)
+        ->getJson('/api/verses/search?query=God&limit=0')
+        ->assertJsonValidationErrors(['limit']);
+
+    actingAs($this->user)
+        ->getJson('/api/verses/search?query=God&limit=-5')
+        ->assertJsonValidationErrors(['limit']);
+});
+
+test('verse search validates limit maximum value', function () {
+    $response = actingAs($this->user)
+        ->getJson('/api/verses/search?query=God&limit=100');
+
+    $response->assertJsonValidationErrors(['limit']);
+});

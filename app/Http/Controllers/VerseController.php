@@ -24,8 +24,13 @@ class VerseController extends Controller
      */
     public function search(Request $request): JsonResponse
     {
-        $query = $request->input('query', '');
-        $limit = $request->input('limit', 10);
+        $validated = $request->validate([
+            'query' => 'nullable|string|max:255',
+            'limit' => 'nullable|integer|min:1|max:50',
+        ]);
+
+        $query = $validated['query'] ?? '';
+        $limit = $validated['limit'] ?? 10;
 
         if (empty($query)) {
             return response()->json([
