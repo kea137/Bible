@@ -28,7 +28,6 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { LibraryBigIcon, PenTool, Search } from 'lucide-vue-next';
 import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Link } from '@inertiajs/vue3';
 
 const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
@@ -302,7 +301,7 @@ const searchVerses = async () => {
                     <CommandInput
                         v-model="searchQuery"
                         @input="searchVerses()"
-                        placeholder="Search bibles by name, language, or version..."
+                        placeholder="Search verses and bibles..."
                     />
                     <CommandList>
                         <CommandEmpty>{{t('No bibles found.')}}</CommandEmpty>
@@ -327,16 +326,16 @@ const searchVerses = async () => {
                         </CommandGroup>
                         <CommandGroup
                         v-if="filteredHighlights.length > 0"
-                        :heading="t('Highlighted Verses')"
+                        :heading="searchQuery ? t('Verses') : t('Highlighted Verses')"
                         >         
                             <CommandItem
                                 v-for="highlight in filteredHighlights.slice(0, 10)"
                                 :key="highlight.id"
                                 :value="highlight.verse.text"
                                 @select="viewHighlight(highlight.verse.id)"
+                                class="cursor-pointer"
                             >
                                 <PenTool class="mr-2 h-4 w-4" />
-                                <Link :href="verse_study(highlight.verse.id)">
                                 <div class="flex flex-col">
                                     <span class="line-clamp-1 text-sm">{{
                                         highlight.verse.text
@@ -348,7 +347,6 @@ const searchVerses = async () => {
                                         }}:{{ highlight.verse.verse_number }}
                                     </span>
                                 </div>
-                                </Link>
                             </CommandItem>
                         </CommandGroup>
                     </CommandList>

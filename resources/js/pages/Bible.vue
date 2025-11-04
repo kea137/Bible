@@ -32,9 +32,9 @@ import {
 } from '@/components/ui/select';
 import VerseDialog from '@/components/VerseDialog.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, verse_study } from '@/routes';
+import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import {
     BookOpen,
     CheckCircle,
@@ -667,16 +667,16 @@ function translateReference(ref: string): string {
                                             <CommandEmpty>{{t('No Verses found.')}}</CommandEmpty>
                                             <CommandGroup
                                             v-if="filteredHighlights.length > 0"
-                                            :heading="t('Highlighted Verses')"
+                                            :heading="searchQuery ? t('Verses') : t('Highlighted Verses')"
                                             >         
                                                 <CommandItem
                                                     v-for="highlight in filteredHighlights.slice(0, 10)"
                                                     :key="highlight.id"
                                                     :value="highlight.verse.text"
                                                     @select="viewHighlight(highlight.verse.id)"
+                                                    class="cursor-pointer"
                                                 >
                                                     <PenTool class="mr-2 h-4 w-4"/>
-                                                    <Link :href="verse_study(highlight.verse.id)">
                                                     <div class="flex flex-col">
                                                         <span class="line-clamp-1 text-sm">{{
                                                             highlight.verse.text
@@ -688,7 +688,6 @@ function translateReference(ref: string): string {
                                                             }}:{{ highlight.verse.verse_number }}
                                                         </span>
                                                     </div>
-                                                    </Link>
                                                 </CommandItem>
                                             </CommandGroup>
                                         </CommandList>

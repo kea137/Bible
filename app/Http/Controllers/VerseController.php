@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreVerseRequest;
 use App\Http\Requests\UpdateVerseRequest;
 use App\Models\Verse;
 use Illuminate\Http\JsonResponse;
