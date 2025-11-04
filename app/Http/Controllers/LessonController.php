@@ -241,7 +241,9 @@ class LessonController extends Controller
                 
                 // Handle series creation or selection
                 $seriesId = null;
-                $episodeNumber = null;
+                $episodeNumber = $request->input('episode_number') 
+                    ? intval($request->input('episode_number')) 
+                    : null;
                 
                 if ($request->has('new_series_title') && $request->input('new_series_title')) {
                     // Create new series
@@ -252,10 +254,8 @@ class LessonController extends Controller
                         'user_id' => Auth::id(),
                     ]);
                     $seriesId = $series->id;
-                    $episodeNumber = $request->input('episode_number', 1);
                 } elseif ($request->has('series_id') && $request->input('series_id')) {
                     $seriesId = intval($request->input('series_id'));
-                    $episodeNumber = intval($request->input('episode_number', 1));
                 }
                 
                 $lesson->update([

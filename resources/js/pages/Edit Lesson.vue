@@ -295,9 +295,9 @@ if (info) {
                                                         </SelectGroup>
                                                     </SelectContent>
                                                 </Select>
-                                                <input v-if="selectedSeriesId" type="hidden" name="series_id" :value="selectedSeriesId" />
                                             </div>
                                         </div>
+                                        <input v-if="selectedSeriesId" type="hidden" name="series_id" :value="selectedSeriesId" />
                                         
                                         <div v-if="newSeriesTitle" class="flex flex-col space-y-1.5">
                                             <Label>{{ t('Series Description') }}</Label>
@@ -309,7 +309,7 @@ if (info) {
                                         </div>
                                         
                                         <input v-if="newSeriesTitle" type="hidden" name="new_series_title" :value="newSeriesTitle" />
-                                        <input v-if="newSeriesTitle" type="hidden" name="new_series_description" :value="newSeriesDescription" />
+                                        <input v-if="newSeriesDescription" type="hidden" name="new_series_description" :value="newSeriesDescription" />
                                         
                                         <div class="flex flex-col space-y-1.5">
                                             <Label>{{ t('Episode Number') }}</Label>
