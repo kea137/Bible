@@ -19,16 +19,6 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles_parallel } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
-import {
-    BookOpen,
-    CheckCircle,
-    ChevronLeft,
-    ChevronRight,
-} from 'lucide-vue-next';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import {
     Select,
@@ -39,6 +29,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { bibles_parallel } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
+import { Head, usePage } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    CheckCircle,
+    ChevronLeft,
+    ChevronRight,
+} from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -566,15 +566,19 @@ if (info) {
                                 class="flex items-center gap-2 text-base sm:text-lg"
                             >
                                 <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
-                                {{t('Bible 1')}}
+                                {{ t('Bible 1') }}
                             </CardTitle>
                             <Select v-model="selectedBible1">
                                 <SelectTrigger>
-                                    <SelectValue :placeholder="t('Select a Bible')" />
+                                    <SelectValue
+                                        :placeholder="t('Select a Bible')"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectLabel>{{t('Bibles')}}</SelectLabel>
+                                        <SelectLabel>{{
+                                            t('Bibles')
+                                        }}</SelectLabel>
                                         <SelectItem
                                             v-for="bible in biblesList"
                                             :key="bible.id"
@@ -597,7 +601,9 @@ if (info) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>{{t('Books')}}</SelectLabel>
+                                            <SelectLabel>{{
+                                                t('Books')
+                                            }}</SelectLabel>
                                             <SelectItem
                                                 v-for="book in biblesList.find(
                                                     (b) =>
@@ -614,11 +620,15 @@ if (info) {
                                 </Select>
                                 <Select v-model="selectedChapter1">
                                     <SelectTrigger class="w-full sm:w-32">
-                                        <SelectValue :placeholder="t('Chapter')" />
+                                        <SelectValue
+                                            :placeholder="t('Chapter')"
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>{{t('Chapters')}}</SelectLabel>
+                                            <SelectLabel>{{
+                                                t('Chapters')
+                                            }}</SelectLabel>
                                             <SelectItem
                                                 v-for="chapter in biblesList
                                                     .find(
@@ -658,7 +668,7 @@ if (info) {
                                 class="w-full sm:w-auto"
                             >
                                 <ChevronLeft class="mr-1 h-4 w-4" />
-                                {{t('Previous')}}
+                                {{ t('Previous') }}
                             </Button>
                             <Button
                                 v-if="page.props.auth?.user && selectedChapter1"
@@ -689,7 +699,7 @@ if (info) {
                                 :disabled="!hasNextChapter1"
                                 class="w-full sm:w-auto"
                             >
-                                {{t('Next')}}
+                                {{ t('Next') }}
                                 <ChevronRight class="ml-1 h-4 w-4" />
                             </Button>
                         </div>
@@ -740,7 +750,11 @@ if (info) {
                                                     <p
                                                         class="text-sm font-semibold"
                                                     >
-                                                        {{t('Cross References:')}}
+                                                        {{
+                                                            t(
+                                                                'Cross References:',
+                                                            )
+                                                        }}
                                                     </p>
                                                     <div
                                                         class="space-y-1 text-sm"
@@ -772,7 +786,11 @@ if (info) {
                                                                 hoveredVerseReferences.length -
                                                                 3
                                                             }}
-                                                            {{t('more references')}}
+                                                            {{
+                                                                t(
+                                                                    'more references',
+                                                                )
+                                                            }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -780,17 +798,19 @@ if (info) {
                                                     v-else
                                                     class="text-sm text-muted-foreground"
                                                 >
-                                                    {{t('No cross-references')}}
-                                                    {{t('available')}}
+                                                    {{
+                                                        t('No cross-references')
+                                                    }}
+                                                    {{ t('available') }}
                                                 </p>
                                             </HoverCardContent>
                                         </HoverCard>
                                         {{ verse.text }}
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
-                                        <DropdownMenuLabel
-                                            >{{t('Highlight')}}</DropdownMenuLabel
-                                        >
+                                        <DropdownMenuLabel>{{
+                                            t('Highlight')
+                                        }}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="
@@ -806,7 +826,7 @@ if (info) {
                                                 <span
                                                     class="h-4 w-4 rounded bg-yellow-300"
                                                 ></span>
-                                                {{t('Highlight - Yellow')}}
+                                                {{ t('Highlight - Yellow') }}
                                             </span>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -823,22 +843,22 @@ if (info) {
                                                 <span
                                                     class="h-4 w-4 rounded bg-green-300"
                                                 ></span>
-                                                {{t('Highlight - Green')}}
+                                                {{ t('Highlight - Green') }}
                                             </span>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="removeHighlight(verse.id)"
                                         >
-                                            {{t('Remove Highlight')}}
+                                            {{ t('Remove Highlight') }}
                                         </DropdownMenuItem>
-                                        <DropdownMenuLabel
-                                            >{{t('Learn More')}}</DropdownMenuLabel
-                                        >
+                                        <DropdownMenuLabel>{{
+                                            t('Learn More')
+                                        }}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="studyVerse(verse.id)"
                                         >
-                                            {{t('Study this Verse')}}
+                                            {{ t('Study this Verse') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
@@ -848,7 +868,7 @@ if (info) {
                                                 )
                                             "
                                         >
-                                            {{t('Put Note on this Verse')}}
+                                            {{ t('Put Note on this Verse') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -859,7 +879,7 @@ if (info) {
                         v-else
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
-                        <p>{{t('Select a Bible to start')}}</p>
+                        <p>{{ t('Select a Bible to start') }}</p>
                     </CardContent>
                 </Card>
 
@@ -871,15 +891,19 @@ if (info) {
                                 class="flex items-center gap-2 text-base sm:text-lg"
                             >
                                 <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
-                                {{t('Bible 2')}}
+                                {{ t('Bible 2') }}
                             </CardTitle>
                             <Select v-model="selectedBible2">
                                 <SelectTrigger>
-                                    <SelectValue :placeholder="t('Select a Bible')" />
+                                    <SelectValue
+                                        :placeholder="t('Select a Bible')"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectLabel>{{t('Bibles')}}</SelectLabel>
+                                        <SelectLabel>{{
+                                            t('Bibles')
+                                        }}</SelectLabel>
                                         <SelectItem
                                             v-for="bible in biblesOther"
                                             :key="bible.id"
@@ -902,7 +926,9 @@ if (info) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>{{t('Books')}}</SelectLabel>
+                                            <SelectLabel>{{
+                                                t('Books')
+                                            }}</SelectLabel>
                                             <SelectItem
                                                 v-for="book in biblesOther.find(
                                                     (b) =>
@@ -919,11 +945,15 @@ if (info) {
                                 </Select>
                                 <Select v-model="selectedChapter2">
                                     <SelectTrigger class="w-full sm:w-32">
-                                        <SelectValue :placeholder="t('Chapter')" />
+                                        <SelectValue
+                                            :placeholder="t('Chapter')"
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>{{t('Chapters')}}</SelectLabel>
+                                            <SelectLabel>{{
+                                                t('Chapters')
+                                            }}</SelectLabel>
                                             <SelectItem
                                                 v-for="chapter in biblesOther
                                                     .find(
@@ -963,7 +993,7 @@ if (info) {
                                 class="w-full sm:w-auto"
                             >
                                 <ChevronLeft class="mr-1 h-4 w-4" />
-                                {{t('Previous')}}
+                                {{ t('Previous') }}
                             </Button>
                             <Button
                                 v-if="page.props.auth?.user && selectedChapter2"
@@ -994,7 +1024,7 @@ if (info) {
                                 :disabled="!hasNextChapter2"
                                 class="w-full sm:w-auto"
                             >
-                                {{t('Next')}}
+                                {{ t('Next') }}
                                 <ChevronRight class="ml-1 h-4 w-4" />
                             </Button>
                         </div>
@@ -1045,7 +1075,11 @@ if (info) {
                                                     <p
                                                         class="text-sm font-semibold"
                                                     >
-                                                        {{t('Cross References:')}}
+                                                        {{
+                                                            t(
+                                                                'Cross References:',
+                                                            )
+                                                        }}
                                                     </p>
                                                     <div
                                                         class="space-y-1 text-sm"
@@ -1077,7 +1111,11 @@ if (info) {
                                                                 hoveredVerseReferences.length -
                                                                 3
                                                             }}
-                                                            {{t('more references')}}
+                                                            {{
+                                                                t(
+                                                                    'more references',
+                                                                )
+                                                            }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -1085,17 +1123,19 @@ if (info) {
                                                     v-else
                                                     class="text-sm text-muted-foreground"
                                                 >
-                                                    {{t('No cross-references')}}
-                                                    {{t('available')}}
+                                                    {{
+                                                        t('No cross-references')
+                                                    }}
+                                                    {{ t('available') }}
                                                 </p>
                                             </HoverCardContent>
                                         </HoverCard>
                                         {{ verse.text }}
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
-                                        <DropdownMenuLabel
-                                            >{{t('Highlight')}}</DropdownMenuLabel
-                                        >
+                                        <DropdownMenuLabel>{{
+                                            t('Highlight')
+                                        }}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="
@@ -1111,7 +1151,7 @@ if (info) {
                                                 <span
                                                     class="h-4 w-4 rounded bg-yellow-300"
                                                 ></span>
-                                                {{t('Highlight - Yellow')}}
+                                                {{ t('Highlight - Yellow') }}
                                             </span>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -1128,22 +1168,22 @@ if (info) {
                                                 <span
                                                     class="h-4 w-4 rounded bg-green-300"
                                                 ></span>
-                                                {{t('Highlight - Green')}}
+                                                {{ t('Highlight - Green') }}
                                             </span>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="removeHighlight(verse.id)"
                                         >
-                                            {{t('Remove Highlight')}}
+                                            {{ t('Remove Highlight') }}
                                         </DropdownMenuItem>
-                                        <DropdownMenuLabel
-                                            >{{t('Learn More')}}</DropdownMenuLabel
-                                        >
+                                        <DropdownMenuLabel>{{
+                                            t('Learn More')
+                                        }}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="studyVerse(verse.id)"
                                         >
-                                            {{t('Study this Verse')}}
+                                            {{ t('Study this Verse') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
@@ -1153,7 +1193,7 @@ if (info) {
                                                 )
                                             "
                                         >
-                                            {{t('Put Note on this Verse')}}
+                                            {{ t('Put Note on this Verse') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -1164,7 +1204,7 @@ if (info) {
                         v-else
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
-                        <p>{{t('Select a Bible to start')}}</p>
+                        <p>{{ t('Select a Bible to start') }}</p>
                     </CardContent>
                 </Card>
             </div>

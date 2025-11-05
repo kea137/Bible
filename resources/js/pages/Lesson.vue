@@ -15,12 +15,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage, router } from '@inertiajs/vue3';
-import {
-    CheckCircle,
-    ChevronLeft,
-    ChevronRight,
-} from 'lucide-vue-next';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -110,7 +106,7 @@ async function toggleLessonCompletion() {
                 Accept: 'application/json',
             },
             body: JSON.stringify({
-                lesson_id: props.lesson.id
+                lesson_id: props.lesson.id,
             }),
         });
 
@@ -145,7 +141,7 @@ if (info) {
     alertInfo.value = true;
 }
 
-function handleReferenceClick(reference: any){
+function handleReferenceClick(reference: any) {
     selectedReferenceVerse.value = reference;
 }
 
@@ -154,10 +150,12 @@ async function handleReferenceHover(reference: any) {
     try {
         // First set the selected verse
         selectedReferenceVerse.value = reference;
-        
+
         // Then fetch cross-references if we have a verse with proper data
         if (reference.verse_id) {
-            const response = await fetch(`/api/verses/${reference.verse_id}/references`);
+            const response = await fetch(
+                `/api/verses/${reference.verse_id}/references`,
+            );
             const data = await response.json();
             if (data && data.references) {
                 hoveredVerseReferences.value = data.references;
@@ -176,7 +174,7 @@ function formatParagraphText(paragraph: any): any[] {
     let text = paragraph.text;
     const textParts: any[] = [];
     let lastIndex = 0;
-    
+
     // Replace full verse references with their text
     if (paragraph.references) {
         paragraph.references.forEach((ref: any) => {
@@ -184,58 +182,64 @@ function formatParagraphText(paragraph: any): any[] {
                 text = text.replace(ref.original, `"${ref.text}"`);
             }
         });
-        
+
         // Find all short reference positions and create text parts
-        const shortRefs = paragraph.references.filter((r: any) => r.type === 'short');
+        const shortRefs = paragraph.references.filter(
+            (r: any) => r.type === 'short',
+        );
         shortRefs.forEach((ref: any) => {
-            const refPattern = new RegExp(ref.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            const refPattern = new RegExp(
+                ref.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            );
             const match = refPattern.exec(text.substring(lastIndex));
-            
+
             if (match) {
                 const matchIndex = lastIndex + match.index;
-                
+
                 // Add text before reference
                 if (matchIndex > lastIndex) {
                     textParts.push({
                         type: 'text',
-                        content: text.substring(lastIndex, matchIndex)
+                        content: text.substring(lastIndex, matchIndex),
                     });
                 }
-                
+
                 // Add reference as separate part
                 textParts.push({
                     type: 'reference',
-                    content: ref
+                    content: ref,
                 });
-                
+
                 lastIndex = matchIndex + ref.original.length;
             }
         });
     }
-    
+
     // Add remaining text
     if (lastIndex < text.length) {
         textParts.push({
             type: 'text',
-            content: text.substring(lastIndex)
+            content: text.substring(lastIndex),
         });
     }
-    
+
     // If no parts, just return the full text
     if (textParts.length === 0) {
         textParts.push({
             type: 'text',
-            content: text.trim()
+            content: text.trim(),
         });
     }
-    
+
     return textParts;
 }
 
 function navigateToNextLesson() {
     if (!props.seriesLessons || !props.lesson.episode_number) return;
-    
-    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+
+    const currentIndex = props.seriesLessons.findIndex(
+        (l) => l.id === props.lesson.id,
+    );
     if (currentIndex < props.seriesLessons.length - 1) {
         const nextLesson = props.seriesLessons[currentIndex + 1];
         router.visit(`/lessons/show/${nextLesson.id}`);
@@ -244,8 +248,10 @@ function navigateToNextLesson() {
 
 function navigateToPreviousLesson() {
     if (!props.seriesLessons || !props.lesson.episode_number) return;
-    
-    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+
+    const currentIndex = props.seriesLessons.findIndex(
+        (l) => l.id === props.lesson.id,
+    );
     if (currentIndex > 0) {
         const previousLesson = props.seriesLessons[currentIndex - 1];
         router.visit(`/lessons/show/${previousLesson.id}`);
@@ -254,16 +260,19 @@ function navigateToPreviousLesson() {
 
 const hasNextLesson = computed(() => {
     if (!props.seriesLessons || !props.lesson.episode_number) return false;
-    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+    const currentIndex = props.seriesLessons.findIndex(
+        (l) => l.id === props.lesson.id,
+    );
     return currentIndex < props.seriesLessons.length - 1;
 });
 
 const hasPreviousLesson = computed(() => {
     if (!props.seriesLessons || !props.lesson.episode_number) return false;
-    const currentIndex = props.seriesLessons.findIndex(l => l.id === props.lesson.id);
+    const currentIndex = props.seriesLessons.findIndex(
+        (l) => l.id === props.lesson.id,
+    );
     return currentIndex > 0;
 });
-
 </script>
 
 <template>
@@ -305,13 +314,17 @@ const hasPreviousLesson = computed(() => {
                 <Card>
                     <CardHeader class="pb-3">
                         <!-- Title centered and bold at top -->
-                        <CardTitle class="text-center text-xl font-bold sm:text-2xl">
+                        <CardTitle
+                            class="text-center text-xl font-bold sm:text-2xl"
+                        >
                             {{ lesson.title }}
                         </CardTitle>
-                        
+
                         <!-- Description styled like verse of the day -->
                         <div class="mt-4">
-                            <blockquote class="border-l-4 border-primary pl-3 italic sm:pl-4">
+                            <blockquote
+                                class="border-l-4 border-primary pl-3 italic sm:pl-4"
+                            >
                                 <p class="text-base leading-relaxed sm:text-lg">
                                     "{{ lesson.description }}"
                                 </p>
@@ -320,14 +333,29 @@ const hasPreviousLesson = computed(() => {
                     </CardHeader>
                     <CardContent>
                         <!-- Series info and navigation buttons -->
-                        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div v-if="lesson.series" class="text-sm text-muted-foreground">
-                                <span class="font-semibold">{{ t('Series') }}:</span> {{ lesson.series.title }}
-                                <span v-if="lesson.episode_number !== null && lesson.episode_number !== undefined" class="ml-2">
-                                    {{ t('Episode') }} {{ lesson.episode_number }}
+                        <div
+                            class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                        >
+                            <div
+                                v-if="lesson.series"
+                                class="text-sm text-muted-foreground"
+                            >
+                                <span class="font-semibold"
+                                    >{{ t('Series') }}:</span
+                                >
+                                {{ lesson.series.title }}
+                                <span
+                                    v-if="
+                                        lesson.episode_number !== null &&
+                                        lesson.episode_number !== undefined
+                                    "
+                                    class="ml-2"
+                                >
+                                    {{ t('Episode') }}
+                                    {{ lesson.episode_number }}
                                 </span>
                             </div>
-                            
+
                             <!-- Navigation and action buttons for series lessons -->
                             <div class="flex flex-wrap gap-2">
                                 <Button
@@ -339,17 +367,23 @@ const hasPreviousLesson = computed(() => {
                                     <ChevronLeft class="h-4 w-4" />
                                     {{ t('Previous') }}
                                 </Button>
-                                
+
                                 <Button
                                     v-if="page.props.auth?.user"
-                                    :variant="lessonCompleted ? 'default' : 'outline'"
+                                    :variant="
+                                        lessonCompleted ? 'default' : 'outline'
+                                    "
                                     size="sm"
                                     @click="toggleLessonCompletion"
                                 >
                                     <CheckCircle class="mr-1 h-4 w-4" />
-                                    {{ lessonCompleted ? t('Completed') : t('Mark as Read') }}
+                                    {{
+                                        lessonCompleted
+                                            ? t('Completed')
+                                            : t('Mark as Read')
+                                    }}
                                 </Button>
-                                
+
                                 <Button
                                     v-if="lesson.series_id && hasNextLesson"
                                     variant="outline"
@@ -363,26 +397,50 @@ const hasPreviousLesson = computed(() => {
                         </div>
 
                         <!-- Lesson content with indented paragraphs and inline references -->
-                        <div class="space-y-4 text-justify text-base leading-relaxed sm:text-lg">
+                        <div
+                            class="space-y-4 text-justify text-base leading-relaxed sm:text-lg"
+                        >
                             <p
                                 v-for="paragraph in lesson.paragraphs"
                                 :key="paragraph.id"
-                                class="indent-6 text-justify"
+                                class="text-justify indent-6"
                             >
-                                <template v-for="(part, idx) in formatParagraphText(paragraph)" :key="idx">
-                                    <template v-if="part.type === 'text'">{{ part.content }}</template>
-                                    <HoverCard v-else-if="part.type === 'reference'" @update:open="(open) => open && handleReferenceHover(part.content)">
+                                <template
+                                    v-for="(part, idx) in formatParagraphText(
+                                        paragraph,
+                                    )"
+                                    :key="idx"
+                                >
+                                    <template v-if="part.type === 'text'">{{
+                                        part.content
+                                    }}</template>
+                                    <HoverCard
+                                        v-else-if="part.type === 'reference'"
+                                        @update:open="
+                                            (open) =>
+                                                open &&
+                                                handleReferenceHover(
+                                                    part.content,
+                                                )
+                                        "
+                                    >
                                         <HoverCardTrigger>
                                             <span
                                                 class="cursor-pointer font-semibold text-primary hover:underline"
-                                                @click="handleReferenceClick(part.content)"
+                                                @click="
+                                                    handleReferenceClick(
+                                                        part.content,
+                                                    )
+                                                "
                                             >
                                                 {{ part.content.reference }}
                                             </span>
                                         </HoverCardTrigger>
                                         <HoverCardContent class="w-80">
                                             <div class="space-y-2">
-                                                <p class="text-sm font-semibold text-primary">
+                                                <p
+                                                    class="text-sm font-semibold text-primary"
+                                                >
                                                     {{ part.content.reference }}
                                                 </p>
                                                 <p class="text-sm">
@@ -403,20 +461,27 @@ const hasPreviousLesson = computed(() => {
                 <!-- Top half - Cross References -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
-                        <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Cross References') }}</CardTitle
-                        >
+                        <CardTitle class="text-sm sm:text-base">{{
+                            t('Cross References')
+                        }}</CardTitle>
                         <CardDescription class="text-xs"
                             ><span class="hidden sm:inline"
-                                >{{ t('Hover over scripture references to see') }}
+                                >{{
+                                    t('Hover over scripture references to see')
+                                }}
                                 {{ t('references') }}</span
-                            ><span class="sm:hidden"
-                                >{{ t('Tap scripture references to see references') }}</span
-                            ></CardDescription
+                            ><span class="sm:hidden">{{
+                                t('Tap scripture references to see references')
+                            }}</span></CardDescription
                         >
                     </CardHeader>
-                    <CardContent class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]">
-                        <ScrollArea v-if="hoveredVerseReferences.length > 0" class="h-full">
+                    <CardContent
+                        class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]"
+                    >
+                        <ScrollArea
+                            v-if="hoveredVerseReferences.length > 0"
+                            class="h-full"
+                        >
                             <div class="space-y-3">
                                 <div
                                     v-for="ref in hoveredVerseReferences"
@@ -424,22 +489,34 @@ const hasPreviousLesson = computed(() => {
                                     class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
                                     @click="handleReferenceClick(ref)"
                                 >
-                                    <p class="text-sm font-semibold text-primary">
+                                    <p
+                                        class="text-sm font-semibold text-primary"
+                                    >
                                         {{ ref.reference }}
                                     </p>
-                                    <p class="mt-1 text-xs text-muted-foreground">
-                                        {{ ref.verse?.text?.substring(0, 100) }}...
+                                    <p
+                                        class="mt-1 text-xs text-muted-foreground"
+                                    >
+                                        {{
+                                            ref.verse?.text?.substring(0, 100)
+                                        }}...
                                     </p>
                                 </div>
                             </div>
                         </ScrollArea>
                         <p v-else class="text-sm text-muted-foreground italic">
                             <span class="hidden sm:inline"
-                                >{{ t('Hover over a scripture reference to see its') }}
+                                >{{
+                                    t(
+                                        'Hover over a scripture reference to see its',
+                                    )
+                                }}
                                 {{ t('cross-references') }}</span
                             >
                             <span class="sm:hidden"
-                                >{{ t('Tap a scripture reference to see its') }}
+                                >{{
+                                    t('Tap a scripture reference to see its')
+                                }}
                                 {{ t('cross-references') }}</span
                             >
                         </p>
@@ -449,26 +526,43 @@ const hasPreviousLesson = computed(() => {
                 <!-- Bottom half - Selected Reference Verse -->
                 <Card class="flex-1 overflow-hidden">
                     <CardHeader class="pb-3">
-                        <CardTitle class="text-sm sm:text-base"
-                            >{{ t('Selected Reference') }}</CardTitle
-                        >
+                        <CardTitle class="text-sm sm:text-base">{{
+                            t('Selected Reference')
+                        }}</CardTitle>
                         <CardDescription class="text-xs"
                             >{{ t('Click a reference above to view full') }}
                             {{ t('verse') }}</CardDescription
                         >
                     </CardHeader>
-                    <CardContent class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]">
+                    <CardContent
+                        class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]"
+                    >
                         <div v-if="selectedReferenceVerse" class="space-y-2">
                             <p class="text-sm font-semibold">
-                                {{ selectedReferenceVerse.book_title || selectedReferenceVerse.verse?.book?.title }}
-                                {{ selectedReferenceVerse.chapter_number || selectedReferenceVerse.verse?.chapter?.chapter_number }}:{{ selectedReferenceVerse.verse_number || selectedReferenceVerse.verse?.verse_number }}
+                                {{
+                                    selectedReferenceVerse.book_title ||
+                                    selectedReferenceVerse.verse?.book?.title
+                                }}
+                                {{
+                                    selectedReferenceVerse.chapter_number ||
+                                    selectedReferenceVerse.verse?.chapter
+                                        ?.chapter_number
+                                }}:{{
+                                    selectedReferenceVerse.verse_number ||
+                                    selectedReferenceVerse.verse?.verse_number
+                                }}
                             </p>
                             <p class="text-sm">
-                                {{ selectedReferenceVerse.text || selectedReferenceVerse.verse?.text }}
+                                {{
+                                    selectedReferenceVerse.text ||
+                                    selectedReferenceVerse.verse?.text
+                                }}
                             </p>
                         </div>
                         <p v-else class="text-sm text-muted-foreground italic">
-                            {{ t('Click on a reference to view the full verse') }}
+                            {{
+                                t('Click on a reference to view the full verse')
+                            }}
                         </p>
                     </CardContent>
                 </Card>

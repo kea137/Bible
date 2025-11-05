@@ -9,10 +9,16 @@ import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, verse_study } from '@/routes';
+import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { BookOpen, ExternalLink, Languages, Share2, StickyNote } from 'lucide-vue-next';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    ExternalLink,
+    Languages,
+    Share2,
+    StickyNote,
+} from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -174,7 +180,7 @@ function translateReference(ref: string): string {
                             class="w-full flex-shrink-0 sm:w-auto"
                         >
                             <StickyNote class="mr-2 h-4 w-4" />
-                            {{t('Add Note')}}
+                            {{ t('Add Note') }}
                         </Button>
                         <Button
                             variant="secondary"
@@ -185,7 +191,6 @@ function translateReference(ref: string): string {
                             <Share2 class="mr-2 h-4 w-4" />
                             {{ t('Share this Verse') }}
                         </Button>
-
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -204,43 +209,47 @@ function translateReference(ref: string): string {
                 <Card>
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Cross References')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Cross References')
+                            }}</CardTitle>
                             <ExternalLink
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
                         </div>
-                        <CardDescription class="text-xs sm:text-sm"
-                            >{{t('Related verses from scripture')}}</CardDescription
-                        >
+                        <CardDescription class="text-xs sm:text-sm">{{
+                            t('Related verses from scripture')
+                        }}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ScrollArea
                             v-if="references.length > 0"
                             class="h-100 space-y-3 sm:space-y-4"
                         >
-                                <div
-                                    v-for="ref in references"
-                                    :key="ref.id"
-                                    class="mt-2 cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
-                                    @click="navigateToVerse(ref.verse)"
+                            <div
+                                v-for="ref in references"
+                                :key="ref.id"
+                                class="mt-2 cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
+                                @click="navigateToVerse(ref.verse)"
+                            >
+                                <p
+                                    class="mb-2 text-xs font-semibold text-primary sm:text-sm"
                                 >
-                                    <p
-                                        class="mb-2 text-xs font-semibold text-primary sm:text-sm"
-                                    >
-                                        {{ translateReference(ref.reference) }}
-                                    </p>
-                                    <p class="text-xs sm:text-sm">
-                                        {{ ref.verse.text }}
-                                    </p>
-                                </div>
+                                    {{ translateReference(ref.reference) }}
+                                </p>
+                                <p class="text-xs sm:text-sm">
+                                    {{ ref.verse.text }}
+                                </p>
+                            </div>
                         </ScrollArea>
                         <p
                             v-else
                             class="text-xs text-muted-foreground italic sm:text-sm"
                         >
-                            {{t('No cross-references available for this verse.')}}
+                            {{
+                                t(
+                                    'No cross-references available for this verse.',
+                                )
+                            }}
                         </p>
                     </CardContent>
                 </Card>
@@ -249,60 +258,65 @@ function translateReference(ref: string): string {
                 <Card>
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Other Translations')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Other Translations')
+                            }}</CardTitle>
                             <Languages
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
                         </div>
-                        <CardDescription class="text-xs sm:text-sm"
-                            >{{t('Same verse in different Bibles')}}</CardDescription
-                        >
+                        <CardDescription class="text-xs sm:text-sm">{{
+                            t('Same verse in different Bibles')
+                        }}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        
                         <div
                             v-if="otherVersions.length > 0"
                             class="max-h-[60vh] space-y-3 overflow-y-auto sm:space-y-4"
                         >
-                        <ScrollArea class=" h-100">
-                            <div
-                                v-for="version in otherVersions"
-                                :key="version.id"
-                                class="rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
-                            >
+                            <ScrollArea class="h-100">
                                 <div
-                                    class="mb-2 flex items-center justify-between gap-2"
+                                    v-for="version in otherVersions"
+                                    :key="version.id"
+                                    class="rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
                                 >
+                                    <div
+                                        class="mb-2 flex items-center justify-between gap-2"
+                                    >
+                                        <p
+                                            class="text-xs font-semibold text-primary sm:text-sm"
+                                        >
+                                            {{ version.bible.name }}
+                                        </p>
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            @click="navigateToVerse(version)"
+                                        >
+                                            <ExternalLink class="h-3 w-3" />
+                                        </Button>
+                                    </div>
                                     <p
-                                        class="text-xs font-semibold text-primary sm:text-sm"
+                                        class="mb-2 text-xs text-muted-foreground"
                                     >
-                                        {{ version.bible.name }}
+                                        {{ version.bible.language }} •
+                                        {{ version.bible.version }}
                                     </p>
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        @click="navigateToVerse(version)"
-                                    >
-                                        <ExternalLink class="h-3 w-3" />
-                                    </Button>
+                                    <p class="text-xs sm:text-sm">
+                                        {{ version.text }}
+                                    </p>
                                 </div>
-                                <p class="mb-2 text-xs text-muted-foreground">
-                                    {{ version.bible.language }} •
-                                    {{ version.bible.version }}
-                                </p>
-                                <p class="text-xs sm:text-sm">
-                                    {{ version.text }}
-                                </p>
-                            </div>
-                        </ScrollArea>
+                            </ScrollArea>
                         </div>
                         <p
                             v-else
                             class="text-xs text-muted-foreground italic sm:text-sm"
                         >
-                            {{t('No other translations available for this verse.')}}
+                            {{
+                                t(
+                                    'No other translations available for this verse.',
+                                )
+                            }}
                         </p>
                     </CardContent>
                 </Card>
@@ -316,7 +330,7 @@ function translateReference(ref: string): string {
                     class="w-full sm:w-auto"
                 >
                     <BookOpen class="mr-2 h-4 w-4" />
-                    {{t('Return to Bible')}}
+                    {{ t('Return to Bible') }}
                 </Button>
             </div>
         </div>

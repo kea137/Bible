@@ -172,18 +172,24 @@ function bootupBibles() {
     >
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>{{t('Are you sure?')}}</AlertDialogTitle>
+                <AlertDialogTitle>{{ t('Are you sure?') }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    {{t('This will permanently delete this Bible and all its')}}
-                    {{t('associated books, chapters, and verses. This action cannot')}}
-                    {{t('be undone.')}}
+                    {{
+                        t('This will permanently delete this Bible and all its')
+                    }}
+                    {{
+                        t(
+                            'associated books, chapters, and verses. This action cannot',
+                        )
+                    }}
+                    {{ t('be undone.') }}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel>{{t('Cancel')}}</AlertDialogCancel>
-                <AlertDialogAction @click="deleteBible"
-                    >{{t('Delete')}}</AlertDialogAction
-                >
+                <AlertDialogCancel>{{ t('Cancel') }}</AlertDialogCancel>
+                <AlertDialogAction @click="deleteBible">{{
+                    t('Delete')
+                }}</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -194,20 +200,38 @@ function bootupBibles() {
     >
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>{{t('Install All Bibles and References?')}}</AlertDialogTitle>
+                <AlertDialogTitle>{{
+                    t('Install All Bibles and References?')
+                }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    {{t('This will install all Bible translations from the resources')}}
-                    {{t('directory and all references for the first Bible. This is a')}}
-                    {{t('heavy operation that will run in the background. You will be')}}
-                    {{t('notified when it completes. Are you sure you want to')}}
-                    {{t('proceed?')}}
+                    {{
+                        t(
+                            'This will install all Bible translations from the resources',
+                        )
+                    }}
+                    {{
+                        t(
+                            'directory and all references for the first Bible. This is a',
+                        )
+                    }}
+                    {{
+                        t(
+                            'heavy operation that will run in the background. You will be',
+                        )
+                    }}
+                    {{
+                        t(
+                            'notified when it completes. Are you sure you want to',
+                        )
+                    }}
+                    {{ t('proceed?') }}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel>{{t('Cancel')}}</AlertDialogCancel>
-                <AlertDialogAction @click="bootupBibles"
-                    >{{t('Install')}}</AlertDialogAction
-                >
+                <AlertDialogCancel>{{ t('Cancel') }}</AlertDialogCancel>
+                <AlertDialogAction @click="bootupBibles">{{
+                    t('Install')
+                }}</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -222,12 +246,16 @@ function bootupBibles() {
                         class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <div>
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Configure Bibles')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Configure Bibles')
+                            }}</CardTitle>
                             <CardDescription class="text-xs sm:text-sm"
-                                >{{t('Manage your Bible translations - create,')}}
-                                {{t('update, or delete')}}</CardDescription
+                                >{{
+                                    t(
+                                        'Manage your Bible translations - create,',
+                                    )
+                                }}
+                                {{ t('update, or delete') }}</CardDescription
                             >
                         </div>
                         <div class="flex flex-col gap-2 sm:flex-row sm:gap-2">
@@ -237,20 +265,24 @@ function bootupBibles() {
                                 class="w-full sm:w-auto"
                             >
                                 <Database class="mr-2 h-4 w-4" />
-                                <span class="hidden sm:inline"
-                                    >{{t('Boot Up All Bibles')}}</span
-                                >
-                                <span class="sm:hidden">{{t('Boot Up Bibles')}}</span>
+                                <span class="hidden sm:inline">{{
+                                    t('Boot Up All Bibles')
+                                }}</span>
+                                <span class="sm:hidden">{{
+                                    t('Boot Up Bibles')
+                                }}</span>
                             </Button>
                             <Button
                                 @click="createBible"
                                 class="w-full sm:w-auto"
                             >
                                 <Plus class="mr-2 h-4 w-4" />
-                                <span class="hidden sm:inline"
-                                    >{{t('Upload New Bible')}}</span
-                                >
-                                <span class="sm:hidden">{{t('Upload Bible')}}</span>
+                                <span class="hidden sm:inline">{{
+                                    t('Upload New Bible')
+                                }}</span>
+                                <span class="sm:hidden">{{
+                                    t('Upload Bible')
+                                }}</span>
                             </Button>
                         </div>
                     </div>
@@ -260,23 +292,23 @@ function bootupBibles() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead class="text-xs sm:text-sm"
-                                        >{{t('Name')}}</TableHead
-                                    >
-                                    <TableHead class="text-xs sm:text-sm"
-                                        >{{t('Abbreviation')}}</TableHead
-                                    >
+                                    <TableHead class="text-xs sm:text-sm">{{
+                                        t('Name')
+                                    }}</TableHead>
+                                    <TableHead class="text-xs sm:text-sm">{{
+                                        t('Abbreviation')
+                                    }}</TableHead>
                                     <TableHead
                                         class="hidden text-xs sm:text-sm md:table-cell"
-                                        >{{t('Language')}}</TableHead
+                                        >{{ t('Language') }}</TableHead
                                     >
                                     <TableHead
                                         class="hidden text-xs sm:text-sm lg:table-cell"
-                                        >{{t('Version')}}</TableHead
+                                        >{{ t('Version') }}</TableHead
                                     >
                                     <TableHead
                                         class="text-right text-xs sm:text-sm"
-                                        >{{t('Actions')}}</TableHead
+                                        >{{ t('Actions') }}</TableHead
                                     >
                                 </TableRow>
                             </TableHeader>
@@ -330,16 +362,28 @@ function bootupBibles() {
                     </div>
                     <div v-else class="py-8 text-center text-muted-foreground">
                         <p class="text-xs sm:text-sm">
-                            {{t('No Bibles found. Upload your first Bible to get')}}
-                            {{t('started.')}}
+                            {{
+                                t(
+                                    'No Bibles found. Upload your first Bible to get',
+                                )
+                            }}
+                            {{ t('started.') }}
                         </p>
                     </div>
                     <div class="mt-8 w-full">
-                        <Pagination :items-per-page="pageSize" :total="bibles.length" :default-page="1" @update:page="handlePageChange">
+                        <Pagination
+                            :items-per-page="pageSize"
+                            :total="bibles.length"
+                            :default-page="1"
+                            @update:page="handlePageChange"
+                        >
                             <PaginationContent v-slot="{ items }">
                                 <PaginationPrevious />
 
-                                <template v-for="(item, index) in items" :key="index">
+                                <template
+                                    v-for="(item, index) in items"
+                                    :key="index"
+                                >
                                     <PaginationItem
                                         v-if="item.type === 'page'"
                                         :value="item.value"
@@ -350,7 +394,14 @@ function bootupBibles() {
                                     </PaginationItem>
                                 </template>
 
-                                <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+                                <PaginationEllipsis
+                                    v-if="
+                                        items.some(
+                                            (i: { type: string }) =>
+                                                i.type === 'ellipsis',
+                                        )
+                                    "
+                                />
 
                                 <PaginationNext />
                             </PaginationContent>

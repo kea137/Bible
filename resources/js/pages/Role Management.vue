@@ -136,7 +136,6 @@ const cancelDelete = () => {
     userToDelete.value = null;
 };
 
-
 const pageSize = 5;
 const currentPage = ref(1);
 
@@ -148,7 +147,6 @@ const paginatedBibles = computed(() => {
 function handlePageChange(page: number) {
     currentPage.value = page;
 }
-
 </script>
 
 <template>
@@ -187,22 +185,21 @@ function handlePageChange(page: number) {
                 <CardHeader>
                     <div class="flex items-center gap-2">
                         <UserCog class="h-6 w-6" />
-                        <CardTitle>{{t('User Role Management')}}</CardTitle>
+                        <CardTitle>{{ t('User Role Management') }}</CardTitle>
                     </div>
                     <CardDescription
-                        >{{t('Assign and manage user roles in the system')}}
-                        </CardDescription
-                    >
+                        >{{ t('Assign and manage user roles in the system') }}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>{{t('Name')}}</TableHead>
-                                <TableHead>{{t('Email')}}</TableHead>
-                                <TableHead>{{t('Current Roles')}}</TableHead>
-                                <TableHead>{{t('Assign Roles')}}</TableHead>
-                                <TableHead>{{t('Actions')}}</TableHead>
+                                <TableHead>{{ t('Name') }}</TableHead>
+                                <TableHead>{{ t('Email') }}</TableHead>
+                                <TableHead>{{ t('Current Roles') }}</TableHead>
+                                <TableHead>{{ t('Assign Roles') }}</TableHead>
+                                <TableHead>{{ t('Actions') }}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -255,7 +252,7 @@ function handlePageChange(page: number) {
                                             @click="saveUserRoles(user.id)"
                                         >
                                             <Save class="h-4 w-4" />
-                                            {{t('Save')}}
+                                            {{ t('Save') }}
                                         </Button>
                                         <Button
                                             v-if="
@@ -272,7 +269,7 @@ function handlePageChange(page: number) {
                                             "
                                         >
                                             <Trash2 class="h-4 w-4" />
-                                            {{t('Delete')}}
+                                            {{ t('Delete') }}
                                         </Button>
                                     </div>
                                 </TableCell>
@@ -281,11 +278,19 @@ function handlePageChange(page: number) {
                     </Table>
                 </CardContent>
                 <div class="mt-8 w-full">
-                    <Pagination :items-per-page="pageSize" :total="users.length" :default-page="1" @update:page="handlePageChange">
+                    <Pagination
+                        :items-per-page="pageSize"
+                        :total="users.length"
+                        :default-page="1"
+                        @update:page="handlePageChange"
+                    >
                         <PaginationContent v-slot="{ items }">
                             <PaginationPrevious />
 
-                            <template v-for="(item, index) in items" :key="index">
+                            <template
+                                v-for="(item, index) in items"
+                                :key="index"
+                            >
                                 <PaginationItem
                                     v-if="item.type === 'page'"
                                     :value="item.value"
@@ -296,7 +301,14 @@ function handlePageChange(page: number) {
                                 </PaginationItem>
                             </template>
 
-                            <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+                            <PaginationEllipsis
+                                v-if="
+                                    items.some(
+                                        (i: { type: string }) =>
+                                            i.type === 'ellipsis',
+                                    )
+                                "
+                            />
 
                             <PaginationNext />
                         </PaginationContent>
@@ -309,22 +321,22 @@ function handlePageChange(page: number) {
         <AlertDialog v-model:open="showDeleteDialog">
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>{{t('Delete User')}}</AlertDialogTitle>
+                    <AlertDialogTitle>{{ t('Delete User') }}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        {{t('Are you sure you want to delete user')}}
+                        {{ t('Are you sure you want to delete user') }}
                         <strong>{{ userToDelete?.name }}</strong
-                        >? {{t('This action cannot be undone.')}}
+                        >? {{ t('This action cannot be undone.') }}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel @click="cancelDelete">
-                        {{t('Cancel')}}
+                        {{ t('Cancel') }}
                     </AlertDialogCancel>
                     <AlertDialogAction
                         @click="confirmDelete"
                         class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        {{t('Delete')}}
+                        {{ t('Delete') }}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

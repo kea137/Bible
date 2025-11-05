@@ -212,19 +212,23 @@ async function deleteNote() {
     <AlertDialog v-model:open="showDeleteDialog">
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>{{t('Delete Note')}}</AlertDialogTitle>
+                <AlertDialogTitle>{{ t('Delete Note') }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    {{t('Are you sure you want to delete this note? This action')}}
-                    {{t('cannot be undone.')}}
+                    {{
+                        t(
+                            'Are you sure you want to delete this note? This action',
+                        )
+                    }}
+                    {{ t('cannot be undone.') }}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel>{{t('Cancel')}}</AlertDialogCancel>
+                <AlertDialogCancel>{{ t('Cancel') }}</AlertDialogCancel>
                 <AlertDialogAction
                     @click="deleteNote"
                     class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                    {{t('Delete')}}
+                    {{ t('Delete') }}
                 </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
@@ -242,10 +246,11 @@ async function deleteNote() {
                             class="flex items-center gap-2 text-base sm:text-lg"
                         >
                             <FileText class="h-4 w-4 sm:h-5 sm:w-5" />
-                            {{t('My Notes')}}
+                            {{ t('My Notes') }}
                         </CardTitle>
                         <CardDescription class="text-xs sm:text-sm"
-                            >{{ notes.length }} {{t('notes')}}</CardDescription
+                            >{{ notes.length }}
+                            {{ t('notes') }}</CardDescription
                         >
                     </CardHeader>
                     <CardContent>
@@ -300,10 +305,14 @@ async function deleteNote() {
                             v-else
                             class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                         >
-                            <p class="mb-4">{{t('No notes yet')}}</p>
+                            <p class="mb-4">{{ t('No notes yet') }}</p>
                             <p class="text-xs sm:text-sm">
-                                {{t('Add notes to verses while reading to see them')}}
-                                {{t('here')}}
+                                {{
+                                    t(
+                                        'Add notes to verses while reading to see them',
+                                    )
+                                }}
+                                {{ t('here') }}
                             </p>
                         </div>
                     </CardContent>
@@ -340,7 +349,9 @@ async function deleteNote() {
                                     @click="startEdit"
                                 >
                                     <Pencil class="h-4 w-4 sm:mr-1" />
-                                    <span class="hidden sm:inline">{{t('Edit')}}</span>
+                                    <span class="hidden sm:inline">{{
+                                        t('Edit')
+                                    }}</span>
                                 </Button>
                                 <Button
                                     v-if="!editMode"
@@ -363,7 +374,9 @@ async function deleteNote() {
                     <CardContent v-if="selectedNote" class="space-y-4">
                         <div v-if="editMode" class="space-y-4">
                             <div class="space-y-2">
-                                <Label for="edit-title">{{t('Title (Optional)')}}</Label>
+                                <Label for="edit-title">{{
+                                    t('Title (Optional)')
+                                }}</Label>
                                 <Input
                                     id="edit-title"
                                     v-model="editTitle"
@@ -371,7 +384,9 @@ async function deleteNote() {
                                 />
                             </div>
                             <div class="space-y-2">
-                                <Label for="edit-content">{{t('Content')}}</Label>
+                                <Label for="edit-content">{{
+                                    t('Content')
+                                }}</Label>
                                 <Textarea
                                     id="edit-content"
                                     v-model="editContent"
@@ -401,7 +416,7 @@ async function deleteNote() {
                                         class="mr-2 h-4 w-4 animate-spin"
                                     />
                                     <Save v-else class="mr-1 h-4 w-4" />
-                                    {{t('Save Changes')}}
+                                    {{ t('Save Changes') }}
                                 </Button>
                             </div>
                         </div>
@@ -435,7 +450,13 @@ async function deleteNote() {
                         <FileText
                             class="mx-auto mb-4 h-10 w-10 opacity-20 sm:h-12 sm:w-12"
                         />
-                        <p>{{t('Select a note from the list to view its details')}}</p>
+                        <p>
+                            {{
+                                t(
+                                    'Select a note from the list to view its details',
+                                )
+                            }}
+                        </p>
                     </CardContent>
                 </Card>
             </div>

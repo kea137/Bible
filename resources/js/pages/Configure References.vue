@@ -147,17 +147,21 @@ function deleteReferences() {
     >
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>{{t('Are you sure?')}}</AlertDialogTitle>
+                <AlertDialogTitle>{{ t('Are you sure?') }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    {{t('This will permanently delete all references for this Bible.')}}
-                    {{t('This action cannot be undone.')}}
+                    {{
+                        t(
+                            'This will permanently delete all references for this Bible.',
+                        )
+                    }}
+                    {{ t('This action cannot be undone.') }}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel>{{t('Cancel')}}</AlertDialogCancel>
-                <AlertDialogAction @click="deleteReferences"
-                    >{{t('Delete')}}</AlertDialogAction
-                >
+                <AlertDialogCancel>{{ t('Cancel') }}</AlertDialogCancel>
+                <AlertDialogAction @click="deleteReferences">{{
+                    t('Delete')
+                }}</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -172,22 +176,26 @@ function deleteReferences() {
                         class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <div>
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Configure References')}}</CardTitle
-                            >
-                            <CardDescription class="text-xs sm:text-sm"
-                                >{{t('Manage Bible verse references - upload or delete')}}</CardDescription
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Configure References')
+                            }}</CardTitle>
+                            <CardDescription class="text-xs sm:text-sm">{{
+                                t(
+                                    'Manage Bible verse references - upload or delete',
+                                )
+                            }}</CardDescription>
                         </div>
                         <Button
                             @click="createReferences"
                             class="w-full sm:w-auto"
                         >
                             <Plus class="mr-2 h-4 w-4" />
-                            <span class="hidden sm:inline"
-                                >{{t('Upload New References')}}</span
-                            >
-                            <span class="sm:hidden">{{t('Upload References')}}</span>
+                            <span class="hidden sm:inline">{{
+                                t('Upload New References')
+                            }}</span>
+                            <span class="sm:hidden">{{
+                                t('Upload References')
+                            }}</span>
                         </Button>
                     </div>
                 </CardHeader>
@@ -196,22 +204,22 @@ function deleteReferences() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead class="text-xs sm:text-sm"
-                                        >{{t('Bible Name')}}</TableHead
-                                    >
-                                    <TableHead class="text-xs sm:text-sm"
-                                        >{{t('Abbreviation')}}</TableHead
-                                    >
+                                    <TableHead class="text-xs sm:text-sm">{{
+                                        t('Bible Name')
+                                    }}</TableHead>
+                                    <TableHead class="text-xs sm:text-sm">{{
+                                        t('Abbreviation')
+                                    }}</TableHead>
                                     <TableHead
                                         class="hidden text-xs sm:text-sm md:table-cell"
-                                        >{{t('Language')}}</TableHead
+                                        >{{ t('Language') }}</TableHead
                                     >
-                                    <TableHead class="text-xs sm:text-sm"
-                                        >{{t('Reference Count')}}</TableHead
-                                    >
+                                    <TableHead class="text-xs sm:text-sm">{{
+                                        t('Reference Count')
+                                    }}</TableHead>
                                     <TableHead
                                         class="text-right text-xs sm:text-sm"
-                                        >{{t('Actions')}}</TableHead
+                                        >{{ t('Actions') }}</TableHead
                                     >
                                 </TableRow>
                             </TableHeader>
@@ -258,16 +266,28 @@ function deleteReferences() {
                     </div>
                     <div v-else class="py-8 text-center text-muted-foreground">
                         <p class="text-xs sm:text-sm">
-                            {{t('No Bibles with references found. Upload references')}}
-                            {{t('to get started.')}}
+                            {{
+                                t(
+                                    'No Bibles with references found. Upload references',
+                                )
+                            }}
+                            {{ t('to get started.') }}
                         </p>
                     </div>
                     <div class="mt-8 w-full">
-                        <Pagination :items-per-page="pageSize" :total="bibles.length" :default-page="1" @update:page="handlePageChange">
+                        <Pagination
+                            :items-per-page="pageSize"
+                            :total="bibles.length"
+                            :default-page="1"
+                            @update:page="handlePageChange"
+                        >
                             <PaginationContent v-slot="{ items }">
                                 <PaginationPrevious />
 
-                                <template v-for="(item, index) in items" :key="index">
+                                <template
+                                    v-for="(item, index) in items"
+                                    :key="index"
+                                >
                                     <PaginationItem
                                         v-if="item.type === 'page'"
                                         :value="item.value"
@@ -278,7 +298,14 @@ function deleteReferences() {
                                     </PaginationItem>
                                 </template>
 
-                                <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+                                <PaginationEllipsis
+                                    v-if="
+                                        items.some(
+                                            (i: { type: string }) =>
+                                                i.type === 'ellipsis',
+                                        )
+                                    "
+                                />
 
                                 <PaginationNext />
                             </PaginationContent>

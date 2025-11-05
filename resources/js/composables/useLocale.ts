@@ -1,7 +1,19 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-type Locale = 'en' | 'sw' | 'fr' | 'es' | 'de' | 'it' | 'ru' | 'zh' | 'ja' | 'ar' | 'hi' | 'ko';
+type Locale =
+    | 'en'
+    | 'sw'
+    | 'fr'
+    | 'es'
+    | 'de'
+    | 'it'
+    | 'ru'
+    | 'zh'
+    | 'ja'
+    | 'ar'
+    | 'hi'
+    | 'ko';
 
 export function updateLocale(value: Locale) {
     if (typeof window === 'undefined') {

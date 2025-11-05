@@ -15,7 +15,11 @@ const { t } = useI18n();
 <template>
     <AuthLayout
         :title="t('Confirm your password')"
-        :description="t('This is a secure area of the application. Please confirm your password before continuing.')"
+        :description="
+            t(
+                'This is a secure area of the application. Please confirm your password before continuing.',
+            )
+        "
     >
         <Head :title="t('Confirm password')" />
 

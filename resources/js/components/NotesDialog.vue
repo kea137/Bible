@@ -117,7 +117,9 @@ function closeDialog() {
                     <p class="text-sm italic">"{{ verseText }}"</p>
                 </div>
                 <div class="grid gap-2">
-                    <Label for="note-title"> {{t('Title (Optional)')}} </Label>
+                    <Label for="note-title">
+                        {{ t('Title (Optional)') }}
+                    </Label>
                     <Input
                         id="note-title"
                         v-model="noteTitle"
@@ -126,12 +128,16 @@ function closeDialog() {
                 </div>
                 <div class="grid gap-2">
                     <Label for="note-content">
-                        {{t('Note')}} <span class="text-destructive">*</span>
+                        {{ t('Note') }} <span class="text-destructive">*</span>
                     </Label>
                     <Textarea
                         id="note-content"
                         v-model="noteContent"
-                        :placeholder="t('Write your thoughts, insights, or reflections...')"
+                        :placeholder="
+                            t(
+                                'Write your thoughts, insights, or reflections...',
+                            )
+                        "
                         rows="6"
                     />
                 </div>
@@ -142,14 +148,14 @@ function closeDialog() {
                     @click="closeDialog"
                     :disabled="saving"
                 >
-                    {{t('Cancel')}}
+                    {{ t('Cancel') }}
                 </Button>
                 <Button @click="saveNote" :disabled="saving">
                     <LoaderCircle
                         v-if="saving"
                         class="mr-2 h-4 w-4 animate-spin"
                     />
-                    {{t('Save Note')}}
+                    {{ t('Save Note') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

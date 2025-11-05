@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import { edit } from '@/routes/profile';
-import { send } from '@/routes/verification';
-import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
@@ -11,7 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { edit } from '@/routes/profile';
+import { send } from '@/routes/verification';
 import { type BreadcrumbItem } from '@/types';
+import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -86,7 +86,11 @@ const user = page.props.auth.user;
                                 as="button"
                                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                             >
-                                {{ t('Click here to resend the verification email.') }}
+                                {{
+                                    t(
+                                        'Click here to resend the verification email.',
+                                    )
+                                }}
                             </Link>
                         </p>
 
@@ -94,7 +98,11 @@ const user = page.props.auth.user;
                             v-if="status === 'verification-link-sent'"
                             class="mt-2 text-sm font-medium text-green-600"
                         >
-                            {{ t('A new verification link has been sent to your email address.') }}
+                            {{
+                                t(
+                                    'A new verification link has been sent to your email address.',
+                                )
+                            }}
                             {{ t('address.') }}
                         </div>
                     </div>

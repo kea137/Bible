@@ -61,7 +61,6 @@ const successMessage = computed(() => page.props.success as string);
 const errorMessage = computed(() => page.props.error as string);
 const alertSuccess = ref(!!successMessage.value);
 const alertError = ref(!!errorMessage.value);
-
 </script>
 
 <template>
@@ -100,11 +99,11 @@ const alertError = ref(!!errorMessage.value);
                                 class="flex items-center gap-2 text-base sm:text-lg"
                             >
                                 <LibraryBigIcon class="h-4 w-4 sm:h-5 sm:w-5" />
-                                {{t('Lessons')}}
+                                {{ t('Lessons') }}
                             </CardTitle>
-                            <CardDescription class="text-xs sm:text-sm"
-                                >{{t('Available Lessons')}}</CardDescription
-                            >
+                            <CardDescription class="text-xs sm:text-sm">{{
+                                t('Available Lessons')
+                            }}</CardDescription>
                         </div>
                         <Button
                             @click="searchOpen = true"
@@ -112,7 +111,7 @@ const alertError = ref(!!errorMessage.value);
                             class="w-full sm:w-auto"
                         >
                             <Search class="mr-2 h-4 w-4" />
-                            {{t('Search Lessons')}}
+                            {{ t('Search Lessons') }}
                         </Button>
                     </div>
                 </CardHeader>
@@ -124,22 +123,36 @@ const alertError = ref(!!errorMessage.value);
                         <div
                             v-for="lesson in paginatedLessons"
                             :key="lesson.id"
-                            class="group relative cursor-pointer overflow-hidden rounded-lg border border-border transition-all hover:shadow-lg hover:scale-[1.02]"
+                            class="group relative cursor-pointer overflow-hidden rounded-lg border border-border transition-all hover:scale-[1.02] hover:shadow-lg"
                             @click="viewLesson(lesson.id)"
                         >
-                            <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 transition-opacity group-hover:opacity-100"></div>
+                            <div
+                                class="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 transition-opacity group-hover:opacity-100"
+                            ></div>
                             <div class="relative p-4">
-                                <div class="mb-2 flex items-start justify-between">
-                                    <LibraryBigIcon class="h-8 w-8 text-primary/70 transition-colors group-hover:text-primary" />
+                                <div
+                                    class="mb-2 flex items-start justify-between"
+                                >
+                                    <LibraryBigIcon
+                                        class="h-8 w-8 text-primary/70 transition-colors group-hover:text-primary"
+                                    />
                                 </div>
-                                <h3 class="mb-2 text-lg font-semibold line-clamp-2">
+                                <h3
+                                    class="mb-2 line-clamp-2 text-lg font-semibold"
+                                >
                                     {{ lesson.title }}
                                 </h3>
-                                <p class="mb-3 text-sm text-muted-foreground line-clamp-2">
+                                <p
+                                    class="mb-3 line-clamp-2 text-sm text-muted-foreground"
+                                >
                                     {{ lesson.description }}
                                 </p>
-                                <div class="flex items-center justify-between text-xs text-muted-foreground">
-                                    <span class="rounded-full bg-primary/10 px-2 py-1">
+                                <div
+                                    class="flex items-center justify-between text-xs text-muted-foreground"
+                                >
+                                    <span
+                                        class="rounded-full bg-primary/10 px-2 py-1"
+                                    >
                                         {{ lesson.language }}
                                     </span>
                                 </div>
@@ -150,14 +163,23 @@ const alertError = ref(!!errorMessage.value);
                         v-else
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
-                        <LibraryBigIcon class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-                        <p>{{t('No Lessons Available')}}</p>
-                        <p class="mt-2 text-xs">{{t('Check back later for new lessons')}}</p>
+                        <LibraryBigIcon
+                            class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50"
+                        />
+                        <p>{{ t('No Lessons Available') }}</p>
+                        <p class="mt-2 text-xs">
+                            {{ t('Check back later for new lessons') }}
+                        </p>
                     </div>
                 </CardContent>
             </Card>
             <div class="mt-8 w-full">
-                <Pagination :items-per-page="pageSize" :total="lessons.length" :default-page="1" @update:page="handlePageChange">
+                <Pagination
+                    :items-per-page="pageSize"
+                    :total="lessons.length"
+                    :default-page="1"
+                    @update:page="handlePageChange"
+                >
                     <PaginationContent v-slot="{ items }">
                         <PaginationPrevious />
 
@@ -172,7 +194,14 @@ const alertError = ref(!!errorMessage.value);
                             </PaginationItem>
                         </template>
 
-                        <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+                        <PaginationEllipsis
+                            v-if="
+                                items.some(
+                                    (i: { type: string }) =>
+                                        i.type === 'ellipsis',
+                                )
+                            "
+                        />
 
                         <PaginationNext />
                     </PaginationContent>

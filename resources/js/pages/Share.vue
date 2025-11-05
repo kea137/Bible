@@ -19,8 +19,8 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Download, Palette, Share2, Type } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
-import LogoImage from '/resources/images/logo-small.png';
 import { useI18n } from 'vue-i18n';
+import LogoImage from '/resources/images/logo-small.png';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -215,7 +215,12 @@ function generateImage() {
     canvas.height = 1080;
 
     // Create gradient background
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+    );
     const colors = currentBackground.value.colors;
     colors.forEach((color, index) => {
         gradient.addColorStop(index / (colors.length - 1), color);
@@ -400,9 +405,19 @@ onMounted(() => {
 });
 
 // Watch for changes in customization options
-watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize, isBoldText], () => {
-    generateImage();
-});
+watch(
+    [
+        customColor1,
+        customColor2,
+        customColor3,
+        selectedFont,
+        selectedFontSize,
+        isBoldText,
+    ],
+    () => {
+        generateImage();
+    },
+);
 </script>
 
 <template>
@@ -414,17 +429,17 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                 <CardHeader>
                     <CardTitle class="flex items-center gap-2">
                         <Share2 class="h-5 w-5" />
-                        {{t('Share Verse')}}
+                        {{ t('Share Verse') }}
                     </CardTitle>
                     <CardDescription
-                        >{{t('Create a beautiful image to share your favorite')}}
-                        {{t('verse')}}</CardDescription
+                        >{{
+                            t('Create a beautiful image to share your favorite')
+                        }}
+                        {{ t('verse') }}</CardDescription
                     >
                 </CardHeader>
                 <CardContent>
-                    <div
-                        class="grid gap-6 lg:grid-cols-2"
-                    >
+                    <div class="grid gap-6 lg:grid-cols-2">
                         <!-- Canvas Preview -->
                         <div class="flex flex-col gap-4">
                             <div
@@ -440,7 +455,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                             <!-- Background Style Selection -->
                             <div class="flex flex-col gap-2">
                                 <p class="text-sm text-muted-foreground">
-                                    {{t('Current Style:')}}
+                                    {{ t('Current Style:') }}
                                     <span class="font-semibold">{{
                                         currentBackground.name
                                     }}</span>
@@ -451,7 +466,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                     :disabled="isGenerating || useCustomColors"
                                     class="w-full"
                                 >
-                                    {{t('Change Background Style')}}
+                                    {{ t('Change Background Style') }}
                                 </Button>
                             </div>
 
@@ -459,7 +474,9 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                             <div class="rounded-lg border p-4">
                                 <div class="mb-3 flex items-center gap-2">
                                     <Palette class="h-4 w-4" />
-                                    <h3 class="font-semibold">{{t('Custom Colors')}}</h3>
+                                    <h3 class="font-semibold">
+                                        {{ t('Custom Colors') }}
+                                    </h3>
                                 </div>
                                 <div class="mb-3 flex items-center gap-2">
                                     <input
@@ -468,16 +485,18 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                         id="useCustomColors"
                                         class="h-4 w-4"
                                     />
-                                    <Label for="useCustomColors"
-                                        >{{t('Use custom color mix')}}</Label
-                                    >
+                                    <Label for="useCustomColors">{{
+                                        t('Use custom color mix')
+                                    }}</Label>
                                 </div>
                                 <div
                                     v-if="useCustomColors"
                                     class="grid grid-cols-3 gap-2"
                                 >
                                     <div>
-                                        <Label class="text-xs">{{t('Color 1')}}</Label>
+                                        <Label class="text-xs">{{
+                                            t('Color 1')
+                                        }}</Label>
                                         <input
                                             type="color"
                                             v-model="customColor1"
@@ -485,7 +504,9 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                         />
                                     </div>
                                     <div>
-                                        <Label class="text-xs">{{t('Color 2')}}</Label>
+                                        <Label class="text-xs">{{
+                                            t('Color 2')
+                                        }}</Label>
                                         <input
                                             type="color"
                                             v-model="customColor2"
@@ -493,7 +514,9 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                         />
                                     </div>
                                     <div>
-                                        <Label class="text-xs">{{t('Color 3')}}</Label>
+                                        <Label class="text-xs">{{
+                                            t('Color 3')
+                                        }}</Label>
                                         <input
                                             type="color"
                                             v-model="customColor3"
@@ -507,16 +530,22 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                             <div class="rounded-lg border p-4">
                                 <div class="mb-3 flex items-center gap-2">
                                     <Type class="h-4 w-4" />
-                                    <h3 class="font-semibold">{{t('Text Style')}}</h3>
+                                    <h3 class="font-semibold">
+                                        {{ t('Text Style') }}
+                                    </h3>
                                 </div>
                                 <div class="space-y-3">
                                     <div class="flex flex-row">
                                         <div class="w-full">
-                                            <Label class="text-sm">{{t('Font Family')}}</Label>
+                                            <Label class="text-sm">{{
+                                                t('Font Family')
+                                            }}</Label>
                                             <Select v-model="selectedFont">
                                                 <SelectTrigger class="w-full">
                                                     <SelectValue
-                                                        :placeholder="t('Select a font')"
+                                                        :placeholder="
+                                                            t('Select a font')
+                                                        "
                                                     />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -532,12 +561,16 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        <div class="w-full mx-4">
-                                            <Label class="text-sm">{{t('Font Size')}}</Label>
+                                        <div class="mx-4 w-full">
+                                            <Label class="text-sm">{{
+                                                t('Font Size')
+                                            }}</Label>
                                             <Select v-model="selectedFontSize">
                                                 <SelectTrigger class="w-full">
                                                     <SelectValue
-                                                        :placeholder="t('Select size')"
+                                                        :placeholder="
+                                                            t('Select size')
+                                                        "
                                                     />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -553,7 +586,6 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                                 </SelectContent>
                                             </Select>
                                         </div>
-
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <input
@@ -562,9 +594,9 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                             id="boldText"
                                             class="h-4 w-4"
                                         />
-                                        <Label for="boldText"
-                                            >{{t('Use bold text')}}</Label
-                                        >
+                                        <Label for="boldText">{{
+                                            t('Use bold text')
+                                        }}</Label>
                                     </div>
                                 </div>
                             </div>
@@ -574,10 +606,14 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                         <div class="flex flex-col gap-4">
                             <div>
                                 <h3 class="mb-2 font-semibold">
-                                    {{t('Download for Platforms')}}
+                                    {{ t('Download for Platforms') }}
                                 </h3>
                                 <p class="mb-4 text-sm text-muted-foreground">
-                                    {{t('Download optimized images for social media')}}
+                                    {{
+                                        t(
+                                            'Download optimized images for social media',
+                                        )
+                                    }}
                                 </p>
                                 <div class="grid grid-cols-1 gap-2">
                                     <Button
@@ -587,18 +623,22 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                         :disabled="!imageDataUrl"
                                     >
                                         <Download class="mr-2 h-4 w-4" />
-                                        {{t('Download Image')}}
+                                        {{ t('Download Image') }}
                                     </Button>
                                 </div>
                             </div>
 
                             <div class="rounded-lg border p-4">
                                 <h3 class="mb-2 font-semibold">
-                                    {{t('Share Directly')}}
+                                    {{ t('Share Directly') }}
                                 </h3>
                                 <p class="mb-4 text-sm text-muted-foreground">
-                                    {{t('Share the image directly from your device')}}
-                                    {{t('using the native share menu')}}
+                                    {{
+                                        t(
+                                            'Share the image directly from your device',
+                                        )
+                                    }}
+                                    {{ t('using the native share menu') }}
                                 </p>
                                 <Button
                                     @click="shareImage"
@@ -606,7 +646,7 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                                     :disabled="!imageDataUrl"
                                 >
                                     <Share2 class="mr-2 h-4 w-4" />
-                                    {{t('Share Image')}}
+                                    {{ t('Share Image') }}
                                 </Button>
                                 <p
                                     v-if="shareError"
@@ -617,16 +657,20 @@ watch([customColor1, customColor2, customColor3, selectedFont, selectedFontSize,
                             </div>
 
                             <div class="rounded-lg border p-4">
-                                <h3 class="mb-2 font-semibold">{{t('Verse Details')}}</h3>
+                                <h3 class="mb-2 font-semibold">
+                                    {{ t('Verse Details') }}
+                                </h3>
                                 <div class="space-y-2 text-sm">
                                     <div>
-                                        <span class="font-semibold"
-                                            >{{t('Reference:')}}</span
-                                        >
+                                        <span class="font-semibold">{{
+                                            t('Reference:')
+                                        }}</span>
                                         {{ verseReference }}
                                     </div>
                                     <div>
-                                        <span class="font-semibold">{{t('Text:')}}</span>
+                                        <span class="font-semibold">{{
+                                            t('Text:')
+                                        }}</span>
                                         <p class="mt-1 text-muted-foreground">
                                             {{ verseText }}
                                         </p>

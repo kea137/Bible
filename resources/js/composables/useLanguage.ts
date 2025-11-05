@@ -1,7 +1,26 @@
 import { router } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 
-type Language = 'en' | 'sw' | 'fr' | 'es' | 'de' | 'it' | 'ru' | 'zh' | 'ja' | 'ar' | 'hi' | 'bn' | 'pa' | 'jv' | 'ko' | 'vi' | 'te' | 'mr' | 'ta';
+type Language =
+    | 'en'
+    | 'sw'
+    | 'fr'
+    | 'es'
+    | 'de'
+    | 'it'
+    | 'ru'
+    | 'zh'
+    | 'ja'
+    | 'ar'
+    | 'hi'
+    | 'bn'
+    | 'pa'
+    | 'jv'
+    | 'ko'
+    | 'vi'
+    | 'te'
+    | 'mr'
+    | 'ta';
 
 const setCookie = (name: string, value: string, days = 365) => {
     if (typeof document === 'undefined') {

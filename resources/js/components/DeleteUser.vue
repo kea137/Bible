@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import { Form } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -17,6 +15,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Form } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -35,12 +35,16 @@ const passwordInput = ref<InstanceType<typeof Input> | null>(null);
             <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
                 <p class="font-medium">{{ t('Warning') }}</p>
                 <p class="text-sm">
-                    {{ t('Please proceed with caution, this cannot be undone.') }}
+                    {{
+                        t('Please proceed with caution, this cannot be undone.')
+                    }}
                 </p>
             </div>
             <Dialog>
                 <DialogTrigger as-child>
-                    <Button variant="destructive" data-test="delete-user-button"
+                    <Button
+                        variant="destructive"
+                        data-test="delete-user-button"
                         >{{ t('Delete account') }}</Button
                     >
                 </DialogTrigger>
@@ -57,22 +61,40 @@ const passwordInput = ref<InstanceType<typeof Input> | null>(null);
                     >
                         <DialogHeader class="space-y-3">
                             <DialogTitle
-                                >{{ t('Are you sure you want to delete your')}}
-                                {{t('account?')}}</DialogTitle
+                                >{{
+                                    t('Are you sure you want to delete your')
+                                }}
+                                {{ t('account?') }}</DialogTitle
                             >
                             <DialogDescription>
-                                {{t('Once your account is deleted, all of its')}}
-                                {{t('resources and data will also be permanently')}}
-                                {{t('deleted. Please enter your password to confirm')}}
-                                {{t('you would like to permanently delete your')}}
-                                {{t('account.')}}
+                                {{
+                                    t(
+                                        'Once your account is deleted, all of its',
+                                    )
+                                }}
+                                {{
+                                    t(
+                                        'resources and data will also be permanently',
+                                    )
+                                }}
+                                {{
+                                    t(
+                                        'deleted. Please enter your password to confirm',
+                                    )
+                                }}
+                                {{
+                                    t(
+                                        'you would like to permanently delete your',
+                                    )
+                                }}
+                                {{ t('account.') }}
                             </DialogDescription>
                         </DialogHeader>
 
                         <div class="grid gap-2">
-                            <Label for="password" class="sr-only"
-                                >{{t('Password')}}</Label
-                            >
+                            <Label for="password" class="sr-only">{{
+                                t('Password')
+                            }}</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -94,7 +116,7 @@ const passwordInput = ref<InstanceType<typeof Input> | null>(null);
                                         }
                                     "
                                 >
-                                    {{t('Cancel')}}
+                                    {{ t('Cancel') }}
                                 </Button>
                             </DialogClose>
 
@@ -104,7 +126,7 @@ const passwordInput = ref<InstanceType<typeof Input> | null>(null);
                                 :disabled="processing"
                                 data-test="confirm-delete-user-button"
                             >
-                                {{t('Delete account')}}
+                                {{ t('Delete account') }}
                             </Button>
                         </DialogFooter>
                     </Form>

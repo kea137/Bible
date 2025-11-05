@@ -117,7 +117,6 @@ const paginatedLessons = computed(() => {
 function handlePageChange(page: number) {
     currentPage.value = page;
 }
-
 </script>
 
 <template>
@@ -157,18 +156,22 @@ function handlePageChange(page: number) {
     >
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>{{t('Are you sure?')}}</AlertDialogTitle>
+                <AlertDialogTitle>{{ t('Are you sure?') }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    {{t('This will permanently delete this Lesson and all its')}}
-                    {{t('associated chapters. This action cannot')}}
-                    {{t('be undone.')}}
+                    {{
+                        t(
+                            'This will permanently delete this Lesson and all its',
+                        )
+                    }}
+                    {{ t('associated chapters. This action cannot') }}
+                    {{ t('be undone.') }}
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel>{{t('Cancel')}}</AlertDialogCancel>
-                <AlertDialogAction @click="deleteLesson"
-                    >{{t('Delete')}}</AlertDialogAction
-                >
+                <AlertDialogCancel>{{ t('Cancel') }}</AlertDialogCancel>
+                <AlertDialogAction @click="deleteLesson">{{
+                    t('Delete')
+                }}</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -183,12 +186,12 @@ function handlePageChange(page: number) {
                         class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <div>
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Configure Lessons')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Configure Lessons')
+                            }}</CardTitle>
                             <CardDescription class="text-xs sm:text-sm"
-                                >{{t('Manage your Lesson - create,')}}
-                                {{t('update, or delete')}}</CardDescription
+                                >{{ t('Manage your Lesson - create,') }}
+                                {{ t('update, or delete') }}</CardDescription
                             >
                         </div>
                         <div class="flex flex-col gap-2 sm:flex-row sm:gap-2">
@@ -197,36 +200,41 @@ function handlePageChange(page: number) {
                                 class="w-full sm:w-auto"
                             >
                                 <Plus class="mr-2 h-4 w-4" />
-                                <span class="hidden sm:inline"
-                                    >{{t('Create New Lesson')}}</span
-                                >
-                                <span class="sm:hidden">{{t('Create Lesson')}}</span>
+                                <span class="hidden sm:inline">{{
+                                    t('Create New Lesson')
+                                }}</span>
+                                <span class="sm:hidden">{{
+                                    t('Create Lesson')
+                                }}</span>
                             </Button>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="props.Lessons.length > 0" class="overflow-x-auto">
+                    <div
+                        v-if="props.Lessons.length > 0"
+                        class="overflow-x-auto"
+                    >
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead class="text-xs sm:text-sm"
-                                        >{{t('Title')}}</TableHead
-                                    >
-                                    <TableHead class="text-xs sm:text-sm"
-                                        >{{t('Description')}}</TableHead
-                                    >
+                                    <TableHead class="text-xs sm:text-sm">{{
+                                        t('Title')
+                                    }}</TableHead>
+                                    <TableHead class="text-xs sm:text-sm">{{
+                                        t('Description')
+                                    }}</TableHead>
                                     <TableHead
                                         class="hidden text-xs sm:text-sm md:table-cell"
-                                        >{{t('Language')}}</TableHead
+                                        >{{ t('Language') }}</TableHead
                                     >
                                     <TableHead
                                         class="hidden text-xs sm:text-sm lg:table-cell"
-                                        >{{t('Readable')}}</TableHead
+                                        >{{ t('Readable') }}</TableHead
                                     >
                                     <TableHead
                                         class="text-right text-xs sm:text-sm"
-                                        >{{t('Actions')}}</TableHead
+                                        >{{ t('Actions') }}</TableHead
                                     >
                                 </TableRow>
                             </TableHeader>
@@ -248,7 +256,9 @@ function handlePageChange(page: number) {
                                     >
                                     <TableCell
                                         class="hidden text-xs sm:text-sm lg:table-cell"
-                                        >{{ Lesson.readable ? 'True' : 'False' }}</TableCell
+                                        >{{
+                                            Lesson.readable ? 'True' : 'False'
+                                        }}</TableCell
                                     >
                                     <TableCell class="text-right">
                                         <div
@@ -266,7 +276,9 @@ function handlePageChange(page: number) {
                                             <Button
                                                 size="sm"
                                                 variant="destructive"
-                                                @click="confirmDelete(Lesson.id)"
+                                                @click="
+                                                    confirmDelete(Lesson.id)
+                                                "
                                             >
                                                 <Trash2
                                                     class="h-3 w-3 sm:h-4 sm:w-4"
@@ -280,16 +292,28 @@ function handlePageChange(page: number) {
                     </div>
                     <div v-else class="py-8 text-center text-muted-foreground">
                         <p class="text-xs sm:text-sm">
-                            {{t('No Lessons found. Create your first Lesson to get')}}
-                            {{t('started.')}}
+                            {{
+                                t(
+                                    'No Lessons found. Create your first Lesson to get',
+                                )
+                            }}
+                            {{ t('started.') }}
                         </p>
                     </div>
                     <div class="mt-8 w-full">
-                        <Pagination :items-per-page="pageSize" :total="Lessons.length" :default-page="1" @update:page="handlePageChange">
+                        <Pagination
+                            :items-per-page="pageSize"
+                            :total="Lessons.length"
+                            :default-page="1"
+                            @update:page="handlePageChange"
+                        >
                             <PaginationContent v-slot="{ items }">
                                 <PaginationPrevious />
 
-                                <template v-for="(item, index) in items" :key="index">
+                                <template
+                                    v-for="(item, index) in items"
+                                    :key="index"
+                                >
                                     <PaginationItem
                                         v-if="item.type === 'page'"
                                         :value="item.value"
@@ -300,7 +324,14 @@ function handlePageChange(page: number) {
                                     </PaginationItem>
                                 </template>
 
-                                <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+                                <PaginationEllipsis
+                                    v-if="
+                                        items.some(
+                                            (i: { type: string }) =>
+                                                i.type === 'ellipsis',
+                                        )
+                                    "
+                                />
 
                                 <PaginationNext />
                             </PaginationContent>

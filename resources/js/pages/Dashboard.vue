@@ -16,9 +16,15 @@ import {
     CommandSeparator,
 } from '@/components/ui/command';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { bibles, dashboard, highlighted_verses_page, verse_study } from '@/routes';
+import {
+    bibles,
+    dashboard,
+    highlighted_verses_page,
+    verse_study,
+} from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { algoliasearch } from 'algoliasearch';
 import {
     BookOpen,
     Highlighter,
@@ -30,7 +36,6 @@ import {
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { algoliasearch } from 'algoliasearch';
 
 onMounted(() => {
     searchVerses();
@@ -39,7 +44,7 @@ onMounted(() => {
 const searchQuery = ref('');
 const client = algoliasearch(
     import.meta.env.VITE_ALGOLIA_APP_ID || 'VV2R5XG4FF',
-    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0'
+    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0',
 );
 
 const searchVerses = async () => {
@@ -55,7 +60,7 @@ const searchVerses = async () => {
                 searchParams: {
                     query: searchQuery.value,
                     hitsPerPage: 10,
-                }
+                },
             });
             // Map Algolia hits to a format similar to highlights
             const verseResults = response.hits.map((hit: any) => ({
@@ -72,13 +77,14 @@ const searchVerses = async () => {
             console.error('Algolia search error:', error);
         }
         // Optionally, search bibles by name/language/version
-        const bibleResponse = await fetch(`/api/bibles?search=${encodeURIComponent(searchQuery.value)}`);
+        const bibleResponse = await fetch(
+            `/api/bibles?search=${encodeURIComponent(searchQuery.value)}`,
+        );
         if (bibleResponse.ok) {
             availableBibles.value = await bibleResponse.json();
         }
     }
 };
-
 
 const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
@@ -222,10 +228,10 @@ function getHighlightColorClass(color: string): string {
             >
                 <div>
                     <h1 class="text-xl font-bold text-foreground sm:text-2xl">
-                        {{t('Welcome back,')}} {{ userName }}!
+                        {{ t('Welcome back,') }} {{ userName }}!
                     </h1>
                     <p class="text-sm text-muted-foreground sm:text-base">
-                        {{t('Continue your spiritual journey')}}
+                        {{ t('Continue your spiritual journey') }}
                     </p>
                 </div>
                 <Button
@@ -234,7 +240,7 @@ function getHighlightColorClass(color: string): string {
                     class="w-full sm:w-auto"
                 >
                     <Search class="mr-2 h-4 w-4" />
-                    {{t('Search')}}
+                    {{ t('Search') }}
                 </Button>
             </div>
 
@@ -245,9 +251,9 @@ function getHighlightColorClass(color: string): string {
                 <Card class="transition-shadow hover:shadow-md">
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Bibles Available')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Bibles Available')
+                            }}</CardTitle>
                             <Library
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
@@ -258,7 +264,7 @@ function getHighlightColorClass(color: string): string {
                             {{ readingStats.total_bibles }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            {{t('In your language')}}
+                            {{ t('In your language') }}
                         </p>
                     </CardContent>
                 </Card>
@@ -266,9 +272,9 @@ function getHighlightColorClass(color: string): string {
                 <Card class="transition-shadow hover:shadow-md">
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Verses Today')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Verses Today')
+                            }}</CardTitle>
                             <BookOpen
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
@@ -279,7 +285,7 @@ function getHighlightColorClass(color: string): string {
                             {{ readingStats.verses_read_today }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            {{t('Keep reading!')}}
+                            {{ t('Keep reading!') }}
                         </p>
                     </CardContent>
                 </Card>
@@ -287,9 +293,9 @@ function getHighlightColorClass(color: string): string {
                 <Card class="transition-shadow hover:shadow-md">
                     <CardHeader class="pb-3">
                         <div class="flex items-center justify-between">
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Progress')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Progress')
+                            }}</CardTitle>
                             <TrendingUp
                                 class="h-4 w-4 text-muted-foreground sm:h-5 sm:w-5"
                             />
@@ -300,7 +306,7 @@ function getHighlightColorClass(color: string): string {
                             {{ readingStats.chapters_completed }}
                         </div>
                         <p class="mt-1 text-xs text-muted-foreground">
-                            {{t('Chapters completed')}}
+                            {{ t('Chapters completed') }}
                         </p>
                     </CardContent>
                 </Card>
@@ -313,9 +319,9 @@ function getHighlightColorClass(color: string): string {
                     <CardHeader class="pb-3">
                         <div class="flex items-center gap-2">
                             <Quote class="h-4 w-4 text-primary sm:h-5 sm:w-5" />
-                            <CardTitle class="text-base sm:text-lg"
-                                >{{t('Verse of the Day')}}</CardTitle
-                            >
+                            <CardTitle class="text-base sm:text-lg">{{
+                                t('Verse of the Day')
+                            }}</CardTitle>
                         </div>
                     </CardHeader>
                     <CardContent v-if="verseOfTheDay">
@@ -345,8 +351,12 @@ function getHighlightColorClass(color: string): string {
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
                         <p>
-                            {{t('No verse available. Start reading to discover')}}
-                            {{t('inspiring passages!')}}
+                            {{
+                                t(
+                                    'No verse available. Start reading to discover',
+                                )
+                            }}
+                            {{ t('inspiring passages!') }}
                         </p>
                     </CardContent>
                 </Card>
@@ -354,12 +364,12 @@ function getHighlightColorClass(color: string): string {
                 <!-- Last Reading / Continue Reading -->
                 <Card v-if="lastReading">
                     <CardHeader class="pb-3">
-                        <CardTitle class="text-base sm:text-lg"
-                            >{{t('Continue Reading')}}</CardTitle
-                        >
-                        <CardDescription class="text-xs sm:text-sm"
-                            >{{t('Pick up where you left off')}}</CardDescription
-                        >
+                        <CardTitle class="text-base sm:text-lg">{{
+                            t('Continue Reading')
+                        }}</CardTitle>
+                        <CardDescription class="text-xs sm:text-sm">{{
+                            t('Pick up where you left off')
+                        }}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div class="space-y-3">
@@ -375,7 +385,7 @@ function getHighlightColorClass(color: string): string {
                                 </p>
                             </div>
                             <Button @click="continueLast" class="w-full">
-                                {{t('Continue Reading')}}
+                                {{ t('Continue Reading') }}
                             </Button>
                         </div>
                     </CardContent>
@@ -384,12 +394,12 @@ function getHighlightColorClass(color: string): string {
                 <!-- Quick Actions -->
                 <Card :class="lastReading ? '' : 'lg:col-span-2'">
                     <CardHeader class="pb-3">
-                        <CardTitle class="text-base sm:text-lg"
-                            >{{t('Quick Actions')}}</CardTitle
-                        >
-                        <CardDescription class="text-xs sm:text-sm"
-                            >{{t('Start your study session')}}</CardDescription
-                        >
+                        <CardTitle class="text-base sm:text-lg">{{
+                            t('Quick Actions')
+                        }}</CardTitle>
+                        <CardDescription class="text-xs sm:text-sm">{{
+                            t('Start your study session')
+                        }}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div class="space-y-2">
@@ -399,7 +409,7 @@ function getHighlightColorClass(color: string): string {
                                 class="w-full justify-start"
                             >
                                 <BookOpen class="mr-2 h-4 w-4" />
-                                {{t('Browse Bibles')}}
+                                {{ t('Browse Bibles') }}
                             </Button>
                             <Button
                                 @click="router.visit('/bibles/parallel')"
@@ -407,7 +417,7 @@ function getHighlightColorClass(color: string): string {
                                 class="w-full justify-start"
                             >
                                 <Library class="mr-2 h-4 w-4" />
-                                {{t('Compare Translations')}}
+                                {{ t('Compare Translations') }}
                             </Button>
                         </div>
                     </CardContent>
@@ -424,11 +434,15 @@ function getHighlightColorClass(color: string): string {
                     >
                         <div>
                             <h3 class="mb-1 text-sm font-semibold sm:text-base">
-                                {{t('Make Reading a Habit')}}
+                                {{ t('Make Reading a Habit') }}
                             </h3>
                             <p class="text-xs text-muted-foreground sm:text-sm">
-                                {{t('Set aside time each day to read and reflect on')}}
-                                {{t('the Word')}}
+                                {{
+                                    t(
+                                        'Set aside time each day to read and reflect on',
+                                    )
+                                }}
+                                {{ t('the Word') }}
                             </p>
                         </div>
                         <BookOpen
@@ -445,13 +459,13 @@ function getHighlightColorClass(color: string): string {
                         <Highlighter
                             class="h-4 w-4 text-primary sm:h-5 sm:w-5"
                         />
-                        <CardTitle class="text-base sm:text-lg"
-                            >{{t('Your Highlighted Verses')}}</CardTitle
-                        >
+                        <CardTitle class="text-base sm:text-lg">{{
+                            t('Your Highlighted Verses')
+                        }}</CardTitle>
                     </div>
-                    <CardDescription class="text-xs sm:text-sm"
-                        >{{t('Recent verses you\'ve marked')}}</CardDescription
-                    >
+                    <CardDescription class="text-xs sm:text-sm">{{
+                        t("Recent verses you've marked")
+                    }}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div class="space-y-3">
@@ -478,7 +492,7 @@ function getHighlightColorClass(color: string): string {
                                 v-if="highlight.note"
                                 class="mt-1 text-xs text-muted-foreground italic"
                             >
-                                {{t('Note:')}} {{ highlight.note }}
+                                {{ t('Note:') }} {{ highlight.note }}
                             </p>
                         </div>
                         <Link :href="highlighted_verses_page()">
@@ -487,7 +501,8 @@ function getHighlightColorClass(color: string): string {
                                 variant="outline"
                                 class="mt-4 w-full"
                             >
-                                {{t('View All')}} {{ highlights.length }} {{t('Highlights')}}
+                                {{ t('View All') }} {{ highlights.length }}
+                                {{ t('Highlights') }}
                             </Button>
                         </Link>
                     </div>
@@ -501,10 +516,12 @@ function getHighlightColorClass(color: string): string {
                 <CommandInput
                     v-model="searchQuery"
                     @input="searchVerses()"
-                    :placeholder="t('Search bibles, verses, or highlighted passages...')"
+                    :placeholder="
+                        t('Search bibles, verses, or highlighted passages...')
+                    "
                 />
                 <CommandList>
-                    <CommandEmpty>{{t('No results found.')}}</CommandEmpty>
+                    <CommandEmpty>{{ t('No results found.') }}</CommandEmpty>
 
                     <CommandGroup
                         v-if="filteredBibles.length > 0"
@@ -538,7 +555,7 @@ function getHighlightColorClass(color: string): string {
                     <CommandGroup
                         v-if="filteredHighlights.length > 0"
                         :heading="t('Highlighted Verses')"
-                    >         
+                    >
                         <CommandItem
                             v-for="highlight in filteredHighlights.slice(0, 10)"
                             :key="highlight.id"
@@ -547,17 +564,18 @@ function getHighlightColorClass(color: string): string {
                         >
                             <PenTool class="mr-2 h-4 w-4" />
                             <Link :href="verse_study(highlight.verse.id)">
-                            <div class="flex flex-col">
-                                <span class="line-clamp-1 text-sm">{{
-                                    highlight.verse.text
-                                }}</span>
-                                <span class="text-xs text-muted-foreground">
-                                    {{ highlight.verse.book?.title }}
-                                    {{
-                                        highlight.verse.chapter?.chapter_number
-                                    }}:{{ highlight.verse.verse_number }}
-                                </span>
-                            </div>
+                                <div class="flex flex-col">
+                                    <span class="line-clamp-1 text-sm">{{
+                                        highlight.verse.text
+                                    }}</span>
+                                    <span class="text-xs text-muted-foreground">
+                                        {{ highlight.verse.book?.title }}
+                                        {{
+                                            highlight.verse.chapter
+                                                ?.chapter_number
+                                        }}:{{ highlight.verse.verse_number }}
+                                    </span>
+                                </div>
                             </Link>
                         </CommandItem>
                     </CommandGroup>

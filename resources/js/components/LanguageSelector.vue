@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useSidebar } from '@/components/ui/sidebar';
 import { useLocale } from '@/composables/useLocale';
+import { usePage } from '@inertiajs/vue3';
 import { Languages } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 
 const { locale, changeLocale, t } = useLocale();
 const { state } = useSidebar();
@@ -29,7 +29,9 @@ async function updateLocale(newLocale: any) {
             csrfToken = String(page.props.csrf_token);
         }
         if (!csrfToken) {
-            alert('CSRF token not found. Refreshing page to fix authentication...');
+            alert(
+                'CSRF token not found. Refreshing page to fix authentication...',
+            );
             window.location.reload();
             return;
         }
@@ -74,7 +76,6 @@ const languages = [
     { value: 'ar', label: 'العربية' },
     { value: 'hi', label: 'हिन्दी' },
     { value: 'ko', label: '한국어' },
-
 ] as const;
 </script>
 
@@ -87,7 +88,7 @@ const languages = [
             :key="value"
             @click="updateLocale(value)"
             :class="[
-                'flex items-center rounded-md transition-colors flex-shrink-0',
+                'flex flex-shrink-0 items-center rounded-md transition-colors',
                 'whitespace-nowrap',
                 state === 'collapsed' ? 'px-2 py-1.5' : 'px-3.5 py-1.5',
                 locale === value
@@ -100,9 +101,7 @@ const languages = [
                 :is="Languages"
                 :class="state === 'collapsed' ? 'h-4 w-4' : '-ml-1 h-4 w-4'"
             />
-            <span class="ml-1.5 text-sm">{{
-                label
-            }}</span>
+            <span class="ml-1.5 text-sm">{{ label }}</span>
         </button>
     </div>
 </template>

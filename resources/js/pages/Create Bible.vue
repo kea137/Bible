@@ -146,9 +146,11 @@ if (info) {
                     >
                         <CardHeader>
                             <CardTitle>{{ t('Create Bible') }}</CardTitle>
-                            <CardDescription
-                                >{{ t('Create a new Bible by filling out the form below.') }}</CardDescription
-                            >
+                            <CardDescription>{{
+                                t(
+                                    'Create a new Bible by filling out the form below.',
+                                )
+                            }}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div
@@ -170,13 +172,17 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="abbreviation">{{ t('Abbreviation') }}</Label>
+                                    <Label for="abbreviation">{{
+                                        t('Abbreviation')
+                                    }}</Label>
                                     <Input
                                         id="abbreviation"
                                         name="abbreviation"
                                         :tabindex="1"
                                         type="text"
-                                        :placeholder="t('Abbreviation of the Bible')"
+                                        :placeholder="
+                                            t('Abbreviation of the Bible')
+                                        "
                                     />
                                     <InputError
                                         :message="errors.abbreviation"
@@ -185,18 +191,29 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="language">{{ t('Language') }}</Label>
+                                    <Label for="language">{{
+                                        t('Language')
+                                    }}</Label>
                                     <Select name="language">
                                         <SelectTrigger id="language">
                                             <SelectValue
-                                                :placeholder="t('Select Language')"
+                                                :placeholder="
+                                                    t('Select Language')
+                                                "
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectLabel>{{ t('Languages') }}</SelectLabel>
-                                                <template v-for="language in props.languages" :key="language.id">
-                                                    <SelectItem :value="language.name">
+                                                <SelectLabel>{{
+                                                    t('Languages')
+                                                }}</SelectLabel>
+                                                <template
+                                                    v-for="language in props.languages"
+                                                    :key="language.id"
+                                                >
+                                                    <SelectItem
+                                                        :value="language.name"
+                                                    >
                                                         {{ language.name }}
                                                     </SelectItem>
                                                 </template>
@@ -208,7 +225,9 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="version">{{ t('Version') }}</Label>
+                                    <Label for="version">{{
+                                        t('Version')
+                                    }}</Label>
                                     <Input
                                         id="version"
                                         name="version"
@@ -221,12 +240,16 @@ if (info) {
                                 <div
                                     class="col-span-2 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="description">{{ t('Description') }}</Label>
+                                    <Label for="description">{{
+                                        t('Description')
+                                    }}</Label>
                                     <Textarea
                                         id="description"
                                         name="description"
                                         :tabindex="1"
-                                        :placeholder="t('Description of the Bible')"
+                                        :placeholder="
+                                            t('Description of the Bible')
+                                        "
                                     />
                                     <InputError :message="errors.description" />
                                 </div>
@@ -271,8 +294,16 @@ if (info) {
                                                 <p
                                                     class="text-base font-medium text-gray-700 dark:text-white"
                                                 >
-                                                    {{ t('Drag & drop the Bible json') }}
-                                                    {{ t('file or click to upload') }}
+                                                    {{
+                                                        t(
+                                                            'Drag & drop the Bible json',
+                                                        )
+                                                    }}
+                                                    {{
+                                                        t(
+                                                            'file or click to upload',
+                                                        )
+                                                    }}
                                                 </p>
                                             </div>
                                             <p

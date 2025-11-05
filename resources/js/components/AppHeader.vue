@@ -36,8 +36,8 @@ import type { BreadcrumbItem, NavItem } from '@/types';
 import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
-import Logo from '/resources/images/logo-small.png';
 import { useI18n } from 'vue-i18n';
+import Logo from '/resources/images/logo-small.png';
 
 const { t } = useI18n();
 const imageUrl = Logo;
@@ -104,9 +104,9 @@ const rightNavItems: NavItem[] = [
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" class="w-[300px] p-6">
-                            <SheetTitle class="sr-only"
-                                >{{t('Navigation Menu')}}</SheetTitle
-                            >
+                            <SheetTitle class="sr-only">{{
+                                t('Navigation Menu')
+                            }}</SheetTitle>
                             <SheetHeader class="flex justify-start text-left">
                                 <AppLogoIcon
                                     class="size-6 fill-current text-black dark:text-white"

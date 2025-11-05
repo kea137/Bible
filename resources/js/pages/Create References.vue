@@ -26,7 +26,7 @@ import { references_configure, references_create } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { LoaderCircle, UploadCloudIcon } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -92,7 +92,6 @@ const errorMessage = computed(() => page.props.error as string);
 const alertSuccess = ref(!!successMessage.value);
 const alertError = ref(!!errorMessage.value);
 const alertErrorMessage = ref('');
-
 </script>
 
 <template>
@@ -133,11 +132,15 @@ const alertErrorMessage = ref('');
                         v-slot="{ errors, processing }"
                     >
                         <CardHeader>
-                            <CardTitle>{{t('Upload References')}}</CardTitle>
+                            <CardTitle>{{ t('Upload References') }}</CardTitle>
                             <CardDescription>
-                                {{t('Upload a JSON file containing verse references')}}.
-                                {{t('Ensure the file')}}
-                                {{t('is properly formatted.')}}
+                                {{
+                                    t(
+                                        'Upload a JSON file containing verse references',
+                                    )
+                                }}.
+                                {{ t('Ensure the file') }}
+                                {{ t('is properly formatted.') }}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -147,18 +150,22 @@ const alertErrorMessage = ref('');
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="bible_id">{{t('Select Bible')}}</Label>
+                                    <Label for="bible_id">{{
+                                        t('Select Bible')
+                                    }}</Label>
                                     <Select v-model="selectedBibleId">
                                         <SelectTrigger>
                                             <SelectValue
-                                                :placeholder="t('Select a Bible')"
+                                                :placeholder="
+                                                    t('Select a Bible')
+                                                "
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectLabel
-                                                    >{{t('Bibles')}}</SelectLabel
-                                                >
+                                                <SelectLabel>{{
+                                                    t('Bibles')
+                                                }}</SelectLabel>
                                                 <SelectItem
                                                     v-for="bible in props.bibles"
                                                     :key="bible.id"
@@ -206,7 +213,11 @@ const alertErrorMessage = ref('');
                                             <p
                                                 class="text-lg font-medium text-primary"
                                             >
-                                                {{t('Drop your JSON file here!')}}
+                                                {{
+                                                    t(
+                                                        'Drop your JSON file here!',
+                                                    )
+                                                }}
                                             </p>
                                         </template>
                                         <template v-else>
@@ -219,8 +230,12 @@ const alertErrorMessage = ref('');
                                                 <p
                                                     class="text-base font-medium text-gray-700 dark:text-white"
                                                 >
-                                                    {{t('Drag & drop JSON file or')}}
-                                                    {{t('click to upload')}}
+                                                    {{
+                                                        t(
+                                                            'Drag & drop JSON file or',
+                                                        )
+                                                    }}
+                                                    {{ t('click to upload') }}
                                                 </p>
                                             </div>
                                             <p
@@ -248,7 +263,7 @@ const alertErrorMessage = ref('');
                                     v-if="processing"
                                     class="mr-2 h-4 w-4 animate-spin"
                                 />
-                                {{t('Upload References')}}
+                                {{ t('Upload References') }}
                             </Button>
                         </CardFooter>
                     </Form>

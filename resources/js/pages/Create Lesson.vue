@@ -57,7 +57,6 @@ const props = defineProps<{
     }[];
 }>();
 
-
 const page = usePage();
 const success = page.props.success;
 const error = page.props.error;
@@ -122,10 +121,14 @@ if (info) {
                         v-slot="{ errors, processing }"
                     >
                         <CardHeader class="pb-3 sm:pb-6">
-                            <CardTitle class="text-lg sm:text-xl">{{ t('Create Lesson') }}</CardTitle>
-                            <CardDescription class="text-xs sm:text-sm"
-                                >{{ t('Create a new Lesson by filling out the form below.') }}</CardDescription
-                            >
+                            <CardTitle class="text-lg sm:text-xl">{{
+                                t('Create Lesson')
+                            }}</CardTitle>
+                            <CardDescription class="text-xs sm:text-sm">{{
+                                t(
+                                    'Create a new Lesson by filling out the form below.',
+                                )
+                            }}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div
@@ -134,7 +137,11 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5 md:col-span-2 lg:col-span-1"
                                 >
-                                    <Label for="name" class="text-sm sm:text-base">{{ t('Title') }}</Label>
+                                    <Label
+                                        for="name"
+                                        class="text-sm sm:text-base"
+                                        >{{ t('Title') }}</Label
+                                    >
                                     <Input
                                         id="title"
                                         name="title"
@@ -147,18 +154,31 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="language" class="text-sm sm:text-base">{{ t('Language') }}</Label>
+                                    <Label
+                                        for="language"
+                                        class="text-sm sm:text-base"
+                                        >{{ t('Language') }}</Label
+                                    >
                                     <Select name="language">
                                         <SelectTrigger id="language">
                                             <SelectValue
-                                                :placeholder="t('Select Language')"
+                                                :placeholder="
+                                                    t('Select Language')
+                                                "
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectLabel>{{ t('Languages') }}</SelectLabel>
-                                                <template v-for="language in props.languages" :key="language.id">
-                                                    <SelectItem :value="language.name">
+                                                <SelectLabel>{{
+                                                    t('Languages')
+                                                }}</SelectLabel>
+                                                <template
+                                                    v-for="language in props.languages"
+                                                    :key="language.id"
+                                                >
+                                                    <SelectItem
+                                                        :value="language.name"
+                                                    >
                                                         {{ language.name }}
                                                     </SelectItem>
                                                 </template>
@@ -170,22 +190,30 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="readable" class="text-sm sm:text-base">{{ t('Readable') }}</Label>
+                                    <Label
+                                        for="readable"
+                                        class="text-sm sm:text-base"
+                                        >{{ t('Readable') }}</Label
+                                    >
                                     <Select name="readable">
                                         <SelectTrigger id="readable">
                                             <SelectValue
-                                                :placeholder="t('Select Language')"
+                                                :placeholder="
+                                                    t('Select Language')
+                                                "
                                             />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectLabel>{{ t('Readable') }}</SelectLabel>
-                                                    <SelectItem value="True">
-                                                        True
-                                                    </SelectItem>
-                                                    <SelectItem value="False">
-                                                        False
-                                                    </SelectItem>
+                                                <SelectLabel>{{
+                                                    t('Readable')
+                                                }}</SelectLabel>
+                                                <SelectItem value="True">
+                                                    True
+                                                </SelectItem>
+                                                <SelectItem value="False">
+                                                    False
+                                                </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -194,7 +222,11 @@ if (info) {
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5"
                                 >
-                                    <Label for="no_paragraphs" class="text-sm sm:text-base">{{ t('Number of Paragraphs') }}</Label>
+                                    <Label
+                                        for="no_paragraphs"
+                                        class="text-sm sm:text-base"
+                                        >{{ t('Number of Paragraphs') }}</Label
+                                    >
                                     <Input
                                         id="no_paragraphs"
                                         name="no_paragraphs"
@@ -203,85 +235,170 @@ if (info) {
                                         v-model="no_paragraphs"
                                         placeholder="Number of Paragraphs"
                                     />
-                                    <InputError :message="errors.no_paragraph" />
+                                    <InputError
+                                        :message="errors.no_paragraph"
+                                    />
                                 </div>
                                 <div
                                     class="col-span-1 flex flex-col space-y-1.5 md:col-span-2 lg:col-span-4"
                                 >
-                                    <Label for="description" class="text-sm sm:text-base">{{ t('Description') }}</Label>
+                                    <Label
+                                        for="description"
+                                        class="text-sm sm:text-base"
+                                        >{{ t('Description') }}</Label
+                                    >
                                     <Textarea
                                         id="description"
                                         name="description"
                                         :tabindex="3"
-                                        :placeholder="t('Description of the Lesson')"
+                                        :placeholder="
+                                            t('Description of the Lesson')
+                                        "
                                     />
                                     <InputError :message="errors.description" />
                                 </div>
-                                
+
                                 <!-- Series Management -->
-                                <div class="col-span-1 space-y-3 md:col-span-2 lg:col-span-4">
+                                <div
+                                    class="col-span-1 space-y-3 md:col-span-2 lg:col-span-4"
+                                >
                                     <div class="flex items-center space-x-2">
-                                        <input 
-                                            type="checkbox" 
-                                            id="create-new-series" 
+                                        <input
+                                            type="checkbox"
+                                            id="create-new-series"
                                             v-model="createNewSeries"
                                             class="h-4 w-4 rounded border-gray-300"
                                         />
-                                        <Label for="create-new-series" class="cursor-pointer text-sm sm:text-base">
-                                            {{ t('Create New Series or Add to Existing') }}
+                                        <Label
+                                            for="create-new-series"
+                                            class="cursor-pointer text-sm sm:text-base"
+                                        >
+                                            {{
+                                                t(
+                                                    'Create New Series or Add to Existing',
+                                                )
+                                            }}
                                         </Label>
                                     </div>
-                                    
+
                                     <template v-if="createNewSeries">
                                         <!-- Option to create new series or select existing -->
-                                        <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
-                                            <div class="flex flex-col space-y-1.5">
-                                                <Label class="text-sm sm:text-base">{{ t('New Series Title') }}</Label>
+                                        <div
+                                            class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2"
+                                        >
+                                            <div
+                                                class="flex flex-col space-y-1.5"
+                                            >
+                                                <Label
+                                                    class="text-sm sm:text-base"
+                                                    >{{
+                                                        t('New Series Title')
+                                                    }}</Label
+                                                >
                                                 <Input
                                                     v-model="newSeriesTitle"
                                                     placeholder="Enter new series title..."
                                                 />
                                             </div>
-                                            <div class="flex flex-col space-y-1.5">
-                                                <Label class="text-sm sm:text-base">{{ t('Or Select Existing Series') }}</Label>
+                                            <div
+                                                class="flex flex-col space-y-1.5"
+                                            >
+                                                <Label
+                                                    class="text-sm sm:text-base"
+                                                    >{{
+                                                        t(
+                                                            'Or Select Existing Series',
+                                                        )
+                                                    }}</Label
+                                                >
                                                 <Select name="series_id">
                                                     <SelectTrigger>
-                                                        <SelectValue :placeholder="t('Select Series')" />
+                                                        <SelectValue
+                                                            :placeholder="
+                                                                t(
+                                                                    'Select Series',
+                                                                )
+                                                            "
+                                                        />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectGroup>
-                                                            <SelectLabel>{{ t('Available Series') }}</SelectLabel>
-                                                            <template v-if="props.series && props.series.length > 0">
-                                                                <SelectItem 
-                                                                    v-for="s in props.series" 
-                                                                    :key="s.id" 
-                                                                    :value="s.id.toString()"
+                                                            <SelectLabel>{{
+                                                                t(
+                                                                    'Available Series',
+                                                                )
+                                                            }}</SelectLabel>
+                                                            <template
+                                                                v-if="
+                                                                    props.series &&
+                                                                    props.series
+                                                                        .length >
+                                                                        0
+                                                                "
+                                                            >
+                                                                <SelectItem
+                                                                    v-for="s in props.series"
+                                                                    :key="s.id"
+                                                                    :value="
+                                                                        s.id.toString()
+                                                                    "
                                                                 >
-                                                                    {{ s.title }}
+                                                                    {{
+                                                                        s.title
+                                                                    }}
                                                                 </SelectItem>
                                                             </template>
-                                                            <SelectItem v-else value="none" disabled>
-                                                                {{ t('No series available') }}
+                                                            <SelectItem
+                                                                v-else
+                                                                value="none"
+                                                                disabled
+                                                            >
+                                                                {{
+                                                                    t(
+                                                                        'No series available',
+                                                                    )
+                                                                }}
                                                             </SelectItem>
                                                         </SelectGroup>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
                                         </div>
-                                        
-                                        <div v-if="newSeriesTitle" class="flex flex-col space-y-1.5">
-                                            <Label class="text-sm sm:text-base">{{ t('Series Description') }}</Label>
+
+                                        <div
+                                            v-if="newSeriesTitle"
+                                            class="flex flex-col space-y-1.5"
+                                        >
+                                            <Label
+                                                class="text-sm sm:text-base"
+                                                >{{
+                                                    t('Series Description')
+                                                }}</Label
+                                            >
                                             <Textarea
                                                 v-model="newSeriesDescription"
                                                 placeholder="Enter series description..."
                                                 rows="2"
                                             />
-                                            <input type="hidden" name="new_series_title" :value="newSeriesTitle" />
-                                            <input type="hidden" name="new_series_description" :value="newSeriesDescription" />
+                                            <input
+                                                type="hidden"
+                                                name="new_series_title"
+                                                :value="newSeriesTitle"
+                                            />
+                                            <input
+                                                type="hidden"
+                                                name="new_series_description"
+                                                :value="newSeriesDescription"
+                                            />
                                         </div>
-                                        
+
                                         <div class="flex flex-col space-y-1.5">
-                                            <Label class="text-sm sm:text-base">{{ t('Episode Number') }}</Label>
+                                            <Label
+                                                class="text-sm sm:text-base"
+                                                >{{
+                                                    t('Episode Number')
+                                                }}</Label
+                                            >
                                             <Input
                                                 type="number"
                                                 name="episode_number"
@@ -291,27 +408,60 @@ if (info) {
                                         </div>
                                     </template>
                                 </div>
-                                
+
                                 <!-- Scripture Reference Help -->
-                                <div class="col-span-1 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950 sm:p-4 md:col-span-2 lg:col-span-4">
-                                    <h4 class="mb-2 text-sm font-semibold text-blue-900 dark:text-blue-100 sm:text-base">
+                                <div
+                                    class="col-span-1 rounded-lg border border-blue-200 bg-blue-50 p-3 sm:p-4 md:col-span-2 lg:col-span-4 dark:border-blue-800 dark:bg-blue-950"
+                                >
+                                    <h4
+                                        class="mb-2 text-sm font-semibold text-blue-900 sm:text-base dark:text-blue-100"
+                                    >
                                         {{ t('Using Scripture References') }}
                                     </h4>
-                                    <div class="space-y-2 text-xs text-blue-800 dark:text-blue-200 sm:text-sm">
+                                    <div
+                                        class="space-y-2 text-xs text-blue-800 sm:text-sm dark:text-blue-200"
+                                    >
                                         <p>
-                                            <strong>{{ t('Short References') }}:</strong> Use single quotes 'BOOK CHAPTER:VERSE' to add clickable references.
+                                            <strong
+                                                >{{
+                                                    t('Short References')
+                                                }}:</strong
+                                            >
+                                            Use single quotes 'BOOK
+                                            CHAPTER:VERSE' to add clickable
+                                            references.
                                         </p>
-                                        <p class="ml-4 italic">{{ t('Example') }}: 'GEN 1:1' or '2KI 2:2'</p>
+                                        <p class="ml-4 italic">
+                                            {{ t('Example') }}: 'GEN 1:1' or
+                                            '2KI 2:2'
+                                        </p>
                                         <p class="mt-2">
-                                            <strong>{{ t('Full Verses') }}:</strong> Use triple quotes '''BOOK CHAPTER:VERSE''' to insert the full verse text.
+                                            <strong
+                                                >{{ t('Full Verses') }}:</strong
+                                            >
+                                            Use triple quotes '''BOOK
+                                            CHAPTER:VERSE''' to insert the full
+                                            verse text.
                                         </p>
-                                        <p class="ml-4 italic">{{ t('Example') }}: '''JHN 3:16''' will be replaced with the actual verse</p>
+                                        <p class="ml-4 italic">
+                                            {{ t('Example') }}: '''JHN 3:16'''
+                                            will be replaced with the actual
+                                            verse
+                                        </p>
                                     </div>
                                 </div>
-                                
-                                <div v-for="(paragraph, idx) in no_paragraphs" :key="`paragraph-${idx}`" class="col-span-1 md:col-span-2 lg:col-span-4">
+
+                                <div
+                                    v-for="(paragraph, idx) in no_paragraphs"
+                                    :key="`paragraph-${idx}`"
+                                    class="col-span-1 md:col-span-2 lg:col-span-4"
+                                >
                                     <div class="flex flex-col space-y-1.5">
-                                        <Label :for="`text-${idx}`" class="text-sm sm:text-base">Paragraph {{ idx + 1 }}</Label>
+                                        <Label
+                                            :for="`text-${idx}`"
+                                            class="text-sm sm:text-base"
+                                            >Paragraph {{ idx + 1 }}</Label
+                                        >
                                         <Textarea
                                             :id="`text-${idx}`"
                                             :name="`paragraphs[${idx}][text]`"
@@ -320,12 +470,18 @@ if (info) {
                                             rows="4"
                                             class="text-sm sm:text-base"
                                         />
-                                        <InputError :message="errors[`paragraphs.${idx}.text`]" />
+                                        <InputError
+                                            :message="
+                                                errors[`paragraphs.${idx}.text`]
+                                            "
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter class="mt-4 flex justify-between px-3 pb-3 sm:mt-6 sm:px-6 sm:pb-4">
+                        <CardFooter
+                            class="mt-4 flex justify-between px-3 pb-3 sm:mt-6 sm:px-6 sm:pb-4"
+                        >
                             <Button
                                 variant="outline"
                                 :class="{ 'opacity-25': processing }"

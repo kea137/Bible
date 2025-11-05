@@ -20,13 +20,13 @@ import {
     dashboard,
     documentation,
     highlighted_verses_page,
+    lessons,
     license,
+    manage_lessons,
     notes,
     reading_plan,
     references_configure,
     role_management,
-    manage_lessons,
-    lessons,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -46,10 +46,10 @@ import {
     UserCog2,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AppLogo from './AppLogo.vue';
 import AppearanceSideBar from './AppearanceSideBar.vue';
 import LanguageSelectorSideBar from './LanguageSelectorSideBar.vue';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const page = usePage();
@@ -174,7 +174,7 @@ const footerNavItems = computed(() => {
             <SidebarGroup class="px-2 py-0">
                 <div class="mr-4 space-y-3 py-2">
                     <div class="space-y-1">
-                        <LanguageSelectorSideBar v-if="!(language === 'en')"/>
+                        <LanguageSelectorSideBar v-if="!(language === 'en')" />
                     </div>
                     <div class="space-y-1">
                         <AppearanceSideBar />

@@ -42,7 +42,7 @@ defineProps<{
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">{{t('Email address')}}</Label>
+                    <Label for="email">{{ t('Email address') }}</Label>
                     <Input
                         id="email"
                         type="email"
@@ -58,14 +58,14 @@ defineProps<{
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
-                        <Label for="password">{{t('Password')}}</Label>
+                        <Label for="password">{{ t('Password') }}</Label>
                         <TextLink
                             v-if="canResetPassword"
                             :href="request()"
                             class="text-sm"
                             :tabindex="5"
                         >
-                            {{t('Forgot password?')}}
+                            {{ t('Forgot password?') }}
                         </TextLink>
                     </div>
                     <Input
@@ -83,7 +83,7 @@ defineProps<{
                 <div class="flex items-center justify-between">
                     <Label for="remember" class="flex items-center space-x-3">
                         <Checkbox id="remember" name="remember" :tabindex="3" />
-                        <span>{{t('Remember me')}}</span>
+                        <span>{{ t('Remember me') }}</span>
                     </Label>
                 </div>
 
@@ -98,13 +98,15 @@ defineProps<{
                         v-if="processing"
                         class="h-4 w-4 animate-spin"
                     />
-                    {{t('Log in')}}
+                    {{ t('Log in') }}
                 </Button>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">
-                {{t('Don\'t have an account?')}}
-                <TextLink :href="register()" :tabindex="5">{{t('Sign up')}}</TextLink>
+                {{ t("Don't have an account?") }}
+                <TextLink :href="register()" :tabindex="5">{{
+                    t('Sign up')
+                }}</TextLink>
             </div>
         </Form>
     </AuthBase>

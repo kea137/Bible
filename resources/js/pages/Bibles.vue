@@ -99,7 +99,6 @@ const alertSuccess = ref(!!successMessage.value);
 const alertError = ref(!!errorMessage.value);
 const alertErrorMessage = ref('');
 
-
 onMounted(() => {
     searchVerses();
 });
@@ -158,7 +157,7 @@ const filteredHighlights = computed(() => {
 const searchQuery = ref('');
 const client = algoliasearch(
     import.meta.env.VITE_ALGOLIA_APP_ID || 'VV2R5XG4FF',
-    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0'
+    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0',
 );
 
 const searchVerses = async () => {
@@ -174,7 +173,7 @@ const searchVerses = async () => {
                 searchParams: {
                     query: searchQuery.value,
                     hitsPerPage: 10,
-                }
+                },
             });
             // Map Algolia hits to a format similar to highlights
             const verseResults = response.hits.map((hit: any) => ({
@@ -191,13 +190,14 @@ const searchVerses = async () => {
             console.error('Algolia search error:', error);
         }
         // Optionally, search bibles by name/language/version
-        const bibleResponse = await fetch(`/api/bibles?search=${encodeURIComponent(searchQuery.value)}`);
+        const bibleResponse = await fetch(
+            `/api/bibles?search=${encodeURIComponent(searchQuery.value)}`,
+        );
         if (bibleResponse.ok) {
             availableBibles.value = await bibleResponse.json();
         }
     }
 };
-
 </script>
 
 <template>
@@ -236,11 +236,11 @@ const searchVerses = async () => {
                                 class="flex items-center gap-2 text-base sm:text-lg"
                             >
                                 <LibraryBigIcon class="h-4 w-4 sm:h-5 sm:w-5" />
-                                {{t('Bibles')}}
+                                {{ t('Bibles') }}
                             </CardTitle>
-                            <CardDescription class="text-xs sm:text-sm"
-                                >{{t('Available Bibles')}}</CardDescription
-                            >
+                            <CardDescription class="text-xs sm:text-sm">{{
+                                t('Available Bibles')
+                            }}</CardDescription>
                         </div>
                         <Button
                             @click="searchOpen = true"
@@ -248,7 +248,7 @@ const searchVerses = async () => {
                             class="w-full sm:w-auto"
                         >
                             <Search class="mr-2 h-4 w-4" />
-                            {{t('Search Bibles')}}
+                            {{ t('Search Bibles') }}
                         </Button>
                     </div>
                 </CardHeader>
@@ -279,12 +279,17 @@ const searchVerses = async () => {
                         v-else
                         class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                     >
-                        <p>{{t('No Bibles Available')}}</p>
+                        <p>{{ t('No Bibles Available') }}</p>
                     </div>
                 </CardContent>
             </Card>
             <div class="mt-8 w-full">
-                <Pagination :items-per-page="pageSize" :total="biblesList.length" :default-page="1" @update:page="handlePageChange">
+                <Pagination
+                    :items-per-page="pageSize"
+                    :total="biblesList.length"
+                    :default-page="1"
+                    @update:page="handlePageChange"
+                >
                     <PaginationContent v-slot="{ items }">
                         <PaginationPrevious />
 
@@ -299,7 +304,14 @@ const searchVerses = async () => {
                             </PaginationItem>
                         </template>
 
-                        <PaginationEllipsis v-if="items.some((i: { type: string }) => i.type === 'ellipsis')" />
+                        <PaginationEllipsis
+                            v-if="
+                                items.some(
+                                    (i: { type: string }) =>
+                                        i.type === 'ellipsis',
+                                )
+                            "
+                        />
 
                         <PaginationNext />
                     </PaginationContent>
@@ -318,7 +330,7 @@ const searchVerses = async () => {
                         placeholder="Search bibles by name, language, or version..."
                     />
                     <CommandList>
-                        <CommandEmpty>{{t('No bibles found.')}}</CommandEmpty>
+                        <CommandEmpty>{{ t('No bibles found.') }}</CommandEmpty>
                         <CommandGroup heading="Bibles">
                             <CommandItem
                                 v-for="bible in filteredBibles"
@@ -339,28 +351,36 @@ const searchVerses = async () => {
                             </CommandItem>
                         </CommandGroup>
                         <CommandGroup
-                        v-if="filteredHighlights.length > 0"
-                        :heading="t('Highlighted Verses')"
-                        >         
+                            v-if="filteredHighlights.length > 0"
+                            :heading="t('Highlighted Verses')"
+                        >
                             <CommandItem
-                                v-for="highlight in filteredHighlights.slice(0, 10)"
+                                v-for="highlight in filteredHighlights.slice(
+                                    0,
+                                    10,
+                                )"
                                 :key="highlight.id"
                                 :value="highlight.verse.text"
                                 @select="viewHighlight(highlight.verse.id)"
                             >
                                 <PenTool class="mr-2 h-4 w-4" />
                                 <Link :href="verse_study(highlight.verse.id)">
-                                <div class="flex flex-col">
-                                    <span class="line-clamp-1 text-sm">{{
-                                        highlight.verse.text
-                                    }}</span>
-                                    <span class="text-xs text-muted-foreground">
-                                        {{ highlight.verse.book?.title }}
-                                        {{
-                                            highlight.verse.chapter?.chapter_number
-                                        }}:{{ highlight.verse.verse_number }}
-                                    </span>
-                                </div>
+                                    <div class="flex flex-col">
+                                        <span class="line-clamp-1 text-sm">{{
+                                            highlight.verse.text
+                                        }}</span>
+                                        <span
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            {{ highlight.verse.book?.title }}
+                                            {{
+                                                highlight.verse.chapter
+                                                    ?.chapter_number
+                                            }}:{{
+                                                highlight.verse.verse_number
+                                            }}
+                                        </span>
+                                    </div>
                                 </Link>
                             </CommandItem>
                         </CommandGroup>

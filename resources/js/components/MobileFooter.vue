@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import {
+    bibles,
+    bibles_parallel,
+    dashboard,
+    highlighted_verses_page,
+    lessons,
+    notes,
+    reading_plan,
+} from '@/routes';
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     BookCopy,
@@ -11,15 +20,6 @@ import {
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import {
-    bibles,
-    bibles_parallel,
-    dashboard,
-    highlighted_verses_page,
-    lessons,
-    notes,
-    reading_plan,
-} from '@/routes';
 
 const { t } = useI18n();
 const page = usePage();
@@ -72,7 +72,9 @@ function isActive(href: string): boolean {
 
 <template>
     <!-- Mobile Footer - Only visible on small screens -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background md:hidden">
+    <div
+        class="fixed right-0 bottom-0 left-0 z-50 border-t border-border bg-background md:hidden"
+    >
         <div class="flex items-center justify-around px-2 py-2">
             <Link
                 v-for="item in navItems.slice(0, MOBILE_NAV_ITEMS_LIMIT)"
@@ -90,7 +92,7 @@ function isActive(href: string): boolean {
             </Link>
         </div>
     </div>
-    
+
     <!-- Spacer to prevent content from being hidden behind the fixed footer -->
     <div class="h-20 md:hidden"></div>
 </template>

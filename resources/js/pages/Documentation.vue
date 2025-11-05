@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { documentation } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import {
     BookOpen,
@@ -13,8 +15,6 @@ import {
     Users,
     Zap,
 } from 'lucide-vue-next';
-import { type BreadcrumbItem } from '@/types';
-import { documentation } from '@/routes';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -940,8 +940,7 @@ php artisan serve</code></pre>
                                         >
                                             POST /api/verse-highlights<br />
                                             GET /api/verse-highlights<br />
-                                            DELETE
-                                            /api/verse-highlights/{verse}
+                                            DELETE /api/verse-highlights/{verse}
                                         </code>
                                     </div>
                                 </div>
@@ -1020,8 +1019,9 @@ php artisan serve</code></pre>
                                         Easy-to-remember path-based structure
                                     </li>
                                     <li>
-                                        📖 <strong>Flexible:</strong> Support for
-                                        book names, numbers, and partial matching
+                                        📖 <strong>Flexible:</strong> Support
+                                        for book names, numbers, and partial
+                                        matching
                                     </li>
                                     <li>
                                         🔀
@@ -1030,7 +1030,8 @@ php artisan serve</code></pre>
                                         cross-references
                                     </li>
                                     <li>
-                                        📊 <strong>JSON Response:</strong> Clean,
+                                        📊
+                                        <strong>JSON Response:</strong> Clean,
                                         structured JSON format
                                     </li>
                                 </ul>
@@ -1046,13 +1047,14 @@ php artisan serve</code></pre>
                                     <code
                                         class="text-sm font-semibold text-primary"
                                     >
-                                        GET
-                                        / api / {language} / {version} / {references} /{book} / {chapter} / {verse?}
-                                    </code> 
+                                        GET / api / {language} / {version} /
+                                        {references} /{book} / {chapter} /
+                                        {verse?}
+                                    </code>
                                 </div>
                                 <p class="mb-3 text-sm text-foreground">
-                                    This standardized URL structure makes it easy
-                                    to remember and construct API requests.
+                                    This standardized URL structure makes it
+                                    easy to remember and construct API requests.
                                 </p>
 
                                 <div class="space-y-2">
@@ -1093,7 +1095,8 @@ php artisan serve</code></pre>
                                                 >references</code
                                             >
                                             <span class="text-muted-foreground">
-                                                - Include refs (true/false)</span
+                                                - Include refs
+                                                (true/false)</span
                                             >
                                         </div>
                                         <div
@@ -1223,8 +1226,8 @@ php artisan serve</code></pre>
                                         <p
                                             class="mt-1 text-xs text-muted-foreground"
                                         >
-                                            (Supports 'Gen' for 'Genesis', 'Matt'
-                                            for 'Matthew')
+                                            (Supports 'Gen' for 'Genesis',
+                                            'Matt' for 'Matthew')
                                         </p>
                                     </div>
                                 </div>
@@ -1237,9 +1240,7 @@ php artisan serve</code></pre>
                                     Response Format
                                 </h3>
                                 <div class="rounded bg-muted p-3">
-                                    <pre
-                                        class="overflow-x-auto text-xs"
-                                    ><code>{
+                                    <pre class="overflow-x-auto text-xs"><code>{
   "bible": {
     "name": "King James Version",
     "abbreviation": "KJV",
@@ -1342,11 +1343,12 @@ print(data['verses'][0]['text'])</code></pre>
                                     class="space-y-1 text-sm text-muted-foreground"
                                 >
                                     <li>
-                                        • Exceeding the limit returns a 429 error
+                                        • Exceeding the limit returns a 429
+                                        error
                                     </li>
                                     <li>
-                                        • Wait for the rate limit window to reset
-                                        (1 minute)
+                                        • Wait for the rate limit window to
+                                        reset (1 minute)
                                     </li>
                                     <li>
                                         • Consider caching responses in your
@@ -1363,12 +1365,14 @@ print(data['verses'][0]['text'])</code></pre>
                                 </h3>
                                 <ul class="space-y-2 text-sm text-foreground">
                                     <li>
-                                        ✅ <strong>Cache Responses:</strong> Bible
+                                        ✅
+                                        <strong>Cache Responses:</strong> Bible
                                         text rarely changes, so cache API
                                         responses
                                     </li>
                                     <li>
-                                        ✅ <strong>Batch Requests:</strong> Fetch
+                                        ✅
+                                        <strong>Batch Requests:</strong> Fetch
                                         entire chapters instead of individual
                                         verses
                                     </li>
@@ -1383,7 +1387,8 @@ print(data['verses'][0]['text'])</code></pre>
                                         Implement backoff strategies
                                     </li>
                                     <li>
-                                        ✅ <strong>Use Specific Versions:</strong>
+                                        ✅
+                                        <strong>Use Specific Versions:</strong>
                                         Specify version in URL for consistency
                                     </li>
                                 </ul>
@@ -1397,9 +1402,7 @@ print(data['verses'][0]['text'])</code></pre>
                                 >
                                     Error Codes
                                 </h3>
-                                <div
-                                    class="grid gap-2 text-sm sm:grid-cols-2"
-                                >
+                                <div class="grid gap-2 text-sm sm:grid-cols-2">
                                     <div class="flex items-start gap-2">
                                         <code
                                             class="rounded bg-green-500/20 px-2 py-1 font-semibold text-green-700 dark:text-green-400"
@@ -1440,8 +1443,8 @@ print(data['verses'][0]['text'])</code></pre>
                                     Need More Details?
                                 </h3>
                                 <p class="text-sm text-muted-foreground">
-                                    For comprehensive API documentation including
-                                    advanced usage, see the
+                                    For comprehensive API documentation
+                                    including advanced usage, see the
                                     <code
                                         class="rounded bg-muted px-1 py-0.5 text-foreground"
                                         >DOCUMENTATION.md</code

@@ -29,7 +29,7 @@ const { t } = useI18n();
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="name">{{ t('Name')}}</Label>
+                    <Label for="name">{{ t('Name') }}</Label>
                     <Input
                         id="name"
                         type="text"
@@ -72,7 +72,9 @@ const { t } = useI18n();
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">{{ t('Confirm password') }}</Label>
+                    <Label for="password_confirmation">{{
+                        t('Confirm password')
+                    }}</Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -96,17 +98,17 @@ const { t } = useI18n();
                         v-if="processing"
                         class="h-4 w-4 animate-spin"
                     />
-                    {{t('Create account')}}
+                    {{ t('Create account') }}
                 </Button>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">
-                {{t('Already have an account?')}}
+                {{ t('Already have an account?') }}
                 <TextLink
                     :href="login()"
                     class="underline underline-offset-4"
                     :tabindex="6"
-                    >{{t('Log in')}}</TextLink
+                    >{{ t('Log in') }}</TextLink
                 >
             </div>
         </Form>

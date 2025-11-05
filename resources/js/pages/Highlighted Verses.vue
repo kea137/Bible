@@ -21,7 +21,7 @@ import { highlighted_verses_page } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { BookOpen, Highlighter, MoreVertical } from 'lucide-vue-next';
-import { onMounted, ref, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -159,10 +159,14 @@ function handleNoteSaved() {
                     >
                         <div>
                             <h3 class="mb-1 text-sm font-semibold sm:text-base">
-                                {{t('Make Reading a Habit')}}
+                                {{ t('Make Reading a Habit') }}
                             </h3>
                             <p class="text-xs text-muted-foreground sm:text-sm">
-                                {{t('Set aside time each day to read and reflect on')}}
+                                {{
+                                    t(
+                                        'Set aside time each day to read and reflect on',
+                                    )
+                                }}
                                 the Word
                             </p>
                         </div>
@@ -180,13 +184,13 @@ function handleNoteSaved() {
                         <Highlighter
                             class="h-4 w-4 text-primary sm:h-5 sm:w-5"
                         />
-                        <CardTitle class="text-base sm:text-lg"
-                            >{{t('Your Highlighted Verses')}}</CardTitle
-                        >
+                        <CardTitle class="text-base sm:text-lg">{{
+                            t('Your Highlighted Verses')
+                        }}</CardTitle>
                     </div>
-                    <CardDescription class="text-xs sm:text-sm"
-                        >{{t('Recent verses you\'ve marked')}}</CardDescription
-                    >
+                    <CardDescription class="text-xs sm:text-sm">{{
+                        t("Recent verses you've marked")
+                    }}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ScrollArea class="h-100 space-y-2 sm:space-y-3">
@@ -216,7 +220,7 @@ function handleNoteSaved() {
                                         v-if="highlight.note"
                                         class="mt-1 text-xs text-muted-foreground italic"
                                     >
-                                        {{t('Note:')}} {{ highlight.note }}
+                                        {{ t('Note:') }} {{ highlight.note }}
                                     </p>
                                 </div>
                                 <DropdownMenu>
@@ -230,28 +234,28 @@ function handleNoteSaved() {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel
-                                            >{{t('Actions')}}</DropdownMenuLabel
-                                        >
+                                        <DropdownMenuLabel>{{
+                                            t('Actions')
+                                        }}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="
                                                 studyVerse(highlight.verse.id)
                                             "
                                         >
-                                            {{t('Study this Verse')}}
+                                            {{ t('Study this Verse') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="openNotesDialog(highlight)"
                                         >
-                                            {{t('Add/Edit Note')}}
+                                            {{ t('Add/Edit Note') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
                                             @click="removeHighlight(highlight)"
                                             class="text-destructive"
                                         >
-                                            {{t('Remove Highlight')}}
+                                            {{ t('Remove Highlight') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -268,11 +272,15 @@ function handleNoteSaved() {
                         class="mx-auto h-12 w-12 text-muted-foreground/50"
                     />
                     <h3 class="mt-4 text-lg font-semibold">
-                        {{t('No Highlighted Verses')}}
+                        {{ t('No Highlighted Verses') }}
                     </h3>
                     <p class="mt-2 text-sm text-muted-foreground">
-                        {{t('Start highlighting verses as you read through the Bible')}}
-                        {{t('to keep track of important passages.')}}
+                        {{
+                            t(
+                                'Start highlighting verses as you read through the Bible',
+                            )
+                        }}
+                        {{ t('to keep track of important passages.') }}
                     </p>
                 </CardContent>
             </Card>

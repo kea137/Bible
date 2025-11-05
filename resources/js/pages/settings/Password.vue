@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
-import InputError from '@/components/InputError.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/password';
-import { Form, Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
+import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { edit } from '@/routes/password';
 import { type BreadcrumbItem } from '@/types';
+import { Form, Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -33,7 +33,11 @@ const currentPasswordInput = ref<HTMLInputElement | null>(null);
             <div class="space-y-6">
                 <HeadingSmall
                     :title="t('Update password')"
-                    :description="t('Ensure your account is using a long, random password to stay secure')"
+                    :description="
+                        t(
+                            'Ensure your account is using a long, random password to stay secure',
+                        )
+                    "
                 />
 
                 <Form
@@ -51,7 +55,9 @@ const currentPasswordInput = ref<HTMLInputElement | null>(null);
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div class="grid gap-2">
-                        <Label for="current_password">{{ t('Current password') }}</Label>
+                        <Label for="current_password">{{
+                            t('Current password')
+                        }}</Label>
                         <Input
                             id="current_password"
                             ref="currentPasswordInput"
@@ -79,9 +85,9 @@ const currentPasswordInput = ref<HTMLInputElement | null>(null);
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation"
-                            >{{ t('Confirm password') }}</Label
-                        >
+                        <Label for="password_confirmation">{{
+                            t('Confirm password')
+                        }}</Label>
                         <Input
                             id="password_confirmation"
                             name="password_confirmation"

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useSidebar } from '@/components/ui/sidebar';
 import { useLocale } from '@/composables/useLocale';
-import { Languages } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { Languages } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const { locale, changeLocale, t } = useLocale();
 const { state } = useSidebar();
@@ -29,8 +29,12 @@ const languages = computed(() => {
     // Always show English and the user's language (even if user's language is English)
     const langs = [{ value: 'en', label: 'English' }];
     if (userLanguage.value && userLanguage.value !== 'en') {
-        const found = other_languages.find(lang => lang.value === userLanguage.value);
-        langs.push(found || { value: userLanguage.value, label: userLanguage.value });
+        const found = other_languages.find(
+            (lang) => lang.value === userLanguage.value,
+        );
+        langs.push(
+            found || { value: userLanguage.value, label: userLanguage.value },
+        );
     }
     // If user's language is English, only show English
     return langs;
