@@ -30,19 +30,17 @@ import {
 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-// import { MeiliSearch } from 'meilisearch';
+import { algoliasearch } from 'algoliasearch';
 
 onMounted(() => {
     searchVerses();
 });
 
 const searchQuery = ref('');
-// const client = new MeiliSearch({
-//   host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
-//   apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
-// });
-
-// const index = client.index('verses'); // Replace with your Meilisearch index name
+const client = algoliasearch(
+    import.meta.env.VITE_ALGOLIA_APP_ID || 'VV2R5XG4FF',
+    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0'
+);
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
@@ -50,21 +48,29 @@ const searchVerses = async () => {
         await loadHighlights();
         await loadBibles();
     } else {
-        // Search verses from Meilisearch
-        // const response = await index.search(searchQuery.value, {
-        //     limit: 10,
-        // });
-        // Map Meilisearch hits to a format similar to highlights
-        // const verseResults = response.hits.map((hit: any) => ({
-        //     verse: {
-        //         id: hit.id,
-        //         text: hit.text,
-        //         verse_number: hit.verse_number,
-        //     },
-        // }));
-        // Merge highlights and verse search results
-        // highlights.value = verseResults;
-        // console.log('Search Results:', verseResults);
+        // Search verses from Algolia
+        try {
+            const response = await client.searchSingleIndex({
+                indexName: 'verses',
+                searchParams: {
+                    query: searchQuery.value,
+                    hitsPerPage: 10,
+                }
+            });
+            // Map Algolia hits to a format similar to highlights
+            const verseResults = response.hits.map((hit: any) => ({
+                verse: {
+                    id: hit.objectID || hit.id,
+                    text: hit.text,
+                    verse_number: hit.verse_number,
+                },
+            }));
+            // Merge highlights and verse search results
+            highlights.value = verseResults;
+            console.log('Search Results:', verseResults);
+        } catch (error) {
+            console.error('Algolia search error:', error);
+        }
         // Optionally, search bibles by name/language/version
         const bibleResponse = await fetch(`/api/bibles?search=${encodeURIComponent(searchQuery.value)}`);
         if (bibleResponse.ok) {

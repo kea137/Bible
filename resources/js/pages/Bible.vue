@@ -55,7 +55,7 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
-// import { MeiliSearch } from 'meilisearch';
+import { algoliasearch } from 'algoliasearch';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -481,39 +481,46 @@ onMounted(() => {
 
 const highlights = ref<any[]>([]);
 const searchQuery = ref('');
-// const client = new MeiliSearch({
-//   host: 'http://127.0.0.1:7700', // Replace with your Meilisearch host
-//   apiKey: 'Bzp5QuuYWH9xAS6uFH4EHGUb0MbopWJ4JiyTtUu6iaU', // Replace with your Meilisearch API key
-// });
-
-// const index = client.index('verses'); // Replace with your Meilisearch index name
+const client = algoliasearch(
+    import.meta.env.VITE_ALGOLIA_APP_ID || 'VV2R5XG4FF',
+    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0'
+);
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
         // Fetch all highlights and bibles if search query is empty
         await loadHighlights();
     } else {
-        // Search verses from Meilisearch
-        // const response = await index.search(searchQuery.value, {
-        //     limit: 10,
-        // });
-        // Map Meilisearch hits to a format similar to highlights
-        // const verseResults = response.hits.map((hit: any) => ({
-        //     verse: {
-        //         id: hit.id,
-        //         text: hit.text,
-        //         verse_number: hit.verse_number,
-        //         bible_id: hit.bible_id,
-        //     },
-        // }));
-        
-        // Merge highlights and verse search results
-        // Filter out verse with bible id matching current bible
-        // const filteredResults = verseResults.filter(
-        //     (vr: any) => vr.verse.bible_id === props.bible.id,
-        // );
+        // Search verses from Algolia
+        try {
+            const response = await client.searchSingleIndex({
+                indexName: 'verses',
+                searchParams: {
+                    query: searchQuery.value,
+                    hitsPerPage: 10,
+                    filters: `bible_id:${props.bible.id}`,
+                }
+            });
+            // Map Algolia hits to a format similar to highlights
+            const verseResults = response.hits.map((hit: any) => ({
+                verse: {
+                    id: hit.objectID || hit.id,
+                    text: hit.text,
+                    verse_number: hit.verse_number,
+                    bible_id: hit.bible_id,
+                },
+            }));
+            
+            // Merge highlights and verse search results
+            // Filter out verse with bible id matching current bible
+            const filteredResults = verseResults.filter(
+                (vr: any) => vr.verse.bible_id === props.bible.id,
+            );
 
-        // highlights.value = filteredResults;
+            highlights.value = filteredResults;
+        } catch (error) {
+            console.error('Algolia search error:', error);
+        }
     }
 };
 
