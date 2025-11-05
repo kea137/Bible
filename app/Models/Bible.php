@@ -40,4 +40,16 @@ class Bible extends Model
     {
         return $this->hasManyThrough(Reference::class, Verse::class);
     }
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'abbreviation' => $this->abbreviation,
+            'language' => $this->language,
+            'version' => $this->version,
+            'description' => $this->description,
+        ];
+    }
 }

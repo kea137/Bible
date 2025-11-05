@@ -44,4 +44,16 @@ class Verse extends Model
     {
         return $this->belongsTo(Reference::class);
     }
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'bible_id' => $this->bible_id,
+            'book_id' => $this->book_id,
+            'chapter_id' => $this->chapter_id,
+            'verse_number' => $this->verse_number,
+            'text' => $this->text,
+        ];
+    }
 }
