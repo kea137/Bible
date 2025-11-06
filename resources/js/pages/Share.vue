@@ -17,7 +17,7 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { Download, Palette, Share2, Type } from 'lucide-vue-next';
+import { Download, Image as ImageIcon, Palette, Share2, Type } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LogoImage from '/resources/images/logo-small.png';
@@ -27,6 +27,14 @@ const props = defineProps<{
     verseReference: string;
     verseText: string;
     verseId: number;
+    backgroundImages?: Array<{
+        id: number;
+        url: string;
+        thumbnail: string;
+        photographer: string;
+        photographer_url: string;
+        alt: string;
+    }>;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -48,6 +56,9 @@ const useCustomColors = ref(false);
 const selectedFont = ref('serif');
 const selectedFontSize = ref(48);
 const isBoldText = ref(false);
+const backgroundType = ref<'gradient' | 'image'>('gradient');
+const currentImageIndex = ref(0);
+const loadedImages = ref<Map<string, HTMLImageElement>>(new Map());
 
 // Font options
 const fontOptions = [
@@ -202,151 +213,223 @@ function wrapText(
 }
 
 function generateImage() {
-    if (!canvasRef.value) return;
-
-    isGenerating.value = true;
+    if (!canvasRef.value) {
+        console.warn('Canvas ref not available');
+        return;
+    }
 
     const canvas = canvasRef.value;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+        console.warn('Canvas context not available');
+        return;
+    }
+
+    isGenerating.value = true;
 
     // Set canvas size (1080x1080 for Instagram, good for most platforms)
     canvas.width = 1080;
     canvas.height = 1080;
 
-    // Create gradient background
-    const gradient = ctx.createLinearGradient(
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-    );
-    const colors = currentBackground.value.colors;
-    colors.forEach((color, index) => {
-        gradient.addColorStop(index / (colors.length - 1), color);
-    });
+    const drawTextAndLogo = () => {
+        // Add subtle overlay for better text readability
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Add subtle overlay for better text readability
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Set text properties
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-
-    // Draw verse text
-    const maxWidth = canvas.width - 200;
-    const lineHeight = 60;
-    const fontSize = 48;
-    const fontWeight = isBoldText.value ? 'bold' : 'normal';
-    ctx.font = `${fontWeight} ${selectedFontSize.value}px ${selectedFont.value}`;
-
-    const lines = wrapText(ctx, props.verseText, maxWidth);
-    const totalTextHeight = lines.length * lineHeight;
-    let y = (canvas.height - totalTextHeight) / 2;
-
-    lines.forEach((line) => {
-        ctx.fillText(line, canvas.width / 2, y);
-        y += lineHeight;
-    });
-
-    // Draw reference
-    ctx.font = `bold ${selectedFontSize.value}px ${selectedFont.value}`;
-    ctx.fillText(props.verseReference, canvas.width / 2, y + 80);
-
-    // Draw decorative elements
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
-    ctx.shadowBlur = 5;
-    const decorPadding = 150;
-    ctx.beginPath();
-    ctx.moveTo(decorPadding, y + 120);
-    ctx.lineTo(canvas.width - decorPadding, y + 120);
-    ctx.stroke();
-
-    // Load and draw logo badge at bottom right corner
-    const logo = new Image();
-    logo.onload = () => {
-        // Logo size (small rounded square badge)
-        const logoSize = 80;
-        const margin = 30;
-        const logoX = canvas.width - logoSize - margin;
-        const logoY = canvas.height - logoSize - margin;
-        const borderRadius = 15;
-
-        // Reset shadow for logo
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-
-        // Draw semi-transparent white background for logo
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.beginPath();
-        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
-        ctx.fill();
-
-        // Add subtle shadow around logo background
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetX = 0;
+        // Set text properties
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.beginPath();
-        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
-        ctx.fill();
 
-        // Reset shadow for drawing logo
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
+        // Draw verse text
+        const maxWidth = canvas.width - 200;
+        const lineHeight = 60;
+        const fontWeight = isBoldText.value ? 'bold' : 'normal';
+        ctx.font = `${fontWeight} ${selectedFontSize.value}px ${selectedFont.value}`;
 
-        // Draw logo with some padding inside the rounded square
-        const logoPadding = 10;
-        ctx.save();
+        const lines = wrapText(ctx, props.verseText, maxWidth);
+        const totalTextHeight = lines.length * lineHeight;
+        let y = (canvas.height - totalTextHeight) / 2;
+
+        lines.forEach((line) => {
+            ctx.fillText(line, canvas.width / 2, y);
+            y += lineHeight;
+        });
+
+        // Draw reference
+        ctx.font = `bold ${selectedFontSize.value}px ${selectedFont.value}`;
+        ctx.fillText(props.verseReference, canvas.width / 2, y + 80);
+
+        // Draw decorative elements
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 5;
+        const decorPadding = 150;
         ctx.beginPath();
-        ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
-        ctx.clip();
-        ctx.drawImage(
-            logo,
-            logoX + logoPadding,
-            logoY + logoPadding,
-            logoSize - logoPadding * 2,
-            logoSize - logoPadding * 2,
+        ctx.moveTo(decorPadding, y + 120);
+        ctx.lineTo(canvas.width - decorPadding, y + 120);
+        ctx.stroke();
+
+        // Function to finalize the image
+        const finalizeImage = () => {
+            imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
+            isGenerating.value = false;
+        };
+
+        // Load and draw logo badge at bottom right corner
+        const logo = new Image();
+        logo.onload = () => {
+            // Logo size (small rounded square badge)
+            const logoSize = 80;
+            const margin = 30;
+            const logoX = canvas.width - logoSize - margin;
+            const logoY = canvas.height - logoSize - margin;
+            const borderRadius = 15;
+
+            // Reset shadow for logo
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Draw semi-transparent white background for logo
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
+            ctx.fill();
+
+            // Add subtle shadow around logo background
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 2;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
+            ctx.fill();
+
+            // Reset shadow for drawing logo
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Draw logo with some padding inside the rounded square
+            const logoPadding = 10;
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(logoX, logoY, logoSize, logoSize, borderRadius);
+            ctx.clip();
+            ctx.drawImage(
+                logo,
+                logoX + logoPadding,
+                logoY + logoPadding,
+                logoSize - logoPadding * 2,
+                logoSize - logoPadding * 2,
+            );
+            ctx.restore();
+
+            // Finalize the image
+            finalizeImage();
+        };
+
+        logo.onerror = () => {
+            // If logo fails to load, still generate the image without it
+            console.warn('Logo failed to load, generating image without logo');
+            finalizeImage();
+        };
+
+        // Set logo source - using the imported logo
+        logo.src = LogoImage;
+    };
+
+    // Draw background based on type
+    if (backgroundType.value === 'image' && props.backgroundImages && props.backgroundImages.length > 0) {
+        const currentImage = props.backgroundImages[currentImageIndex.value];
+        const imageUrl = currentImage.url;
+        
+        // Check if image is already loaded
+        if (loadedImages.value.has(imageUrl)) {
+            const bgImg = loadedImages.value.get(imageUrl)!;
+            ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+            drawTextAndLogo();
+        } else {
+            // Load the image
+            const bgImg = new Image();
+            // Note: We try crossOrigin first, but handle CORS errors gracefully
+            bgImg.crossOrigin = 'anonymous';
+            bgImg.onload = () => {
+                loadedImages.value.set(imageUrl, bgImg);
+                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+                drawTextAndLogo();
+            };
+            bgImg.onerror = () => {
+                console.error('Failed to load background image from Pexels');
+                // Try loading without crossOrigin as fallback
+                const bgImgRetry = new Image();
+                bgImgRetry.onload = () => {
+                    try {
+                        loadedImages.value.set(imageUrl, bgImgRetry);
+                        ctx.drawImage(bgImgRetry, 0, 0, canvas.width, canvas.height);
+                        drawTextAndLogo();
+                    } catch (e) {
+                        console.error('Canvas tainted, using gradient fallback', e);
+                        // Draw gradient as fallback without changing UI state
+                        const tempGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        const colors = currentBackground.value.colors;
+                        colors.forEach((color, index) => {
+                            tempGradient.addColorStop(index / (colors.length - 1), color);
+                        });
+                        ctx.fillStyle = tempGradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        drawTextAndLogo();
+                    }
+                };
+                bgImgRetry.onerror = () => {
+                    console.error('Failed to load image even without CORS, using gradient');
+                    // Draw gradient as fallback without changing UI state
+                    const tempGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    const colors = currentBackground.value.colors;
+                    colors.forEach((color, index) => {
+                        tempGradient.addColorStop(index / (colors.length - 1), color);
+                    });
+                    ctx.fillStyle = tempGradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    drawTextAndLogo();
+                };
+                bgImgRetry.src = imageUrl;
+            };
+            bgImg.src = imageUrl;
+        }
+    } else {
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(
+            0,
+            0,
+            canvas.width,
+            canvas.height,
         );
-        ctx.restore();
+        const colors = currentBackground.value.colors;
+        colors.forEach((color, index) => {
+            gradient.addColorStop(index / (colors.length - 1), color);
+        });
 
-        // Convert to data URL
-        imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-        isGenerating.value = false;
-    };
-
-    logo.onerror = () => {
-        // If logo fails to load, still generate the image without it
-        console.warn('Logo failed to load, generating image without logo');
-        imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-        isGenerating.value = false;
-    };
-
-    // Set logo source - using the imported logo
-    logo.src = LogoImage;
-
-    // Convert to data URL
-    imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-    isGenerating.value = false;
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        drawTextAndLogo();
+    }
 }
 
 function changeBackground() {
-    currentBackgroundIndex.value =
-        (currentBackgroundIndex.value + 1) % backgrounds.length;
+    if (backgroundType.value === 'image' && props.backgroundImages && props.backgroundImages.length > 0) {
+        currentImageIndex.value = (currentImageIndex.value + 1) % props.backgroundImages.length;
+    } else {
+        currentBackgroundIndex.value = (currentBackgroundIndex.value + 1) % backgrounds.length;
+    }
     generateImage();
 }
 
@@ -413,6 +496,8 @@ watch(
         selectedFont,
         selectedFontSize,
         isBoldText,
+        backgroundType,
+        currentImageIndex,
     ],
     () => {
         generateImage();
@@ -454,24 +539,68 @@ watch(
 
                             <!-- Background Style Selection -->
                             <div class="flex flex-col gap-2">
-                                <p class="text-sm text-muted-foreground">
+                                <!-- Background Type Toggle -->
+                                <div class="rounded-lg border p-4">
+                                    <div class="mb-3 flex items-center gap-2">
+                                        <ImageIcon class="h-4 w-4" />
+                                        <h3 class="font-semibold">
+                                            {{ t('Background Type') }}
+                                        </h3>
+                                    </div>
+                                    <div class="mb-3 flex gap-2">
+                                        <Button
+                                            @click="backgroundType = 'gradient'"
+                                            :variant="backgroundType === 'gradient' ? 'default' : 'outline'"
+                                            size="sm"
+                                            class="flex-1"
+                                        >
+                                            <Palette class="mr-2 h-4 w-4" />
+                                            {{ t('Gradient') }}
+                                        </Button>
+                                        <Button
+                                            @click="backgroundType = 'image'"
+                                            :variant="backgroundType === 'image' ? 'default' : 'outline'"
+                                            size="sm"
+                                            class="flex-1"
+                                            :disabled="!backgroundImages || backgroundImages.length === 0"
+                                        >
+                                            <ImageIcon class="mr-2 h-4 w-4" />
+                                            {{ t('Image') }}
+                                        </Button>
+                                    </div>
+                                    <p class="text-xs text-muted-foreground" v-if="backgroundType === 'image' && backgroundImages && backgroundImages.length > 0">
+                                        {{ t('Using serene nature images from Pexels') }}
+                                    </p>
+                                    <p class="text-xs text-yellow-600 dark:text-yellow-400" v-if="!backgroundImages || backgroundImages.length === 0">
+                                        {{ t('No Images for now.') }}
+                                    </p>
+                                </div>
+
+                                <p class="text-sm text-muted-foreground" v-if="backgroundType === 'gradient'">
                                     {{ t('Current Style:') }}
                                     <span class="font-semibold">{{
                                         currentBackground.name
                                     }}</span>
                                 </p>
+                                <p class="text-sm text-muted-foreground" v-else-if="backgroundImages && backgroundImages.length > 0">
+                                    {{ t('Image by') }}
+                                    <a :href="backgroundImages[currentImageIndex].photographer_url" target="_blank" class="font-semibold underline">
+                                        {{ backgroundImages[currentImageIndex].photographer }}
+                                    </a>
+                                    {{ t('on Pexels') }}
+                                </p>
                                 <Button
                                     @click="changeBackground"
                                     variant="outline"
-                                    :disabled="isGenerating || useCustomColors"
+                                    :disabled="!isGenerating || (backgroundType === 'gradient' && useCustomColors)"
                                     class="w-full"
                                 >
-                                    {{ t('Change Background Style') }}
+                                    {{ backgroundType === 'image' ? t('Change Image') : t('Change Background Style') }}
                                 </Button>
                             </div>
 
-                            <!-- Custom Colors -->
-                            <div class="rounded-lg border p-4">
+                            <!-- Custom Colors (only show for gradients) -->
+                            <div class="rounded-lg border p-4" v-if="backgroundType === 'gradient'">
                                 <div class="mb-3 flex items-center gap-2">
                                     <Palette class="h-4 w-4" />
                                     <h3 class="font-semibold">
@@ -620,7 +749,7 @@ watch(
                                         @click="downloadImage('instagram')"
                                         variant="outline"
                                         size="sm"
-                                        :disabled="!imageDataUrl"
+                                        :disabled="!isGenerating"
                                     >
                                         <Download class="mr-2 h-4 w-4" />
                                         {{ t('Download Image') }}
@@ -643,7 +772,7 @@ watch(
                                 <Button
                                     @click="shareImage"
                                     class="w-full"
-                                    :disabled="!imageDataUrl"
+                                    :disabled="!isGenerating"
                                 >
                                     <Share2 class="mr-2 h-4 w-4" />
                                     {{ t('Share Image') }}
