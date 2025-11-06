@@ -31,12 +31,12 @@ class PexelsService
 
         // Cache for 1 hour to reduce API calls (200 per hour limit)
         // Use a consistent cache key to ensure we get the same set of images
-        $cacheKey = 'pexels_backgrounds_spiritual_'.md5($perPage);
+        $cacheKey = 'pexels_backgrounds_christian_'.md5($perPage);
 
         return Cache::remember($cacheKey, 3600, function () use ($perPage) {
             try {
                 // Use a consistent query for better caching and image consistency
-                $query = 'peaceful spiritual nature';
+                $query = 'christian nature light happiness';
 
                 $response = Http::withHeaders([
                     'Authorization' => $this->apiKey,

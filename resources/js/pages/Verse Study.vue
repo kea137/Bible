@@ -326,7 +326,7 @@ function translateReference(ref: string): string {
             <div class="flex justify-center">
                 <Button
                     variant="outline"
-                    @click="router.visit(`/bibles/${verse.bible.id}`)"
+                    @click="router.visit(`/bibles/${verse.bible.id}?book=${verse.book.id}&chapter=${verse.chapter.id}`)"
                     class="w-full sm:w-auto"
                 >
                     <BookOpen class="mr-2 h-4 w-4" />

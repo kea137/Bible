@@ -188,7 +188,7 @@ async function loadChapterProgress(chapterId: number) {
 
 async function toggleChapterCompletion() {
     if (!page.props.auth?.user) {
-        alert('Please log in to track reading progress');
+        alert(t('Please log in to track reading progress'));
         return;
     }
 
@@ -201,7 +201,7 @@ async function toggleChapterCompletion() {
         }
         if (!csrfToken) {
             alert(
-                'CSRF token not found. Refreshing page to fix authentication...',
+                t('CSRF token not found. Refreshing page to fix authentication...'),
             );
             window.location.reload();
             return;
@@ -244,7 +244,7 @@ function loadChapter(chapterId: number) {
 
 async function highlightVerse(verseId: number, color: string) {
     if (!page.props.auth?.user) {
-        alert('Please log in to highlight verses');
+        alert(t('Please log in to highlight verses'));
         return;
     }
 
@@ -261,7 +261,7 @@ async function highlightVerse(verseId: number, color: string) {
         if (!csrfToken) {
             // Attempt to reload the page to refresh CSRF token
             alert(
-                'CSRF token not found. Refreshing page to fix authentication...',
+                t('CSRF token not found. Refreshing page to fix authentication...'),
             );
             window.location.reload();
             return;
@@ -289,24 +289,24 @@ async function highlightVerse(verseId: number, color: string) {
             result = await response.json();
         } catch {
             // If response is not JSON, treat as error
-            alert('Unexpected server response. Please try again.');
+            alert(t('Unexpected server response. Please try again.'));
             return;
         }
 
         if (response.ok && result?.success) {
             await loadChapterHighlights(selectedChapterId.value);
         } else {
-            alert(result?.message || 'Failed to highlight verse.');
+            alert(result?.message || t('Failed to highlight verse.'));
         }
     } catch (error) {
-        alert('Failed to highlight verse.');
+        alert(t('Failed to highlight verse.'));
         console.error(error);
     }
 }
 
 async function removeHighlight(verseId: number) {
     if (!page.props.auth?.user) {
-        alert('Please log in to highlight verses');
+        alert(t('Please log in to highlight verses'));
         return;
     }
 
@@ -323,7 +323,7 @@ async function removeHighlight(verseId: number) {
         if (!csrfToken) {
             // Attempt to reload the page to refresh CSRF token
             alert(
-                'CSRF token not found. Refreshing page to fix authentication...',
+                t('CSRF token not found. Refreshing page to fix authentication...'),
             );
             window.location.reload();
             return;
@@ -347,11 +347,11 @@ async function removeHighlight(verseId: number) {
             removeVerseHighlightClass(verseId);
         } catch {
             // If response is not JSON, treat as error
-            alert('Unexpected server response. Please try again.');
+            alert(t('Unexpected server response. Please try again.'));
             return;
         }
     } catch (error) {
-        alert('Failed to Remove highlight.');
+        alert(t('Failed to Remove highlight.'));
         console.error(error);
     }
 }
@@ -881,6 +881,43 @@ function translateReference(ref: string): string {
                                         {{ verse.text }}
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
+                                        <!-- Cross References for Mobile -->
+                                        <div
+                                            v-if="
+                                                clickedVerseId === verse.id &&
+                                                hoveredVerseReferences.length > 0
+                                            "
+                                            class="mb-2 sm:hidden"
+                                        >
+                                            <DropdownMenuLabel>{{
+                                                t('Cross References')
+                                            }}</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <div class="max-h-40 overflow-y-auto px-2 py-1">
+                                                <div
+                                                    v-for="ref in hoveredVerseReferences.slice(
+                                                        0,
+                                                        3,
+                                                    )"
+                                                    :key="ref.id"
+                                                    class="mb-2 text-xs"
+                                                >
+                                                    <p class="font-semibold text-primary">
+                                                        {{ translateReference(ref.reference) }}
+                                                    </p>
+                                                    <p class="text-muted-foreground">
+                                                        {{ ref.verse?.text?.substring(0, 60) }}...
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    v-if="hoveredVerseReferences.length > 3"
+                                                    class="text-xs text-muted-foreground italic"
+                                                >
+                                                    +{{ hoveredVerseReferences.length - 3 }} {{ t('more references') }}
+                                                </p>
+                                            </div>
+                                            <DropdownMenuSeparator />
+                                        </div>
                                         <DropdownMenuLabel>{{
                                             t('Highlight')
                                         }}</DropdownMenuLabel>

@@ -461,9 +461,11 @@ php artisan serve</code></pre>
                                     Reference Preview
                                 </h3>
                                 <p class="text-sm text-muted-foreground">
-                                    <strong>Hover</strong> over verse numbers to
+                                    <strong>Desktop:</strong> Hover over verse numbers to
                                     see a preview of cross-references and the
-                                    total number of references.
+                                    total number of references.<br />
+                                    <strong>Mobile:</strong> Tap verse numbers to
+                                    view cross-references in the sidebar and in the verse options menu.
                                 </p>
                             </div>
 
@@ -494,10 +496,11 @@ php artisan serve</code></pre>
                                     Verse Study Page
                                 </h3>
                                 <p class="text-sm text-muted-foreground">
-                                    Access via right-click menu on any verse to
+                                    Access via right-click menu (or tap menu on mobile) on any verse to
                                     see full verse context, all cross-references
                                     with complete text, and the same verse in
-                                    other translations.
+                                    other translations. The "Return to Bible" button
+                                    takes you back to the exact chapter you were reading.
                                 </p>
                             </div>
                         </div>
