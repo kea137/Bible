@@ -6,6 +6,7 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 
 - Browse and read different Bible translations
 - **Public API for Bible verses** (no authentication required, rate-limited)
+- **Verse sharing with beautiful backgrounds** - Create shareable images with gradient or photo backgrounds from Pexels
 - User authentication and role management
 - Two-factor authentication support
 - Dark mode support
@@ -21,9 +22,12 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 3. Install Node dependencies: `npm install`
 4. Copy `.env.example` to `.env` and configure your environment
 5. Generate application key: `php artisan key:generate`
-6. Run migrations: `php artisan migrate`
-7. Build assets: `npm run build`
-8. Start the development server: `php artisan serve`
+6. (Optional) Add your Pexels API key to `.env` for verse sharing image backgrounds:
+   - Get a free API key from [Pexels](https://www.pexels.com/api/)
+   - Set `PEXELS_API_KEY=your-api-key-here` in `.env`
+7. Run migrations: `php artisan migrate`
+8. Build assets: `npm run build`
+9. Start the development server: `php artisan serve`
 
 ## Development
 
@@ -55,12 +59,32 @@ curl "http://your-domain.com/api/English/KJV/false/John/3/16"
 
 For detailed API documentation, see [DOCUMENTATION.md](DOCUMENTATION.md#public-bible-api).
 
+## Verse Sharing
+
+The application includes a powerful verse sharing feature that allows users to create beautiful images with Bible verses for social media sharing.
+
+### Features:
+- **Gradient Backgrounds**: Choose from 15 pre-designed beautiful gradient backgrounds
+- **Photo Backgrounds**: Use serene nature images from Pexels (when API key is configured)
+- **Customizable Text**: Adjust font family, size, and style
+- **Custom Colors**: Create your own gradient color combinations
+- **Download & Share**: Download images or use native device sharing
+
+### Setup (Optional):
+To enable photo backgrounds from Pexels:
+1. Sign up for a free API key at [Pexels](https://www.pexels.com/api/)
+2. Add `PEXELS_API_KEY=your-api-key-here` to your `.env` file
+3. The app will automatically fetch serene nature images for verse backgrounds
+
+**Note**: The feature works perfectly without a Pexels API key - users can still use the beautiful gradient backgrounds.
+
 ## Credits & Acknowledgments
 
 This project utilizes resources from the following repositories:
 
 - **Bible Translations**: [jadenzaleski/BibleTranslations](https://github.com/jadenzaleski/BibleTranslations) - Provides various Bible translation JSON files found in the `resources/Bibles` directory
 - **Bible Cross References**: [josephilipraja/bible-cross-reference-json](https://github.com/josephilipraja/bible-cross-reference-json) - Provides cross-reference data found in the `resources/References` directory
+- **Background Images**: [Pexels](https://www.pexels.com/) - Provides free stock photos for verse sharing backgrounds (when API key is configured)
 
 We are grateful to these projects for making their resources available to the community. For more information about the Bible translations and cross-reference system, please visit the repositories linked above.
 
