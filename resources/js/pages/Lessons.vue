@@ -64,7 +64,7 @@ const alertError = ref(!!errorMessage.value);
 </script>
 
 <template>
-    <Head title="Lessons" />
+    <Head :title="t('Lessons')" />
 
     <AlertUser
         v-if="alertSuccess"

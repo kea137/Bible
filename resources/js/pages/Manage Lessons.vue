@@ -43,7 +43,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Lessons Management',
+        title: t('Lessons Management'),
         href: manage_lessons().url,
     },
 ];
@@ -294,10 +294,9 @@ function handlePageChange(page: number) {
                         <p class="text-xs sm:text-sm">
                             {{
                                 t(
-                                    'No Lessons found. Create your first Lesson to get',
+                                    'No Lessons found. Create your first Lesson to get started',
                                 )
                             }}
-                            {{ t('started.') }}
                         </p>
                     </div>
                     <div class="mt-8 w-full">

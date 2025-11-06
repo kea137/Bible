@@ -479,8 +479,8 @@ onMounted(() => {
 const highlights = ref<any[]>([]);
 const searchQuery = ref('');
 const client = algoliasearch(
-    import.meta.env.VITE_ALGOLIA_APP_ID || 'VV2R5XG4FF',
-    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0',
+    import.meta.env.VITE_ALGOLIA_APP_ID || 'ZRYCA9P53B',
+    import.meta.env.VITE_ALGOLIA_API_KEY || '4bb73bb3c87b2a1005c2c06e9128dec4',
 );
 
 const searchVerses = async () => {
@@ -488,33 +488,26 @@ const searchVerses = async () => {
         // Fetch all highlights and bibles if search query is empty
         await loadHighlights();
     } else {
-        // Search verses from Algolia
+        // Search verses from Algolia 
         try {
             const response = await client.searchSingleIndex({
                 indexName: 'verses',
                 searchParams: {
                     query: searchQuery.value,
                     hitsPerPage: 10,
-                    filters: `bible_id:${props.bible.id}`,
                 },
             });
             // Map Algolia hits to a format similar to highlights
             const verseResults = response.hits.map((hit: any) => ({
                 verse: {
-                    id: hit.objectID || hit.id,
+                    id: typeof hit.objectID === 'string' && hit.objectID.startsWith('App\\Models\\Verse::')
+                        ? parseInt(hit.objectID.split('::')[1], 10)
+                        : hit.objectID || hit.id,
                     text: hit.text,
-                    verse_number: hit.verse_number,
-                    bible_id: hit.bible_id,
                 },
             }));
 
-            // Merge highlights and verse search results
-            // Filter out verse with bible id matching current bible
-            const filteredResults = verseResults.filter(
-                (vr: any) => vr.verse.bible_id === props.bible.id,
-            );
-
-            highlights.value = filteredResults;
+            highlights.value = verseResults.map(v => v.verse);
         } catch (error) {
             console.error('Algolia search error:', error);
         }
@@ -532,16 +525,22 @@ async function loadHighlights() {
     }
 }
 
+function getVerse(h: any) {
+    return h?.verse || h;
+}
+
 const filteredHighlights = computed(() => {
     if (!searchQuery.value) {
         return highlights.value;
     }
     const query = searchQuery.value.toLowerCase();
-    return highlights.value.filter(
-        (h) =>
-            h.verse.text.toLowerCase().includes(query) ||
-            h.verse.book?.title.toLowerCase().includes(query),
-    );
+    return highlights.value.filter((h) => {
+        const verse = getVerse(h);
+        if (!verse || typeof verse.text !== 'string') return false;
+        const textMatch = verse.text.toLowerCase().includes(query);
+        const bookMatch = verse.book && typeof verse.book.title === 'string' && verse.book.title.toLowerCase().includes(query);
+        return textMatch || bookMatch;
+    });
 });
 
 function viewHighlight(verseId: number) {
@@ -682,6 +681,12 @@ function translateReference(ref: string): string {
                                     :open="searchOpen"
                                     @update:open="searchOpen = $event"
                                 >
+                                    <template #title>
+                                        <span class="sr-only">{{ t('Search Verses') }}</span>
+                                    </template>
+                                    <template #description>
+                                        <span class="sr-only">{{ t('Type to search for Bible verses or highlights.') }}</span>
+                                    </template>
                                     <Command>
                                         <CommandInput
                                             v-model="searchQuery"
@@ -693,70 +698,24 @@ function translateReference(ref: string): string {
                                                 t('No Verses found.')
                                             }}</CommandEmpty>
                                             <CommandGroup
-                                                v-if="
-                                                    filteredHighlights.length >
-                                                    0
-                                                "
-                                                :heading="
-                                                    t('Highlighted Verses')
-                                                "
+                                                v-if="filteredHighlights.length > 0"
+                                                :heading="t('Highlighted Verses')"
                                             >
                                                 <CommandItem
-                                                    v-for="highlight in filteredHighlights.slice(
-                                                        0,
-                                                        10,
-                                                    )"
-                                                    :key="highlight.id"
-                                                    :value="
-                                                        highlight.verse.text
-                                                    "
-                                                    @select="
-                                                        viewHighlight(
-                                                            highlight.verse.id,
-                                                        )
-                                                    "
+                                                    v-for="highlight in filteredHighlights.slice(0, 10)"
+                                                    :key="highlight.id || (highlight.verse && highlight.verse.id)"
+                                                    :value="getVerse(highlight).text"
+                                                    @select="viewHighlight(getVerse(highlight).id)"
                                                 >
-                                                    <PenTool
-                                                        class="mr-2 h-4 w-4"
-                                                    />
-                                                    <Link
-                                                        :href="
-                                                            verse_study(
-                                                                highlight.verse
-                                                                    .id,
-                                                            )
-                                                        "
-                                                    >
-                                                        <div
-                                                            class="flex flex-col"
-                                                        >
-                                                            <span
-                                                                class="line-clamp-1 text-sm"
-                                                                >{{
-                                                                    highlight
-                                                                        .verse
-                                                                        .text
-                                                                }}</span
-                                                            >
-                                                            <span
-                                                                class="text-xs text-muted-foreground"
-                                                            >
-                                                                {{
-                                                                    highlight
-                                                                        .verse
-                                                                        .book
-                                                                        ?.title
-                                                                }}
-                                                                {{
-                                                                    highlight
-                                                                        .verse
-                                                                        .chapter
-                                                                        ?.chapter_number
-                                                                }}:{{
-                                                                    highlight
-                                                                        .verse
-                                                                        .verse_number
-                                                                }}
+                                                    <PenTool class="mr-2 h-4 w-4" />
+                                                    <Link :href="verse_study(highlight.id).url" class="flex w-full items-center gap-2">
+                                                        <div class="flex flex-col">
+                                                            <span class="line-clamp-1 text-sm">
+                                                                {{ getVerse(highlight).text }}
+                                                            </span>
+                                                            <span class="text-xs text-muted-foreground">
+                                                                {{ getVerse(highlight).book?.title }}
+                                                                {{ getVerse(highlight).chapter?.chapter_number }}:{{ getVerse(highlight).verse_number }}
                                                             </span>
                                                         </div>
                                                     </Link>
