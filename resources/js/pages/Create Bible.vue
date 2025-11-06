@@ -233,7 +233,7 @@ if (info) {
                                         name="version"
                                         :tabindex="1"
                                         type="text"
-                                        placeholder="Version of the Bible"
+                                        :placeholder="t('Version of the Bible')"
                                     />
                                     <InputError :message="errors.version" />
                                 </div>

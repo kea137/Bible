@@ -201,7 +201,7 @@ const searchVerses = async () => {
 </script>
 
 <template>
-    <Head title="Bibles" />
+    <Head :title="t('Bibles')" />
 
     <AlertUser
         v-if="alertSuccess"
@@ -327,11 +327,11 @@ const searchVerses = async () => {
                     <CommandInput
                         v-model="searchQuery"
                         @input="searchVerses()"
-                        placeholder="Search bibles by name, language, or version..."
+                        :placeholder="t('Search bibles by name, language, or version...')"
                     />
                     <CommandList>
                         <CommandEmpty>{{ t('No bibles found.') }}</CommandEmpty>
-                        <CommandGroup heading="Bibles">
+                        <CommandGroup :heading="t('Bibles')">
                             <CommandItem
                                 v-for="bible in filteredBibles"
                                 :key="bible.id"

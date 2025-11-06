@@ -380,7 +380,7 @@ async function deleteNote() {
                                 <Input
                                     id="edit-title"
                                     v-model="editTitle"
-                                    placeholder="Note title..."
+                                    :placeholder="t('Note title...')"
                                 />
                             </div>
                             <div class="space-y-2">
@@ -390,7 +390,7 @@ async function deleteNote() {
                                 <Textarea
                                     id="edit-content"
                                     v-model="editContent"
-                                    placeholder="Your thoughts, insights, or reflections..."
+                                    :placeholder="t('Your thoughts, insights, or reflections...')"
                                     rows="12"
                                 />
                             </div>
