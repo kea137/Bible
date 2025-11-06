@@ -185,13 +185,6 @@ const currentBackground = computed(() => {
     return backgrounds[currentBackgroundIndex.value];
 });
 
-const currentPhotographer = computed(() => {
-    if (backgroundType.value === 'image' && props.backgroundImages && props.backgroundImages.length > 0) {
-        return props.backgroundImages[currentImageIndex.value];
-    }
-    return null;
-});
-
 function wrapText(
     ctx: CanvasRenderingContext2D,
     text: string,
