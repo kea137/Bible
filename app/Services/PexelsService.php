@@ -30,20 +30,20 @@ class PexelsService
         }
 
         // Cache for 1 hour to reduce API calls (200 per hour limit)
-        $cacheKey = 'pexels_backgrounds_'.md5($perPage);
+        // Use a consistent cache key to ensure we get the same set of images
+        $cacheKey = 'pexels_backgrounds_spiritual_'.md5($perPage);
 
         return Cache::remember($cacheKey, 3600, function () use ($perPage) {
             try {
-                // Search for serene, spiritual nature images suitable for Bible verses
-                $queries = ['serenity nature', 'peaceful landscape', 'spiritual nature', 'calm sky'];
-                $randomQuery = $queries[array_rand($queries)];
+                // Use a consistent query for better caching and image consistency
+                $query = 'peaceful spiritual nature';
 
                 $response = Http::withHeaders([
                     'Authorization' => $this->apiKey,
                 ])
                     ->timeout(10)
                     ->get("{$this->baseUrl}/search", [
-                        'query' => $randomQuery,
+                        'query' => $query,
                         'per_page' => $perPage,
                         'orientation' => 'square', // Best for social media sharing
                     ]);

@@ -349,6 +349,7 @@ function generateImage() {
         } else {
             // Load the image
             const bgImg = new Image();
+            // Note: We try crossOrigin first, but handle CORS errors gracefully
             bgImg.crossOrigin = 'anonymous';
             bgImg.onload = () => {
                 loadedImages.value.set(imageUrl, bgImg);
@@ -356,10 +357,40 @@ function generateImage() {
                 drawTextAndLogo();
             };
             bgImg.onerror = () => {
-                console.error('Failed to load background image, falling back to gradient');
-                // Fallback to gradient
-                backgroundType.value = 'gradient';
-                generateImage();
+                console.error('Failed to load background image from Pexels');
+                // Try loading without crossOrigin as fallback
+                const bgImgRetry = new Image();
+                bgImgRetry.onload = () => {
+                    try {
+                        loadedImages.value.set(imageUrl, bgImgRetry);
+                        ctx.drawImage(bgImgRetry, 0, 0, canvas.width, canvas.height);
+                        drawTextAndLogo();
+                    } catch (e) {
+                        console.error('Canvas tainted, using gradient fallback', e);
+                        // Draw gradient as fallback without changing UI state
+                        const tempGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        const colors = currentBackground.value.colors;
+                        colors.forEach((color, index) => {
+                            tempGradient.addColorStop(index / (colors.length - 1), color);
+                        });
+                        ctx.fillStyle = tempGradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        drawTextAndLogo();
+                    }
+                };
+                bgImgRetry.onerror = () => {
+                    console.error('Failed to load image even without CORS, using gradient');
+                    // Draw gradient as fallback without changing UI state
+                    const tempGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    const colors = currentBackground.value.colors;
+                    colors.forEach((color, index) => {
+                        tempGradient.addColorStop(index / (colors.length - 1), color);
+                    });
+                    ctx.fillStyle = tempGradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    drawTextAndLogo();
+                };
+                bgImgRetry.src = imageUrl;
             };
             bgImg.src = imageUrl;
         }
