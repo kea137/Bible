@@ -572,7 +572,7 @@ watch(
                                         {{ t('Using serene nature images from Pexels') }}
                                     </p>
                                     <p class="text-xs text-yellow-600 dark:text-yellow-400" v-if="!backgroundImages || backgroundImages.length === 0">
-                                        {{ t('No Pexels API key configured. Add PEXELS_API_KEY to your .env file to enable image backgrounds. Run "php artisan config:clear" after adding it.') }}
+                                        {{ t('No Images for now.') }}
                                     </p>
                                 </div>
 
@@ -592,7 +592,7 @@ watch(
                                 <Button
                                     @click="changeBackground"
                                     variant="outline"
-                                    :disabled="isGenerating || (backgroundType === 'gradient' && useCustomColors)"
+                                    :disabled="!isGenerating || (backgroundType === 'gradient' && useCustomColors)"
                                     class="w-full"
                                 >
                                     {{ backgroundType === 'image' ? t('Change Image') : t('Change Background Style') }}
@@ -749,7 +749,7 @@ watch(
                                         @click="downloadImage('instagram')"
                                         variant="outline"
                                         size="sm"
-                                        :disabled="!imageDataUrl"
+                                        :disabled="!isGenerating"
                                     >
                                         <Download class="mr-2 h-4 w-4" />
                                         {{ t('Download Image') }}
@@ -772,7 +772,7 @@ watch(
                                 <Button
                                     @click="shareImage"
                                     class="w-full"
-                                    :disabled="!imageDataUrl"
+                                    :disabled="!isGenerating"
                                 >
                                     <Share2 class="mr-2 h-4 w-4" />
                                     {{ t('Share Image') }}
