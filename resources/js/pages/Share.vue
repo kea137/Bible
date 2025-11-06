@@ -592,7 +592,7 @@ watch(
                                 <Button
                                     @click="changeBackground"
                                     variant="outline"
-                                    :disabled="!isGenerating || (backgroundType === 'gradient' && useCustomColors)"
+                                    :disabled="isGenerating || (backgroundType === 'gradient' && useCustomColors)"
                                     class="w-full"
                                 >
                                     {{ backgroundType === 'image' ? t('Change Image') : t('Change Background Style') }}
@@ -749,7 +749,7 @@ watch(
                                         @click="downloadImage('instagram')"
                                         variant="outline"
                                         size="sm"
-                                        :disabled="!isGenerating"
+                                        :disabled="isGenerating"
                                     >
                                         <Download class="mr-2 h-4 w-4" />
                                         {{ t('Download Image') }}
@@ -772,7 +772,7 @@ watch(
                                 <Button
                                     @click="shareImage"
                                     class="w-full"
-                                    :disabled="!isGenerating"
+                                    :disabled="isGenerating"
                                 >
                                     <Share2 class="mr-2 h-4 w-4" />
                                     {{ t('Share Image') }}
