@@ -14,7 +14,7 @@ class PexelsService
 
     public function __construct()
     {
-        $this->apiKey = config('services.pexels.api_key', '');
+        $this->apiKey = config('services.pexels.api_key', env('PEXELS_API_KEY', ''));
     }
 
     /**
