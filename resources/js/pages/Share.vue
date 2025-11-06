@@ -267,6 +267,12 @@ function generateImage() {
         ctx.lineTo(canvas.width - decorPadding, y + 120);
         ctx.stroke();
 
+        // Function to finalize the image
+        const finalizeImage = () => {
+            imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
+            isGenerating.value = false;
+        };
+
         // Load and draw logo badge at bottom right corner
         const logo = new Image();
         logo.onload = () => {
@@ -320,16 +326,14 @@ function generateImage() {
             );
             ctx.restore();
 
-            // Convert to data URL
-            imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-            isGenerating.value = false;
+            // Finalize the image
+            finalizeImage();
         };
 
         logo.onerror = () => {
             // If logo fails to load, still generate the image without it
             console.warn('Logo failed to load, generating image without logo');
-            imageDataUrl.value = canvas.toDataURL('image/png', 1.0);
-            isGenerating.value = false;
+            finalizeImage();
         };
 
         // Set logo source - using the imported logo
@@ -561,8 +565,8 @@ watch(
                                     <p class="text-xs text-muted-foreground" v-if="backgroundType === 'image' && backgroundImages && backgroundImages.length > 0">
                                         {{ t('Using serene nature images from Pexels') }}
                                     </p>
-                                    <p class="text-xs text-yellow-600 dark:text-yellow-400" v-if="backgroundType === 'image' && (!backgroundImages || backgroundImages.length === 0)">
-                                        {{ t('No background images available. Using gradients instead.') }}
+                                    <p class="text-xs text-yellow-600 dark:text-yellow-400" v-if="!backgroundImages || backgroundImages.length === 0">
+                                        {{ t('No Pexels API key configured. Add PEXELS_API_KEY to your .env file to enable image backgrounds. Run "php artisan config:clear" after adding it.') }}
                                     </p>
                                 </div>
 
