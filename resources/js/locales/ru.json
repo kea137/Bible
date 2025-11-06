@@ -768,5 +768,15 @@
     "website": "Веб-сайт",
     "welcome": "Добро пожаловать",
     "year": "Год",
-    "yes": "Да"
+    "yes": "Да",
+    "Please log in to track reading progress": "Пожалуйста, войдите, чтобы отслеживать прогресс чтения",
+    "Please log in to highlight verses": "Пожалуйста, войдите, чтобы выделить стихи",
+    "CSRF token not found. Refreshing page to fix authentication...": "Токен CSRF не найден. Обновление страницы для исправления аутентификации...",
+    "Unexpected server response. Please try again.": "Неожиданный ответ сервера. Пожалуйста, попробуйте еще раз.",
+    "Failed to highlight verse.": "Не удалось выделить стих.",
+    "Failed to Remove highlight.": "Не удалось удалить выделение.",
+    "Mark as Read": "Отметить как прочитанное",
+    "Mark as Unread": "Отметить как непрочитанное",
+    "Search bibles by name, language, or version...": "Поиск Библий по имени, языку или версии...",
+    "Boot Up All Bibles": "Загрузить все Библии"
 }

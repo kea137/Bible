@@ -623,5 +623,15 @@
     "Website": "Site Web",
     "Welcome": "Bienvenue",
     "Year": "Année",
-    "Yes": "Oui"
+    "Yes": "Oui",
+    "Please log in to track reading progress": "Veuillez vous connecter pour suivre la progression de lecture",
+    "Please log in to highlight verses": "Veuillez vous connecter pour surligner les versets",
+    "CSRF token not found. Refreshing page to fix authentication...": "Jeton CSRF introuvable. Actualisation de la page pour corriger l'authentification...",
+    "Unexpected server response. Please try again.": "Réponse du serveur inattendue. Veuillez réessayer.",
+    "Failed to highlight verse.": "Échec du surlignage du verset.",
+    "Failed to Remove highlight.": "Échec de la suppression du surlignage.",
+    "Mark as Read": "Marquer comme lu",
+    "Mark as Unread": "Marquer comme non lu",
+    "Search bibles by name, language, or version...": "Rechercher des bibles par nom, langue ou version...",
+    "Boot Up All Bibles": "Charger toutes les Bibles"
 }

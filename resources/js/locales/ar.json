@@ -768,5 +768,15 @@
     "Website": "موقع إلكتروني",
     "Welcome": "مرحباً",
     "Year": "سنة",
-    "Yes": "نعم"
+    "Yes": "نعم",
+    "Please log in to track reading progress": "الرجاء تسجيل الدخول لتتبع تقدم القراءة",
+    "Please log in to highlight verses": "الرجاء تسجيل الدخول لتمييز الآيات",
+    "CSRF token not found. Refreshing page to fix authentication...": "لم يتم العثور على رمز CSRF. جارٍ تحديث الصفحة لإصلاح المصادقة...",
+    "Unexpected server response. Please try again.": "استجابة غير متوقعة من الخادم. يرجى المحاولة مرة أخرى.",
+    "Failed to highlight verse.": "فشل في تمييز الآية.",
+    "Failed to Remove highlight.": "فشل في إزالة التمييز.",
+    "Mark as Read": "وضع علامة كمقروء",
+    "Mark as Unread": "وضع علامة كغير مقروء",
+    "Search bibles by name, language, or version...": "البحث عن الأناجيل بالاسم أو اللغة أو النسخة...",
+    "Boot Up All Bibles": "تحميل جميع الأناجيل"
 }

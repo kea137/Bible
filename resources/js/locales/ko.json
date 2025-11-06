@@ -768,5 +768,15 @@
     "Website": "웹사이트",
     "Welcome": "환영합니다",
     "Year": "년",
-    "Yes": "예"
+    "Yes": "예",
+    "Please log in to track reading progress": "독서 진행 상황을 추적하려면 로그인하세요",
+    "Please log in to highlight verses": "구절을 강조하려면 로그인하세요",
+    "CSRF token not found. Refreshing page to fix authentication...": "CSRF 토큰을 찾을 수 없습니다. 인증을 수정하기 위해 페이지를 새로 고치는 중...",
+    "Unexpected server response. Please try again.": "예기치 않은 서버 응답입니다. 다시 시도하세요.",
+    "Failed to highlight verse.": "구절 강조에 실패했습니다.",
+    "Failed to Remove highlight.": "강조 제거에 실패했습니다.",
+    "Mark as Read": "읽음으로 표시",
+    "Mark as Unread": "읽지 않음으로 표시",
+    "Search bibles by name, language, or version...": "이름, 언어 또는 버전으로 성경 검색...",
+    "Boot Up All Bibles": "모든 성경 로드"
 }

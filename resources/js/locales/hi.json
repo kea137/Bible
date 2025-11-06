@@ -768,5 +768,15 @@
     "website": "वेबसाइट",
     "welcome": "स्वागत है",
     "year": "वर्ष",
-    "yes": "हाँ"
+    "yes": "हाँ",
+    "Please log in to track reading progress": "पढ़ने की प्रगति को ट्रैक करने के लिए कृपया लॉग इन करें",
+    "Please log in to highlight verses": "छंदों को हाइलाइट करने के लिए कृपया लॉग इन करें",
+    "CSRF token not found. Refreshing page to fix authentication...": "CSRF टोकन नहीं मिला। प्रमाणीकरण को ठीक करने के लिए पृष्ठ को रीफ्रेश किया जा रहा है...",
+    "Unexpected server response. Please try again.": "अप्रत्याशित सर्वर प्रतिक्रिया। कृपया पुनः प्रयास करें।",
+    "Failed to highlight verse.": "छंद को हाइलाइट करने में विफल।",
+    "Failed to Remove highlight.": "हाइलाइट हटाने में विफल।",
+    "Mark as Read": "पढ़ा हुआ चिह्नित करें",
+    "Mark as Unread": "अपठित चिह्नित करें",
+    "Search bibles by name, language, or version...": "नाम, भाषा या संस्करण के अनुसार बाइबल खोजें...",
+    "Boot Up All Bibles": "सभी बाइबल लोड करें"
 }

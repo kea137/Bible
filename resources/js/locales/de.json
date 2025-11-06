@@ -770,5 +770,15 @@
     "Website": "Webseite",
     "Welcome": "Willkommen",
     "Year": "Jahr",
-    "Yes": "Ja"
+    "Yes": "Ja",
+    "Please log in to track reading progress": "Bitte melden Sie sich an, um den Lesefortschritt zu verfolgen",
+    "Please log in to highlight verses": "Bitte melden Sie sich an, um Verse zu markieren",
+    "CSRF token not found. Refreshing page to fix authentication...": "CSRF-Token nicht gefunden. Seite wird aktualisiert, um die Authentifizierung zu beheben...",
+    "Unexpected server response. Please try again.": "Unerwartete Serverantwort. Bitte versuchen Sie es erneut.",
+    "Failed to highlight verse.": "Fehler beim Markieren des Verses.",
+    "Failed to Remove highlight.": "Fehler beim Entfernen der Markierung.",
+    "Mark as Read": "Als gelesen markieren",
+    "Mark as Unread": "Als ungelesen markieren",
+    "Search bibles by name, language, or version...": "Bibeln nach Name, Sprache oder Version suchen...",
+    "Boot Up All Bibles": "Alle Bibeln laden"
 }

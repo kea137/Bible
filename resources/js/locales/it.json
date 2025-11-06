@@ -768,5 +768,15 @@
     "Website": "Sito web",
     "Welcome": "Benvenuto",
     "Year": "Anno",
-    "Yes": "Sì"
+    "Yes": "Sì",
+    "Please log in to track reading progress": "Effettua il login per tracciare i progressi di lettura",
+    "Please log in to highlight verses": "Effettua il login per evidenziare i versetti",
+    "CSRF token not found. Refreshing page to fix authentication...": "Token CSRF non trovato. Aggiornamento della pagina per correggere l'autenticazione...",
+    "Unexpected server response. Please try again.": "Risposta del server imprevista. Riprova.",
+    "Failed to highlight verse.": "Impossibile evidenziare il versetto.",
+    "Failed to Remove highlight.": "Impossibile rimuovere l'evidenziazione.",
+    "Mark as Read": "Segna come letto",
+    "Mark as Unread": "Segna come non letto",
+    "Search bibles by name, language, or version...": "Cerca bibbie per nome, lingua o versione...",
+    "Boot Up All Bibles": "Carica tutte le Bibbie"
 }

@@ -771,5 +771,15 @@
     "Website": "Tovuti",
     "Welcome": "Karibu",
     "Year": "Mwaka",
-    "Yes": "Ndiyo"
+    "Yes": "Ndiyo",
+    "Please log in to track reading progress": "Tafadhali ingia ili kufuatilia maendeleo ya kusoma",
+    "Please log in to highlight verses": "Tafadhali ingia ili kuangazia mistari",
+    "CSRF token not found. Refreshing page to fix authentication...": "Ishara ya CSRF haikupatikana. Inarudisha ukurasa ili kurekebisha uthibitishaji...",
+    "Unexpected server response. Please try again.": "Jibu lisilo la kawaida kutoka kwa seva. Tafadhali jaribu tena.",
+    "Failed to highlight verse.": "Imeshindwa kuangazia mstari.",
+    "Failed to Remove highlight.": "Imeshindwa kuondoa uangavu.",
+    "Mark as Read": "Weka alama kama Imesomwa",
+    "Mark as Unread": "Weka alama kama Haijasomwa",
+    "Search bibles by name, language, or version...": "Tafuta Biblia kwa jina, lugha au toleo...",
+    "Boot Up All Bibles": "Pakia Biblia zote"
 }

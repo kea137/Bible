@@ -784,5 +784,15 @@
     "website": "网站",
     "welcome": "欢迎",
     "year": "年",
-    "yes": "是"
+    "yes": "是",
+    "Please log in to track reading progress": "请登录以跟踪阅读进度",
+    "Please log in to highlight verses": "请登录以高亮显示经文",
+    "CSRF token not found. Refreshing page to fix authentication...": "未找到CSRF令牌。正在刷新页面以修复身份验证...",
+    "Unexpected server response. Please try again.": "服务器响应异常。请重试。",
+    "Failed to highlight verse.": "高亮显示经文失败。",
+    "Failed to Remove highlight.": "删除高亮失败。",
+    "Mark as Read": "标记为已读",
+    "Mark as Unread": "标记为未读",
+    "Search bibles by name, language, or version...": "按名称、语言或版本搜索圣经...",
+    "Boot Up All Bibles": "加载所有圣经"
 }
