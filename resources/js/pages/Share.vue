@@ -213,13 +213,19 @@ function wrapText(
 }
 
 function generateImage() {
-    if (!canvasRef.value) return;
-
-    isGenerating.value = true;
+    if (!canvasRef.value) {
+        console.warn('Canvas ref not available');
+        return;
+    }
 
     const canvas = canvasRef.value;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+        console.warn('Canvas context not available');
+        return;
+    }
+
+    isGenerating.value = true;
 
     // Set canvas size (1080x1080 for Instagram, good for most platforms)
     canvas.width = 1080;
