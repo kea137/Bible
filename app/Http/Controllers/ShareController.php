@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Verse;
+use App\Services\PexelsService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,7 +12,7 @@ class ShareController extends Controller
     /**
      * Display the verse sharing page.
      */
-    public function index(Request $request)
+    public function index(Request $request, PexelsService $pexelsService)
     {
         $verseReference = $request->query('reference', '');
         $verseText = $request->query('text', '');
@@ -26,10 +27,14 @@ class ShareController extends Controller
             }
         }
 
+        // Get background images from Pexels
+        $backgroundImages = $pexelsService->getBackgroundImages(15);
+
         return Inertia::render('Share', [
             'verseReference' => $verseReference,
             'verseText' => $verseText,
             'verseId' => ($verseId && is_numeric($verseId)) ? (int) $verseId : null,
+            'backgroundImages' => $backgroundImages,
         ]);
     }
 }
