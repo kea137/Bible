@@ -4,6 +4,7 @@ use App\Http\Controllers\BibleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ReadingProgressController;
 use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
@@ -26,7 +27,14 @@ Route::get('/documentation', function () {
     return Inertia::render('Documentation');
 })->name('documentation');
 
-Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'check.onboarding'])->name('dashboard');
+
+// Onboarding routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('onboarding', [OnboardingController::class, 'show'])->name('onboarding');
+    Route::post('onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
+    Route::post('onboarding/skip', [OnboardingController::class, 'skip'])->name('onboarding.skip');
+});
 
 // Share verse routes
 Route::get('/share', [ShareController::class, 'index'])->name('share');
@@ -37,14 +45,14 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 // Store user's locale preference
 Route::post('/api/user/locale', [DashboardController::class, 'updateLocale'])->name('update_locale')->middleware('auth');
 
-Route::get('/bibles', [BibleController::class, 'index'])->name('bibles')->middleware('auth');
-Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel')->middleware('auth');
-Route::get('/bibles/configure', [BibleController::class, 'configure'])->name('bibles_configure')->middleware(['auth', 'can:update,App\\Models\\Bible']);
-Route::post('/bibles/bootup', [BibleController::class, 'bootup'])->name('bibles_bootup')->middleware(['auth', 'can:update,App\\Models\\Bible']);
-Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show')->middleware('auth');
-Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create')->middleware(['auth', 'can:update,App\\Models\\Bible']);
-Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store')->middleware(['auth', 'can:update,App\\Models\\Bible']);
-Route::get('/bibles/{bible}/edit', [BibleController::class, 'edit'])->name('bible_edit')->middleware(['auth', 'can:update,App\\Models\\Bible']);
+Route::get('/bibles', [BibleController::class, 'index'])->name('bibles')->middleware(['auth', 'check.onboarding']);
+Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel')->middleware(['auth', 'check.onboarding']);
+Route::get('/bibles/configure', [BibleController::class, 'configure'])->name('bibles_configure')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);
+Route::post('/bibles/bootup', [BibleController::class, 'bootup'])->name('bibles_bootup')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);
+Route::get('/bibles/{bible}', [BibleController::class, 'show'])->name('bible_show')->middleware(['auth', 'check.onboarding']);
+Route::get('/bibles/upload/bible', [BibleController::class, 'create'])->name('bible_create')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);
+Route::post('/bibles/create/bible', [BibleController::class, 'store'])->name('bible_store')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);
+Route::get('/bibles/{bible}/edit', [BibleController::class, 'edit'])->name('bible_edit')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);
 Route::put('/bibles/{bible}', [BibleController::class, 'update'])->name('bible_update')->middleware(['auth', 'can:update,App\\Models\\Bible']);
 Route::delete('/bibles/{bible}', [BibleController::class, 'destroy'])->name('bible_destroy')->middleware(['auth', 'can:update,App\\Models\\Bible']);
 Route::get('/api/bibles', [BibleController::class, 'apiBiblesIndex'])->name('api_bibles')->middleware('auth');

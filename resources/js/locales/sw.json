@@ -781,5 +781,26 @@
     "Search bibles by name, language, or version...": "Tafuta Biblia kwa jina, lugha au toleo...",
     "Boot Up All Bibles": "Pakia Biblia zote",
     "Note title...": "Kichwa cha kumbukumbu...",
-    "Your thoughts, insights, or reflections...": "Mawazo yako, maarifa au tafakari..."
+    "Your thoughts, insights, or reflections...": "Mawazo yako, maarifa au tafakari...",
+
+    "Welcome! Let's get you started": "Karibu! Hebu tuanze",
+    "Let's personalize your Bible experience": "Hebu tubinafsishe uzoefu wako wa Biblia",
+    "Choose your preferred language": "Chagua lugha unayopendelea",
+    "Select the language you want to use for the app interface": "Chagua lugha unayotaka kutumia kwa kiolesura cha programu",
+    "Select Your Preferred Bible Translations": "Chagua Tafsiri za Biblia Unazopenda",
+    "Choose the Bible translations you'd like to use for parallel reading and study": "Chagua tafsiri za Biblia unazotaka kutumia kwa kusoma sambamba na kujifunza",
+    "You can select multiple translations": "Unaweza kuchagua tafsiri nyingi",
+    "Customize Your Reading Experience": "Binafsisha Uzoefu wako wa Kusoma",
+    "Choose your preferred theme for reading": "Chagua mandhari unayopendelea kwa kusoma",
+    "Light": "Mwanga",
+    "Dark": "Giza",
+    "System": "Mfumo",
+    "Next": "Ifuatayo",
+    "Previous": "Iliyotangulia",
+    "Skip for now": "Ruka kwa sasa",
+    "Complete Setup": "Kamilisha Usanidi",
+    "Select at least one Bible translation": "Chagua angalau tafsiri moja ya Biblia",
+    "No translations available": "Hakuna tafsiri zinazopatikana",
+    "Step": "Hatua",
+    "of": "ya"
 }

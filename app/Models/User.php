@@ -23,6 +23,9 @@ class User extends Authenticatable
         'email',
         'password',
         'language',
+        'preferred_translations',
+        'appearance_preferences',
+        'onboarding_completed',
     ];
 
     /**
@@ -48,6 +51,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'preferred_translations' => 'array',
+            'appearance_preferences' => 'array',
+            'onboarding_completed' => 'boolean',
         ];
     }
 
