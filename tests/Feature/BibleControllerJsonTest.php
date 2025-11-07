@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 test('bible controller can upload swahili format json file', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['onboarding_completed' => true]);
     Storage::fake('local');
 
     $jsonContent = json_encode([
@@ -49,7 +49,7 @@ test('bible controller can upload swahili format json file', function () {
 });
 
 test('bible controller can upload flat verses format json file', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['onboarding_completed' => true]);
     Storage::fake('local');
 
     $jsonContent = json_encode([
@@ -72,7 +72,7 @@ test('bible controller can upload flat verses format json file', function () {
 });
 
 test('bible controller handles invalid json format gracefully', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['onboarding_completed' => true]);
     Storage::fake('local');
 
     $jsonContent = json_encode(['invalid' => 'format']);

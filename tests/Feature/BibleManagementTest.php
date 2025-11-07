@@ -10,12 +10,12 @@ use function Pest\Laravel\actingAs;
 beforeEach(function () {
     // Create an admin user with role number 1
     $adminRole = Role::factory()->create(['role_number' => 1, 'name' => 'Admin']);
-    $this->admin = User::factory()->create();
+    $this->admin = User::factory()->create(['onboarding_completed' => true]);
     $this->admin->roles()->attach($adminRole);
 
     // Create a regular user without admin role
     $userRole = Role::factory()->create(['role_number' => 3, 'name' => 'User']);
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->create(['onboarding_completed' => true]);
     $this->user->roles()->attach($userRole);
 
     // Create a test Bible
