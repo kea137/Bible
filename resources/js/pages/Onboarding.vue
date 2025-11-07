@@ -227,7 +227,7 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                         </div>
                     </ScrollArea>
 
-                    <div v-if="!canProceed" class="text-sm text-destructive">
+                    <div v-if="currentStep === 2 && !canProceed" class="text-sm text-destructive">
                         {{ t('Select at least one Bible translation') }}
                     </div>
                 </div>
