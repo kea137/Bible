@@ -33,10 +33,10 @@ class PexelsService
         // Use a consistent cache key to ensure we get the same set of images
         $cacheKey = 'pexels_backgrounds_christian_'.md5($perPage);
 
-        return Cache::remember($cacheKey, 3600, function () use ($perPage) {
+        return Cache::remember($cacheKey, 60, function () use ($perPage) {
             try {
                 // Use a consistent query for better caching and image consistency
-                $query = 'christian nature light happiness';
+                $query = 'christian nature light christ';
 
                 $response = Http::withHeaders([
                     'Authorization' => $this->apiKey,
