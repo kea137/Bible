@@ -9,6 +9,7 @@ use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Role;
 use App\Services\BibleJsonParser;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -99,32 +100,42 @@ class BibleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Bible $bible)
+    public function show(Bible $bible, Request $request)
     {
         $bible->load('books.chapters');
 
-        $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', Auth::id())
-            ->where('completed', true)
-            ->with([
-                'bible:id,name',
-                'chapter:id,book_id,chapter_number',
-                'chapter.book:id,title'
-            ])
-            ->latest('completed_at')
-            ->select('id', 'user_id', 'bible_id', 'chapter_id', 'completed_at')
-            ->first();
+        if(empty($request->all())){
+            $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', Auth::id())
+                ->where('completed', true)
+                ->with([
+                    'bible:id,name',
+                    'chapter:id,book_id,chapter_number',
+                    'chapter.book:id,title'
+                ])
+                ->latest('completed_at')
+                ->select('id', 'user_id', 'bible_id', 'chapter_id', 'completed_at')
+                ->first();
 
-        // Get the last reading point or first book and first chapter 
-        $firstBook = $lastReadingProgress && $lastReadingProgress->bible_id === $bible->id
-            ? $bible->books->firstWhere('id', $lastReadingProgress->chapter->book_id)
-            : $bible->books->first();
-        $firstChapter = $lastReadingProgress && $lastReadingProgress->bible_id === $bible->id
-            ? $firstBook->chapters->firstWhere('id', $lastReadingProgress->chapter_id)
-            : $firstBook->chapters->first();
+            // Get the last reading point or first book and first chapter 
+            $firstBook = $lastReadingProgress && $lastReadingProgress->bible_id === $bible->id
+                ? $bible->books->firstWhere('id', $lastReadingProgress->chapter->book_id)
+                : $bible->books->first();
+            $firstChapter = $lastReadingProgress && $lastReadingProgress->bible_id === $bible->id
+                ? $firstBook->chapters->firstWhere('id', $lastReadingProgress->chapter_id)
+                : $firstBook->chapters->first();
 
-        if ($firstChapter) {
-            $firstChapter->load('verses', 'book');
+            if ($firstChapter) {
+                $firstChapter->load('verses', 'book');
+            }
+        } else {
+            $firstBook = $bible->books->firstWhere('id', $request->book);
+            $firstChapter = $firstBook ? $firstBook->chapters->firstWhere('id', $request->chapter) : null;
+
+            if ($firstChapter) {
+                $firstChapter->load('verses', 'book');
+            }
         }
+        
 
         return Inertia::render('Bible', [
             'bible' => $bible->toArray(),
