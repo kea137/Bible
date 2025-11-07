@@ -130,7 +130,7 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
 
 <template>
     <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
-        <Head :title="t('Welcome! Let\\'s get you started')" />
+        <Head :title="t('Welcome! Let\'s get you started')" />
         
         <Card class="w-full max-w-2xl shadow-xl">
             <CardHeader class="text-center">

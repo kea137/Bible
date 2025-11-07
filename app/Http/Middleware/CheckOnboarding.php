@@ -16,9 +16,9 @@ class CheckOnboarding
     public function handle(Request $request, Closure $next): Response
     {
         // Check if user is authenticated and hasn't completed onboarding
-        if ($request->user() && !$request->user()->onboarding_completed) {
+        if ($request->user() && ! $request->user()->onboarding_completed) {
             // Don't redirect if already on onboarding page or logout
-            if (!$request->is('onboarding') && !$request->is('onboarding/*') && !$request->is('logout')) {
+            if (! $request->is('onboarding') && ! $request->is('onboarding/*') && ! $request->is('logout')) {
                 return redirect()->route('onboarding');
             }
         }

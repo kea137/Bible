@@ -14,7 +14,7 @@ class OnboardingController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        
+
         // If onboarding is already completed, redirect to dashboard
         if ($user->onboarding_completed) {
             return redirect()->route('dashboard');
@@ -50,7 +50,7 @@ class OnboardingController extends Controller
         ]);
 
         $user = $request->user();
-        
+
         $user->update([
             'language' => $request->language,
             'preferred_translations' => $request->preferred_translations ?? [],
