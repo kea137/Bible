@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import { Download, Image as ImageIcon, Palette, Share2, Type } from 'lucide-vue-next';
+import { Head, router } from '@inertiajs/vue3';
+import { BookMarked, Download, Image as ImageIcon, Palette, Share2, Type } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LogoImage from '/resources/images/logo-small.png';
@@ -27,6 +27,9 @@ const props = defineProps<{
     verseReference: string;
     verseText: string;
     verseId: number;
+    book: number;
+    chapter: number;
+    bible: number;
     backgroundImages?: Array<{
         id: number;
         url: string;
@@ -805,6 +808,13 @@ watch(
                                         </p>
                                     </div>
                                 </div>
+                                <Button
+                                    @click="router.visit(`/bibles/${bible}?book=${book}&chapter=${chapter}`)"
+                                    class="w-full mt-4"
+                                >
+                                    <BookMarked class="mr-2 h-4 w-4" />
+                                    {{ t('Back to Bible') }}
+                                </Button>
                             </div>
                         </div>
                     </div>

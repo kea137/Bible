@@ -17,6 +17,9 @@ class ShareController extends Controller
         $verseReference = $request->query('reference', '');
         $verseText = $request->query('text', '');
         $verseId = $request->query('verseId', null);
+        $bible = [];
+        $book = [];
+        $chapter = [];
 
         // If verseId is provided, validate and fetch the verse from database
         if ($verseId && is_numeric($verseId) && $verseId > 0) {
@@ -25,6 +28,9 @@ class ShareController extends Controller
                 $verseReference = $verse->chapter->book->title.' '.$verse->chapter->chapter_number.':'.$verse->verse_number;
                 $verseText = $verse->text;
             }
+            $bible = $verse->chapter->book->bible_id;
+            $book = $verse->chapter->book->id;
+            $chapter = $verse->chapter->id;
         }
 
         // Get background images from Pexels
@@ -35,6 +41,9 @@ class ShareController extends Controller
             'verseText' => $verseText,
             'verseId' => ($verseId && is_numeric($verseId)) ? (int) $verseId : null,
             'backgroundImages' => $backgroundImages,
+            'bible' => $bible,
+            'book' => $book,
+            'chapter' => $chapter
         ]);
     }
 }
