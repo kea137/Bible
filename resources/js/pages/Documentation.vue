@@ -5,12 +5,14 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import {
     BookOpen,
+    BookText,
     Code,
     Database,
     Globe,
     Highlighter,
     Map,
     Settings,
+    Share2,
     Target,
     Users,
     Zap,
@@ -147,6 +149,40 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </a>
 
                         <a
+                            href="#lessons"
+                            class="group block rounded-lg border border-border p-4 transition-colors hover:border-primary hover:bg-accent"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <BookText class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-base font-semibold text-foreground"
+                                >
+                                    Lessons
+                                </h3>
+                            </div>
+                            <p class="m-0 text-sm text-muted-foreground">
+                                Bible study lessons and series
+                            </p>
+                        </a>
+
+                        <a
+                            href="#verse-sharing"
+                            class="group block rounded-lg border border-border p-4 transition-colors hover:border-primary hover:bg-accent"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <Share2 class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-base font-semibold text-foreground"
+                                >
+                                    Verse Sharing
+                                </h3>
+                            </div>
+                            <p class="m-0 text-sm text-muted-foreground">
+                                Create shareable verse images
+                            </p>
+                        </a>
+
+                        <a
                             href="#user-management"
                             class="group block rounded-lg border border-border p-4 transition-colors hover:border-primary hover:bg-accent"
                         >
@@ -246,9 +282,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <li>✅ Personal Notes</li>
                                 <li>✅ Reading Plan with progress tracking</li>
                                 <li>✅ Parallel Bible comparison view</li>
+                                <li>✅ Bible study Lessons with series support</li>
+                                <li>✅ Verse Sharing with beautiful backgrounds</li>
+                                <li>✅ Onboarding for new users</li>
                                 <li>✅ User Authentication with 2FA</li>
                                 <li>✅ Dark Mode support</li>
                                 <li>✅ Responsive design for all devices</li>
+                                <li>✅ SEO optimized with sitemap</li>
                             </ul>
                         </div>
                     </section>
@@ -268,6 +308,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <li>
                                 <strong>Create an account</strong> or log in if
                                 you already have one
+                            </li>
+                            <li>
+                                <strong>Complete onboarding</strong> to select your
+                                preferred Bible and language
                             </li>
                             <li>
                                 <strong>Browse available Bibles</strong> from
@@ -681,6 +725,199 @@ php artisan serve</code></pre>
                         </div>
                     </section>
 
+                    <!-- Lessons Section -->
+                    <section id="lessons" class="mb-12">
+                        <h2 class="mb-4 text-2xl font-bold text-foreground">
+                            Lessons
+                        </h2>
+
+                        <p class="mb-4 text-foreground">
+                            Create, manage, and study Bible lessons with integrated
+                            scripture references and progress tracking. Organize
+                            lessons into series for structured learning.
+                        </p>
+
+                        <div class="grid gap-4 sm:grid-cols-2 mb-6">
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Scripture References
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Short references: 'GEN 1:1' (clickable)</li>
+                                    <li>• Full verses: '''JHN 3:16''' (embedded)</li>
+                                    <li>• English and localized book codes</li>
+                                    <li>• Hover to preview verse text</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Lesson Series
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Organize related lessons</li>
+                                    <li>• Episode numbers for ordering</li>
+                                    <li>• Track series progress</li>
+                                    <li>• Filter by language</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Creating Lessons
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Title, language, description</li>
+                                    <li>• Structured paragraphs with references</li>
+                                    <li>• Control visibility (readable/private)</li>
+                                    <li>• Admin/Editor role required</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Progress Tracking
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Mark lessons as completed</li>
+                                    <li>• View completion statistics</li>
+                                    <li>• Browse recently completed</li>
+                                    <li>• Series progress overview</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-muted/50 p-4">
+                            <h3
+                                class="mb-3 text-lg font-semibold text-foreground"
+                            >
+                                How to Use
+                            </h3>
+                            <ol class="space-y-2 text-sm text-foreground">
+                                <li>1. Navigate to "Lessons Management" (admin/editor)</li>
+                                <li>2. Click "Create New Lesson"</li>
+                                <li>3. Fill in lesson details and content</li>
+                                <li>4. Add scripture references using special syntax</li>
+                                <li>5. Optionally assign to a series</li>
+                                <li>6. Save and publish the lesson</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <!-- Verse Sharing Section -->
+                    <section id="verse-sharing" class="mb-12">
+                        <h2 class="mb-4 text-2xl font-bold text-foreground">
+                            Verse Sharing
+                        </h2>
+
+                        <p class="mb-4 text-foreground">
+                            Create beautiful, shareable images of Bible verses with
+                            customizable backgrounds perfect for social media and
+                            messaging.
+                        </p>
+
+                        <div class="grid gap-4 sm:grid-cols-2 mb-6">
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Background Options
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• 15 beautiful gradient presets</li>
+                                    <li>• Photo backgrounds from Pexels (optional)</li>
+                                    <li>• Create custom gradient colors</li>
+                                    <li>• Professional color schemes</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Customization
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Multiple font families</li>
+                                    <li>• Adjustable font size</li>
+                                    <li>• Bold, italic, or normal style</li>
+                                    <li>• Text alignment options</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Sharing Options
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Download image to device</li>
+                                    <li>• Native device sharing</li>
+                                    <li>• Copy to clipboard</li>
+                                    <li>• Direct social media posting</li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Use Cases
+                                </h3>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Social media posts</li>
+                                    <li>• Messaging friends and family</li>
+                                    <li>• Custom device wallpapers</li>
+                                    <li>• Study group materials</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-primary/10 p-4">
+                            <h3
+                                class="mb-3 text-lg font-semibold text-foreground"
+                            >
+                                Optional: Pexels API Key
+                            </h3>
+                            <p class="text-sm text-foreground mb-2">
+                                To enable photo backgrounds, add a free Pexels API key:
+                            </p>
+                            <ol class="space-y-1 text-sm text-muted-foreground">
+                                <li>1. Sign up at <a href="https://www.pexels.com/api/" class="text-primary underline" target="_blank">Pexels API</a></li>
+                                <li>2. Add PEXELS_API_KEY to your .env file</li>
+                                <li>3. Restart the application</li>
+                            </ol>
+                            <p class="text-sm text-muted-foreground mt-2">
+                                Note: The feature works perfectly without an API key using gradient backgrounds.
+                            </p>
+                        </div>
+                    </section>
+
                     <!-- User Management Section -->
                     <section id="user-management" class="mb-12">
                         <h2 class="mb-4 text-2xl font-bold text-foreground">
@@ -688,6 +925,23 @@ php artisan serve</code></pre>
                         </h2>
 
                         <div class="space-y-6">
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Onboarding
+                                </h3>
+                                <p class="text-sm text-foreground mb-3">
+                                    New users are guided through a personalized setup process:
+                                </p>
+                                <ul class="space-y-2 text-sm text-muted-foreground">
+                                    <li>• Choose preferred Bible translation</li>
+                                    <li>• Set interface language</li>
+                                    <li>• Quick tour of key features (optional)</li>
+                                    <li>• Can be skipped and configured later</li>
+                                </ul>
+                            </div>
+
                             <div class="rounded-lg border border-border p-4">
                                 <h3
                                     class="mb-3 text-lg font-semibold text-foreground"
@@ -860,6 +1114,31 @@ php artisan serve</code></pre>
                                     Admin-only page to view all users,
                                     assign/remove roles, and manage user
                                     accounts.
+                                </p>
+                            </div>
+
+                            <div
+                                class="rounded-lg border border-border bg-muted/30 p-4"
+                            >
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    SEO & Sitemap
+                                </h3>
+                                <p class="mb-2 text-sm text-foreground">
+                                    The application includes built-in SEO optimization:
+                                </p>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>• Automatic sitemap generation at /sitemap.xml</li>
+                                    <li>• Meta tags for search engines</li>
+                                    <li>• Open Graph tags for social sharing</li>
+                                    <li>• Twitter Card support</li>
+                                    <li>• Optimized robots.txt</li>
+                                </ul>
+                                <p class="mt-2 text-sm text-muted-foreground">
+                                    Submit your sitemap to Google Search Console and Bing Webmaster Tools for better visibility.
                                 </p>
                             </div>
                         </div>

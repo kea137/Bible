@@ -13,9 +13,11 @@ Welcome to the Bible Application documentation. This guide covers all features a
 7. [Highlighting & Notes](#highlighting--notes)
 8. [Reading Plan](#reading-plan)
 9. [Parallel Bibles](#parallel-bibles)
-10. [User Management](#user-management)
-11. [Configuration](#configuration)
-12. [Developer Guide](#developer-guide)
+10. [Lessons](#lessons)
+11. [Verse Sharing](#verse-sharing)
+12. [User Management](#user-management)
+13. [Configuration](#configuration)
+14. [Developer Guide](#developer-guide)
 
 ---
 
@@ -26,14 +28,19 @@ The Bible Application is a modern Bible reading and study platform built with La
 ### Key Features
 
 - **Multiple Bible Translations**: Browse and read different Bible versions
+- **Public Bible API**: RESTful API for accessing Bible verses without authentication
 - **Cross-Reference System**: Navigate related verses with ease
 - **Verse Highlighting**: Mark important verses with color codes
 - **Personal Notes**: Add private notes to verses
 - **Reading Plan**: Track your Bible reading progress
 - **Parallel View**: Compare multiple translations side-by-side
+- **Lessons & Series**: Create, manage, and study Bible lessons with progress tracking
+- **Verse Sharing**: Create beautiful shareable images with gradient or photo backgrounds
+- **Onboarding**: Guided setup for new users
 - **User Authentication**: Secure account with optional two-factor authentication
 - **Dark Mode**: Choose your preferred theme
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **SEO Optimized**: Sitemap generation for search engine visibility
 
 ---
 
@@ -80,7 +87,8 @@ Visit `http://localhost:8000` in your browser.
 ### First Steps
 
 1. **Create an account** or log in if you already have one
-2. **Browse available Bibles** from the Bibles page
+2. **Complete onboarding** - Select your preferred Bible translation and language
+3. **Browse available Bibles** from the Bibles page
 3. **Select a Bible translation** to start reading
 4. **Explore features** like highlighting, notes, and cross-references
 
@@ -535,7 +543,266 @@ Compare multiple Bible translations side-by-side.
 
 ---
 
+## Lessons
+
+### Overview
+
+The Lessons feature allows users to create, manage, and study Bible lessons with integrated scripture references and progress tracking. Lessons can be organized into series for structured learning.
+
+### Features
+
+#### Creating Lessons
+
+**Lesson Components:**
+- **Title**: Descriptive name for the lesson
+- **Language**: Language of the lesson content
+- **Description**: Brief summary of the lesson
+- **Paragraphs**: Structured content with scripture references
+- **Visibility**: Control whether lessons are publicly readable
+
+**How to Create:**
+1. Navigate to "Lessons Management" (requires editor/admin role)
+2. Click "Create New Lesson"
+3. Fill in lesson details
+4. Write lesson paragraphs with scripture references
+5. Click "Create Lesson" to save
+
+#### Scripture References in Lessons
+
+Lessons support two types of scripture references:
+
+**Short References (Clickable):**
+- Format: `'BOOK CHAPTER:VERSE'`
+- Examples: `'GEN 1:1'`, `'JHN 3:16'`, `'PSA 23:1'`
+- Appears as clickable links in the lesson
+- Hover to preview verse text
+- Click to view full verse in sidebar
+
+**Full Verses (Embedded):**
+- Format: `'''BOOK CHAPTER:VERSE'''`
+- Examples: `'''JHN 3:16'''`, `'''PSA 23:1'''`
+- Automatically fetches and displays full verse text
+- Embedded directly in the lesson content
+- Uses your preferred Bible translation
+
+**Supported Book Codes:**
+- English codes: GEN (Genesis), EXO (Exodus), JHN (John), PSA (Psalms), etc.
+- Localized codes: Supports language-specific book codes (e.g., MWA for Genesis in Swahili)
+- Both English and localized codes work seamlessly
+
+#### Lesson Series
+
+Organize related lessons into series:
+
+**Series Features:**
+- Create series with title and description
+- Assign lessons with episode numbers
+- Track progress through entire series
+- View all lessons in a series
+- Filter by language
+
+**Creating a Series:**
+1. Go to "Lessons Management"
+2. Create or edit a lesson
+3. Optionally assign to a series
+4. Set episode number for ordering
+5. Save
+
+#### Progress Tracking
+
+Track your lesson completion:
+
+**Features:**
+- Mark lessons as completed
+- View total lessons completed
+- See lessons completed today
+- Browse recently completed lessons
+- View series progress
+- Statistics in Reading Plan page
+
+**Tracking Progress:**
+1. Open any lesson
+2. Click "Mark as Read" button
+3. Progress saves automatically
+4. View stats in Reading Plan
+
+#### Viewing Lessons
+
+**Lesson Display:**
+- Main content with embedded verses
+- Clickable short references
+- Hover over paragraph numbers for reference preview
+- Sidebar shows full verse text
+- Series information (if part of a series)
+- Episode navigation
+
+**Lesson Library:**
+- Browse all available lessons
+- Filter by language
+- Search by title or description
+- Creative card-based layout
+- See completion status
+
+### API Endpoints
+
+**Lesson Progress:**
+```
+POST /api/lesson/progress     # Toggle lesson completion
+```
+
+### Best Practices
+
+1. **Reference Placement**: Add references where they enhance understanding
+2. **Lesson Structure**: Break into logical paragraphs for readability
+3. **Series Organization**: Use meaningful episode numbers
+4. **Content Quality**: Write clear, engaging content
+5. **Book Codes**: Use consistent book codes (English or localized)
+
+---
+
+## Verse Sharing
+
+### Overview
+
+The Verse Sharing feature enables users to create beautiful, shareable images of Bible verses with customizable backgrounds, perfect for social media and messaging.
+
+### Features
+
+#### Background Options
+
+**Gradient Backgrounds:**
+- 15 pre-designed beautiful gradient combinations
+- Professional color schemes
+- No API key required
+- Always available
+
+**Photo Backgrounds:**
+- Serene nature images from Pexels
+- Requires free Pexels API key
+- Automatically fetched based on content
+- High-quality stock photos
+
+**Custom Gradients:**
+- Create your own color combinations
+- Choose from any colors
+- Save custom designs
+- Full creative control
+
+#### Customization Options
+
+**Text Styling:**
+- **Font Family**: Multiple font options
+- **Font Size**: Adjustable text size
+- **Font Style**: Bold, italic, or normal
+- **Text Alignment**: Center, left, or right
+
+**Background Selection:**
+- Browse gradient presets
+- Select photo backgrounds (when API key configured)
+- Create custom gradient colors
+- Preview in real-time
+
+#### Sharing & Downloading
+
+**Options:**
+- **Download**: Save image to device
+- **Share**: Use native device sharing
+- **Copy**: Copy to clipboard
+- **Social Media**: Share directly to platforms
+
+### Setup (Optional)
+
+To enable photo backgrounds from Pexels:
+
+1. **Get API Key:**
+   - Sign up at [Pexels](https://www.pexels.com/api/)
+   - Free tier available
+   - No credit card required
+
+2. **Configure:**
+   - Add `PEXELS_API_KEY=your-api-key-here` to `.env` file
+   - Restart application
+   - Photo backgrounds automatically enabled
+
+3. **Without API Key:**
+   - Feature works perfectly with gradients only
+   - No functionality lost
+   - Beautiful designs still available
+
+### How to Use
+
+1. **Access Feature:**
+   - Click "Share" in navigation
+   - Or share directly from Bible reading page
+
+2. **Select Verse:**
+   - Enter verse reference
+   - Or browse and select
+
+3. **Choose Background:**
+   - Select from gradient presets
+   - Or choose photo (if API key configured)
+   - Or create custom gradient
+
+4. **Customize:**
+   - Adjust font family
+   - Change text size
+   - Set text style
+   - Position text
+
+5. **Share:**
+   - Download image
+   - Use native sharing
+   - Post to social media
+
+### Use Cases
+
+- **Social Media**: Share verses on Instagram, Facebook, Twitter
+- **Messaging**: Send to friends and family
+- **Wallpapers**: Create custom device backgrounds
+- **Study Groups**: Visual aids for discussions
+- **Church**: Bulletin graphics and announcements
+- **Personal**: Daily verse reminders
+
+### Technical Details
+
+**Image Format:**
+- High-quality PNG output
+- Optimized file size
+- Retina display ready
+- Mobile and desktop compatible
+
+**Privacy:**
+- No tracking
+- No data collection
+- Images generated client-side
+- Pexels API used only for photo backgrounds
+
+---
+
 ## User Management
+
+### Onboarding
+
+New users are guided through an onboarding process to personalize their experience:
+
+**Onboarding Steps:**
+1. **Welcome Screen**: Introduction to the application
+2. **Bible Selection**: Choose your preferred Bible translation
+3. **Language Selection**: Set your interface language
+4. **Quick Tour**: Overview of key features (optional)
+
+**Features:**
+- One-time setup for new accounts
+- Can be skipped if preferred
+- Settings can be changed later in preferences
+- Personalized experience from the start
+
+**After Onboarding:**
+- Access to all application features
+- Personalized dashboard
+- Default Bible already selected
+- Ready to start reading and studying
 
 ### Account Features
 
@@ -688,6 +955,29 @@ For administrators to quickly populate the database:
 3. Assign/remove roles
 4. Delete users if necessary
 
+#### SEO & Sitemap
+
+**Sitemap Generation:**
+- Automatically generated at `/sitemap.xml`
+- Includes all important pages
+- Updates dynamically with content
+- Proper priority and change frequency
+- Ready for search engine submission
+
+**SEO Features:**
+- Meta tags for search engines
+- Open Graph tags for social sharing
+- Twitter Card support
+- Canonical URLs
+- Optimized page titles and descriptions
+- Proper robots.txt configuration
+
+**Submitting to Search Engines:**
+1. Access sitemap at `https://yourdomain.com/sitemap.xml`
+2. Submit to Google Search Console
+3. Submit to Bing Webmaster Tools
+4. Monitor indexing status
+
 ---
 
 ## Developer Guide
@@ -826,6 +1116,21 @@ GET  /api/reading-progress/bible        # Get Bible progress
 GET  /api/reading-progress/statistics   # Get reading stats
 ```
 
+**Lesson Endpoints:**
+```
+GET    /lessons                    # List all lessons
+GET    /lessons/show/{lesson}      # View a specific lesson
+POST   /create/lesson              # Create new lesson
+PUT    /update/lesson/{lesson}     # Update lesson
+DELETE /lessons/{lesson}            # Delete lesson
+POST   /api/lesson/progress        # Toggle lesson completion
+```
+
+**Share Endpoints:**
+```
+GET /share                          # Verse sharing page
+```
+
 ### Database Schema
 
 **Key Tables:**
@@ -837,6 +1142,10 @@ GET  /api/reading-progress/statistics   # Get reading stats
 - `verse_highlights`: User verse highlights
 - `notes`: User notes
 - `reading_progress`: Chapter completion tracking
+- `lessons`: Bible study lessons
+- `paragraphs`: Lesson content paragraphs
+- `lesson_series`: Lesson series organization
+- `lesson_progress`: Lesson completion tracking
 - `users`: User accounts
 - `roles`: User roles
 

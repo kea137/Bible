@@ -7,13 +7,17 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 - Browse and read different Bible translations
 - **Public API for Bible verses** (no authentication required, rate-limited)
 - **Verse sharing with beautiful backgrounds** - Create shareable images with gradient or photo backgrounds from Pexels
+- **Bible study lessons** - Create, manage, and track progress through structured lessons with scripture references
 - User authentication and role management
 - Two-factor authentication support
 - Dark mode support
-- Responsive design
+- Responsive design with mobile-optimized interface
 - Cross-reference system for Bible verses
 - Reading progress tracking
 - Verse highlighting and notes
+- Parallel Bible view for comparing translations
+- Onboarding for new users
+- SEO optimized with sitemap generation
 
 ## Installation
 
