@@ -10,7 +10,6 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const page = usePage();
-const userLanguage = computed(() => (page.props.language as string) || 'en');
 
 interface Bible {
     id: number;
@@ -24,22 +23,6 @@ const bibles = ref<Bible[]>([]);
 const selectedTranslations = ref<number[]>([]);
 const loading = ref(false);
 const saving = ref(false);
-
-// Language mapping
-const languageMap: Record<string, string> = {
-    en: 'English',
-    sw: 'Swahili',
-    fr: 'French',
-    es: 'Spanish',
-    de: 'German',
-    it: 'Italian',
-    ru: 'Russian',
-    zh: 'Chinese',
-    ja: 'Japanese',
-    ar: 'Arabic',
-    hi: 'Hindi',
-    ko: 'Korean',
-};
 
 const fetchBibles = async () => {
     loading.value = true;
@@ -64,11 +47,6 @@ const fetchUserPreferences = async () => {
         }
     }
 };
-
-const biblesForUserLanguage = computed(() => {
-    const languageName = languageMap[userLanguage.value] || 'English';
-    return bibles.value.filter((bible) => bible.language === languageName);
-});
 
 const toggleTranslation = (id: number) => {
     const index = selectedTranslations.value.indexOf(id);
@@ -141,11 +119,11 @@ onMounted(() => {
             <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
 
-        <div v-else-if="biblesForUserLanguage.length > 0" class="space-y-3">
+        <div v-else-if="bibles.length > 0" class="space-y-3">
             <ScrollArea class="h-[300px] rounded-md border p-4">
                 <div class="space-y-3">
                     <div
-                        v-for="bible in biblesForUserLanguage"
+                        v-for="bible in bibles"
                         :key="bible.id"
                         class="flex items-start space-x-3 rounded-lg border p-3 transition-colors hover:bg-accent"
                     >
@@ -162,7 +140,7 @@ onMounted(() => {
                                 {{ bible.name }}
                             </Label>
                             <p class="text-xs text-muted-foreground">
-                                {{ bible.abbreviation }} - {{ bible.version }}
+                                {{ bible.abbreviation }} - {{ bible.version }} ({{ bible.language }})
                             </p>
                         </div>
                     </div>
@@ -186,7 +164,7 @@ onMounted(() => {
             v-else
             class="flex items-center justify-center rounded-md border p-8 text-muted-foreground"
         >
-            {{ t('No translations available for your language') }}
+            {{ t('No translations available') }}
         </div>
     </div>
 </template>
