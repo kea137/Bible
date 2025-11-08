@@ -16,9 +16,18 @@ class HandleAppearance
      */
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('appearance', $request->cookie('appearance') ?? 'system');
-        View::share('language', $request->cookie('language') ?? 'en');
-        
+        // Get appearance from user's database settings or default to 'system'
+        $appearance = 'system';
+        $language = 'en';
+
+        if ($request->user()) {
+            $appearance = $request->user()->appearance_preferences['theme'] ?? 'system';
+            $language = $request->user()->language ?? 'en';
+        }
+
+        View::share('appearance', $appearance);
+        View::share('language', $language);
+
         return $next($request);
     }
 }

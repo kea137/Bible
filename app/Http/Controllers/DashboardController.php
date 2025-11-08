@@ -45,7 +45,7 @@ class DashboardController extends Controller
             ->with([
                 'bible:id,name',
                 'chapter:id,book_id,chapter_number',
-                'chapter.book:id,title'
+                'chapter.book:id,title',
             ])
             ->latest('completed_at')
             ->select('id', 'user_id', 'bible_id', 'chapter_id', 'completed_at')
@@ -53,10 +53,10 @@ class DashboardController extends Controller
 
         // Get random verse of the day with only needed fields
         $randomVerse = Verse::with([
-                'bible:id,name,language',
-                'book:id,title',
-                'chapter:id,chapter_number'
-            ])
+            'bible:id,name,language',
+            'book:id,title',
+            'chapter:id,chapter_number',
+        ])
             ->whereHas('bible', function ($query) use ($languageName) {
                 $query->where('language', $languageName);
             })
@@ -121,11 +121,12 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function updateLocale(){
+    public function updateLocale()
+    {
         $userId = Auth::id();
         $user = \App\Models\User::find($userId);
 
-        //update users language data
+        // update users language data
         request()->validate([
             'locale' => 'required|string|max:5',
         ]);
@@ -138,5 +139,27 @@ class DashboardController extends Controller
         }
 
         return response()->json(['success' => true, 'locale' => $locale]);
+    }
+
+    public function updateTheme()
+    {
+        $userId = Auth::id();
+        $user = \App\Models\User::find($userId);
+
+        // Validate theme value
+        request()->validate([
+            'theme' => 'required|string|in:light,dark,system',
+        ]);
+
+        $theme = request('theme');
+
+        if ($user) {
+            $preferences = $user->appearance_preferences ?? [];
+            $preferences['theme'] = $theme;
+            $user->appearance_preferences = $preferences;
+            $user->save();
+        }
+
+        return response()->json(['success' => true, 'theme' => $theme]);
     }
 }

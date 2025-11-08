@@ -45,6 +45,9 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 // Store user's locale preference
 Route::post('/api/user/locale', [DashboardController::class, 'updateLocale'])->name('update_locale')->middleware('auth');
 
+// Store user's theme preference
+Route::post('/api/user/theme', [DashboardController::class, 'updateTheme'])->name('update_theme')->middleware('auth');
+
 Route::get('/bibles', [BibleController::class, 'index'])->name('bibles')->middleware(['auth', 'check.onboarding']);
 Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel')->middleware(['auth', 'check.onboarding']);
 Route::get('/bibles/configure', [BibleController::class, 'configure'])->name('bibles_configure')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);
