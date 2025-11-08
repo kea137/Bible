@@ -31,7 +31,7 @@ class OnboardingController extends Controller
             });
 
         return Inertia::render('Onboarding', [
-            'bibles' => $bibles,
+            'bibles' => $bibles->toArray(),
             'currentLanguage' => $user->language ?? 'en',
         ]);
     }

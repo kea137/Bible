@@ -11,6 +11,7 @@ import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import { router, useForm, Head } from '@inertiajs/vue3';
 import { BookOpen, Check, Languages, Palette } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
@@ -27,7 +28,13 @@ const props = defineProps<{
 }>();
 
 const currentStep = ref(1);
+const preferred_translations = ref<number[]>([]);
 const totalSteps = 3;
+
+// Sync preferred_translations with form.preferred_translations
+watch(preferred_translations, (newVal) => {
+    form.preferred_translations = [...newVal];
+});
 
 const form = useForm({
     language: props.currentLanguage || 'en',
@@ -60,29 +67,15 @@ const themes = [
 
 // Get bibles for selected language
 const biblesForSelectedLanguage = computed(() => {
-    const languageMap: Record<string, string> = {
-        'en': 'English',
-        'sw': 'Swahili',
-        'fr': 'French',
-        'es': 'Spanish',
-        'de': 'German',
-        'it': 'Italian',
-        'ru': 'Russian',
-        'zh': 'Chinese',
-        'ja': 'Japanese',
-        'ar': 'Arabic',
-        'hi': 'Hindi',
-        'ko': 'Korean',
-    };
-    
-    const languageName = languageMap[form.language] || 'English';
-    return props.bibles[languageName] || [];
+    // Return all bibles, regardless of language
+    return Object.values(props.bibles).flat();
 });
 
 const canProceed = computed(() => {
     if (currentStep.value === 1) return true;
-    if (currentStep.value === 2) return form.preferred_translations.length > 0;
+    if (currentStep.value === 2) return preferred_translations.value.length > 0;
     if (currentStep.value === 3) return true;
+    form.preferred_translations = preferred_translations.value;
     return false;
 });
 
@@ -99,22 +92,22 @@ const previousStep = () => {
 };
 
 const toggleTranslation = (id: number) => {
-    const index = form.preferred_translations.indexOf(id);
-    if (index > -1) {
-        form.preferred_translations.splice(index, 1);
+    const current = preferred_translations.value;
+    if (current.includes(id)) {
+        preferred_translations.value = current.filter(tid => tid !== id);
     } else {
-        form.preferred_translations.push(id);
+        preferred_translations.value = [...current, id];
     }
 };
 
 const completeOnboarding = () => {
-    form.post(route('onboarding.store'), {
+    form.post(`/onboarding`, {
         preserveScroll: true,
     });
 };
 
 const skipOnboarding = () => {
-    router.post(route('onboarding.skip'));
+    router.post('/onboarding/skip');
 };
 
 const selectLanguage = (lang: string) => {
@@ -206,8 +199,8 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                             >
                                 <Checkbox
                                     :id="`bible-${bible.id}`"
-                                    :checked="form.preferred_translations.includes(bible.id)"
-                                    @update:checked="() => toggleTranslation(bible.id)"
+                                    :checked="preferred_translations.includes(bible.id)"
+                                    @update:model-value="toggleTranslation(bible.id)"
                                 />
                                 <div class="flex-1">
                                     <Label

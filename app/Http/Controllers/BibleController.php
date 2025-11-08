@@ -77,23 +77,16 @@ class BibleController extends Controller
 
         $languageName = $this->languageMap[$userLanguage] ?? 'English';
 
-        // Filter bibles by language, only eager load books (not chapters) for faster response
+        // Filter bibles based on preffered translations from users onboarding data
+        $user = Auth::getUser();
         $bibles_preffered = Bible::select('id', 'name', 'abbreviation', 'language', 'version')
             ->with('books.chapters') // Avoid loading chapters unless needed
-            ->where('language', $languageName)
-            ->limit(5)
-            ->get();
-
-        // Exclude preferred language from "other" bibles, and only eager load books
-        $bibles_other = Bible::select('id', 'name', 'abbreviation', 'language', 'version')
-            ->with('books.chapters')
-            ->where('language', 'English')
-            ->limit(5)
+            ->whereIn('id', $user->preferred_translations)
             ->get();
 
         return Inertia::render('Parallel Bibles', [
             'biblesList' => $bibles_preffered->toArray(),
-            'biblesOther' => $bibles_other->toArray(),
+            'biblesOther' => $bibles_preffered->toArray(),
         ]);
     }
 

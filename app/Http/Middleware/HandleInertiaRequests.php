@@ -50,6 +50,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'roleNumbers' => $roleNumbers,
             ],
+            'theme' => $request->user() ? $request->user()->appearance_preferences['theme'] : 'system',
             'language' => $request->user() ? $request->user()->language : 'en',
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'success' => fn () => $request->session()->get('success'),
