@@ -38,12 +38,16 @@ class BibleController extends Controller
     public function index()
     {
         // Only load the necessary fields for the index page to reduce memory usage
-        $userLanguage = request()->user()->language ?? 'en';
-
-        $languageName = $this->languageMap[$userLanguage] ?? 'English';
+        $userPreferences = request()->user()->preferred_translations;
 
         $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version', 'description')
-            ->orderByRaw("language = ? DESC, name ASC", $languageName) // change as per user's preferences
+            ->when(!empty($userPreferences) && is_array($userPreferences), function ($q) use ($userPreferences) {
+                // Preserve user's preference order first, then fallback to name for others
+                $ids = implode(',', array_map('intval', $userPreferences));
+                return $q->orderByRaw("(FIELD(id, {$ids}) = 0), FIELD(id, {$ids}), name ASC");
+            }, function ($q) {
+                return $q->orderBy('name');
+            })
             ->get();
 
         return Inertia::render('Bibles', [
@@ -72,11 +76,6 @@ class BibleController extends Controller
      */
     public function parallel()
     {
-        // Get user's preferred language from cookie or default to 'en'
-        $userLanguage = request()->user()->language ?? 'en';
-
-        $languageName = $this->languageMap[$userLanguage] ?? 'English';
-
         // Filter bibles based on preffered translations from users onboarding data
         $user = Auth::getUser();
         $bibles_preffered = Bible::select('id', 'name', 'abbreviation', 'language', 'version')

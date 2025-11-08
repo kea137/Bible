@@ -110,8 +110,6 @@ async function toggleLessonCompletion() {
             }),
         });
 
-        alert(csrfToken);
-
         if (response.ok) {
             const result = await response.json();
             lessonCompleted.value = result.progress.completed;

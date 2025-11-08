@@ -43,17 +43,16 @@ onMounted(() => {
 
 const searchQuery = ref('');
 const client = algoliasearch(
-    import.meta.env.VITE_ALGOLIA_APP_ID || 'VV2R5XG4FF',
-    import.meta.env.VITE_ALGOLIA_API_KEY || '3a774edb6e30e191a2b70602ddfd65b0',
+    import.meta.env.VITE_ALGOLIA_APP_ID || 'ZRYCA9P53B',
+    import.meta.env.VITE_ALGOLIA_API_KEY || '4bb73bb3c87b2a1005c2c06e9128dec4',
 );
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
         // Fetch all highlights and bibles if search query is empty
         await loadHighlights();
-        await loadBibles();
     } else {
-        // Search verses from Algolia
+        // Search verses from Algolia 
         try {
             const response = await client.searchSingleIndex({
                 indexName: 'verses',
@@ -65,23 +64,16 @@ const searchVerses = async () => {
             // Map Algolia hits to a format similar to highlights
             const verseResults = response.hits.map((hit: any) => ({
                 verse: {
-                    id: hit.objectID || hit.id,
+                    id: typeof hit.objectID === 'string' && hit.objectID.startsWith('App\\Models\\Verse::')
+                        ? parseInt(hit.objectID.split('::')[1], 10)
+                        : hit.objectID || hit.id,
                     text: hit.text,
-                    verse_number: hit.verse_number,
                 },
             }));
-            // Merge highlights and verse search results
-            highlights.value = verseResults;
-            console.log('Search Results:', verseResults);
+
+            highlights.value = verseResults.map(v => v.verse);
         } catch (error) {
             console.error('Algolia search error:', error);
-        }
-        // Optionally, search bibles by name/language/version
-        const bibleResponse = await fetch(
-            `/api/bibles?search=${encodeURIComponent(searchQuery.value)}`,
-        );
-        if (bibleResponse.ok) {
-            availableBibles.value = await bibleResponse.json();
         }
     }
 };
