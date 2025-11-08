@@ -334,7 +334,11 @@ if (info) {
                                                 >
                                                 <Input
                                                     v-model="newSeriesTitle"
-                                                    :placeholder="t('Enter new series title...')"
+                                                    :placeholder="
+                                                        t(
+                                                            'Enter new series title...',
+                                                        )
+                                                    "
                                                 />
                                             </div>
                                             <div
@@ -481,25 +485,38 @@ if (info) {
                                                     t('Short References')
                                                 }}:</strong
                                             >
-                                            {{t('Use single quotes \'BOOK')}}
-                                            {{t('CHAPTER:VERSE\' to add clickable')}}
-                                            {{t('references.')}}
+                                            {{ t("Use single quotes 'BOOK") }}
+                                            {{
+                                                t(
+                                                    "CHAPTER:VERSE' to add clickable",
+                                                )
+                                            }}
+                                            {{ t('references.') }}
                                         </p>
                                         <p class="ml-4 italic">
-                                            {{ t('Example') }}: 'GEN 1:1' {{t('or')}}
+                                            {{ t('Example') }}: 'GEN 1:1'
+                                            {{ t('or') }}
                                             '2KI 2:2'
                                         </p>
                                         <p class="mt-2">
                                             <strong
                                                 >{{ t('Full Verses') }}:</strong
                                             >
-                                            {{t('Use triple quotes \'\'\'BOOK')}}
-                                            {{t('CHAPTER:VERSE\'\'\' to insert the full')}}
-                                            {{t('verse text.')}}
+                                            {{ t("Use triple quotes '''BOOK") }}
+                                            {{
+                                                t(
+                                                    "CHAPTER:VERSE''' to insert the full",
+                                                )
+                                            }}
+                                            {{ t('verse text.') }}
                                         </p>
                                         <p class="ml-4 italic">
                                             {{ t('Example') }}: '''JHN 3:16'''
-                                            {{ t('will be replaced with the actual') }}
+                                            {{
+                                                t(
+                                                    'will be replaced with the actual',
+                                                )
+                                            }}
                                             {{ t('verse') }}
                                         </p>
                                     </div>
@@ -516,13 +533,18 @@ if (info) {
                                         <Label
                                             :for="`text-${idx}`"
                                             class="text-sm sm:text-base"
-                                            >{{ t('Paragraph') }} {{ idx + 1 }}</Label
+                                            >{{ t('Paragraph') }}
+                                            {{ idx + 1 }}</Label
                                         >
                                         <Textarea
                                             :id="`text-${idx}`"
                                             :name="`paragraphs[${idx}][text]`"
                                             type="text"
-                                            :placeholder="t('Paragraph Text goes here... You can use \'GEN 1:1\' for short references or \'\'\'JHN 3:16\'\'\' for full verses.')"
+                                            :placeholder="
+                                                t(
+                                                    'Paragraph Text goes here... You can use \'GEN 1:1\' for short references or \'\'\'JHN 3:16\'\'\' for full verses.',
+                                                )
+                                            "
                                             v-model="
                                                 editableLesson.paragraphs[idx]
                                                     .text

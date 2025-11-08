@@ -37,10 +37,6 @@ import {
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-onMounted(() => {
-    searchVerses();
-});
-
 const searchQuery = ref('');
 const client = algoliasearch(
     import.meta.env.VITE_ALGOLIA_APP_ID || 'ZRYCA9P53B',
@@ -52,7 +48,7 @@ const searchVerses = async () => {
         // Fetch all highlights and bibles if search query is empty
         await loadHighlights();
     } else {
-        // Search verses from Algolia 
+        // Search verses from Algolia
         try {
             const response = await client.searchSingleIndex({
                 indexName: 'verses',
@@ -64,14 +60,16 @@ const searchVerses = async () => {
             // Map Algolia hits to a format similar to highlights
             const verseResults = response.hits.map((hit: any) => ({
                 verse: {
-                    id: typeof hit.objectID === 'string' && hit.objectID.startsWith('App\\Models\\Verse::')
-                        ? parseInt(hit.objectID.split('::')[1], 10)
-                        : hit.objectID || hit.id,
+                    id:
+                        typeof hit.objectID === 'string' &&
+                        hit.objectID.startsWith('App\\Models\\Verse::')
+                            ? parseInt(hit.objectID.split('::')[1], 10)
+                            : hit.objectID || hit.id,
                     text: hit.text,
                 },
             }));
 
-            highlights.value = verseResults.map(v => v.verse);
+            highlights.value = verseResults.map((v) => v.verse);
         } catch (error) {
             console.error('Algolia search error:', error);
         }
@@ -169,7 +167,7 @@ const filteredBibles = computed(() => {
 });
 
 onMounted(() => {
-    loadHighlights();
+    searchVerses();
     loadBibles();
 });
 

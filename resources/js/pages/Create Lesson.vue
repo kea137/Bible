@@ -209,10 +209,10 @@ if (info) {
                                                     t('Readable')
                                                 }}</SelectLabel>
                                                 <SelectItem value="True">
-                                                    {{t('True')}}
+                                                    {{ t('True') }}
                                                 </SelectItem>
                                                 <SelectItem value="False">
-                                                    {{t('False')}}
+                                                    {{ t('False') }}
                                                 </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
@@ -297,7 +297,11 @@ if (info) {
                                                 >
                                                 <Input
                                                     v-model="newSeriesTitle"
-                                                    :placeholder="t('Enter new series title...')"
+                                                    :placeholder="
+                                                        t(
+                                                            'Enter new series title...',
+                                                        )
+                                                    "
                                                 />
                                             </div>
                                             <div
@@ -377,7 +381,11 @@ if (info) {
                                             >
                                             <Textarea
                                                 v-model="newSeriesDescription"
-                                                :placeholder="t('Enter series description...')"
+                                                :placeholder="
+                                                    t(
+                                                        'Enter series description...',
+                                                    )
+                                                "
                                                 rows="2"
                                             />
                                             <input
@@ -426,26 +434,39 @@ if (info) {
                                                     t('Short References')
                                                 }}:</strong
                                             >
-                                            {{ t('Use single quotes \'BOOK') }}
-                                            {{ t('CHAPTER:VERSE\' to add clickable') }}
+                                            {{ t("Use single quotes 'BOOK") }}
+                                            {{
+                                                t(
+                                                    "CHAPTER:VERSE' to add clickable",
+                                                )
+                                            }}
                                             {{ t('references.') }}
                                         </p>
                                         <p class="ml-4 italic">
-                                            {{ t('Example') }}: 'GEN 1:1' {{t('or')}}
+                                            {{ t('Example') }}: 'GEN 1:1'
+                                            {{ t('or') }}
                                             '2KI 2:2'
                                         </p>
                                         <p class="mt-2">
                                             <strong
                                                 >{{ t('Full Verses') }}:</strong
                                             >
-                                            {{ t('Use triple quotes \'\'\'BOOK') }}
-                                            {{t('CHAPTER:VERSE\'\'\' to insert the full')}}
-                                            {{t('verse text.')}}
+                                            {{ t("Use triple quotes '''BOOK") }}
+                                            {{
+                                                t(
+                                                    "CHAPTER:VERSE''' to insert the full",
+                                                )
+                                            }}
+                                            {{ t('verse text.') }}
                                         </p>
                                         <p class="ml-4 italic">
                                             {{ t('Example') }}: '''JHN 3:16'''
-                                            {{ t('will be replaced with the actual')}}
-                                            {{ t('verse')}}
+                                            {{
+                                                t(
+                                                    'will be replaced with the actual',
+                                                )
+                                            }}
+                                            {{ t('verse') }}
                                         </p>
                                     </div>
                                 </div>
@@ -459,13 +480,18 @@ if (info) {
                                         <Label
                                             :for="`text-${idx}`"
                                             class="text-sm sm:text-base"
-                                            >{{t('Paragraph')}} {{ idx + 1 }}</Label
+                                            >{{ t('Paragraph') }}
+                                            {{ idx + 1 }}</Label
                                         >
                                         <Textarea
                                             :id="`text-${idx}`"
                                             :name="`paragraphs[${idx}][text]`"
                                             type="text"
-                                            :placeholder="t('Paragraph Text goes here... You can use \'GEN 1:1\' for short references or \'\'\'JHN 3:16\'\'\' for full verses.')"
+                                            :placeholder="
+                                                t(
+                                                    'Paragraph Text goes here... You can use \'GEN 1:1\' for short references or \'\'\'JHN 3:16\'\'\' for full verses.',
+                                                )
+                                            "
                                             rows="4"
                                             class="text-sm sm:text-base"
                                         />

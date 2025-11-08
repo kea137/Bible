@@ -47,7 +47,9 @@ export function initializeTheme() {
 
     // Set up system theme change listener
     if (userTheme === 'system') {
-        mediaQuery()?.addEventListener('change', () => handleSystemThemeChange(userTheme));
+        mediaQuery()?.addEventListener('change', () =>
+            handleSystemThemeChange(userTheme),
+        );
     }
 }
 
@@ -55,7 +57,9 @@ const appearance = ref<Appearance>('system');
 
 export function useAppearance() {
     const page = usePage();
-    const userTheme = computed(() => (page.props.theme as Appearance) || 'system');
+    const userTheme = computed(
+        () => (page.props.theme as Appearance) || 'system',
+    );
 
     onMounted(() => {
         appearance.value = userTheme.value;

@@ -201,7 +201,9 @@ async function toggleChapterCompletion() {
         }
         if (!csrfToken) {
             alert(
-                t('CSRF token not found. Refreshing page to fix authentication...'),
+                t(
+                    'CSRF token not found. Refreshing page to fix authentication...',
+                ),
             );
             window.location.reload();
             return;
@@ -261,7 +263,9 @@ async function highlightVerse(verseId: number, color: string) {
         if (!csrfToken) {
             // Attempt to reload the page to refresh CSRF token
             alert(
-                t('CSRF token not found. Refreshing page to fix authentication...'),
+                t(
+                    'CSRF token not found. Refreshing page to fix authentication...',
+                ),
             );
             window.location.reload();
             return;
@@ -323,7 +327,9 @@ async function removeHighlight(verseId: number) {
         if (!csrfToken) {
             // Attempt to reload the page to refresh CSRF token
             alert(
-                t('CSRF token not found. Refreshing page to fix authentication...'),
+                t(
+                    'CSRF token not found. Refreshing page to fix authentication...',
+                ),
             );
             window.location.reload();
             return;
@@ -488,7 +494,7 @@ const searchVerses = async () => {
         // Fetch all highlights and bibles if search query is empty
         await loadHighlights();
     } else {
-        // Search verses from Algolia 
+        // Search verses from Algolia
         try {
             const response = await client.searchSingleIndex({
                 indexName: 'verses',
@@ -500,14 +506,16 @@ const searchVerses = async () => {
             // Map Algolia hits to a format similar to highlights
             const verseResults = response.hits.map((hit: any) => ({
                 verse: {
-                    id: typeof hit.objectID === 'string' && hit.objectID.startsWith('App\\Models\\Verse::')
-                        ? parseInt(hit.objectID.split('::')[1], 10)
-                        : hit.objectID || hit.id,
+                    id:
+                        typeof hit.objectID === 'string' &&
+                        hit.objectID.startsWith('App\\Models\\Verse::')
+                            ? parseInt(hit.objectID.split('::')[1], 10)
+                            : hit.objectID || hit.id,
                     text: hit.text,
                 },
             }));
 
-            highlights.value = verseResults.map(v => v.verse);
+            highlights.value = verseResults.map((v) => v.verse);
         } catch (error) {
             console.error('Algolia search error:', error);
         }
@@ -538,7 +546,10 @@ const filteredHighlights = computed(() => {
         const verse = getVerse(h);
         if (!verse || typeof verse.text !== 'string') return false;
         const textMatch = verse.text.toLowerCase().includes(query);
-        const bookMatch = verse.book && typeof verse.book.title === 'string' && verse.book.title.toLowerCase().includes(query);
+        const bookMatch =
+            verse.book &&
+            typeof verse.book.title === 'string' &&
+            verse.book.title.toLowerCase().includes(query);
         return textMatch || bookMatch;
     });
 });
@@ -682,10 +693,16 @@ function translateReference(ref: string): string {
                                     @update:open="searchOpen = $event"
                                 >
                                     <template #title>
-                                        <span class="sr-only">{{ t('Search Verses') }}</span>
+                                        <span class="sr-only">{{
+                                            t('Search Verses')
+                                        }}</span>
                                     </template>
                                     <template #description>
-                                        <span class="sr-only">{{ t('Type to search for Bible verses or highlights.') }}</span>
+                                        <span class="sr-only">{{
+                                            t(
+                                                'Type to search for Bible verses or highlights.',
+                                            )
+                                        }}</span>
                                     </template>
                                     <Command>
                                         <CommandInput
@@ -698,24 +715,77 @@ function translateReference(ref: string): string {
                                                 t('No Verses found.')
                                             }}</CommandEmpty>
                                             <CommandGroup
-                                                v-if="filteredHighlights.length > 0"
-                                                :heading="t('Highlighted Verses')"
+                                                v-if="
+                                                    filteredHighlights.length >
+                                                    0
+                                                "
+                                                :heading="
+                                                    t('Highlighted Verses')
+                                                "
                                             >
                                                 <CommandItem
-                                                    v-for="highlight in filteredHighlights.slice(0, 10)"
-                                                    :key="highlight.id || (highlight.verse && highlight.verse.id)"
-                                                    :value="getVerse(highlight).text"
-                                                    @select="viewHighlight(getVerse(highlight).id)"
+                                                    v-for="highlight in filteredHighlights.slice(
+                                                        0,
+                                                        10,
+                                                    )"
+                                                    :key="
+                                                        highlight.id ||
+                                                        (highlight.verse &&
+                                                            highlight.verse.id)
+                                                    "
+                                                    :value="
+                                                        getVerse(highlight).text
+                                                    "
+                                                    @select="
+                                                        viewHighlight(
+                                                            getVerse(highlight)
+                                                                .id,
+                                                        )
+                                                    "
                                                 >
-                                                    <PenTool class="mr-2 h-4 w-4" />
-                                                    <Link :href="verse_study(highlight.id).url" class="flex w-full items-center gap-2">
-                                                        <div class="flex flex-col">
-                                                            <span class="line-clamp-1 text-sm">
-                                                                {{ getVerse(highlight).text }}
+                                                    <PenTool
+                                                        class="mr-2 h-4 w-4"
+                                                    />
+                                                    <Link
+                                                        :href="
+                                                            verse_study(
+                                                                highlight.id,
+                                                            ).url
+                                                        "
+                                                        class="flex w-full items-center gap-2"
+                                                    >
+                                                        <div
+                                                            class="flex flex-col"
+                                                        >
+                                                            <span
+                                                                class="line-clamp-1 text-sm"
+                                                            >
+                                                                {{
+                                                                    getVerse(
+                                                                        highlight,
+                                                                    ).text
+                                                                }}
                                                             </span>
-                                                            <span class="text-xs text-muted-foreground">
-                                                                {{ getVerse(highlight).book?.title }}
-                                                                {{ getVerse(highlight).chapter?.chapter_number }}:{{ getVerse(highlight).verse_number }}
+                                                            <span
+                                                                class="text-xs text-muted-foreground"
+                                                            >
+                                                                {{
+                                                                    getVerse(
+                                                                        highlight,
+                                                                    ).book
+                                                                        ?.title
+                                                                }}
+                                                                {{
+                                                                    getVerse(
+                                                                        highlight,
+                                                                    ).chapter
+                                                                        ?.chapter_number
+                                                                }}:{{
+                                                                    getVerse(
+                                                                        highlight,
+                                                                    )
+                                                                        .verse_number
+                                                                }}
                                                             </span>
                                                         </div>
                                                     </Link>
@@ -885,7 +955,8 @@ function translateReference(ref: string): string {
                                         <div
                                             v-if="
                                                 clickedVerseId === verse.id &&
-                                                hoveredVerseReferences.length > 0
+                                                hoveredVerseReferences.length >
+                                                    0
                                             "
                                             class="mb-2 sm:hidden"
                                         >
@@ -893,7 +964,9 @@ function translateReference(ref: string): string {
                                                 t('Cross References')
                                             }}</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
-                                            <div class="max-h-40 overflow-y-auto px-2 py-1">
+                                            <div
+                                                class="max-h-40 overflow-y-auto px-2 py-1"
+                                            >
                                                 <div
                                                     v-for="ref in hoveredVerseReferences.slice(
                                                         0,
@@ -902,18 +975,38 @@ function translateReference(ref: string): string {
                                                     :key="ref.id"
                                                     class="mb-2 text-xs"
                                                 >
-                                                    <p class="font-semibold text-primary">
-                                                        {{ translateReference(ref.reference) }}
+                                                    <p
+                                                        class="font-semibold text-primary"
+                                                    >
+                                                        {{
+                                                            translateReference(
+                                                                ref.reference,
+                                                            )
+                                                        }}
                                                     </p>
-                                                    <p class="text-muted-foreground">
-                                                        {{ ref.verse?.text?.substring(0, 60) }}...
+                                                    <p
+                                                        class="text-muted-foreground"
+                                                    >
+                                                        {{
+                                                            ref.verse?.text?.substring(
+                                                                0,
+                                                                60,
+                                                            )
+                                                        }}...
                                                     </p>
                                                 </div>
                                                 <p
-                                                    v-if="hoveredVerseReferences.length > 3"
+                                                    v-if="
+                                                        hoveredVerseReferences.length >
+                                                        3
+                                                    "
                                                     class="text-xs text-muted-foreground italic"
                                                 >
-                                                    +{{ hoveredVerseReferences.length - 3 }} {{ t('more references') }}
+                                                    +{{
+                                                        hoveredVerseReferences.length -
+                                                        3
+                                                    }}
+                                                    {{ t('more references') }}
                                                 </p>
                                             </div>
                                             <DropdownMenuSeparator />

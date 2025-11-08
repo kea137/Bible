@@ -17,7 +17,14 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { BookMarked, Download, Image as ImageIcon, Palette, Share2, Type } from 'lucide-vue-next';
+import {
+    BookMarked,
+    Download,
+    Image as ImageIcon,
+    Palette,
+    Share2,
+    Type,
+} from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LogoImage from '/resources/images/logo-small.png';
@@ -350,10 +357,14 @@ function generateImage() {
     };
 
     // Draw background based on type
-    if (backgroundType.value === 'image' && props.backgroundImages && props.backgroundImages.length > 0) {
+    if (
+        backgroundType.value === 'image' &&
+        props.backgroundImages &&
+        props.backgroundImages.length > 0
+    ) {
         const currentImage = props.backgroundImages[currentImageIndex.value];
         const imageUrl = currentImage.url;
-        
+
         // Check if image is already loaded
         if (loadedImages.value.has(imageUrl)) {
             const bgImg = loadedImages.value.get(imageUrl)!;
@@ -376,15 +387,32 @@ function generateImage() {
                 bgImgRetry.onload = () => {
                     try {
                         loadedImages.value.set(imageUrl, bgImgRetry);
-                        ctx.drawImage(bgImgRetry, 0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(
+                            bgImgRetry,
+                            0,
+                            0,
+                            canvas.width,
+                            canvas.height,
+                        );
                         drawTextAndLogo();
                     } catch (e) {
-                        console.error('Canvas tainted, using gradient fallback', e);
+                        console.error(
+                            'Canvas tainted, using gradient fallback',
+                            e,
+                        );
                         // Draw gradient as fallback without changing UI state
-                        const tempGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                        const tempGradient = ctx.createLinearGradient(
+                            0,
+                            0,
+                            canvas.width,
+                            canvas.height,
+                        );
                         const colors = currentBackground.value.colors;
                         colors.forEach((color, index) => {
-                            tempGradient.addColorStop(index / (colors.length - 1), color);
+                            tempGradient.addColorStop(
+                                index / (colors.length - 1),
+                                color,
+                            );
                         });
                         ctx.fillStyle = tempGradient;
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -392,12 +420,22 @@ function generateImage() {
                     }
                 };
                 bgImgRetry.onerror = () => {
-                    console.error('Failed to load image even without CORS, using gradient');
+                    console.error(
+                        'Failed to load image even without CORS, using gradient',
+                    );
                     // Draw gradient as fallback without changing UI state
-                    const tempGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    const tempGradient = ctx.createLinearGradient(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height,
+                    );
                     const colors = currentBackground.value.colors;
                     colors.forEach((color, index) => {
-                        tempGradient.addColorStop(index / (colors.length - 1), color);
+                        tempGradient.addColorStop(
+                            index / (colors.length - 1),
+                            color,
+                        );
                     });
                     ctx.fillStyle = tempGradient;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -422,16 +460,22 @@ function generateImage() {
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
+
         drawTextAndLogo();
     }
 }
 
 function changeBackground() {
-    if (backgroundType.value === 'image' && props.backgroundImages && props.backgroundImages.length > 0) {
-        currentImageIndex.value = (currentImageIndex.value + 1) % props.backgroundImages.length;
+    if (
+        backgroundType.value === 'image' &&
+        props.backgroundImages &&
+        props.backgroundImages.length > 0
+    ) {
+        currentImageIndex.value =
+            (currentImageIndex.value + 1) % props.backgroundImages.length;
     } else {
-        currentBackgroundIndex.value = (currentBackgroundIndex.value + 1) % backgrounds.length;
+        currentBackgroundIndex.value =
+            (currentBackgroundIndex.value + 1) % backgrounds.length;
     }
     generateImage();
 }
@@ -553,7 +597,11 @@ watch(
                                     <div class="mb-3 flex gap-2">
                                         <Button
                                             @click="backgroundType = 'gradient'"
-                                            :variant="backgroundType === 'gradient' ? 'default' : 'outline'"
+                                            :variant="
+                                                backgroundType === 'gradient'
+                                                    ? 'default'
+                                                    : 'outline'
+                                            "
                                             size="sm"
                                             class="flex-1"
                                         >
@@ -562,48 +610,102 @@ watch(
                                         </Button>
                                         <Button
                                             @click="backgroundType = 'image'"
-                                            :variant="backgroundType === 'image' ? 'default' : 'outline'"
+                                            :variant="
+                                                backgroundType === 'image'
+                                                    ? 'default'
+                                                    : 'outline'
+                                            "
                                             size="sm"
                                             class="flex-1"
-                                            :disabled="!backgroundImages || backgroundImages.length === 0"
+                                            :disabled="
+                                                !backgroundImages ||
+                                                backgroundImages.length === 0
+                                            "
                                         >
                                             <ImageIcon class="mr-2 h-4 w-4" />
                                             {{ t('Image') }}
                                         </Button>
                                     </div>
-                                    <p class="text-xs text-muted-foreground" v-if="backgroundType === 'image' && backgroundImages && backgroundImages.length > 0">
-                                        {{ t('Using serene nature images from Pexels') }}
+                                    <p
+                                        class="text-xs text-muted-foreground"
+                                        v-if="
+                                            backgroundType === 'image' &&
+                                            backgroundImages &&
+                                            backgroundImages.length > 0
+                                        "
+                                    >
+                                        {{
+                                            t(
+                                                'Using serene nature images from Pexels',
+                                            )
+                                        }}
                                     </p>
-                                    <p class="text-xs text-yellow-600 dark:text-yellow-400" v-if="!backgroundImages || backgroundImages.length === 0">
+                                    <p
+                                        class="text-xs text-yellow-600 dark:text-yellow-400"
+                                        v-if="
+                                            !backgroundImages ||
+                                            backgroundImages.length === 0
+                                        "
+                                    >
                                         {{ t('No Images for now.') }}
                                     </p>
                                 </div>
 
-                                <p class="text-sm text-muted-foreground" v-if="backgroundType === 'gradient'">
+                                <p
+                                    class="text-sm text-muted-foreground"
+                                    v-if="backgroundType === 'gradient'"
+                                >
                                     {{ t('Current Style:') }}
                                     <span class="font-semibold">{{
                                         currentBackground.name
                                     }}</span>
                                 </p>
-                                <p class="text-sm text-muted-foreground" v-else-if="backgroundImages && backgroundImages.length > 0">
+                                <p
+                                    class="text-sm text-muted-foreground"
+                                    v-else-if="
+                                        backgroundImages &&
+                                        backgroundImages.length > 0
+                                    "
+                                >
                                     {{ t('Image by') }}
-                                    <a :href="backgroundImages[currentImageIndex].photographer_url" target="_blank" class="font-semibold underline">
-                                        {{ backgroundImages[currentImageIndex].photographer }}
+                                    <a
+                                        :href="
+                                            backgroundImages[currentImageIndex]
+                                                .photographer_url
+                                        "
+                                        target="_blank"
+                                        class="font-semibold underline"
+                                    >
+                                        {{
+                                            backgroundImages[currentImageIndex]
+                                                .photographer
+                                        }}
                                     </a>
                                     {{ t('on Pexels') }}
                                 </p>
                                 <Button
                                     @click="changeBackground"
                                     variant="outline"
-                                    :disabled="isGenerating || (backgroundType === 'gradient' && useCustomColors)"
+                                    :disabled="
+                                        isGenerating ||
+                                        (backgroundType === 'gradient' &&
+                                            useCustomColors)
+                                    "
                                     class="w-full"
                                 >
-                                    {{ backgroundType === 'image' ? t('Change Image') : t('Change Background Style') }}
+                                    {{
+                                        backgroundType === 'image'
+                                            ? t('Change Image')
+                                            : t('Change Background Style')
+                                    }}
                                 </Button>
                             </div>
 
                             <!-- Custom Colors (only show for gradients) -->
-                            <div class="rounded-lg border p-4" v-if="backgroundType === 'gradient'">
+                            <div
+                                class="rounded-lg border p-4"
+                                v-if="backgroundType === 'gradient'"
+                            >
                                 <div class="mb-3 flex items-center gap-2">
                                     <Palette class="h-4 w-4" />
                                     <h3 class="font-semibold">
@@ -809,8 +911,12 @@ watch(
                                     </div>
                                 </div>
                                 <Button
-                                    @click="router.visit(`/bibles/${bible}?book=${book}&chapter=${chapter}`)"
-                                    class="w-full mt-4"
+                                    @click="
+                                        router.visit(
+                                            `/bibles/${bible}?book=${book}&chapter=${chapter}`,
+                                        )
+                                    "
+                                    class="mt-4 w-full"
                                 >
                                     <BookMarked class="mr-2 h-4 w-4" />
                                     {{ t('Back to Bible') }}

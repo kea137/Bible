@@ -8,22 +8,24 @@ import CardTitle from '@/components/ui/card/CardTitle.vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
-import { router, useForm, Head } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { BookOpen, Check, Languages, Palette } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
-import { watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
 
 const props = defineProps<{
-    bibles: Record<string, Array<{
-        id: number;
-        name: string;
-        abbreviation: string;
-        language: string;
-        version: string;
-    }>>;
+    bibles: Record<
+        string,
+        Array<{
+            id: number;
+            name: string;
+            abbreviation: string;
+            language: string;
+            version: string;
+        }>
+    >;
     currentLanguage: string;
 }>();
 
@@ -94,7 +96,7 @@ const previousStep = () => {
 const toggleTranslation = (id: number) => {
     const current = preferred_translations.value;
     if (current.includes(id)) {
-        preferred_translations.value = current.filter(tid => tid !== id);
+        preferred_translations.value = current.filter((tid) => tid !== id);
     } else {
         preferred_translations.value = [...current, id];
     }
@@ -123,21 +125,24 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
 
 <template>
     <div class="flex min-h-screen items-center justify-center p-4">
-        <Head :title="t('Welcome! Let\'s get you started')"/>
-        
+        <Head :title="t('Welcome! Let\'s get you started')" />
+
         <Card class="w-full max-w-2xl shadow-xl">
             <CardHeader class="text-center">
-                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <div
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10"
+                >
                     <BookOpen class="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle class="text-2xl">
-                    {{ t('Welcome! Let\'s get you started') }}
+                    {{ t("Welcome! Let's get you started") }}
                 </CardTitle>
                 <CardDescription>
-                    {{ t('Let\'s personalize your Bible experience') }}
+                    {{ t("Let's personalize your Bible experience") }}
                 </CardDescription>
                 <div class="mt-4 text-sm text-muted-foreground">
-                    {{ t('Step') }} {{ currentStep }} {{ t('of') }} {{ totalSteps }}
+                    {{ t('Step') }} {{ currentStep }} {{ t('of') }}
+                    {{ totalSteps }}
                 </div>
             </CardHeader>
 
@@ -151,9 +156,13 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                         </h3>
                     </div>
                     <p class="text-sm text-muted-foreground">
-                        {{ t('Select the language you want to use for the app interface') }}
+                        {{
+                            t(
+                                'Select the language you want to use for the app interface',
+                            )
+                        }}
                     </p>
-                    
+
                     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                         <button
                             v-for="lang in languages"
@@ -184,23 +193,36 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                         </h3>
                     </div>
                     <p class="text-sm text-muted-foreground">
-                        {{ t('Choose the Bible translations you\'d like to use for parallel reading and study') }}
+                        {{
+                            t(
+                                "Choose the Bible translations you'd like to use for parallel reading and study",
+                            )
+                        }}
                     </p>
                     <p class="text-xs text-muted-foreground italic">
                         {{ t('You can select multiple translations') }}
                     </p>
 
                     <ScrollArea class="h-[300px] rounded-md border p-4">
-                        <div v-if="biblesForSelectedLanguage.length > 0" class="space-y-3">
+                        <div
+                            v-if="biblesForSelectedLanguage.length > 0"
+                            class="space-y-3"
+                        >
                             <div
                                 v-for="bible in biblesForSelectedLanguage"
                                 :key="bible.id"
-                                class="flex items-start space-x-3 rounded-lg border p-3 hover:bg-accent transition-colors"
+                                class="flex items-start space-x-3 rounded-lg border p-3 transition-colors hover:bg-accent"
                             >
                                 <Checkbox
                                     :id="`bible-${bible.id}`"
-                                    :checked="preferred_translations.includes(bible.id)"
-                                    @update:model-value="toggleTranslation(bible.id)"
+                                    :checked="
+                                        preferred_translations.includes(
+                                            bible.id,
+                                        )
+                                    "
+                                    @update:model-value="
+                                        toggleTranslation(bible.id)
+                                    "
                                 />
                                 <div class="flex-1">
                                     <Label
@@ -210,17 +232,24 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                                         {{ bible.name }}
                                     </Label>
                                     <p class="text-xs text-muted-foreground">
-                                        {{ bible.abbreviation }} - {{ bible.version }}
+                                        {{ bible.abbreviation }} -
+                                        {{ bible.version }}
                                     </p>
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="flex h-full items-center justify-center text-muted-foreground">
+                        <div
+                            v-else
+                            class="flex h-full items-center justify-center text-muted-foreground"
+                        >
                             {{ t('No translations available') }}
                         </div>
                     </ScrollArea>
 
-                    <div v-if="currentStep === 2 && !canProceed" class="text-sm text-destructive">
+                    <div
+                        v-if="currentStep === 2 && !canProceed"
+                        class="text-sm text-destructive"
+                    >
                         {{ t('Select at least one Bible translation') }}
                     </div>
                 </div>
@@ -244,15 +273,19 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                             @click="selectTheme(theme.value)"
                             :class="[
                                 'flex flex-col items-center justify-center rounded-lg border-2 p-6 transition-all hover:border-primary hover:bg-primary/5',
-                                form.appearance_preferences.theme === theme.value
+                                form.appearance_preferences.theme ===
+                                theme.value
                                     ? 'border-primary bg-primary/10 font-semibold'
                                     : 'border-gray-200 dark:border-gray-700',
                             ]"
                         >
-                            <span class="text-3xl mb-2">{{ theme.icon }}</span>
+                            <span class="mb-2 text-3xl">{{ theme.icon }}</span>
                             <span>{{ theme.label }}</span>
                             <Check
-                                v-if="form.appearance_preferences.theme === theme.value"
+                                v-if="
+                                    form.appearance_preferences.theme ===
+                                    theme.value
+                                "
                                 class="mt-2 h-4 w-4 text-primary"
                             />
                         </button>
@@ -260,7 +293,9 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                 </div>
 
                 <!-- Navigation Buttons -->
-                <div class="flex items-center justify-between gap-4 pt-6 border-t">
+                <div
+                    class="flex items-center justify-between gap-4 border-t pt-6"
+                >
                     <Button
                         v-if="currentStep > 1"
                         variant="outline"
@@ -268,11 +303,7 @@ const selectTheme = (theme: 'light' | 'dark' | 'system') => {
                     >
                         {{ t('Previous') }}
                     </Button>
-                    <Button
-                        v-else
-                        variant="ghost"
-                        @click="skipOnboarding"
-                    >
+                    <Button v-else variant="ghost" @click="skipOnboarding">
                         {{ t('Skip for now') }}
                     </Button>
 

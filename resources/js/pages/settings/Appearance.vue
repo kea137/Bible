@@ -27,9 +27,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
             <div class="space-y-6">
                 <HeadingSmall
                     :title="t('Preferences settings')"
-                    :description="
-                        t('Update your account\'s preferences')
-                    "
+                    :description="t('Update your account\'s preferences')"
                 />
 
                 <div class="space-y-4">

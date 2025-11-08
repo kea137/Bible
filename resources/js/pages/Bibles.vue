@@ -150,7 +150,7 @@ const searchVerses = async () => {
         // Fetch all highlights and bibles if search query is empty
         await loadHighlights();
     } else {
-        // Search verses from Algolia 
+        // Search verses from Algolia
         try {
             const response = await client.searchSingleIndex({
                 indexName: 'verses',
@@ -162,14 +162,16 @@ const searchVerses = async () => {
             // Map Algolia hits to a format similar to highlights
             const verseResults = response.hits.map((hit: any) => ({
                 verse: {
-                    id: typeof hit.objectID === 'string' && hit.objectID.startsWith('App\\Models\\Verse::')
-                        ? parseInt(hit.objectID.split('::')[1], 10)
-                        : hit.objectID || hit.id,
+                    id:
+                        typeof hit.objectID === 'string' &&
+                        hit.objectID.startsWith('App\\Models\\Verse::')
+                            ? parseInt(hit.objectID.split('::')[1], 10)
+                            : hit.objectID || hit.id,
                     text: hit.text,
                 },
             }));
 
-            highlights.value = verseResults.map(v => v.verse);
+            highlights.value = verseResults.map((v) => v.verse);
         } catch (error) {
             console.error('Algolia search error:', error);
         }
@@ -304,7 +306,9 @@ const searchVerses = async () => {
                     <CommandInput
                         v-model="searchQuery"
                         @input="searchVerses()"
-                        :placeholder="t('Search bibles by name, language, or version...')"
+                        :placeholder="
+                            t('Search bibles by name, language, or version...')
+                        "
                     />
                     <CommandList>
                         <CommandEmpty>{{ t('No bibles found.') }}</CommandEmpty>

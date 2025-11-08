@@ -49,7 +49,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AppLogo from './AppLogo.vue';
 import AppearanceSideBar from './AppearanceSideBar.vue';
-import LanguageSelectorSideBar from './LanguageSelectorSideBar.vue';
 
 const { t } = useI18n();
 const page = usePage();

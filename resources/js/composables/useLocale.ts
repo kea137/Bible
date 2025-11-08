@@ -24,7 +24,7 @@ export function initializeLocale(i18n: any) {
     // Initialize locale from user's database preference passed via Inertia
     const page = usePage();
     const userLanguage = (page.props.language as Locale) || 'en';
-    
+
     if (i18n.global) {
         i18n.global.locale.value = userLanguage;
     }
@@ -35,7 +35,9 @@ const locale = ref<Locale>('en');
 export function useLocale() {
     const { locale: i18nLocale, t } = useI18n();
     const page = usePage();
-    const userLanguage = computed(() => (page.props.language as Locale) || 'en');
+    const userLanguage = computed(
+        () => (page.props.language as Locale) || 'en',
+    );
 
     onMounted(() => {
         locale.value = userLanguage.value;

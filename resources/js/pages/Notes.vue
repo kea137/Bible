@@ -390,7 +390,11 @@ async function deleteNote() {
                                 <Textarea
                                     id="edit-content"
                                     v-model="editContent"
-                                    :placeholder="t('Your thoughts, insights, or reflections...')"
+                                    :placeholder="
+                                        t(
+                                            'Your thoughts, insights, or reflections...',
+                                        )
+                                    "
                                     rows="12"
                                 />
                             </div>

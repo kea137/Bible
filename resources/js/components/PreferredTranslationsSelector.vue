@@ -42,7 +42,10 @@ const fetchBibles = async () => {
 const fetchUserPreferences = async () => {
     if (page.props.auth?.user) {
         const user = page.props.auth.user as any;
-        if (user.preferred_translations && Array.isArray(user.preferred_translations)) {
+        if (
+            user.preferred_translations &&
+            Array.isArray(user.preferred_translations)
+        ) {
             selectedTranslations.value = user.preferred_translations;
         }
     }
@@ -144,7 +147,8 @@ const checked = (id: number) => {
                                 {{ bible.name }}
                             </Label>
                             <p class="text-xs text-muted-foreground">
-                                {{ bible.abbreviation }} - {{ bible.version }} ({{ bible.language }})
+                                {{ bible.abbreviation }} -
+                                {{ bible.version }} ({{ bible.language }})
                             </p>
                         </div>
                     </div>
@@ -156,10 +160,7 @@ const checked = (id: number) => {
                 :disabled="saving || selectedTranslations.length === 0"
                 class="w-full"
             >
-                <Loader2
-                    v-if="saving"
-                    class="mr-2 h-4 w-4 animate-spin"
-                />
+                <Loader2 v-if="saving" class="mr-2 h-4 w-4 animate-spin" />
                 {{ saving ? t('Saving...') : t('Save Preferences') }}
             </Button>
         </div>
