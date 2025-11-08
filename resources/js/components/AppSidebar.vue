@@ -174,9 +174,6 @@ const footerNavItems = computed(() => {
             <SidebarGroup class="px-2 py-0">
                 <div class="mr-4 space-y-3 py-2">
                     <div class="space-y-1">
-                        <LanguageSelectorSideBar v-if="!(language === 'en')" />
-                    </div>
-                    <div class="space-y-1">
                         <AppearanceSideBar />
                     </div>
                 </div>

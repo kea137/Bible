@@ -26,7 +26,7 @@ const sidebarNavItems: NavItem[] = [
         href: show(),
     },
     {
-        title: t('Appearance'),
+        title: t('Preferences'),
         href: editAppearance(),
     },
 ];
