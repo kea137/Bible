@@ -793,5 +793,12 @@
     "Complete Setup": "Completar configuración",
     "Select at least one Bible translation": "Selecciona al menos una traducción de la Biblia",
     "No translations available": "No hay traducciones disponibles",
-    "Step": "Paso"
+    "Step": "Paso",
+    "Preferences settings": "Preferences settings",
+    "Update your account's preferences": "Update your account's preferences",
+    "Preferred Bible Translations": "Preferred Bible Translations",
+    "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
+    "Saving...": "Saving...",
+    "Save Preferences": "Save Preferences",
+    "No translations available for your language": "No translations available for your language"
 }

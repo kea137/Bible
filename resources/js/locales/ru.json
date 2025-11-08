@@ -795,5 +795,12 @@
     "Complete Setup": "Завершить настройку",
     "Select at least one Bible translation": "Выберите хотя бы один перевод Библии",
     "No translations available": "Нет доступных переводов",
-    "Step": "Шаг"
+    "Step": "Шаг",
+    "Preferences settings": "Preferences settings",
+    "Update your account's preferences": "Update your account's preferences",
+    "Preferred Bible Translations": "Preferred Bible Translations",
+    "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
+    "Saving...": "Saving...",
+    "Save Preferences": "Save Preferences",
+    "No translations available for your language": "No translations available for your language"
 }

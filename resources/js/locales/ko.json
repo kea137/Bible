@@ -793,5 +793,12 @@
     "Complete Setup": "설정 완료",
     "Select at least one Bible translation": "성경 번역을 최소 하나 이상 선택하세요",
     "No translations available": "사용 가능한 번역이 없습니다",
-    "Step": "단계"
+    "Step": "단계",
+    "Preferences settings": "Preferences settings",
+    "Update your account's preferences": "Update your account's preferences",
+    "Preferred Bible Translations": "Preferred Bible Translations",
+    "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
+    "Saving...": "Saving...",
+    "Save Preferences": "Save Preferences",
+    "No translations available for your language": "No translations available for your language"
 }

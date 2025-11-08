@@ -162,4 +162,25 @@ class DashboardController extends Controller
 
         return response()->json(['success' => true, 'theme' => $theme]);
     }
+
+    public function updateTranslations()
+    {
+        $userId = Auth::id();
+        $user = \App\Models\User::find($userId);
+
+        // Validate translations
+        request()->validate([
+            'preferred_translations' => 'nullable|array',
+            'preferred_translations.*' => 'integer|exists:bibles,id',
+        ]);
+
+        $translations = request('preferred_translations', []);
+
+        if ($user) {
+            $user->preferred_translations = $translations;
+            $user->save();
+        }
+
+        return response()->json(['success' => true, 'translations' => $translations]);
+    }
 }

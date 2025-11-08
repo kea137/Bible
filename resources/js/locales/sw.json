@@ -796,5 +796,12 @@
     "Complete Setup": "Kamilisha Usanidi",
     "Select at least one Bible translation": "Chagua angalau tafsiri moja ya Biblia",
     "No translations available": "Hakuna tafsiri zinazopatikana",
-    "Step": "Hatua"
+    "Step": "Hatua",
+    "Preferences settings": "Mipangilio ya Mapendeleo",
+    "Update your account's preferences": "Sasisha mapendeleo ya akaunti yako",
+    "Preferred Bible Translations": "Tafsiri za Biblia Zinazopendwa",
+    "Select Bible translations for parallel reading and study": "Chagua tafsiri za Biblia kwa kusoma sambamba na kujifunza",
+    "Saving...": "Inahifadhi...",
+    "Save Preferences": "Hifadhi Mapendeleo",
+    "No translations available for your language": "Hakuna tafsiri zinazopatikana kwa lugha yako"
 }

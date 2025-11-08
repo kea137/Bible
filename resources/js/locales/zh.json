@@ -811,5 +811,12 @@
     "Complete Setup": "完成设置",
     "Select at least one Bible translation": "请至少选择一个圣经译本",
     "No translations available": "暂无译本",
-    "Step": "步骤"
+    "Step": "步骤",
+    "Preferences settings": "Preferences settings",
+    "Update your account's preferences": "Update your account's preferences",
+    "Preferred Bible Translations": "Preferred Bible Translations",
+    "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
+    "Saving...": "Saving...",
+    "Save Preferences": "Save Preferences",
+    "No translations available for your language": "No translations available for your language"
 }

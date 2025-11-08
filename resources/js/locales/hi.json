@@ -795,5 +795,12 @@
     "Complete Setup": "सेटअप पूरा करें",
     "Select at least one Bible translation": "कम से कम एक बाइबल अनुवाद चुनें",
     "No translations available": "कोई अनुवाद उपलब्ध नहीं है",
-    "Step": "चरण"
+    "Step": "चरण",
+    "Preferences settings": "Preferences settings",
+    "Update your account's preferences": "Update your account's preferences",
+    "Preferred Bible Translations": "Preferred Bible Translations",
+    "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
+    "Saving...": "Saving...",
+    "Save Preferences": "Save Preferences",
+    "No translations available for your language": "No translations available for your language"
 }

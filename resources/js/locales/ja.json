@@ -796,5 +796,12 @@
     "Complete Setup": "設定を完了",
     "Select at least one Bible translation": "少なくとも1つの聖書翻訳を選択してください",
     "No translations available": "利用可能な翻訳はありません",
-    "Step": "ステップ"
+    "Step": "ステップ",
+    "Preferences settings": "Preferences settings",
+    "Update your account's preferences": "Update your account's preferences",
+    "Preferred Bible Translations": "Preferred Bible Translations",
+    "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
+    "Saving...": "Saving...",
+    "Save Preferences": "Save Preferences",
+    "No translations available for your language": "No translations available for your language"
 }
