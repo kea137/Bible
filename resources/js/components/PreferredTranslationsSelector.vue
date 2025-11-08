@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import { usePage } from '@inertiajs/vue3';
 import { Loader2 } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -30,7 +30,7 @@ const fetchBibles = async () => {
         const response = await fetch('/api/bibles');
         if (response.ok) {
             const data = await response.json();
-            bibles.value = data.data || [];
+            bibles.value = data;
         }
     } catch (error) {
         console.error('Failed to fetch bibles:', error);
@@ -107,6 +107,10 @@ onMounted(() => {
     fetchBibles();
     fetchUserPreferences();
 });
+
+const checked = (id: number) => {
+    return selectedTranslations.value.includes(id);
+};
 </script>
 
 <template>
@@ -129,8 +133,8 @@ onMounted(() => {
                     >
                         <Checkbox
                             :id="`translation-${bible.id}`"
-                            :checked="selectedTranslations.includes(bible.id)"
-                            @update:checked="() => toggleTranslation(bible.id)"
+                            :modelValue="checked(bible.id)"
+                            @update:modelValue="toggleTranslation(bible.id)"
                         />
                         <div class="flex-1">
                             <Label
