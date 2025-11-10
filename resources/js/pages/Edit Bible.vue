@@ -64,6 +64,15 @@ const successMessage = computed(() => page.props.success as string);
 const errorMessage = computed(() => page.props.error as string);
 const alertSuccess = ref(!!successMessage.value);
 const alertError = ref(!!errorMessage.value);
+
+// Create a local copy of bible to avoid mutating props
+const bibleForm = ref({
+    name: props.bible.name,
+    abbreviation: props.bible.abbreviation,
+    language: props.bible.language,
+    version: props.bible.version,
+    description: props.bible.description,
+});
 </script>
 
 <template>
@@ -124,7 +133,7 @@ const alertError = ref(!!errorMessage.value);
                                         :tabindex="1"
                                         type="text"
                                         :placeholder="t('Name of the Bible')"
-                                        v-model="bible.name"
+                                        v-model="bibleForm.name"
                                     />
                                     <InputError :message="errors.name" />
                                 </div>
@@ -142,7 +151,7 @@ const alertError = ref(!!errorMessage.value);
                                         :placeholder="
                                             t('Abbreviation of the Bible')
                                         "
-                                        v-model="bible.abbreviation"
+                                        v-model="bibleForm.abbreviation"
                                     />
                                     <InputError
                                         :message="errors.abbreviation"
@@ -156,7 +165,11 @@ const alertError = ref(!!errorMessage.value);
                                     }}</Label>
                                     <Select
                                         name="language"
-                                        :default-value="bible.language"
+                                        :default-value="bibleForm.language"
+                                        @update:model-value="
+                                            (value) =>
+                                                (bibleForm.language = value)
+                                        "
                                     >
                                         <SelectTrigger id="language">
                                             <SelectValue
@@ -194,7 +207,7 @@ const alertError = ref(!!errorMessage.value);
                                         :tabindex="1"
                                         type="text"
                                         :placeholder="t('Version of the Bible')"
-                                        v-model="bible.version"
+                                        v-model="bibleForm.version"
                                     />
                                     <InputError :message="errors.version" />
                                 </div>
@@ -211,7 +224,7 @@ const alertError = ref(!!errorMessage.value);
                                         :placeholder="
                                             t('Description of the Bible')
                                         "
-                                        v-model="bible.description"
+                                        v-model="bibleForm.description"
                                     />
                                     <InputError :message="errors.description" />
                                 </div>

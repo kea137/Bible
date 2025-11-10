@@ -15,8 +15,8 @@ class LanguageController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'language' => ['required', 'string', 
-            Rule::in(['en', 'sw', 'fr', 'es', 'de', 'it', 'ru', 'zh', 'ja', 'ar', 'hi', 'bn', 'pa', 'jv', 'ko', 'vi', 'te', 'mr', 'ta'])],
+            'language' => ['required', 'string',
+                Rule::in(['en', 'sw', 'fr', 'es', 'de', 'it', 'ru', 'zh', 'ja', 'ar', 'hi', 'bn', 'pa', 'jv', 'ko', 'vi', 'te', 'mr', 'ta'])],
         ]);
 
         $request->user()->update([

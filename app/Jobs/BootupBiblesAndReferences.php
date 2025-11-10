@@ -39,5 +39,4 @@ class BootupBiblesAndReferences implements ShouldQueue
 
         Log::info('Bible and References bootup process completed.');
     }
-
 }

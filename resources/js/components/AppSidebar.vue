@@ -53,7 +53,6 @@ import AppearanceSideBar from './AppearanceSideBar.vue';
 const { t } = useI18n();
 const page = usePage();
 const auth = computed(() => page.props.auth);
-const language = computed(() => page.props.language);
 const roleNumbers = computed(() => auth.value?.roleNumbers || []);
 
 const mainNavItems: NavItem[] = [

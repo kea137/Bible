@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 test('PexelsService returns empty array when API key is not configured', function () {
     Config::set('services.pexels.api_key', '');
 
-    $service = new PexelsService();
+    $service = new PexelsService;
     $images = $service->getBackgroundImages();
 
     expect($images)->toBeArray()->toBeEmpty();
@@ -39,7 +39,7 @@ test('PexelsService caches API responses', function () {
     // Clear cache before test
     Cache::flush();
 
-    $service = new PexelsService();
+    $service = new PexelsService;
 
     // First call should hit the API
     $images = $service->getBackgroundImages(1);
@@ -78,7 +78,7 @@ test('PexelsService formats image data correctly', function () {
     ]);
 
     Cache::flush();
-    $service = new PexelsService();
+    $service = new PexelsService;
     $images = $service->getBackgroundImages(1);
 
     expect($images[0])
@@ -98,7 +98,7 @@ test('PexelsService returns empty array on API failure', function () {
     ]);
 
     Cache::flush();
-    $service = new PexelsService();
+    $service = new PexelsService;
     $images = $service->getBackgroundImages();
 
     expect($images)->toBeArray()->toBeEmpty();
@@ -133,7 +133,7 @@ test('getRandomBackground returns a random image', function () {
     ]);
 
     Cache::flush();
-    $service = new PexelsService();
+    $service = new PexelsService;
     $image = $service->getRandomBackground();
 
     expect($image)
@@ -144,7 +144,7 @@ test('getRandomBackground returns a random image', function () {
 test('getRandomBackground returns null when no images available', function () {
     Config::set('services.pexels.api_key', '');
 
-    $service = new PexelsService();
+    $service = new PexelsService;
     $image = $service->getRandomBackground();
 
     expect($image)->toBeNull();

@@ -37,10 +37,8 @@ import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Logo from '/resources/images/logo-small.png';
 
 const { t } = useI18n();
-const imageUrl = Logo;
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];

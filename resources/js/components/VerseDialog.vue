@@ -27,7 +27,6 @@ const emit = defineEmits<{
 }>();
 
 const page = usePage();
-const noteTitle = ref('');
 const Verse_content = ref('');
 const saving = ref(false);
 

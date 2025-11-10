@@ -139,11 +139,6 @@ const cancelDelete = () => {
 const pageSize = 5;
 const currentPage = ref(1);
 
-const paginatedBibles = computed(() => {
-    const start = (currentPage.value - 1) * pageSize;
-    return props.users.slice(start, start + pageSize);
-});
-
 function handlePageChange(page: number) {
     currentPage.value = page;
 }

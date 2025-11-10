@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { useSidebar } from '@/components/ui/sidebar';
 import { useLocale } from '@/composables/useLocale';
-import { usePage } from '@inertiajs/vue3';
 import { Languages } from 'lucide-vue-next';
-import { computed } from 'vue';
 
-const { locale, changeLocale, t } = useLocale();
+const { locale, changeLocale } = useLocale();
 const { state } = useSidebar();
-const page = usePage();
-const userLanguage = computed(() => page.props.language as string);
 
 // store language in database when changed
 async function updateLocale(newLocale: any) {

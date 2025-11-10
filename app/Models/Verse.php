@@ -8,9 +8,8 @@ use Laravel\Scout\Searchable;
 
 class Verse extends Model
 {
-    use Searchable;
-
     use HasFactory;
+    use Searchable;
 
     protected $fillable = [
         'bible_id',

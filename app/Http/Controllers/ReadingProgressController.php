@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Bible;
 use App\Models\Chapter;
-use App\Models\ReadingProgress;
 use App\Models\LessonProgress;
+use App\Models\ReadingProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;

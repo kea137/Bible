@@ -77,7 +77,6 @@ const canProceed = computed(() => {
     if (currentStep.value === 1) return true;
     if (currentStep.value === 2) return preferred_translations.value.length > 0;
     if (currentStep.value === 3) return true;
-    form.preferred_translations = preferred_translations.value;
     return false;
 });
 

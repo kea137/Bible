@@ -34,7 +34,7 @@ class ReferenceController extends Controller
                     'name' => $bible->name,
                     'abbreviation' => $bible->abbreviation,
                     'language' => $bible->language,
-                    'reference_count' => (int)$bible->references_count ?? 0,
+                    'reference_count' => (int) $bible->references_count ?? 0,
                 ];
             });
 

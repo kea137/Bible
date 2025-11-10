@@ -10,27 +10,27 @@ use App\Models\Chapter;
 use App\Models\Role;
 use App\Services\BibleJsonParser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 
 class BibleController extends Controller
 {
     public $languageMap = [
-            'en' => 'English',
-            'sw' => 'Swahili',
-            'fr' => 'French',
-            'es' => 'Spanish',
-            'de' => 'German',
-            'it' => 'Italian',
-            'ru' => 'Russian',
-            'zh' => 'Chinese',
-            'ja' => 'Japanese',
-            'ar' => 'Arabic',
-            'hi' => 'Hindi',
-            'ko' => 'Korean',
-        ];
+        'en' => 'English',
+        'sw' => 'Swahili',
+        'fr' => 'French',
+        'es' => 'Spanish',
+        'de' => 'German',
+        'it' => 'Italian',
+        'ru' => 'Russian',
+        'zh' => 'Chinese',
+        'ja' => 'Japanese',
+        'ar' => 'Arabic',
+        'hi' => 'Hindi',
+        'ko' => 'Korean',
+    ];
 
     /**
      * Display a listing of the resource.
@@ -41,9 +41,10 @@ class BibleController extends Controller
         $userPreferences = request()->user()->preferred_translations;
 
         $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version', 'description')
-            ->when(!empty($userPreferences) && is_array($userPreferences), function ($q) use ($userPreferences) {
+            ->when(! empty($userPreferences) && is_array($userPreferences), function ($q) use ($userPreferences) {
                 // Preserve user's preference order first, then fallback to name for others
                 $ids = implode(',', array_map('intval', $userPreferences));
+
                 return $q->orderByRaw("(FIELD(id, {$ids}) = 0), FIELD(id, {$ids}), name ASC");
             }, function ($q) {
                 return $q->orderBy('name');
@@ -96,19 +97,19 @@ class BibleController extends Controller
     {
         $bible->load('books.chapters');
 
-        if(empty($request->all())){
+        if (empty($request->all())) {
             $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', Auth::id())
                 ->where('completed', true)
                 ->with([
                     'bible:id,name',
                     'chapter:id,book_id,chapter_number',
-                    'chapter.book:id,title'
+                    'chapter.book:id,title',
                 ])
                 ->latest('completed_at')
                 ->select('id', 'user_id', 'bible_id', 'chapter_id', 'completed_at')
                 ->first();
 
-            // Get the last reading point or first book and first chapter 
+            // Get the last reading point or first book and first chapter
             $firstBook = $lastReadingProgress && $lastReadingProgress->bible_id === $bible->id
                 ? $bible->books->firstWhere('id', $lastReadingProgress->chapter->book_id)
                 : $bible->books->first();
@@ -127,7 +128,6 @@ class BibleController extends Controller
                 $firstChapter->load('verses', 'book');
             }
         }
-        
 
         return Inertia::render('Bible', [
             'bible' => $bible->toArray(),
@@ -186,7 +186,7 @@ class BibleController extends Controller
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
 
                 DB::transaction(
-                    function() use ($validated, $parser, $data) {
+                    function () use ($validated, $parser, $data) {
                         try {
                             $bible = Bible::create([
                                 'name' => $validated['name'],
@@ -205,7 +205,6 @@ class BibleController extends Controller
                         }
                     }
                 );
-                
 
             }
 
@@ -280,7 +279,7 @@ class BibleController extends Controller
                     'version' => $validated['version'],
                     'description' => $validated['description'] ?? null,
                 ]);
-                
+
             }
         );
 
@@ -322,5 +321,4 @@ class BibleController extends Controller
 
         return redirect()->route('bibles')->with('success', 'Bible and reference installation has been queued. You will be notified when it completes.');
     }
-
 }

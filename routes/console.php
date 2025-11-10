@@ -1,7 +1,6 @@
 <?php
 
 use App\Jobs\BootupBiblesAndReferences;
-use App\Models\Bible;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -25,7 +24,8 @@ Artisan::command('bibles:bootup', function () {
         BootupBiblesAndReferences::dispatchSync();
         $this->info('Bible and References bootup process completed.');
     } catch (\Exception $e) {
-        $this->error('Error migrating Bible tables: ' . $e->getMessage());
+        $this->error('Error migrating Bible tables: '.$e->getMessage());
+
         return;
     }
 

@@ -52,7 +52,7 @@ class VerseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateVerseRequest $request, Verse $verse) : JsonResponse
+    public function update(UpdateVerseRequest $request, Verse $verse): JsonResponse
     {
         Gate::authorize('update', Verse::class);
 

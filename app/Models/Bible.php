@@ -8,10 +8,10 @@ use Laravel\Scout\Searchable;
 
 class Bible extends Model
 {
-    use Searchable;
-
     /** @use HasFactory<\Database\Factories\BibleFactory> */
     use HasFactory;
+
+    use Searchable;
 
     protected $fillable = [
         'name',

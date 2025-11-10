@@ -515,7 +515,6 @@ const successMessage = computed(() => page.props.success as string);
 const errorMessage = computed(() => page.props.error as string);
 const alertSuccess = ref(!!successMessage.value);
 const alertError = ref(!!errorMessage.value);
-const alertErrorMessage = ref('');
 const alertInfo = ref(false);
 
 if (success) {

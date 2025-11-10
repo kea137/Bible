@@ -11,7 +11,7 @@ import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import {
     BookOpen,
     ExternalLink,
@@ -86,7 +86,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const page = usePage();
 const notesDialogOpen = ref(false);
 const alertSuccess = ref(false);
 const alertError = ref(false);

@@ -43,7 +43,7 @@ class ShareController extends Controller
             'backgroundImages' => $backgroundImages,
             'bible' => $bible,
             'book' => $book,
-            'chapter' => $chapter
+            'chapter' => $chapter,
         ]);
     }
 }

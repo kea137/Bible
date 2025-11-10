@@ -5,15 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Bible;
 use App\Models\Verse;
-use Illuminate\Http\Request;
 
 class PublicBibleController extends Controller
 {
     /**
      * Fetch Bible verses using standardized URL path
-     * 
+     *
      * URL Format: /api/{language}/{version}/{references}/{book}/{chapter}/{verse?}
-     * 
+     *
      * Path parameters:
      * - language: Bible language (e.g., 'English', 'Swahili')
      * - version: Bible version/abbreviation (e.g., 'KJV', 'NIV')
@@ -21,7 +20,7 @@ class PublicBibleController extends Controller
      * - book: Book name or number (e.g., 'Genesis' or '1')
      * - chapter: Chapter number
      * - verse: Specific verse number (optional)
-     * 
+     *
      * Examples:
      * /api/English/KJV/false/Genesis/1
      * /api/English/KJV/true/John/3/16
@@ -44,29 +43,29 @@ class PublicBibleController extends Controller
         // Get the Bible (use first match)
         $bible = $bibleQuery->first();
 
-        if (!$bible) {
+        if (! $bible) {
             return response()->json([
                 'error' => 'No Bible found matching the specified criteria',
-                'message' => 'Please check your language and version parameters'
+                'message' => 'Please check your language and version parameters',
             ], 404);
         }
 
         // Find the book (by name or number)
         $bookQuery = $bible->books();
-        
+
         // Check if book is numeric
         if (is_numeric($book)) {
             $bookQuery->where('book_number', $book);
         } else {
-            $bookQuery->where('title', 'LIKE', $book . '%');
+            $bookQuery->where('title', 'LIKE', $book.'%');
         }
-        
+
         $bookModel = $bookQuery->first();
 
-        if (!$bookModel) {
+        if (! $bookModel) {
             return response()->json([
                 'error' => 'Book not found',
-                'message' => 'The specified book does not exist in this Bible version'
+                'message' => 'The specified book does not exist in this Bible version',
             ], 404);
         }
 
@@ -75,10 +74,10 @@ class PublicBibleController extends Controller
             ->where('chapter_number', $chapter)
             ->first();
 
-        if (!$chapterModel) {
+        if (! $chapterModel) {
             return response()->json([
                 'error' => 'Chapter not found',
-                'message' => 'The specified chapter does not exist in this book'
+                'message' => 'The specified chapter does not exist in this book',
             ], 404);
         }
 
@@ -102,7 +101,7 @@ class PublicBibleController extends Controller
         if ($verses->isEmpty()) {
             return response()->json([
                 'error' => 'No verses found',
-                'message' => 'No verses match the specified criteria'
+                'message' => 'No verses match the specified criteria',
             ], 404);
         }
 

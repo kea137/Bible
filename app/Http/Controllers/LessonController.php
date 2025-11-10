@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
+use App\Models\Bible;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\LessonSeries;
-use App\Models\Bible;
 use App\Services\ScriptureReferenceService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LessonController extends Controller
@@ -46,7 +46,7 @@ class LessonController extends Controller
     public function index()
     {
         return Inertia::render('Lessons', [
-            'lessons'=> Lesson::where('readable', true)->get()->toArray(),
+            'lessons' => Lesson::where('readable', true)->get()->toArray(),
         ]);
     }
 
@@ -58,8 +58,8 @@ class LessonController extends Controller
         $series = LessonSeries::where('user_id', Auth::id())
             ->orderBy('title')
             ->get(['id', 'title', 'description']);
-            
-        return Inertia::render('Create Lesson',[
+
+        return Inertia::render('Create Lesson', [
             'languages' => $this->languages,
             'series' => $series->toArray(),
         ]);
@@ -91,11 +91,11 @@ class LessonController extends Controller
             function () use ($request) {
 
                 $validated = $request->validated();
-                
+
                 // Handle series creation or selection
                 $seriesId = null;
                 $episodeNumber = null;
-                
+
                 if ($request->has('new_series_title') && $request->input('new_series_title')) {
                     // Create new series
                     $series = LessonSeries::create([
@@ -110,21 +110,21 @@ class LessonController extends Controller
                     $seriesId = $request->input('series_id');
                     $episodeNumber = $request->input('episode_number', 1);
                 }
-            
+
                 $lesson = Lesson::create([
-                    'title'=>$validated['title'],
-                    'description'=>$validated['description'],
-                    'language'=>$validated['language'],
-                    'readable'=>($validated['readable'] === 'False' ? false : true),
-                    'no_paragraphs'=>$validated['no_paragraphs'],
-                    'user_id'=>Auth::id(),
-                    'series_id'=>$seriesId,
-                    'episode_number'=>$episodeNumber,
+                    'title' => $validated['title'],
+                    'description' => $validated['description'],
+                    'language' => $validated['language'],
+                    'readable' => ($validated['readable'] === 'False' ? false : true),
+                    'no_paragraphs' => $validated['no_paragraphs'],
+                    'user_id' => Auth::id(),
+                    'series_id' => $seriesId,
+                    'episode_number' => $episodeNumber,
                 ]);
 
-                foreach($validated['paragraphs'] as $paragraph) {
+                foreach ($validated['paragraphs'] as $paragraph) {
                     $lesson->paragraphs()->create([
-                        'text'=>$paragraph['text']
+                        'text' => $paragraph['text'],
                     ]);
                 }
 
@@ -140,22 +140,22 @@ class LessonController extends Controller
     public function show(Lesson $lesson, ScriptureReferenceService $scriptureService)
     {
         $lesson->load(['paragraphs', 'series']);
-        
+
         // Get the first available Bible for fetching scripture references
         $bible = Bible::first();
         $bibleId = $bible ? $bible->id : null;
-        
+
         // Process description for full verse references ('''BOOK CH:V''')
         $processedDescription = $lesson->description;
         if ($bibleId) {
             $processedDescription = $scriptureService->replaceReferences($lesson->description, $bibleId);
         }
-        
+
         // Parse and fetch scripture references from paragraphs
         $paragraphsWithReferences = $lesson->paragraphs->map(function ($paragraph) use ($scriptureService, $bibleId) {
             $references = $scriptureService->parseReferences($paragraph->text);
             $fetchedReferences = [];
-            
+
             if ($bibleId) {
                 foreach ($references as $ref) {
                     $verseData = $scriptureService->fetchVerse($ref['book_code'], $ref['chapter'], $ref['verse'], $bibleId);
@@ -164,7 +164,7 @@ class LessonController extends Controller
                     }
                 }
             }
-            
+
             return [
                 'id' => $paragraph->id,
                 'title' => $paragraph->title,
@@ -172,7 +172,7 @@ class LessonController extends Controller
                 'references' => $fetchedReferences,
             ];
         });
-        
+
         // Get user's progress for this lesson
         $userProgress = null;
         if (Auth::check()) {
@@ -180,7 +180,7 @@ class LessonController extends Controller
                 ->where('lesson_id', $lesson->id)
                 ->first();
         }
-        
+
         // Get series lessons if this lesson is part of a series
         $seriesLessons = [];
         if ($lesson->series_id) {
@@ -189,7 +189,7 @@ class LessonController extends Controller
                 ->get(['id', 'title', 'episode_number'])
                 ->toArray();
         }
-        
+
         return Inertia::render('Lesson', [
             'lesson' => array_merge($lesson->toArray(), [
                 'description' => $processedDescription,
@@ -229,22 +229,22 @@ class LessonController extends Controller
 
         DB::transaction(
 
-            function() use ($lesson, $validated, $request) {
+            function () use ($lesson, $validated, $request) {
 
                 $lesson->paragraphs()->delete();
 
-                foreach($validated['paragraphs'] as $paragraph) {
+                foreach ($validated['paragraphs'] as $paragraph) {
                     $lesson->paragraphs()->create([
-                        'text'=>$paragraph['text']
+                        'text' => $paragraph['text'],
                     ]);
                 }
-                
+
                 // Handle series creation or selection
                 $seriesId = null;
-                $episodeNumber = $request->input('episode_number') 
-                    ? intval($request->input('episode_number')) 
+                $episodeNumber = $request->input('episode_number')
+                    ? intval($request->input('episode_number'))
                     : null;
-                
+
                 if ($request->has('new_series_title') && $request->input('new_series_title')) {
                     // Create new series
                     $series = LessonSeries::create([
@@ -257,11 +257,11 @@ class LessonController extends Controller
                 } elseif ($request->has('series_id') && $request->input('series_id')) {
                     $seriesId = intval($request->input('series_id'));
                 }
-                
+
                 $lesson->update([
                     'title' => $validated['title'],
                     'description' => $validated['description'],
-                    'readable'=>($validated['readable'] === 'False' ? false : true),
+                    'readable' => ($validated['readable'] === 'False' ? false : true),
                     'language' => $validated['language'],
                     'no_paragraphs' => $validated['no_paragraphs'],
                     'series_id' => $seriesId,
@@ -300,7 +300,7 @@ class LessonController extends Controller
             ->first();
 
         if ($progress) {
-            $progress->completed = !$progress->completed;
+            $progress->completed = ! $progress->completed;
             $progress->completed_at = $progress->completed ? now() : null;
             $progress->save();
         } else {

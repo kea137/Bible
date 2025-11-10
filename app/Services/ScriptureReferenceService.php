@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Verse;
 use App\Models\Book;
+use App\Models\Verse;
 
 class ScriptureReferenceService
 {
@@ -109,31 +109,31 @@ class ScriptureReferenceService
     public function parseReferences(string $text): array
     {
         $references = [];
-        
+
         // Pattern for full verse references: '''BOOK CHAPTER:VERSE'''
         preg_match_all("/'''([A-Z0-9]{3})\s+(\d+):(\d+)'''/", $text, $fullMatches, PREG_SET_ORDER);
         foreach ($fullMatches as $match) {
             $references[] = [
                 'type' => 'full',
                 'book_code' => $match[1],
-                'chapter' => (int)$match[2],
-                'verse' => (int)$match[3],
+                'chapter' => (int) $match[2],
+                'verse' => (int) $match[3],
                 'original' => $match[0],
             ];
         }
-        
+
         // Pattern for short references: 'BOOK CHAPTER:VERSE'
         preg_match_all("/'([A-Z0-9]{3})\s+(\d+):(\d+)'/", $text, $shortMatches, PREG_SET_ORDER);
         foreach ($shortMatches as $match) {
             $references[] = [
                 'type' => 'short',
                 'book_code' => $match[1],
-                'chapter' => (int)$match[2],
-                'verse' => (int)$match[3],
+                'chapter' => (int) $match[2],
+                'verse' => (int) $match[3],
                 'original' => $match[0],
             ];
         }
-        
+
         return $references;
     }
 
@@ -143,17 +143,17 @@ class ScriptureReferenceService
     private function getBookNumber(string $bookCode): ?int
     {
         $upperCode = strtoupper($bookCode);
-        
+
         // Try standard English code first
         if (isset(self::BOOK_CODE_MAP[$upperCode])) {
             return self::BOOK_CODE_MAP[$upperCode];
         }
-        
+
         // Try localized code
         if (isset(self::LOCALIZED_BOOK_CODE_MAP[$upperCode])) {
             return self::LOCALIZED_BOOK_CODE_MAP[$upperCode];
         }
-        
+
         return null;
     }
 
@@ -163,28 +163,28 @@ class ScriptureReferenceService
     public function fetchVerse(string $bookCode, int $chapterNumber, int $verseNumber, int $bibleId): ?array
     {
         $bookNumber = $this->getBookNumber($bookCode);
-        
-        if (!$bookNumber) {
+
+        if (! $bookNumber) {
             return null;
         }
 
         $book = Book::where('book_number', $bookNumber)
-                    ->where('bible_id', $bibleId)
-                    ->first();
-        
-        if (!$book) {
+            ->where('bible_id', $bibleId)
+            ->first();
+
+        if (! $book) {
             return null;
         }
 
         $verse = Verse::whereHas('chapter', function ($query) use ($book, $chapterNumber) {
             $query->where('book_id', $book->id)
-                  ->where('chapter_number', $chapterNumber);
+                ->where('chapter_number', $chapterNumber);
         })
-        ->where('verse_number', $verseNumber)
-        ->with(['chapter.book'])
-        ->first();
+            ->where('verse_number', $verseNumber)
+            ->with(['chapter.book'])
+            ->first();
 
-        if (!$verse) {
+        if (! $verse) {
             return null;
         }
 
@@ -205,10 +205,10 @@ class ScriptureReferenceService
     public function replaceReferences(string $text, int $bibleId): string
     {
         $references = $this->parseReferences($text);
-        
+
         foreach ($references as $ref) {
             $verseData = $this->fetchVerse($ref['book_code'], $ref['chapter'], $ref['verse'], $bibleId);
-            
+
             if ($verseData) {
                 if ($ref['type'] === 'full') {
                     // Replace full verse references with the actual verse text
@@ -220,7 +220,7 @@ class ScriptureReferenceService
                 }
             }
         }
-        
+
         return $text;
     }
 }
