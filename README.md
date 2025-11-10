@@ -1,6 +1,14 @@
 # Bible Application
 
-A modern Bible reading and management application built with Laravel, Vue.js, and Inertia.js.
+A comprehensive Bible reading and management platform with both web and mobile applications built with Laravel, Vue.js, and React Native.
+
+## Platforms
+
+### Web Application (Main Repository)
+A modern web application built with Laravel, Vue.js, and Inertia.js providing a full-featured Bible study experience.
+
+### Mobile Application (Bible-App)
+A native mobile app built with React Native and Expo for iOS and Android devices. See [Bible-App/README.md](Bible-App/README.md) for mobile app documentation.
 
 ## Features
 
@@ -130,3 +138,7 @@ SOFTWARE.
 ## Contact
 
 For questions, issues, or contributions, please visit the [GitHub repository](https://github.com/kea137/Bible).
+
+## Mobile App
+
+The React Native mobile application is located in the `Bible-App` directory. It provides native iOS and Android experiences with all the core features of the web application. See the [mobile app documentation](Bible-App/README.md) for setup and development instructions.
