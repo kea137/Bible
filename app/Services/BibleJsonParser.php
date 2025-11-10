@@ -89,12 +89,8 @@ class BibleJsonParser
             return 'flat_verses';
         }
 
-        // Check for nested associative format: { "Genesis": { "1": { "1": "text" } } }
-        if ($this->isNestedAssociativeFormat($data)) {
-            return 'nested_associative';
-        }
-
         // Check for nested books format (array of books with chapters and verses)
+        // This must come BEFORE nested associative check
         if (isset($data['books']) && is_array($data['books'])) {
             return 'nested_books';
         }
@@ -102,6 +98,11 @@ class BibleJsonParser
         // Check if it's a direct array of books
         if (isset($data[0]) && isset($data[0]['chapters']) && is_array($data[0]['chapters'])) {
             return 'nested_books';
+        }
+
+        // Check for nested associative format: { "Genesis": { "1": { "1": "text" } } }
+        if ($this->isNestedAssociativeFormat($data)) {
+            return 'nested_associative';
         }
 
         throw new \InvalidArgumentException('Unable to detect JSON format');

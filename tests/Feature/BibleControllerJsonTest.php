@@ -2,6 +2,7 @@
 
 use App\Models\Bible;
 use App\Models\Book;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -11,6 +12,8 @@ uses(RefreshDatabase::class);
 
 test('bible controller can upload swahili format json file', function () {
     $user = User::factory()->create(['onboarding_completed' => true]);
+    $adminRole = Role::create(['name' => 'Admin', 'role_number' => 1, 'description' => 'Administrator']);
+    $user->roles()->attach($adminRole);
     Storage::fake('local');
 
     $jsonContent = json_encode([
@@ -50,6 +53,8 @@ test('bible controller can upload swahili format json file', function () {
 
 test('bible controller can upload flat verses format json file', function () {
     $user = User::factory()->create(['onboarding_completed' => true]);
+    $adminRole = Role::create(['name' => 'Admin', 'role_number' => 1, 'description' => 'Administrator']);
+    $user->roles()->attach($adminRole);
     Storage::fake('local');
 
     $jsonContent = json_encode([
@@ -73,6 +78,8 @@ test('bible controller can upload flat verses format json file', function () {
 
 test('bible controller handles invalid json format gracefully', function () {
     $user = User::factory()->create(['onboarding_completed' => true]);
+    $adminRole = Role::create(['name' => 'Admin', 'role_number' => 1, 'description' => 'Administrator']);
+    $user->roles()->attach($adminRole);
     Storage::fake('local');
 
     $jsonContent = json_encode(['invalid' => 'format']);

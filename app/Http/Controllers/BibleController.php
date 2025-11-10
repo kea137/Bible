@@ -173,7 +173,7 @@ class BibleController extends Controller
      */
     public function store(StoreBibleRequest $request, BibleJsonParser $parser)
     {
-        Gate::authorize('create', Role::class);
+        Gate::authorize('create', Bible::class);
 
         $validated = $request->validated();
 
@@ -185,9 +185,9 @@ class BibleController extends Controller
             if ($file->getClientOriginalExtension() === 'json') {
                 $data = json_decode(file_get_contents($file->getRealPath()), true);
 
-                DB::transaction(
-                    function () use ($validated, $parser, $data) {
-                        try {
+                try {
+                    DB::transaction(
+                        function () use ($validated, $parser, $data) {
                             $bible = Bible::create([
                                 'name' => $validated['name'],
                                 'abbreviation' => $validated['abbreviation'],
@@ -197,14 +197,12 @@ class BibleController extends Controller
                             ]);
                             // Use the parser service to handle different JSON formats
                             $parser->parse($bible, $data);
-                        } catch (\InvalidArgumentException $e) {
-                            // If parsing fails, delete the created Bible and return error
-                            $bible->delete();
-
-                            return redirect('references')->with('error', 'Failed to parse the uploaded Bible file: '.$e->getMessage());
                         }
-                    }
-                );
+                    );
+                } catch (\InvalidArgumentException $e) {
+                    // If parsing fails, return error
+                    return redirect()->back()->withErrors(['file' => 'Failed to parse the uploaded Bible file: '.$e->getMessage()]);
+                }
 
             }
 
@@ -314,11 +312,11 @@ class BibleController extends Controller
      */
     public function bootup()
     {
-        Gate::authorize('create', Role::class);
+        Gate::authorize('create', Bible::class);
 
         // Dispatch the job to queue
         BootupBiblesAndReferences::dispatch();
 
-        return redirect()->route('bibles')->with('success', 'Bible and reference installation has been queued. You will be notified when it completes.');
+        return redirect()->route('bibles_configure')->with('success', 'Bible and reference installation has been queued. You will be notified when it completes.');
     }
 }
