@@ -32,12 +32,13 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles_parallel } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, router } from '@inertiajs/vue3';
 import {
     BookOpen,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
+    Share2,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -528,6 +529,14 @@ if (error) {
 if (info) {
     alertInfo.value = true;
 }
+
+function shareVerse(verse: any, chapter: any) {
+    const verseReference = `${chapter.book?.title} ${chapter.chapter_number}:${verse.verse_number}`;
+    const verseText = verse.text;
+    router.visit(
+        `/share?reference=${encodeURIComponent(verseReference)}&text=${encodeURIComponent(verseText)}&verseId=${verse.id}`,
+    );
+}
 </script>
 
 <template>
@@ -869,6 +878,16 @@ if (info) {
                                         >
                                             {{ t('Put Note on this Verse') }}
                                         </DropdownMenuItem>
+                                        <DropdownMenuLabel>{{
+                                            t('Share')
+                                        }}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="shareVerse(verse, loadedChapter1)"
+                                        >
+                                            <Share2 class="mr-2 h-4 w-4" />
+                                            {{ t('Share this Verse') }}
+                                        </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </p>
@@ -1193,6 +1212,16 @@ if (info) {
                                             "
                                         >
                                             {{ t('Put Note on this Verse') }}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuLabel>{{
+                                            t('Share')
+                                        }}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="shareVerse(verse, loadedChapter2)"
+                                        >
+                                            <Share2 class="mr-2 h-4 w-4" />
+                                            {{ t('Share this Verse') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
