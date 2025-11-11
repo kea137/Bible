@@ -255,7 +255,7 @@ function translateReference(ref: string): string {
 
                 <!-- Other Bible Versions -->
                 <Card>
-                    <CardHeader class="pb-3">
+                    <CardHeader class="pb-2">
                         <div class="flex items-center justify-between">
                             <CardTitle class="text-base sm:text-lg">{{
                                 t('Other Translations')
@@ -277,23 +277,17 @@ function translateReference(ref: string): string {
                                 <div
                                     v-for="version in otherVersions"
                                     :key="version.id"
-                                    class="rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
+                                    class="rounded-lg border p-3 my-2 transition-colors hover:bg-accent sm:p-4"
                                 >
                                     <div
-                                        class="mb-2 flex items-center justify-between gap-2"
+                                        class="flex items-center justify-between gap-2"
                                     >
                                         <p
                                             class="text-xs font-semibold text-primary sm:text-sm"
                                         >
                                             {{ version.bible.name }}
-                                        </p>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            @click="navigateToVerse(version)"
-                                        >
-                                            <ExternalLink class="h-3 w-3" />
-                                        </Button>
+                                        </p><ExternalLink class="h-3 w-3" />
+                                        
                                     </div>
                                     <p
                                         class="mb-2 text-xs text-muted-foreground"
@@ -301,9 +295,15 @@ function translateReference(ref: string): string {
                                         {{ version.bible.language }} •
                                         {{ version.bible.version }}
                                     </p>
-                                    <p class="text-xs sm:text-sm">
+                                    <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            @click="navigateToVerse(version)"
+                                    >
+                                    <p class="text-xs sm:text-sm break-words whitespace-normal pb-6">
                                         {{ version.text }}
-                                    </p>
+                                    </p>     
+                                    </Button>
                                 </div>
                             </ScrollArea>
                         </div>
