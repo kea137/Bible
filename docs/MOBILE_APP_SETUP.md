@@ -26,78 +26,49 @@ Edit `config/cors.php` to allow requests from your mobile app:
 'supports_credentials' => true,
 ```
 
-### 2. Create Login/Register Endpoints
+### 2. Authentication Endpoints
 
-The existing authentication routes in `routes/web.php` can be used, but you may want to create API-specific versions:
+The authentication endpoints are already created for you under `/api/mobile/auth`:
 
-```php
-// routes/api.php
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+- `POST /api/mobile/auth/register` - Register a new user
+- `POST /api/mobile/auth/login` - Login and get a token
+- `POST /api/mobile/auth/logout` - Logout (requires authentication)
+- `POST /api/mobile/auth/forgot-password` - Request password reset link
+- `POST /api/mobile/auth/reset-password` - Reset password with token
+- `GET /api/mobile/auth/user` - Get current user info (requires authentication)
+
+These endpoints are implemented in `app/Http/Controllers/Api/AuthController.php` and handle:
+- User registration with validation
+- Login with credentials and token generation
+- Logout with token revocation
+- Password reset via email
+- User information retrieval
+
+**Example Registration:**
+```bash
+curl -X POST https://your-domain.com/api/mobile/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
 ```
 
-### 3. Create Authentication Controller
+**Example Login:**
+```bash
+curl -X POST https://your-domain.com/api/mobile/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }'
+```
 
-```php
-// app/Http/Controllers/Api/AuthController.php
-namespace App\Http\Controllers\Api;
+### 3. Authentication Controller
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-
-class AuthController extends Controller
-{
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'language' => 'en',
-            'onboarding_completed' => false,
-        ]);
-
-        $token = $user->createToken('mobile-app')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'user' => $user,
-            'token' => $token,
-        ], 201);
-    }
-
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
-        // Revoke old tokens (optional - for single device login)
-        // $user->tokens()->delete();
-
-        $token = $user->createToken('mobile-app')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
+The authentication controller is already implemented at `app/Http/Controllers/Api/AuthController.php` with the following methods:
             'user' => $user,
             'token' => $token,
         ]);
@@ -133,7 +104,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const API_BASE_URL = 'https://your-domain.com/api/mobile';
-const AUTH_BASE_URL = 'https://your-domain.com/api/auth';
+const AUTH_BASE_URL = 'https://your-domain.com/api/mobile/auth';
 
 // Create axios instance
 const api = axios.create({
@@ -177,8 +148,8 @@ export const authApi = {
       password,
       password_confirmation: passwordConfirmation,
     });
-    if (response.data.token) {
-      await AsyncStorage.setItem('authToken', response.data.token);
+    if (response.data.data?.token) {
+      await AsyncStorage.setItem('authToken', response.data.data.token);
     }
     return response.data;
   },
@@ -188,8 +159,8 @@ export const authApi = {
       email,
       password,
     });
-    if (response.data.token) {
-      await AsyncStorage.setItem('authToken', response.data.token);
+    if (response.data.data?.token) {
+      await AsyncStorage.setItem('authToken', response.data.data.token);
     }
     return response.data;
   },
@@ -200,6 +171,28 @@ export const authApi = {
     } finally {
       await AsyncStorage.removeItem('authToken');
     }
+  },
+
+  forgotPassword: async (email) => {
+    const response = await axios.post(`${AUTH_BASE_URL}/forgot-password`, {
+      email,
+    });
+    return response.data;
+  },
+
+  resetPassword: async (token, email, password, passwordConfirmation) => {
+    const response = await axios.post(`${AUTH_BASE_URL}/reset-password`, {
+      token,
+      email,
+      password,
+      password_confirmation: passwordConfirmation,
+    });
+    return response.data;
+  },
+
+  getUser: async () => {
+    const response = await api.get(`${AUTH_BASE_URL}/user`);
+    return response.data;
   },
 };
 

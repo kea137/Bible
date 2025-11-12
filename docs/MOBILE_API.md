@@ -18,14 +18,176 @@ Authorization: Bearer YOUR_TOKEN_HERE
 
 ### Getting a Token
 
-Use Laravel Sanctum's token generation:
-
-```php
-// After successful login
-$token = $user->createToken('mobile-app')->plainTextToken;
-```
+Use the authentication endpoints below to register or login and receive a token.
 
 ## Endpoints
+
+### Authentication Endpoints
+
+All authentication endpoints are under `/api/mobile/auth`.
+
+#### Register
+
+Register a new user and receive an authentication token.
+
+```http
+POST /api/mobile/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Registration successful",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "language": "en",
+      "onboarding_completed": false
+    },
+    "token": "1|abcd1234..."
+  }
+}
+```
+
+#### Login
+
+Login with existing credentials and receive an authentication token.
+
+```http
+POST /api/mobile/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "language": "en",
+      "onboarding_completed": false,
+      "preferred_translations": [1, 2, 3],
+      "appearance_preferences": {
+        "theme": "dark"
+      }
+    },
+    "token": "2|xyz5678..."
+  }
+}
+```
+
+#### Logout
+
+Logout and revoke the current authentication token. Requires authentication.
+
+```http
+POST /api/mobile/auth/logout
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+#### Forgot Password
+
+Request a password reset link to be sent to the user's email.
+
+```http
+POST /api/mobile/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "john@example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password reset link sent to your email"
+}
+```
+
+#### Reset Password
+
+Reset the user's password using the token from the reset email.
+
+```http
+POST /api/mobile/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "reset_token_from_email",
+  "email": "john@example.com",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password has been reset successfully"
+}
+```
+
+#### Get User Information
+
+Get the authenticated user's current information. Requires authentication.
+
+```http
+GET /api/mobile/auth/user
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "language": "en",
+      "onboarding_completed": true,
+      "preferred_translations": [1, 2, 3],
+      "appearance_preferences": {
+        "theme": "dark"
+      }
+    }
+  }
+}
+```
+
+---
 
 ### Public Endpoints
 

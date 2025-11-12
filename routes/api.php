@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MobileApiController;
 use App\Http\Controllers\Api\PublicBibleController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,30 @@ Route::middleware('throttle:30,1')->group(function () {
             'chapter' => '[0-9]+',
             'verse' => '[0-9]+',
         ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Mobile App Authentication Routes
+|--------------------------------------------------------------------------
+|
+| These routes handle authentication for the React Native mobile app.
+| Uses Laravel Sanctum for token-based authentication.
+|
+*/
+
+Route::prefix('mobile/auth')->group(function () {
+    // Public authentication routes
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+    // Authenticated routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/user', [AuthController::class, 'user']);
+    });
 });
 
 /*
