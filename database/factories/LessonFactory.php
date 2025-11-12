@@ -17,7 +17,12 @@ class LessonFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => fake()->sentence(),
+            'description' => fake()->paragraph(),
+            'language' => 'English',
+            'readable' => true,
+            'no_paragraphs' => fake()->numberBetween(1, 10),
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }

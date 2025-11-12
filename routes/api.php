@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\MobileApiController;
 use App\Http\Controllers\Api\PublicBibleController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +28,77 @@ Route::middleware('throttle:30,1')->group(function () {
             'chapter' => '[0-9]+',
             'verse' => '[0-9]+',
         ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Mobile App API Routes
+|--------------------------------------------------------------------------
+|
+| These routes are for the React Native mobile app (kea137/Bible-App).
+| Authentication required via Laravel Sanctum.
+|
+*/
+
+Route::prefix('mobile')->group(function () {
+    // Public routes (no authentication required)
+    Route::get('/home', [MobileApiController::class, 'home']);
+
+    // Authenticated routes
+    Route::middleware('auth:sanctum')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [MobileApiController::class, 'dashboard']);
+
+        // Onboarding
+        Route::get('/onboarding', [MobileApiController::class, 'onboarding']);
+        Route::post('/onboarding', [MobileApiController::class, 'storeOnboarding']);
+
+        // Share
+        Route::get('/share', [MobileApiController::class, 'share']);
+
+        // Sitemap
+        Route::get('/sitemap', [MobileApiController::class, 'sitemap']);
+
+        // User preferences
+        Route::post('/update-locale', [MobileApiController::class, 'updateLocale']);
+        Route::post('/update-theme', [MobileApiController::class, 'updateTheme']);
+        Route::post('/update-translations', [MobileApiController::class, 'updateTranslations']);
+
+        // Bibles
+        Route::get('/bibles', [MobileApiController::class, 'bibles']);
+        Route::get('/bibles/parallel', [MobileApiController::class, 'biblesParallel']);
+        Route::get('/bibles/{bible}', [MobileApiController::class, 'bibleShow']);
+        Route::get('/api-bibles', [MobileApiController::class, 'apiBibles']);
+        Route::get('/bibles/chapters/{chapter}', [MobileApiController::class, 'bibleShowChapter']);
+
+        // Verse references and study
+        Route::get('/verses/{verse}/references', [MobileApiController::class, 'verseReferences']);
+        Route::get('/verses/{verse}/study', [MobileApiController::class, 'verseStudy']);
+
+        // Verse highlights
+        Route::post('/verse-highlights', [MobileApiController::class, 'verseHighlightsStore']);
+        Route::delete('/verse-highlights/{verse}', [MobileApiController::class, 'verseHighlightsDestroy']);
+        Route::get('/verse-highlights', [MobileApiController::class, 'verseHighlightsIndex']);
+        Route::get('/verse-highlights/chapter', [MobileApiController::class, 'verseHighlightsChapter']);
+        Route::get('/highlighted-verses', [MobileApiController::class, 'highlightedVersesPage']);
+
+        // Notes
+        Route::get('/notes', [MobileApiController::class, 'notes']);
+        Route::get('/notes/index', [MobileApiController::class, 'notesIndex']);
+        Route::post('/notes', [MobileApiController::class, 'notesStore']);
+        Route::get('/notes/{note}', [MobileApiController::class, 'notesShow']);
+        Route::put('/notes/{note}', [MobileApiController::class, 'notesUpdate']);
+        Route::delete('/notes/{note}', [MobileApiController::class, 'notesDestroy']);
+
+        // Reading progress
+        Route::get('/reading-plan', [MobileApiController::class, 'readingPlan']);
+        Route::post('/reading-progress/toggle', [MobileApiController::class, 'readingProgressToggle']);
+        Route::get('/reading-progress/bible', [MobileApiController::class, 'readingProgressBible']);
+        Route::get('/reading-progress/statistics', [MobileApiController::class, 'readingProgressStatistics']);
+
+        // Lessons
+        Route::get('/lessons', [MobileApiController::class, 'lessons']);
+        Route::get('/lessons/{lesson}', [MobileApiController::class, 'showLesson']);
+        Route::post('/lesson-progress/toggle', [MobileApiController::class, 'lessonProgressToggle']);
+    });
 });

@@ -18,6 +18,7 @@ class ChapterFactory extends Factory
     {
         return [
             'chapter_number' => fake()->numberBetween(1, 150),
+            'bible_id' => \App\Models\Bible::factory(),
         ];
     }
 }
