@@ -65,7 +65,7 @@ Route::prefix('mobile/auth')->group(function () {
 |
 */
 
-Route::prefix('mobile')->group(function () {
+Route::group(function () {
     // Public routes (no authentication required)
     Route::get('/home', [MobileApiController::class, 'home']);
 
@@ -127,3 +127,14 @@ Route::prefix('mobile')->group(function () {
         Route::post('/lesson-progress/toggle', [MobileApiController::class, 'lessonProgressToggle']);
     });
 });
+
+// Sanctum CSRF Cookie Route
+Route::prefix('mobile')->get('/sanctum/csrf-cookie', function () {
+    $csrfToken = csrf_token();
+    return response()->json([
+        'message' => 'CSRF cookie set',
+        'csrf_token' => $csrfToken,
+    ]);
+});
+
+
