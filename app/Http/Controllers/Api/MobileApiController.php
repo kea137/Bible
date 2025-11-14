@@ -350,9 +350,9 @@ class MobileApiController extends Controller
     /**
      * Get parallel bibles
      */
-    public function biblesParallel(Request $request): JsonResponse
+    public function biblesParallel(): JsonResponse
     {
-        $user = $request->user();
+        $user = Auth::user();
         $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version')
             ->with('books.chapters')
             ->whereIn('id', $user->preferred_translations)
