@@ -67,64 +67,64 @@ Route::prefix('mobile/auth')->group(function () {
 
 Route::middleware('throttle:30,1')->group(function () {
     // Public routes (no authentication required)
-    Route::get('/home', [MobileApiController::class, 'home']);
+    Route::get('/mobile/home', [MobileApiController::class, 'home']);
 
     // Authenticated routes
     Route::middleware('auth:sanctum')->group(function () {
         // Dashboard
-        Route::get('/dashboard', [MobileApiController::class, 'dashboard']);
+        Route::get('/mobile/dashboard', [MobileApiController::class, 'dashboard']);
 
         // Onboarding
-        Route::get('/onboarding', [MobileApiController::class, 'onboarding']);
-        Route::post('/onboarding', [MobileApiController::class, 'storeOnboarding']);
+        Route::get('/mobile/onboarding', [MobileApiController::class, 'onboarding']);
+        Route::post('/mobile/onboarding', [MobileApiController::class, 'storeOnboarding']);
 
         // Share
-        Route::get('/share', [MobileApiController::class, 'share']);
+        Route::get('/mobile/share', [MobileApiController::class, 'share']);
 
         // Sitemap
-        Route::get('/sitemap', [MobileApiController::class, 'sitemap']);
+        Route::get('/mobile/sitemap', [MobileApiController::class, 'sitemap']);
 
         // User preferences
-        Route::post('/update-locale', [MobileApiController::class, 'updateLocale']);
-        Route::post('/update-theme', [MobileApiController::class, 'updateTheme']);
-        Route::post('/update-translations', [MobileApiController::class, 'updateTranslations']);
+        Route::post('/mobile/update-locale', [MobileApiController::class, 'updateLocale']);
+        Route::post('/mobile/update-theme', [MobileApiController::class, 'updateTheme']);
+        Route::post('/mobile/update-translations', [MobileApiController::class, 'updateTranslations']);
 
         // Bibles
-        Route::get('/bibles', [MobileApiController::class, 'bibles']);
-        Route::get('/bibles/parallel', [MobileApiController::class, 'biblesParallel']);
-        Route::get('/bibles/{bible}', [MobileApiController::class, 'bibleShow']);
-        Route::get('/api-bibles', [MobileApiController::class, 'apiBibles']);
-        Route::get('/bibles/chapters/{chapter}', [MobileApiController::class, 'bibleShowChapter']);
+        Route::get('/mobile/bibles', [MobileApiController::class, 'bibles']);
+        Route::get('/mobile/bibles/parallel', [MobileApiController::class, 'biblesParallel']);
+        Route::get('/mobile/bibles/{bible}', [MobileApiController::class, 'bibleShow']);
+        Route::get('/mobile/api-bibles', [MobileApiController::class, 'apiBibles']);
+        Route::get('/mobile/bibles/chapters/{chapter}', [MobileApiController::class, 'bibleShowChapter']);
 
         // Verse references and study
-        Route::get('/verses/{verse}/references', [MobileApiController::class, 'verseReferences']);
-        Route::get('/verses/{verse}/study', [MobileApiController::class, 'verseStudy']);
+        Route::get('/mobile/verses/{verse}/references', [MobileApiController::class, 'verseReferences']);
+        Route::get('/mobile/verses/{verse}/study', [MobileApiController::class, 'verseStudy']);
 
         // Verse highlights
-        Route::post('/verse-highlights', [MobileApiController::class, 'verseHighlightsStore']);
-        Route::delete('/verse-highlights/{verse}', [MobileApiController::class, 'verseHighlightsDestroy']);
-        Route::get('/verse-highlights', [MobileApiController::class, 'verseHighlightsIndex']);
-        Route::get('/verse-highlights/chapter', [MobileApiController::class, 'verseHighlightsChapter']);
-        Route::get('/highlighted-verses', [MobileApiController::class, 'highlightedVersesPage']);
+        Route::post('/mobile/verse-highlights', [MobileApiController::class, 'verseHighlightsStore']);
+        Route::delete('/mobile/verse-highlights/{verse}', [MobileApiController::class, 'verseHighlightsDestroy']);
+        Route::get('/mobile/verse-highlights', [MobileApiController::class, 'verseHighlightsIndex']);
+        Route::get('/mobile/verse-highlights/chapter', [MobileApiController::class, 'verseHighlightsChapter']);
+        Route::get('/mobile/highlighted-verses', [MobileApiController::class, 'highlightedVersesPage']);
 
         // Notes
-        Route::get('/notes', [MobileApiController::class, 'notes']);
-        Route::get('/notes/index', [MobileApiController::class, 'notesIndex']);
-        Route::post('/notes', [MobileApiController::class, 'notesStore']);
-        Route::get('/notes/{note}', [MobileApiController::class, 'notesShow']);
-        Route::put('/notes/{note}', [MobileApiController::class, 'notesUpdate']);
-        Route::delete('/notes/{note}', [MobileApiController::class, 'notesDestroy']);
+        Route::get('/mobile/notes', [MobileApiController::class, 'notes']);
+        Route::get('/mobile/notes/index', [MobileApiController::class, 'notesIndex']);
+        Route::post('/mobile/notes', [MobileApiController::class, 'notesStore']);
+        Route::get('/mobile/notes/{note}', [MobileApiController::class, 'notesShow']);
+        Route::put('/mobile/notes/{note}', [MobileApiController::class, 'notesUpdate']);
+        Route::delete('/mobile/notes/{note}', [MobileApiController::class, 'notesDestroy']);
 
         // Reading progress
-        Route::get('/reading-plan', [MobileApiController::class, 'readingPlan']);
-        Route::post('/reading-progress/toggle', [MobileApiController::class, 'readingProgressToggle']);
-        Route::get('/reading-progress/bible', [MobileApiController::class, 'readingProgressBible']);
-        Route::get('/reading-progress/statistics', [MobileApiController::class, 'readingProgressStatistics']);
+        Route::get('/mobile/reading-plan', [MobileApiController::class, 'readingPlan']);
+        Route::post('/mobile/reading-progress/toggle', [MobileApiController::class, 'readingProgressToggle']);
+        Route::get('/mobile/reading-progress/bible', [MobileApiController::class, 'readingProgressBible']);
+        Route::get('/mobile/reading-progress/statistics', [MobileApiController::class, 'readingProgressStatistics']);
 
         // Lessons
-        Route::get('/lessons', [MobileApiController::class, 'lessons']);
-        Route::get('/lessons/{lesson}', [MobileApiController::class, 'showLesson']);
-        Route::post('/lesson-progress/toggle', [MobileApiController::class, 'lessonProgressToggle']);
+        Route::get('/mobile/lessons', [MobileApiController::class, 'lessons']);
+        Route::get('/mobile/lessons/{lesson}', [MobileApiController::class, 'showLesson']);
+        Route::post('/mobile/lesson-progress/toggle', [MobileApiController::class, 'lessonProgressToggle']);
     });
 });
 

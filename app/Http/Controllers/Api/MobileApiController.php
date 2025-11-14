@@ -327,9 +327,9 @@ class MobileApiController extends Controller
     /**
      * Get list of bibles
      */
-    public function bibles(): JsonResponse
+    public function bibles(Request $request): JsonResponse
     {
-        $userPreferences = Auth::user()->preferred_translations;
+        $userPreferences = $request->user()->preferred_translations;
 
         $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version', 'description')
             ->when(! empty($userPreferences) && is_array($userPreferences), function ($q) use ($userPreferences) {
@@ -350,9 +350,9 @@ class MobileApiController extends Controller
     /**
      * Get parallel bibles
      */
-    public function biblesParallel(): JsonResponse
+    public function biblesParallel(Request $request): JsonResponse
     {
-        $user = Auth::user();
+        $user = $request->user();
         $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version')
             ->with('books.chapters')
             ->whereIn('id', $user->preferred_translations)
