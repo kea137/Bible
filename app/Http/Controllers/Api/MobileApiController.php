@@ -119,9 +119,15 @@ class MobileApiController extends Controller
             $versesReadToday = Verse::whereIn('chapter_id', $chapterIdsToday)->count();
         }
 
+        $highlights = VerseHighlight::where('user_id', Auth::id())
+            ->with(['verse.book', 'verse.chapter'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return response()->json([
             'success' => true,
             'data' => [
+                'highlightedVerses' => $highlights,
                 'verseOfTheDay' => $randomVerse ? [
                     'id' => $randomVerse->id,
                     'text' => $randomVerse->text,
