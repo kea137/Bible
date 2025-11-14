@@ -327,9 +327,9 @@ class MobileApiController extends Controller
     /**
      * Get list of bibles
      */
-    public function bibles(Request $request): JsonResponse
+    public function bibles(): JsonResponse
     {
-        $userPreferences = $request->user()->preferred_translations;
+        $userPreferences = Auth::user()->preferred_translations;
 
         $bibles = Bible::select('id', 'name', 'abbreviation', 'language', 'version', 'description')
             ->when(! empty($userPreferences) && is_array($userPreferences), function ($q) use ($userPreferences) {
