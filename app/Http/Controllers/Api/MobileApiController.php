@@ -375,7 +375,12 @@ class MobileApiController extends Controller
      */
     public function bibleShow(Bible $bible, Request $request): JsonResponse
     {
-        $bible->load('books.chapters');
+        $bible->load(['books' => function ($query) {
+            $query->select('id', 'bible_id', 'title', 'book_number', 'author')
+            ->with(['chapters' => function ($q) {
+                $q->select('id', 'book_id', 'chapter_number');
+            }]);
+        }]);
 
         $firstChapter = null;
 
