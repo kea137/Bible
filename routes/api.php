@@ -95,6 +95,7 @@ Route::middleware('throttle:30,1')->group(function () {
         Route::get('/mobile/bibles/{bible}', [MobileApiController::class, 'bibleShow']);
         Route::get('/mobile/api-bibles', [MobileApiController::class, 'apiBibles']);
         Route::get('/mobile/bibles/chapters/{chapter}', [MobileApiController::class, 'bibleShowChapter']);
+        Route::get('/mobile/bibles/{bible}/books/{book}/chapters/{chapter}', [MobileApiController::class, 'bibleShowChapterVerses']);
 
         // Verse references and study
         Route::get('/mobile/verses/{verse}/references', [MobileApiController::class, 'verseReferences']);

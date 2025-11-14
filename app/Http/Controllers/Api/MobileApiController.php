@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
 use App\Models\Bible;
+use App\Models\Book;
 use App\Models\Chapter;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
@@ -367,6 +368,16 @@ class MobileApiController extends Controller
         return response()->json([
             'success' => true,
             'data' => $bibles,
+        ]);
+    }
+
+    public function bibleShowChapterVerses(Bible $bible, Book $book, Chapter $chapter): JsonResponse
+    {
+        $chapter->load('verses', 'book');
+
+        return response()->json([
+            'success' => true,
+            'data' => $chapter,
         ]);
     }
 
