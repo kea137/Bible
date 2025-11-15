@@ -374,11 +374,11 @@ class MobileApiController extends Controller
     public function bibleShowChapterVerses(Bible $bible, Book $book, Chapter $chapter): JsonResponse
     {
 
-        $chapter=Chapter::where('book_id',$book->id)->where('id',$chapter->id)->with('verses')->first();
+        $chapter_load=Chapter::where('bible_id', $bible->id)->where('book_id',$book->id)->where('id',$chapter->id)->with('verses')->first();
 
         return response()->json([
             'success' => true,
-            'data' => $chapter,
+            'data' => $chapter_load,
         ]);
     }
 
