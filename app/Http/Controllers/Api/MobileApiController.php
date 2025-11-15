@@ -20,6 +20,7 @@ use App\Services\ScriptureReferenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MobileApiController extends Controller
 {
@@ -374,7 +375,7 @@ class MobileApiController extends Controller
     public function bibleShowChapterVerses(Bible $bible, Book $book, Chapter $chapter): JsonResponse
     {
 
-        $chapter_load=Chapter::where('bible_id', $bible->id)->where('book_id',$book->id)->where('id',$chapter->id)->with('verses')->first();
+        $chapter_load=Chapter::where('bible_id', $bible->id)->where('book_id',$book->id)->with('verses')->first();
 
         return response()->json([
             'success' => true,
