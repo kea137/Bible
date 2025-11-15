@@ -406,6 +406,11 @@ class MobileApiController extends Controller
             }]);
         }]);
 
+        // Add chapters_count to each book
+        foreach ($bible->books as $book) {
+            $book->chapters_count = $book->chapters->count();
+        }
+
         $firstChapter = null;
 
         if (empty($request->all())) {
