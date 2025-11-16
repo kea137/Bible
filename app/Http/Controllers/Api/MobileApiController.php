@@ -20,7 +20,6 @@ use App\Services\ScriptureReferenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class MobileApiController extends Controller
 {
@@ -504,6 +503,27 @@ class MobileApiController extends Controller
     public function verseStudy(Verse $verse): JsonResponse
     {
         $data = $this->referenceService->getVerseWithReferences($verse->id);
+
+        // Get other Bible versions of the same verse
+        // Get user's preferred Bible IDs (assume from authenticated user or passed in)
+        $user = Auth::user();
+
+        $preferredBibleIds = $user->preferred_translations ?? [1, 2, 3, 4, 5];
+
+        $otherVersions = Verse::whereHas('book', function ($query) use ($verse) {
+            $query->where('book_number', $verse->book->book_number);
+        })
+            ->whereHas('chapter', function ($query) use ($verse) {
+                $query->where('chapter_number', $verse->chapter->chapter_number);
+            })
+            ->where('verse_number', $verse->verse_number)
+            ->whereIn('bible_id', $preferredBibleIds)
+            ->where('bible_id', '!=', $verse->bible_id)
+            ->with(['bible'])
+            ->limit(5)
+            ->get();
+        
+        $data['other_translations'] = $otherVersions;
 
         return response()->json([
             'success' => true,

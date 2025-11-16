@@ -99,7 +99,7 @@ Route::middleware('throttle:30,1')->group(function () {
 
         // Verse references and study
         Route::get('/mobile/verses/{verse}/references', [MobileApiController::class, 'verseReferences']);
-        Route::get('/mobile/verses/{verse}/study', [MobileApiController::class, 'verseStudy']);
+        Route::get('/mobile/study/{verse}', [MobileApiController::class, 'verseStudy']);
 
         // Verse highlights
         Route::post('/mobile/verse-highlights', [MobileApiController::class, 'verseHighlightsStore']);
