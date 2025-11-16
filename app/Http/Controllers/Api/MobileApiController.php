@@ -440,14 +440,24 @@ class MobileApiController extends Controller
                 : ($firstBook ? $firstBook->chapters->first() : null);
 
             if ($firstChapter) {
-                $firstChapter->load('verses', 'book');
+                $firstChapter->load(['verses' => function ($query) {
+                    $query->with(['highlight' => function ($q) {
+                        $q->where('user_id', Auth::id())
+                          ->select('id', 'verse_id', 'color');
+                    }]);
+                }, 'book']);
             }
         } else {
             $firstBook = $bible->books->firstWhere('id', $request->book);
             $firstChapter = $firstBook ? $firstBook->chapters->firstWhere('id', $request->chapter) : null;
 
             if ($firstChapter) {
-                $firstChapter->load('verses', 'book');
+                $firstChapter->load(['verses' => function ($query) {
+                    $query->with(['highlight' => function ($q) {
+                        $q->where('user_id', Auth::id())
+                          ->select('id', 'verse_id', 'color');
+                    }]);
+                }, 'book']);
             }
         }
 
@@ -827,6 +837,7 @@ class MobileApiController extends Controller
             'data' => $progress,
         ]);
     }
+
 
     /**
      * Get bible reading progress

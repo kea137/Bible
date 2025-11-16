@@ -44,6 +44,11 @@ class Verse extends Model
         return $this->belongsTo(Reference::class);
     }
 
+    public function highlight()
+{
+    return $this->hasOne(VerseHighlight::class, 'verse_id');
+}
+
     public function toSearchableArray()
     {
         return [
