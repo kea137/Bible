@@ -45,9 +45,9 @@ class Verse extends Model
     }
 
     public function highlight()
-{
-    return $this->hasOne(VerseHighlight::class, 'verse_id');
-}
+    {
+        return $this->hasOne(VerseHighlight::class, 'verse_id');
+    }
 
     public function toSearchableArray()
     {

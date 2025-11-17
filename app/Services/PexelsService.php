@@ -21,7 +21,7 @@ class PexelsService
      * Get background images for verse sharing.
      * Uses caching to reduce API calls and stay within rate limits.
      */
-    public function getBackgroundImages(int $perPage = 30): array
+    public function getBackgroundImages(int $perPage = 200): array
     {
         if (empty($this->apiKey)) {
             Log::warning('Pexels API key not configured');
