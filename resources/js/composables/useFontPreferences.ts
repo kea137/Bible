@@ -49,10 +49,9 @@ export function applyFontPreferences(preferences: FontPreferences) {
     const fontFamily = fontFamilyMap[preferences.fontFamily];
     const fontSize = fontSizeMap[preferences.fontSize];
 
-    document.documentElement.style.setProperty('--font-family', fontFamily);
+    // Override Tailwind's --font-sans variable to change font globally
+    document.documentElement.style.setProperty('--font-sans', fontFamily);
     document.documentElement.style.setProperty('--font-size', fontSize);
-    document.documentElement.style.fontFamily = fontFamily;
-    document.documentElement.style.fontSize = fontSize;
 }
 
 export function initializeFontPreferences() {
