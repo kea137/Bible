@@ -409,15 +409,21 @@ class MobileApiController extends Controller
         if (! $chapter) {
             $chapter_load = Chapter::where('bible_id', $bible->id)
                 ->where('book_id', $book->id)
-                ->with('verses')
+                ->with(['verses' => function ($query) {
+                    $query->with(['highlight' => function ($q) {
+                        $q->where('user_id', Auth::id())
+                            ->select('id', 'verse_id', 'color');
+                    }]);
+                }])
                 ->first();
+                
         } else {
-            $chapter_load = Chapter::where('bible_id', $bible->id)
-                ->where('book_id', $book->id)
-                ->where('id', $chapter->id)
-                ->with('verses')
-                ->first();
-        }
+            $chapter_load = $chapter->load(['verses' => function ($query) {
+                $query->with(['highlight' => function ($q) {
+                    $q->where('user_id', Auth::id())
+                        ->select('id', 'verse_id', 'color');
+                }]);
+            }]);
 
         // Check if chapter is read
         $isRead = ReadingProgress::where('user_id', Auth::id())
@@ -540,7 +546,12 @@ class MobileApiController extends Controller
      */
     public function bibleShowChapter(Chapter $chapter): JsonResponse
     {
-        $chapter->load('verses', 'book');
+        $chapter->load(['verses' => function ($query) {
+            $query->with(['highlight' => function ($q) {
+                $q->where('user_id', Auth::id())
+                    ->select('id', 'verse_id', 'color');
+            }]);
+        }, 'book']);
         
         $isRead = ReadingProgress::where('user_id', Auth::id())
             ->where('chapter_id', $chapter->id)
