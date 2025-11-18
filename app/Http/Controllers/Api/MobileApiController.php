@@ -424,6 +424,7 @@ class MobileApiController extends Controller
                         ->select('id', 'verse_id', 'color');
                 }]);
             }]);
+        }
 
         // Check if chapter is read
         $isRead = ReadingProgress::where('user_id', Auth::id())
