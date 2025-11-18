@@ -66,30 +66,31 @@ export function initializeFontPreferences() {
         return;
     }
 
-    // Wait for Inertia to be ready before accessing page props
-    const checkAndApply = () => {
+    const applyFonts = () => {
         try {
+            // Initialize font from user's database preference passed via Inertia
             const page = usePage();
-            if (page && page.props) {
-                const fontFamily =
-                    (page.props.fontFamily as FontFamily | undefined) || 'system';
-                const fontSize = (page.props.fontSize as FontSize | undefined) || 'base';
-
-                applyFontPreferences({ fontFamily, fontSize });
+            if (!page || !page.props) {
+                console.warn('Page props not available yet for font initialization');
+                return;
             }
+
+            const fontFamily =
+                (page.props.fontFamily as FontFamily | undefined) || 'system';
+            const fontSize = (page.props.fontSize as FontSize | undefined) || 'base';
+
+            console.log('Initializing fonts:', { fontFamily, fontSize });
+            applyFontPreferences({ fontFamily, fontSize });
         } catch (error) {
-            // If usePage() fails, props not ready yet
-            console.debug('Font preferences not initialized yet:', error);
+            console.error('Error initializing font preferences:', error);
         }
     };
 
-    // Try immediately
-    checkAndApply();
-    
-    // Also set up a listener for Inertia page visits
-    if (typeof window !== 'undefined') {
-        document.addEventListener('inertia:navigate', checkAndApply);
-    }
+    // Apply fonts initially
+    applyFonts();
+
+    // Reapply fonts after Inertia navigations
+    document.addEventListener('inertia:finish', applyFonts);
 }
 
 const fontPreferences = ref<FontPreferences>({
