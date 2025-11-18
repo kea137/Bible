@@ -96,7 +96,7 @@ Route::middleware('throttle:30,1')->group(function () {
         Route::get('/mobile/api-bibles', [MobileApiController::class, 'apiBibles']);
         Route::get('/mobile/bibles/chapters/{chapter}', [MobileApiController::class, 'bibleShowChapter']);
         Route::get('/mobile/bibles/{bible}/books/{book}/chapters/{chapter}', [MobileApiController::class, 'bibleShowChapterVerses']);
-        Route::get('/mobile/bibles/{chapter}', [MobileApiController::class, 'markAsRead']);
+        Route::post('/mobile/bibles/mark_as_read', [MobileApiController::class, 'markAsRead']);
 
         // Verse references and study
         Route::get('/mobile/verses/{verse}/references', [MobileApiController::class, 'verseReferences']);
@@ -126,7 +126,7 @@ Route::middleware('throttle:30,1')->group(function () {
         // Lessons
         Route::get('/mobile/lessons', [MobileApiController::class, 'lessons']);
         Route::get('/mobile/lessons/{lesson}', [MobileApiController::class, 'showLesson']);
-        Route::post('/mobile/lesson-progress/toggle', [MobileApiController::class, 'lessonProgressToggle']);
+        Route::post('/mobile/lesson-progress', [MobileApiController::class, 'lessonProgressToggle']);
     });
 });
 

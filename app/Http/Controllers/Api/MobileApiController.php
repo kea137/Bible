@@ -123,6 +123,7 @@ class MobileApiController extends Controller
         $highlights = VerseHighlight::where('user_id', Auth::id())
             ->with(['verse.book', 'verse.chapter'])
             ->orderBy('created_at', 'desc')
+            ->limit(5)
             ->get();
 
         return response()->json([
@@ -358,8 +359,22 @@ class MobileApiController extends Controller
     /**
      * Mark as read function for chapters
      */
-    public function markAsRead(Chapter $chapter){
+    public function markAsRead(Request $request): JsonResponse{
         $userId = Auth::id();
+
+        $validated = $request->validate([
+            'chapter_id' => 'required|integer|exists:chapters,id',
+        ]);
+
+        $chapterId = $validated['chapter_id'];
+
+        $chapter = Chapter::find($chapterId);
+        if (! $chapter) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chapter not found',
+            ], 404);
+        }
 
         $progress = ReadingProgress::where('user_id', $userId)
             ->where('chapter_id', $chapter->id)
@@ -506,6 +521,12 @@ class MobileApiController extends Controller
                             ->select('id', 'verse_id', 'color');
                     }]);
                 }, 'book']);
+
+                $isRead = ReadingProgress::where('user_id', Auth::id())
+                    ->where('chapter_id', $firstChapter->id)
+                    ->where('completed', true)
+                    ->exists();
+                $firstChapter->is_read = $isRead;
             }
         } else {
             $firstBook = $bible->books->firstWhere('id', $request->book);
@@ -518,6 +539,12 @@ class MobileApiController extends Controller
                             ->select('id', 'verse_id', 'color');
                     }]);
                 }, 'book']);
+
+                $isRead = ReadingProgress::where('user_id', Auth::id())
+                    ->where('chapter_id', $firstChapter->id)
+                    ->where('completed', true)
+                    ->exists();
+                $firstChapter->is_read = $isRead;
             }
         }
 
@@ -526,7 +553,6 @@ class MobileApiController extends Controller
             'data' => [
                 'bible' => $bible,
                 'initialChapter' => $firstChapter,
-                'readChapters' => $readChapters,
             ],
         ]);
     }
