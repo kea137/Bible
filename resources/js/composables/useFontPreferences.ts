@@ -52,6 +52,10 @@ export function applyFontPreferences(preferences: FontPreferences) {
     // Override Tailwind's --font-sans variable to change font globally
     document.documentElement.style.setProperty('--font-sans', fontFamily);
     document.documentElement.style.setProperty('--font-size', fontSize);
+    
+    // Also apply directly to body to ensure immediate update
+    document.body.style.fontFamily = fontFamily;
+    document.body.style.fontSize = fontSize;
 }
 
 export function initializeFontPreferences() {
