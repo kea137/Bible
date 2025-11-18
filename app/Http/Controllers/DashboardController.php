@@ -191,7 +191,7 @@ class DashboardController extends Controller
 
         // Validate font preferences
         request()->validate([
-            'font_family' => 'required|string|in:system,serif,sans-serif,monospace,times,georgia,arial,helvetica,courier',
+            'font_family' => 'required|string|in:instrument-sans,system,serif,sans-serif,monospace,times,georgia,arial,helvetica,courier',
             'font_size' => 'required|string|in:xs,sm,base,lg,xl',
         ]);
 

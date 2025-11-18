@@ -2,6 +2,7 @@ import { usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 
 export type FontFamily =
+    | 'instrument-sans'
     | 'system'
     | 'serif'
     | 'sans-serif'
@@ -20,6 +21,8 @@ interface FontPreferences {
 }
 
 const fontFamilyMap: Record<FontFamily, string> = {
+    'instrument-sans':
+        'Instrument Sans, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
     system:
         'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
     serif: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
@@ -63,12 +66,30 @@ export function initializeFontPreferences() {
         return;
     }
 
-    const page = usePage();
-    const fontFamily =
-        (page.props.fontFamily as FontFamily | undefined) || 'system';
-    const fontSize = (page.props.fontSize as FontSize | undefined) || 'base';
+    // Wait for Inertia to be ready before accessing page props
+    const checkAndApply = () => {
+        try {
+            const page = usePage();
+            if (page && page.props) {
+                const fontFamily =
+                    (page.props.fontFamily as FontFamily | undefined) || 'system';
+                const fontSize = (page.props.fontSize as FontSize | undefined) || 'base';
 
-    applyFontPreferences({ fontFamily, fontSize });
+                applyFontPreferences({ fontFamily, fontSize });
+            }
+        } catch (error) {
+            // If usePage() fails, props not ready yet
+            console.debug('Font preferences not initialized yet:', error);
+        }
+    };
+
+    // Try immediately
+    checkAndApply();
+    
+    // Also set up a listener for Inertia page visits
+    if (typeof window !== 'undefined') {
+        document.addEventListener('inertia:navigate', checkAndApply);
+    }
 }
 
 const fontPreferences = ref<FontPreferences>({

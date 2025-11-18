@@ -90,3 +90,22 @@ test('font preferences persist with existing appearance preferences', function (
     expect($user->appearance_preferences['font_family'])->toBe('monospace');
     expect($user->appearance_preferences['font_size'])->toBe('xl');
 });
+
+test('authenticated user can select instrument sans font', function () {
+    $user = User::factory()->create();
+
+    actingAs($user)
+        ->postJson('/api/user/font-preferences', [
+            'font_family' => 'instrument-sans',
+            'font_size' => 'base',
+        ])
+        ->assertOk()
+        ->assertJson([
+            'success' => true,
+            'font_family' => 'instrument-sans',
+            'font_size' => 'base',
+        ]);
+
+    $user->refresh();
+    expect($user->appearance_preferences['font_family'])->toBe('instrument-sans');
+});

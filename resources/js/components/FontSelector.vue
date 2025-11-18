@@ -10,6 +10,7 @@ const { t } = useI18n();
 const { fontPreferences, updateFontPreferences } = useFontPreferences();
 
 const fontFamilyOptions: { value: FontFamily; label: string }[] = [
+    { value: 'instrument-sans', label: 'Instrument Sans' },
     { value: 'system', label: t('System Default') },
     { value: 'sans-serif', label: t('Sans Serif') },
     { value: 'serif', label: t('Serif') },
