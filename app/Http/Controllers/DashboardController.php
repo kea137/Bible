@@ -183,4 +183,33 @@ class DashboardController extends Controller
 
         return response()->json(['success' => true, 'translations' => $translations]);
     }
+
+    public function updateFontPreferences()
+    {
+        $userId = Auth::id();
+        $user = \App\Models\User::find($userId);
+
+        // Validate font preferences
+        request()->validate([
+            'font_family' => 'required|string|in:system,serif,sans-serif,monospace,times,georgia,arial,helvetica,courier',
+            'font_size' => 'required|string|in:xs,sm,base,lg,xl',
+        ]);
+
+        $fontFamily = request('font_family');
+        $fontSize = request('font_size');
+
+        if ($user) {
+            $preferences = $user->appearance_preferences ?? [];
+            $preferences['font_family'] = $fontFamily;
+            $preferences['font_size'] = $fontSize;
+            $user->appearance_preferences = $preferences;
+            $user->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'font_family' => $fontFamily,
+            'font_size' => $fontSize,
+        ]);
+    }
 }

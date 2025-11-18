@@ -132,10 +132,9 @@ Route::middleware('throttle:30,1')->group(function () {
 // Sanctum CSRF Cookie Route
 Route::prefix('mobile')->get('/sanctum/csrf-cookie', function () {
     $csrfToken = csrf_token();
+
     return response()->json([
         'message' => 'CSRF cookie set',
         'csrf_token' => $csrfToken,
     ]);
 });
-
-

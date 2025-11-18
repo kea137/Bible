@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppearanceTabs from '@/components/AppearanceTabs.vue';
+import FontSelector from '@/components/FontSelector.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 import PreferredTranslationsSelector from '@/components/PreferredTranslationsSelector.vue';
@@ -36,6 +37,13 @@ const breadcrumbItems: BreadcrumbItem[] = [
                             {{ t('Theme') }}
                         </h3>
                         <AppearanceTabs />
+                    </div>
+
+                    <div>
+                        <h3 class="mb-2 text-sm font-medium">
+                            {{ t('Font Preferences') }}
+                        </h3>
+                        <FontSelector />
                     </div>
 
                     <div>

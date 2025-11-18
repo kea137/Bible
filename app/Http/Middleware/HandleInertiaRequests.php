@@ -51,6 +51,8 @@ class HandleInertiaRequests extends Middleware
                 'roleNumbers' => $roleNumbers,
             ],
             'theme' => $request->user() ? ($request->user()->appearance_preferences['theme'] ?? 'system') : 'system',
+            'fontFamily' => $request->user() ? ($request->user()->appearance_preferences['font_family'] ?? 'system') : 'system',
+            'fontSize' => $request->user() ? ($request->user()->appearance_preferences['font_size'] ?? 'base') : 'base',
             'language' => $request->user() ? ($request->user()->language ?? 'en') : 'en',
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'success' => fn () => $request->session()->get('success'),

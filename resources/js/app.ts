@@ -5,6 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
+import { initializeFontPreferences } from './composables/useFontPreferences';
 import { initializeLocale } from './composables/useLocale';
 import { i18n } from './i18n';
 
@@ -30,4 +31,5 @@ createInertiaApp({
 
 // This will set light / dark mode on page load...
 initializeTheme();
+initializeFontPreferences();
 initializeLocale(i18n);

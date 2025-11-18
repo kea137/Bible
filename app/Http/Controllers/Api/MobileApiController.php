@@ -374,17 +374,17 @@ class MobileApiController extends Controller
     public function bibleShowChapterVerses(Bible $bible, Book $book, Chapter $chapter): JsonResponse
     {
 
-        if(!$chapter){
+        if (! $chapter) {
             $chapter_load = Chapter::where('bible_id', $bible->id)
-            ->where('book_id', $book->id)
-            ->with('verses')
-            ->first();
+                ->where('book_id', $book->id)
+                ->with('verses')
+                ->first();
         } else {
             $chapter_load = Chapter::where('bible_id', $bible->id)
-            ->where('book_id', $book->id)
-            ->where('id', $chapter->id)
-            ->with('verses')
-            ->first();
+                ->where('book_id', $book->id)
+                ->where('id', $chapter->id)
+                ->with('verses')
+                ->first();
         }
 
         // Pass book data with chapters_count
@@ -408,9 +408,9 @@ class MobileApiController extends Controller
     {
         $bible->load(['books' => function ($query) {
             $query->select('id', 'bible_id', 'title', 'book_number', 'author')
-            ->with(['chapters' => function ($q) {
-                $q->select('id', 'book_id', 'chapter_number');
-            }]);
+                ->with(['chapters' => function ($q) {
+                    $q->select('id', 'book_id', 'chapter_number');
+                }]);
         }]);
 
         // Add chapters_count to each book
@@ -443,7 +443,7 @@ class MobileApiController extends Controller
                 $firstChapter->load(['verses' => function ($query) {
                     $query->with(['highlight' => function ($q) {
                         $q->where('user_id', Auth::id())
-                          ->select('id', 'verse_id', 'color');
+                            ->select('id', 'verse_id', 'color');
                     }]);
                 }, 'book']);
             }
@@ -455,7 +455,7 @@ class MobileApiController extends Controller
                 $firstChapter->load(['verses' => function ($query) {
                     $query->with(['highlight' => function ($q) {
                         $q->where('user_id', Auth::id())
-                          ->select('id', 'verse_id', 'color');
+                            ->select('id', 'verse_id', 'color');
                     }]);
                 }, 'book']);
             }
@@ -532,7 +532,7 @@ class MobileApiController extends Controller
             ->with(['bible'])
             ->limit(5)
             ->get();
-        
+
         $data['other_translations'] = $otherVersions;
 
         return response()->json([
@@ -837,7 +837,6 @@ class MobileApiController extends Controller
             'data' => $progress,
         ]);
     }
-
 
     /**
      * Get bible reading progress
