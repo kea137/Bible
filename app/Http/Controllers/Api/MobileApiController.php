@@ -281,12 +281,12 @@ class MobileApiController extends Controller
         ]);
 
         $user = $request->user();
-        $user->language = $request->locale;
+        $user->language = $request['locale'];
         $user->save();
 
         return response()->json([
             'success' => true,
-            'locale' => $request->locale,
+            'locale' => $request['locale'],
         ]);
     }
 
@@ -354,6 +354,39 @@ class MobileApiController extends Controller
         ]);
     }
 
+
+    /**
+     * Mark as read function for chapters
+     */
+    public function markAsRead(Chapter $chapter){
+        $userId = Auth::id();
+
+        $progress = ReadingProgress::where('user_id', $userId)
+            ->where('chapter_id', $chapter->id)
+            ->first();
+
+        if ($progress) {
+            if (! $progress->completed) {
+                $progress->completed = true;
+                $progress->completed_at = now();
+                $progress->save();
+            }
+        } else {
+            $progress = ReadingProgress::create([
+                'user_id' => $userId,
+                'bible_id' => $chapter->bible_id,
+                'chapter_id' => $chapter->id,
+                'completed' => true,
+                'completed_at' => now(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $progress,
+        ]);
+    }
+
     /**
      * Get parallel bibles
      */
@@ -371,9 +404,8 @@ class MobileApiController extends Controller
         ]);
     }
 
-    public function bibleShowChapterVerses(Bible $bible, Book $book, Chapter $chapter): JsonResponse
+    public function bibleShowChapterVerses(Bible $bible, Book $book, Chapter $chapter = null): JsonResponse
     {
-
         if (! $chapter) {
             $chapter_load = Chapter::where('bible_id', $bible->id)
                 ->where('book_id', $book->id)
@@ -387,12 +419,19 @@ class MobileApiController extends Controller
                 ->first();
         }
 
+        // Check if chapter is read
+        $isRead = ReadingProgress::where('user_id', Auth::id())
+            ->where('chapter_id', $chapter_load->id)
+            ->where('completed', true)
+            ->exists();
+
         // Pass book data with chapters_count
         $book_data = $book->toArray();
         $book_data['chapters_count'] = $book->chapters()->count();
 
         if ($chapter_load) {
             $chapter_load->book = $book_data;
+            $chapter_load->is_read = $isRead;
         }
 
         return response()->json([
@@ -416,6 +455,20 @@ class MobileApiController extends Controller
         // Add chapters_count to each book
         foreach ($bible->books as $book) {
             $book->chapters_count = $book->chapters->count();
+        }
+
+        // Get read chapters for the current user
+        $readChapters = ReadingProgress::where('user_id', Auth::id())
+            ->where('bible_id', $bible->id)
+            ->where('completed', true)
+            ->pluck('chapter_id')
+            ->toArray();
+
+        // Add read status to each chapter
+        foreach ($bible->books as $book) {
+            foreach ($book->chapters as $chapter) {
+                $chapter->is_read = in_array($chapter->id, $readChapters);
+            }
         }
 
         $firstChapter = null;
@@ -466,6 +519,7 @@ class MobileApiController extends Controller
             'data' => [
                 'bible' => $bible,
                 'initialChapter' => $firstChapter,
+                'readChapters' => $readChapters,
             ],
         ]);
     }
@@ -487,6 +541,13 @@ class MobileApiController extends Controller
     public function bibleShowChapter(Chapter $chapter): JsonResponse
     {
         $chapter->load('verses', 'book');
+        
+        $isRead = ReadingProgress::where('user_id', Auth::id())
+            ->where('chapter_id', $chapter->id)
+            ->where('completed', true)
+            ->exists();
+        
+        $chapter['is_read'] = $isRead;
 
         return response()->json([
             'success' => true,
@@ -670,9 +731,9 @@ class MobileApiController extends Controller
     {
         $note = Note::create([
             'user_id' => Auth::id(),
-            'verse_id' => $request->verse_id,
-            'title' => $request->title,
-            'content' => $request->content,
+            'verse_id' => $request['verse_id'],
+            'title' => $request['title'],
+            'content' => $request['content'],
         ]);
 
         $note->load(['verse.book', 'verse.chapter']);
@@ -711,8 +772,8 @@ class MobileApiController extends Controller
         }
 
         $note->update([
-            'title' => $request->title,
-            'content' => $request->content,
+            'title' => $request['title'],
+            'content' => $request['content'],
         ]);
 
         $note->load(['verse.book', 'verse.chapter']);
