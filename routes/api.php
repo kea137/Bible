@@ -65,7 +65,7 @@ Route::prefix('mobile/auth')->group(function () {
 |
 */
 
-Route::middleware('throttle:30,1')->group(function () {
+Route::middleware('throttle:60,1')->group(function () {
     // Public routes (no authentication required)
     Route::get('/mobile/home', [MobileApiController::class, 'home']);
 
