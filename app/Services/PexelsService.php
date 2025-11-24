@@ -36,7 +36,7 @@ class PexelsService
         return Cache::remember($cacheKey, 60, function () use ($perPage) {
             try {
                 // Use a consistent query for better caching and image consistency
-                $query = 'christian nature light christ';
+                $query = 'water forest space God nature light christ';
 
                 $response = Http::withHeaders([
                     'Authorization' => $this->apiKey,
