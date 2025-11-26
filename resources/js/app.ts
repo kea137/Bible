@@ -22,12 +22,12 @@ createInertiaApp({
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(i18n);
-        
+
         app.mount(el);
-        
+
         // Initialize font preferences after mount to ensure page props are available
         initializeFontPreferences();
-        
+
         return app;
     },
     progress: {

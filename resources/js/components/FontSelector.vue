@@ -49,7 +49,7 @@ const fontSizeOptions: { value: FontSize; label: string }[] = [
                             .value as FontFamily,
                     })
                 "
-                class="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                class="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
             >
                 <option
                     v-for="option in fontFamilyOptions"
@@ -77,7 +77,7 @@ const fontSizeOptions: { value: FontSize; label: string }[] = [
                             .value as FontSize,
                     })
                 "
-                class="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                class="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
             >
                 <option
                     v-for="option in fontSizeOptions"

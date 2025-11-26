@@ -23,12 +23,12 @@ interface FontPreferences {
 const fontFamilyMap: Record<FontFamily, string> = {
     'instrument-sans':
         'Instrument Sans, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-    system:
-        'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+    system: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
     serif: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
     'sans-serif':
         'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
-    monospace: 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+    monospace:
+        'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
     times: '"Times New Roman", Times, serif',
     georgia: 'Georgia, serif',
     arial: 'Arial, Helvetica, sans-serif',
@@ -55,7 +55,7 @@ export function applyFontPreferences(preferences: FontPreferences) {
     // Override Tailwind's --font-sans variable to change font globally
     document.documentElement.style.setProperty('--font-sans', fontFamily);
     document.documentElement.style.setProperty('--font-size', fontSize);
-    
+
     // Also apply directly to body to ensure immediate update
     document.body.style.fontFamily = fontFamily;
     document.body.style.fontSize = fontSize;
@@ -71,13 +71,16 @@ export function initializeFontPreferences() {
             // Initialize font from user's database preference passed via Inertia
             const page = usePage();
             if (!page || !page.props) {
-                console.warn('Page props not available yet for font initialization');
+                console.warn(
+                    'Page props not available yet for font initialization',
+                );
                 return;
             }
 
             const fontFamily =
                 (page.props.fontFamily as FontFamily | undefined) || 'system';
-            const fontSize = (page.props.fontSize as FontSize | undefined) || 'base';
+            const fontSize =
+                (page.props.fontSize as FontSize | undefined) || 'base';
 
             console.log('Initializing fonts:', { fontFamily, fontSize });
             applyFontPreferences({ fontFamily, fontSize });
