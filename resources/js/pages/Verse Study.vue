@@ -277,7 +277,7 @@ function translateReference(ref: string): string {
                                 <div
                                     v-for="version in otherVersions"
                                     :key="version.id"
-                                    class="rounded-lg border p-3 my-2 transition-colors hover:bg-accent sm:p-4"
+                                    class="my-2 rounded-lg border p-3 transition-colors hover:bg-accent sm:p-4"
                                 >
                                     <div
                                         class="flex items-center justify-between gap-2"
@@ -286,8 +286,8 @@ function translateReference(ref: string): string {
                                             class="text-xs font-semibold text-primary sm:text-sm"
                                         >
                                             {{ version.bible.name }}
-                                        </p><ExternalLink class="h-3 w-3" />
-                                        
+                                        </p>
+                                        <ExternalLink class="h-3 w-3" />
                                     </div>
                                     <p
                                         class="mb-2 text-xs text-muted-foreground"
@@ -296,13 +296,15 @@ function translateReference(ref: string): string {
                                         {{ version.bible.version }}
                                     </p>
                                     <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            @click="navigateToVerse(version)"
+                                        size="sm"
+                                        variant="ghost"
+                                        @click="navigateToVerse(version)"
                                     >
-                                    <p class="text-xs sm:text-sm break-words whitespace-normal pb-6">
-                                        {{ version.text }}
-                                    </p>     
+                                        <p
+                                            class="pb-6 text-xs break-words whitespace-normal sm:text-sm"
+                                        >
+                                            {{ version.text }}
+                                        </p>
                                     </Button>
                                 </div>
                             </ScrollArea>
