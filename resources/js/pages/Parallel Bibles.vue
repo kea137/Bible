@@ -780,13 +780,13 @@ function shareVerse(verse: any, chapter: any) {
                     >
                         <div class="flex items-center gap-2">
                             <span class="font-normal">{{
-                                getBibleName(selectedBible1)
+                                getBibleName(Number(selectedBible1))
                             }}</span>
                             <span class="text-xs">({{ t('Regular') }})</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="font-normal italic">{{
-                                getBibleName(selectedBible2)
+                                getBibleName(Number(selectedBible2))
                             }}</span>
                             <span class="text-xs">({{ t('Italic') }})</span>
                         </div>
