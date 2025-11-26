@@ -1009,7 +1009,7 @@ function shareVerse(verse: any, chapter: any) {
                     v-else
                     class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
                 >
-                    <p>{{ t('Select both translations to start') }}</p>
+                    <p>{{ t('Select a translation to start') }}</p>
                 </CardContent>
             </Card>
         </div>
