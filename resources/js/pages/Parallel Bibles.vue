@@ -728,7 +728,7 @@ function shareVerse(verse: any, chapter: any) {
                     </div>
                 </CardHeader>
 
-                <CardContent v-if="loadedChapter1 && loadedChapter2">
+                <CardContent v-if="loadedChapter1">
                     <div
                         class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                     >
@@ -774,8 +774,9 @@ function shareVerse(verse: any, chapter: any) {
                         </Button>
                     </div>
 
-                    <!-- Legend for font styles -->
+                    <!-- Legend for font styles or message -->
                     <div
+                        v-if="loadedChapter2"
                         class="mb-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground"
                     >
                         <div class="flex items-center gap-2">
@@ -790,6 +791,16 @@ function shareVerse(verse: any, chapter: any) {
                             }}</span>
                             <span class="text-xs">({{ t('Italic') }})</span>
                         </div>
+                    </div>
+                    <div
+                        v-else
+                        class="mb-4 rounded bg-muted p-3 text-sm text-muted-foreground"
+                    >
+                        {{
+                            t(
+                                'Select a second translation to see parallel verses',
+                            )
+                        }}
                     </div>
 
                     <ScrollArea
@@ -903,20 +914,24 @@ function shareVerse(verse: any, chapter: any) {
                                         }}</span>
 
                                         <!-- Translation 2 Text (Italic) -->
-                                        <span
+                                        <template
                                             v-if="
+                                                loadedChapter2 &&
                                                 getVerse2ByNumber(
                                                     verse1.verse_number,
                                                 )
                                             "
-                                            class="ml-1 font-normal italic"
                                         >
-                                            {{
-                                                getVerse2ByNumber(
-                                                    verse1.verse_number,
-                                                )?.text
-                                            }}
-                                        </span>
+                                            <span
+                                                class="ml-1 font-normal italic"
+                                            >
+                                                {{
+                                                    getVerse2ByNumber(
+                                                        verse1.verse_number,
+                                                    ).text
+                                                }}
+                                            </span>
+                                        </template>
                                     </div>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
