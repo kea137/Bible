@@ -164,6 +164,7 @@ const searching = ref(false);
 const bibles = ref<any[]>([]);
 const selectedBibleId = ref<string>('');
 const books = ref<any[]>([]);
+const selectedVerseToAdd = ref<Verse | null>(null);
 
 // Connection state
 const connectingFrom = ref<Node | null>(null);
@@ -378,21 +379,20 @@ async function deleteCanvas() {
 }
 
 async function searchVerses() {
-    if (!searchBookId.value || !searchChapter.value) {
-        alertMessage.value = t('Please select a book and chapter');
+    if (!searchBookId.value || !searchChapter.value || !searchVerse.value) {
+        alertMessage.value = t('Please select a book, chapter, and verse');
         alertError.value = true;
         return;
     }
 
     searching.value = true;
+    selectedVerseToAdd.value = null;
     try {
         const params = new URLSearchParams({
             book_id: searchBookId.value,
             chapter_number: searchChapter.value,
+            verse_number: searchVerse.value,
         });
-        if (searchVerse.value) {
-            params.append('verse_number', searchVerse.value);
-        }
 
         const response = await fetch(`/api/verse-link/search?${params}`);
         if (response.ok) {
@@ -408,6 +408,19 @@ async function searchVerses() {
     } finally {
         searching.value = false;
     }
+}
+
+function selectVerseToAdd(verse: Verse) {
+    selectedVerseToAdd.value = verse;
+}
+
+function cancelVerseSelection() {
+    selectedVerseToAdd.value = null;
+}
+
+async function confirmAddVerse() {
+    if (!selectedVerseToAdd.value) return;
+    await addVerseToCanvas(selectedVerseToAdd.value);
 }
 
 async function addVerseToCanvas(verse: Verse) {
@@ -446,6 +459,7 @@ async function addVerseToCanvas(verse: Verse) {
             searchBookId.value = '';
             searchChapter.value = '';
             searchVerse.value = '';
+            selectedVerseToAdd.value = null;
         } else {
             alertMessage.value = result.message || t('Failed to add verse');
             alertError.value = true;
@@ -929,9 +943,10 @@ const canvasBounds = computed(() => {
                         />
                     </div>
                     <div class="grid gap-2">
-                        <Label for="search-verse">{{
-                            t('Verse (Optional)')
-                        }}</Label>
+                        <Label for="search-verse"
+                            >{{ t('Verse') }}
+                            <span class="text-destructive">*</span></Label
+                        >
                         <Input
                             id="search-verse"
                             v-model="searchVerse"
@@ -941,7 +956,15 @@ const canvasBounds = computed(() => {
                         />
                     </div>
                 </div>
-                <Button @click="searchVerses" :disabled="searching">
+                <Button
+                    @click="searchVerses"
+                    :disabled="
+                        searching ||
+                        !searchBookId ||
+                        !searchChapter ||
+                        !searchVerse
+                    "
+                >
                     <LoaderCircle
                         v-if="searching"
                         class="mr-2 h-4 w-4 animate-spin"
@@ -951,7 +974,7 @@ const canvasBounds = computed(() => {
 
                 <!-- Search Results -->
                 <ScrollArea
-                    v-if="searchResults.length > 0"
+                    v-if="searchResults.length > 0 && !selectedVerseToAdd"
                     class="h-[200px] rounded-md border p-2"
                 >
                     <div class="space-y-2">
@@ -959,7 +982,7 @@ const canvasBounds = computed(() => {
                             v-for="verse in searchResults"
                             :key="verse.id"
                             class="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent"
-                            @click="addVerseToCanvas(verse)"
+                            @click="selectVerseToAdd(verse)"
                         >
                             <p class="text-sm font-medium text-primary">
                                 {{ verse.book.title }}
@@ -973,10 +996,56 @@ const canvasBounds = computed(() => {
                         </div>
                     </div>
                 </ScrollArea>
+
+                <!-- Selected Verse Preview -->
+                <div
+                    v-if="selectedVerseToAdd"
+                    class="rounded-lg border-2 border-primary bg-primary/5 p-4"
+                >
+                    <div class="mb-2 flex items-center justify-between">
+                        <p class="text-sm font-semibold text-primary">
+                            {{ t('Selected Verse') }}
+                        </p>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            @click="cancelVerseSelection"
+                        >
+                            <X class="h-4 w-4" />
+                        </Button>
+                    </div>
+                    <p class="mb-2 text-base font-medium">
+                        {{ selectedVerseToAdd.book.title }}
+                        {{ selectedVerseToAdd.chapter.chapter_number }}:{{
+                            selectedVerseToAdd.verse_number
+                        }}
+                    </p>
+                    <p class="text-sm italic text-muted-foreground">
+                        "{{ selectedVerseToAdd.text }}"
+                    </p>
+                    <p class="mt-2 text-xs text-muted-foreground">
+                        {{ selectedVerseToAdd.bible.name }}
+                    </p>
+                </div>
             </div>
             <DialogFooter>
-                <Button variant="outline" @click="addVerseDialog = false">
-                    {{ t('Close') }}
+                <Button
+                    variant="outline"
+                    @click="addVerseDialog = false"
+                    :disabled="saving"
+                >
+                    {{ t('Cancel') }}
+                </Button>
+                <Button
+                    v-if="selectedVerseToAdd"
+                    @click="confirmAddVerse"
+                    :disabled="saving"
+                >
+                    <LoaderCircle
+                        v-if="saving"
+                        class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {{ t('Add to Canvas') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

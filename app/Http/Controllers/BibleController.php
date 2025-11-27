@@ -302,7 +302,7 @@ class BibleController extends Controller
      */
     public function apiBiblesIndex()
     {
-        return response()->json(Bible::all());
+        return response()->json(Bible::with('books')->get());
     }
 
     /**
