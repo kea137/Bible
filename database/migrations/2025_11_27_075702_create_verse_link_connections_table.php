@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Prevent duplicate connections (in either direction)
-            $table->unique(['canvas_id', 'source_node_id', 'target_node_id']);
+            $table->unique(['canvas_id', 'source_node_id', 'target_node_id'], 'vlc_canvas_src_tgt_unique');
         });
     }
 
