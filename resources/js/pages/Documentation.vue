@@ -8,6 +8,7 @@ import {
     BookText,
     Code,
     Database,
+    GitBranch,
     Globe,
     Highlighter,
     Map,
@@ -252,6 +253,23 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </a>
 
                         <a
+                            href="#verse-link"
+                            class="group block rounded-lg border border-border p-4 transition-colors hover:border-primary hover:bg-accent"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <GitBranch class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-base font-semibold text-foreground"
+                                >
+                                    Verse Link
+                                </h3>
+                            </div>
+                            <p class="m-0 text-sm text-muted-foreground">
+                                Visual verse connection canvas
+                            </p>
+                        </a>
+
+                        <a
                             href="#mobile-app"
                             class="group block rounded-lg border border-border p-4 transition-colors hover:border-primary hover:bg-accent"
                         >
@@ -306,6 +324,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <li>
                                     ✅ Verse Sharing with beautiful backgrounds
                                 </li>
+                                <li>✅ Verse Link Canvas for connecting verses visually</li>
                                 <li>✅ Onboarding for new users</li>
                                 <li>✅ User Authentication with 2FA</li>
                                 <li>✅ Dark Mode support</li>
@@ -1810,6 +1829,100 @@ print(data['verses'][0]['text'])</code></pre>
                                     >
                                     file in the repository.
                                 </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Verse Link Section -->
+                    <section id="verse-link" class="mb-12">
+                        <h2 class="mb-4 text-2xl font-bold text-foreground">
+                            Verse Link
+                        </h2>
+
+                        <div
+                            class="mb-6 rounded-lg border-2 border-primary/20 bg-primary/5 p-4"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <GitBranch class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-lg font-semibold text-foreground"
+                                >
+                                    Visual Verse Connection Canvas
+                                </h3>
+                            </div>
+                            <p class="text-sm text-foreground">
+                                The Verse Link feature provides an interactive
+                                canvas for creating visual connections between
+                                Bible verses. Build your own verse relationship
+                                maps and explore scripture connections.
+                            </p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div
+                                class="rounded-lg border border-border bg-muted/30 p-4"
+                            >
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Key Features
+                                </h3>
+                                <ul class="space-y-2 text-sm text-foreground">
+                                    <li>
+                                        🎨 <strong>Canvas-Based Interface:</strong>
+                                        Create multiple canvases to organize your verse studies
+                                    </li>
+                                    <li>
+                                        🔗 <strong>Visual Connections:</strong>
+                                        Draw connections between verses to show relationships
+                                    </li>
+                                    <li>
+                                        📝 <strong>Personal Notes:</strong>
+                                        Add notes to any verse node on the canvas
+                                    </li>
+                                    <li>
+                                        🔍 <strong>Cross-References:</strong>
+                                        View cross-references for each verse directly on the canvas
+                                    </li>
+                                    <li>
+                                        🖱️ <strong>Drag & Drop:</strong>
+                                        Easily rearrange verse nodes on the canvas
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    How to Use
+                                </h3>
+                                <ol class="space-y-2 text-sm text-foreground">
+                                    <li>1. Navigate to Verse Link from the navigation menu</li>
+                                    <li>2. Create a new canvas with a name and optional description</li>
+                                    <li>3. Search for verses and add them to your canvas</li>
+                                    <li>4. Drag verse nodes to arrange them visually</li>
+                                    <li>5. Click "Connect" to draw lines between related verses</li>
+                                    <li>6. Add notes to verses for additional context</li>
+                                    <li>7. Expand cross-references to discover related verses</li>
+                                </ol>
+                            </div>
+
+                            <div
+                                class="rounded-lg border border-border bg-accent/30 p-4"
+                            >
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Use Cases
+                                </h3>
+                                <ul class="space-y-1 text-sm text-muted-foreground">
+                                    <li>• Map thematic connections across books of the Bible</li>
+                                    <li>• Create study guides for sermon preparation</li>
+                                    <li>• Visualize prophecy and fulfillment relationships</li>
+                                    <li>• Build topical verse collections</li>
+                                    <li>• Track character appearances across scripture</li>
+                                </ul>
                             </div>
                         </div>
                     </section>
