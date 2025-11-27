@@ -13,6 +13,7 @@ import {
     Map,
     Settings,
     Share2,
+    Smartphone,
     Target,
     Users,
     Zap,
@@ -249,6 +250,23 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 External API access
                             </p>
                         </a>
+
+                        <a
+                            href="#mobile-app"
+                            class="group block rounded-lg border border-border p-4 transition-colors hover:border-primary hover:bg-accent"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <Smartphone class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-base font-semibold text-foreground"
+                                >
+                                    Mobile App
+                                </h3>
+                            </div>
+                            <p class="m-0 text-sm text-muted-foreground">
+                                Take Bible study on the go
+                            </p>
+                        </a>
                     </div>
 
                     <!-- Overview Section -->
@@ -281,7 +299,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <li>✅ Verse Highlighting with color codes</li>
                                 <li>✅ Personal Notes</li>
                                 <li>✅ Reading Plan with progress tracking</li>
-                                <li>✅ Parallel Bible comparison view</li>
+                                <li>✅ Parallel Bible comparison view with cross-references</li>
                                 <li>
                                     ✅ Bible study Lessons with series support
                                 </li>
@@ -293,6 +311,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <li>✅ Dark Mode support</li>
                                 <li>✅ Responsive design for all devices</li>
                                 <li>✅ SEO optimized with sitemap</li>
+                                <li>✅ <a href="https://github.com/kea137/Bible-app" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Companion Mobile App</a></li>
                             </ul>
                         </div>
                     </section>
@@ -402,8 +421,9 @@ php artisan serve</code></pre>
                                     Parallel Bibles
                                 </h3>
                                 <p class="text-sm text-muted-foreground">
-                                    Compare up to 3 Bible translations
-                                    side-by-side with synchronized scrolling.
+                                    Compare up to 2 Bible translations
+                                    side-by-side with synchronized scrolling,
+                                    cross-references, and selected reference viewing.
                                 </p>
                             </div>
                         </div>
@@ -1789,6 +1809,100 @@ print(data['verses'][0]['text'])</code></pre>
                                         >DOCUMENTATION.md</code
                                     >
                                     file in the repository.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Mobile App Section -->
+                    <section id="mobile-app" class="mb-12">
+                        <h2 class="mb-4 text-2xl font-bold text-foreground">
+                            Mobile App
+                        </h2>
+
+                        <div
+                            class="mb-6 rounded-lg border-2 border-primary/20 bg-primary/5 p-4"
+                        >
+                            <div class="mb-2 flex items-center gap-2">
+                                <Smartphone class="h-5 w-5 text-primary" />
+                                <h3
+                                    class="m-0 text-lg font-semibold text-foreground"
+                                >
+                                    Bible App - Mobile Companion
+                                </h3>
+                            </div>
+                            <p class="text-sm text-foreground">
+                                Take your Bible study on the go with our companion
+                                mobile application. The mobile app provides a
+                                seamless reading experience optimized for mobile
+                                devices.
+                            </p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div
+                                class="rounded-lg border border-border bg-muted/30 p-4"
+                            >
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Key Features
+                                </h3>
+                                <ul class="space-y-2 text-sm text-foreground">
+                                    <li>
+                                        📱 <strong>Native Mobile Experience:</strong>
+                                        Designed specifically for mobile devices
+                                    </li>
+                                    <li>
+                                        📖 <strong>Offline Reading:</strong>
+                                        Read Bible verses without an internet connection
+                                    </li>
+                                    <li>
+                                        🔄 <strong>Cross-Platform:</strong>
+                                        Available for multiple platforms
+                                    </li>
+                                    <li>
+                                        🎨 <strong>Beautiful Interface:</strong>
+                                        Clean, distraction-free reading experience
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="rounded-lg border border-border p-4">
+                                <h3
+                                    class="mb-3 text-lg font-semibold text-foreground"
+                                >
+                                    Repository
+                                </h3>
+                                <p class="mb-2 text-sm text-foreground">
+                                    The mobile app is developed as a sister project
+                                    and is available on GitHub:
+                                </p>
+                                <a
+                                    href="https://github.com/kea137/Bible-app"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20"
+                                >
+                                    <Globe class="h-4 w-4" />
+                                    kea137/Bible-app
+                                </a>
+                            </div>
+
+                            <div
+                                class="rounded-lg border border-border bg-accent/30 p-4"
+                            >
+                                <h3
+                                    class="mb-2 text-lg font-semibold text-foreground"
+                                >
+                                    Relationship with Web App
+                                </h3>
+                                <p class="text-sm text-muted-foreground">
+                                    The mobile app (kea137/Bible-app) is the
+                                    companion application to this web application
+                                    (kea137/Bible). Both applications share the
+                                    same mission of making Bible study accessible
+                                    and enjoyable.
                                 </p>
                             </div>
                         </div>

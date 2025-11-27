@@ -4,11 +4,13 @@ import { Head, Link } from '@inertiajs/vue3';
 import {
     BookOpen,
     Calendar,
+    ExternalLink,
     Highlighter,
     Library,
     Link2,
     Moon,
     NotebookPen,
+    Smartphone,
     SplitSquareHorizontal,
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
@@ -49,6 +51,10 @@ const features = [
     {
         icon: Moon,
         title: t('Dark Mode'),
+    },
+    {
+        icon: Smartphone,
+        title: t('Mobile App Available'),
     },
 ];
 </script>
@@ -155,6 +161,36 @@ const features = [
                         >
                             {{ t('Go to Dashboard') }}
                         </Link>
+                    </div>
+
+                    <!-- Mobile App Link -->
+                    <div
+                        class="mt-4 rounded-lg border border-[#19140035] p-3 dark:border-[#3E3E3A]"
+                    >
+                        <div class="flex items-center gap-2">
+                            <Smartphone
+                                class="h-4 w-4 text-[#f53003] dark:text-[#FF4433]"
+                            />
+                            <span
+                                class="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]"
+                            >
+                                {{ t('Mobile App') }}
+                            </span>
+                        </div>
+                        <p
+                            class="mt-1 text-xs text-[#706f6c] dark:text-[#A1A09A]"
+                        >
+                            {{ t('Take Bible study on the go with our') }}
+                            <a
+                                href="https://github.com/kea137/Bible-app"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center gap-1 text-[#f53003] hover:underline dark:text-[#FF4433]"
+                            >
+                                {{ t('mobile app') }}
+                                <ExternalLink class="h-3 w-3" />
+                            </a>
+                        </p>
                     </div>
                 </div>
                 <div

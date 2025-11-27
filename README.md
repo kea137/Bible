@@ -2,6 +2,10 @@
 
 A modern Bible reading and management application built with Laravel, Vue.js, and Inertia.js.
 
+## Sister Mobile App
+
+Looking for the mobile version? Check out our companion mobile app: [**kea137/Bible-app**](https://github.com/kea137/Bible-app) - Take your Bible study on the go!
+
 ## Features
 
 - Browse and read different Bible translations and languages
@@ -14,7 +18,7 @@ A modern Bible reading and management application built with Laravel, Vue.js, an
 - Cross-reference system for Bible verses
 - Bible reading progress tracking
 - Verse highlighting and notes
-- Parallel Bible view for comparing translations and deep learning
+- Parallel Bible view for comparing translations with cross-references and selected reference viewing
 - Onboarding for new users
 - SEO optimized with sitemap generation for hosting
 
@@ -80,6 +84,10 @@ To enable photo backgrounds from Pexels:
 3. The app will automatically fetch serene nature images for verse backgrounds
 
 **Note**: The feature works perfectly without a Pexels API key - users can still use the beautiful gradient backgrounds.
+
+## Related Projects
+
+- **[kea137/Bible-app](https://github.com/kea137/Bible-app)** - The companion mobile application for Bible study on the go. Provides a native mobile experience with offline reading capabilities.
 
 ## Credits & Acknowledgments
 
