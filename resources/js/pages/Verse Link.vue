@@ -1,0 +1,1396 @@
+<script setup lang="ts">
+import AlertUser from '@/components/AlertUser.vue';
+import NotesDialog from '@/components/NotesDialog.vue';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import Button from '@/components/ui/button/Button.vue';
+import Card from '@/components/ui/card/Card.vue';
+import CardContent from '@/components/ui/card/CardContent.vue';
+import CardDescription from '@/components/ui/card/CardDescription.vue';
+import CardHeader from '@/components/ui/card/CardHeader.vue';
+import CardTitle from '@/components/ui/card/CardTitle.vue';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { verse_link } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    ChevronDown,
+    ChevronRight,
+    ExternalLink,
+    GitBranch,
+    GripVertical,
+    Link2,
+    LoaderCircle,
+    Pencil,
+    Plus,
+    StickyNote,
+    Trash2,
+    X,
+} from 'lucide-vue-next';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: t('Verse Link'),
+        href: verse_link().url,
+    },
+];
+
+interface Canvas {
+    id: number;
+    name: string;
+    description: string | null;
+    nodes_count: number;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Verse {
+    id: number;
+    verse_number: number;
+    text: string;
+    book: {
+        id: number;
+        title: string;
+    };
+    chapter: {
+        id: number;
+        chapter_number: number;
+    };
+    bible: {
+        id: number;
+        name: string;
+        version: string;
+    };
+}
+
+interface Node {
+    id: number;
+    canvas_id: number;
+    verse_id: number;
+    position_x: number;
+    position_y: number;
+    note: string | null;
+    verse: Verse;
+}
+
+interface Connection {
+    id: number;
+    canvas_id: number;
+    source_node_id: number;
+    target_node_id: number;
+    label: string | null;
+}
+
+interface Reference {
+    id: string;
+    reference: string;
+    verse: Verse;
+}
+
+defineProps<{
+    canvases: Canvas[];
+}>();
+
+const page = usePage();
+const alertSuccess = ref(false);
+const alertError = ref(false);
+const alertMessage = ref('');
+
+// Canvas state
+const selectedCanvas = ref<Canvas | null>(null);
+const canvasData = ref<{
+    nodes: Node[];
+    connections: Connection[];
+} | null>(null);
+const loading = ref(false);
+
+// Dialog states
+const createCanvasDialog = ref(false);
+const editCanvasDialog = ref(false);
+const deleteCanvasDialog = ref(false);
+const addVerseDialog = ref(false);
+const notesDialogOpen = ref(false);
+const selectedNodeForNote = ref<Node | null>(null);
+
+// Form data
+const newCanvasName = ref('');
+const newCanvasDescription = ref('');
+const editCanvasName = ref('');
+const editCanvasDescription = ref('');
+const saving = ref(false);
+
+// Search verse form
+const searchBookId = ref<string>('');
+const searchChapter = ref('');
+const searchVerse = ref('');
+const searchResults = ref<Verse[]>([]);
+const searching = ref(false);
+const bibles = ref<any[]>([]);
+const selectedBibleId = ref<string>('');
+const books = ref<any[]>([]);
+
+// Connection state
+const connectingFrom = ref<Node | null>(null);
+const isConnecting = ref(false);
+
+// Drag state
+const draggedNode = ref<Node | null>(null);
+const dragStartPos = ref({ x: 0, y: 0 });
+const nodeStartPos = ref({ x: 0, y: 0 });
+
+// Canvas viewport
+const canvasRef = ref<HTMLElement | null>(null);
+
+// References state for collapsible
+const nodeReferences = ref<Record<number, Reference[]>>({});
+const loadingReferences = ref<Record<number, boolean>>({});
+const expandedReferences = ref<Record<number, boolean>>({});
+
+async function loadBibles() {
+    try {
+        const response = await fetch('/api/bibles');
+        if (response.ok) {
+            bibles.value = await response.json();
+            if (bibles.value.length > 0) {
+                selectedBibleId.value = bibles.value[0].id.toString();
+                books.value = bibles.value[0].books || [];
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load bibles:', error);
+    }
+}
+
+watch(selectedBibleId, (newId) => {
+    const bible = bibles.value.find((b) => b.id.toString() === newId);
+    if (bible) {
+        books.value = bible.books || [];
+        searchBookId.value = '';
+    }
+});
+
+onMounted(() => {
+    loadBibles();
+});
+
+function getCsrfToken(): string {
+    let csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content');
+    if (!csrfToken && page.props.csrf_token) {
+        csrfToken = String(page.props.csrf_token);
+    }
+    return csrfToken || '';
+}
+
+async function createCanvas() {
+    if (!newCanvasName.value.trim()) {
+        alertMessage.value = t('Please enter a canvas name');
+        alertError.value = true;
+        return;
+    }
+
+    saving.value = true;
+    try {
+        const response = await fetch('/api/verse-link/canvas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                name: newCanvasName.value,
+                description: newCanvasDescription.value || null,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alertMessage.value = t('Canvas created successfully');
+            alertSuccess.value = true;
+            createCanvasDialog.value = false;
+            newCanvasName.value = '';
+            newCanvasDescription.value = '';
+            router.reload({ only: ['canvases'] });
+        } else {
+            alertMessage.value = result.message || t('Failed to create canvas');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to create canvas');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        saving.value = false;
+    }
+}
+
+async function openCanvas(canvas: Canvas) {
+    selectedCanvas.value = canvas;
+    loading.value = true;
+
+    try {
+        const response = await fetch(`/api/verse-link/canvas/${canvas.id}`);
+        if (response.ok) {
+            const data = await response.json();
+            canvasData.value = {
+                nodes: data.nodes || [],
+                connections: data.connections || [],
+            };
+        } else {
+            alertMessage.value = t('Failed to load canvas');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to load canvas');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        loading.value = false;
+    }
+}
+
+function openEditCanvasDialog() {
+    if (!selectedCanvas.value) return;
+    editCanvasName.value = selectedCanvas.value.name;
+    editCanvasDescription.value = selectedCanvas.value.description || '';
+    editCanvasDialog.value = true;
+}
+
+async function updateCanvas() {
+    if (!selectedCanvas.value) return;
+
+    saving.value = true;
+    try {
+        const response = await fetch(
+            `/api/verse-link/canvas/${selectedCanvas.value.id}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                    name: editCanvasName.value,
+                    description: editCanvasDescription.value || null,
+                }),
+            },
+        );
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            selectedCanvas.value.name = editCanvasName.value;
+            selectedCanvas.value.description = editCanvasDescription.value;
+            alertMessage.value = t('Canvas updated successfully');
+            alertSuccess.value = true;
+            editCanvasDialog.value = false;
+            router.reload({ only: ['canvases'] });
+        } else {
+            alertMessage.value = result.message || t('Failed to update canvas');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to update canvas');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        saving.value = false;
+    }
+}
+
+async function deleteCanvas() {
+    if (!selectedCanvas.value) return;
+
+    saving.value = true;
+    try {
+        const response = await fetch(
+            `/api/verse-link/canvas/${selectedCanvas.value.id}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                    Accept: 'application/json',
+                },
+            },
+        );
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alertMessage.value = t('Canvas deleted successfully');
+            alertSuccess.value = true;
+            deleteCanvasDialog.value = false;
+            selectedCanvas.value = null;
+            canvasData.value = null;
+            router.reload({ only: ['canvases'] });
+        } else {
+            alertMessage.value = result.message || t('Failed to delete canvas');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to delete canvas');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        saving.value = false;
+    }
+}
+
+async function searchVerses() {
+    if (!searchBookId.value || !searchChapter.value) {
+        alertMessage.value = t('Please select a book and chapter');
+        alertError.value = true;
+        return;
+    }
+
+    searching.value = true;
+    try {
+        const params = new URLSearchParams({
+            book_id: searchBookId.value,
+            chapter_number: searchChapter.value,
+        });
+        if (searchVerse.value) {
+            params.append('verse_number', searchVerse.value);
+        }
+
+        const response = await fetch(`/api/verse-link/search?${params}`);
+        if (response.ok) {
+            searchResults.value = await response.json();
+        } else {
+            alertMessage.value = t('Failed to search verses');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to search verses');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        searching.value = false;
+    }
+}
+
+async function addVerseToCanvas(verse: Verse) {
+    if (!selectedCanvas.value || !canvasData.value) return;
+
+    // Calculate position (center of visible canvas area with some offset)
+    const existingNodes = canvasData.value.nodes.length;
+    const posX = 100 + (existingNodes % 3) * 350;
+    const posY = 100 + Math.floor(existingNodes / 3) * 250;
+
+    saving.value = true;
+    try {
+        const response = await fetch('/api/verse-link/node', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                canvas_id: selectedCanvas.value.id,
+                verse_id: verse.id,
+                position_x: posX,
+                position_y: posY,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            canvasData.value.nodes.push(result.node);
+            alertMessage.value = t('Verse added to canvas');
+            alertSuccess.value = true;
+            addVerseDialog.value = false;
+            searchResults.value = [];
+            searchBookId.value = '';
+            searchChapter.value = '';
+            searchVerse.value = '';
+        } else {
+            alertMessage.value = result.message || t('Failed to add verse');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to add verse');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        saving.value = false;
+    }
+}
+
+async function updateNodePosition(node: Node) {
+    try {
+        await fetch(`/api/verse-link/node/${node.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                position_x: node.position_x,
+                position_y: node.position_y,
+            }),
+        });
+    } catch (error) {
+        console.error('Failed to update node position:', error);
+    }
+}
+
+async function deleteNode(node: Node) {
+    if (!canvasData.value) return;
+
+    try {
+        const response = await fetch(`/api/verse-link/node/${node.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            canvasData.value.nodes = canvasData.value.nodes.filter(
+                (n) => n.id !== node.id,
+            );
+            canvasData.value.connections = canvasData.value.connections.filter(
+                (c) =>
+                    c.source_node_id !== node.id &&
+                    c.target_node_id !== node.id,
+            );
+            alertMessage.value = t('Verse removed from canvas');
+            alertSuccess.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to remove verse');
+        alertError.value = true;
+        console.error(error);
+    }
+}
+
+function startConnecting(node: Node) {
+    connectingFrom.value = node;
+    isConnecting.value = true;
+}
+
+function cancelConnecting() {
+    connectingFrom.value = null;
+    isConnecting.value = false;
+}
+
+async function connectToNode(targetNode: Node) {
+    if (
+        !connectingFrom.value ||
+        !selectedCanvas.value ||
+        !canvasData.value ||
+        connectingFrom.value.id === targetNode.id
+    ) {
+        cancelConnecting();
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/verse-link/connection', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                canvas_id: selectedCanvas.value.id,
+                source_node_id: connectingFrom.value.id,
+                target_node_id: targetNode.id,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            canvasData.value.connections.push(result.connection);
+            alertMessage.value = t('Connection created');
+            alertSuccess.value = true;
+        } else {
+            alertMessage.value =
+                result.message || t('Failed to create connection');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to create connection');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        cancelConnecting();
+    }
+}
+
+async function deleteConnection(connection: Connection) {
+    if (!canvasData.value) return;
+
+    try {
+        const response = await fetch(
+            `/api/verse-link/connection/${connection.id}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                    Accept: 'application/json',
+                },
+            },
+        );
+
+        if (response.ok) {
+            canvasData.value.connections = canvasData.value.connections.filter(
+                (c) => c.id !== connection.id,
+            );
+        }
+    } catch (error) {
+        console.error('Failed to delete connection:', error);
+    }
+}
+
+// Drag handlers
+function startDrag(event: MouseEvent, node: Node) {
+    if (isConnecting.value) {
+        connectToNode(node);
+        return;
+    }
+
+    draggedNode.value = node;
+    dragStartPos.value = { x: event.clientX, y: event.clientY };
+    nodeStartPos.value = { x: node.position_x, y: node.position_y };
+
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', stopDrag);
+}
+
+function onDrag(event: MouseEvent) {
+    if (!draggedNode.value) return;
+
+    const dx = event.clientX - dragStartPos.value.x;
+    const dy = event.clientY - dragStartPos.value.y;
+
+    draggedNode.value.position_x = Math.max(0, nodeStartPos.value.x + dx);
+    draggedNode.value.position_y = Math.max(0, nodeStartPos.value.y + dy);
+}
+
+function stopDrag() {
+    if (draggedNode.value) {
+        updateNodePosition(draggedNode.value);
+    }
+    draggedNode.value = null;
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+}
+
+onUnmounted(() => {
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+});
+
+// Get connection line path
+function getConnectionPath(connection: Connection): string {
+    if (!canvasData.value) return '';
+
+    const sourceNode = canvasData.value.nodes.find(
+        (n) => n.id === connection.source_node_id,
+    );
+    const targetNode = canvasData.value.nodes.find(
+        (n) => n.id === connection.target_node_id,
+    );
+
+    if (!sourceNode || !targetNode) return '';
+
+    const cardWidth = 300;
+    const cardHeight = 150;
+
+    const x1 = sourceNode.position_x + cardWidth / 2;
+    const y1 = sourceNode.position_y + cardHeight / 2;
+    const x2 = targetNode.position_x + cardWidth / 2;
+    const y2 = targetNode.position_y + cardHeight / 2;
+
+    // Bezier curve for smoother lines
+    const midX = (x1 + x2) / 2;
+
+    return `M ${x1} ${y1} Q ${midX} ${y1} ${midX} ${(y1 + y2) / 2} T ${x2} ${y2}`;
+}
+
+// Load references for a node
+async function toggleReferences(node: Node) {
+    const nodeId = node.id;
+
+    if (expandedReferences.value[nodeId]) {
+        expandedReferences.value[nodeId] = false;
+        return;
+    }
+
+    if (nodeReferences.value[nodeId]) {
+        expandedReferences.value[nodeId] = true;
+        return;
+    }
+
+    loadingReferences.value[nodeId] = true;
+    try {
+        const response = await fetch(
+            `/api/verse-link/node/${nodeId}/references`,
+        );
+        if (response.ok) {
+            nodeReferences.value[nodeId] = await response.json();
+            expandedReferences.value[nodeId] = true;
+        }
+    } catch (error) {
+        console.error('Failed to load references:', error);
+    } finally {
+        loadingReferences.value[nodeId] = false;
+    }
+}
+
+function openNotesForNode(node: Node) {
+    selectedNodeForNote.value = node;
+    notesDialogOpen.value = true;
+}
+
+function handleNoteSaved() {
+    alertMessage.value = t('Note saved successfully');
+    alertSuccess.value = true;
+}
+
+function goToVerseStudy(verseId: number) {
+    router.visit(`/verses/${verseId}/study`);
+}
+
+function goBack() {
+    selectedCanvas.value = null;
+    canvasData.value = null;
+}
+
+// Calculate canvas bounds for SVG
+const canvasBounds = computed(() => {
+    if (!canvasData.value || canvasData.value.nodes.length === 0) {
+        return { width: 2000, height: 1500 };
+    }
+
+    let maxX = 0;
+    let maxY = 0;
+
+    for (const node of canvasData.value.nodes) {
+        maxX = Math.max(maxX, node.position_x + 400);
+        maxY = Math.max(maxY, node.position_y + 300);
+    }
+
+    return {
+        width: Math.max(2000, maxX),
+        height: Math.max(1500, maxY),
+    };
+});
+</script>
+
+<template>
+    <Head :title="t('Verse Link')" />
+
+    <AlertUser
+        v-if="alertSuccess"
+        :open="true"
+        :title="t('Success')"
+        :confirmButtonText="'OK'"
+        :message="alertMessage"
+        variant="success"
+        @update:open="() => (alertSuccess = false)"
+    />
+    <AlertUser
+        v-if="alertError"
+        :open="true"
+        :title="t('Error')"
+        :confirmButtonText="'OK'"
+        :message="alertMessage"
+        variant="error"
+        @update:open="() => (alertError = false)"
+    />
+
+    <!-- Create Canvas Dialog -->
+    <Dialog v-model:open="createCanvasDialog">
+        <DialogContent class="sm:max-w-[425px]">
+            <DialogHeader>
+                <DialogTitle>{{ t('Create New Canvas') }}</DialogTitle>
+                <DialogDescription>
+                    {{
+                        t(
+                            'Create a new canvas to link and study related Bible verses.',
+                        )
+                    }}
+                </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-4 py-4">
+                <div class="grid gap-2">
+                    <Label for="canvas-name">{{ t('Name') }}</Label>
+                    <Input
+                        id="canvas-name"
+                        v-model="newCanvasName"
+                        :placeholder="t('e.g., Salvation Verses')"
+                    />
+                </div>
+                <div class="grid gap-2">
+                    <Label for="canvas-description">{{
+                        t('Description (Optional)')
+                    }}</Label>
+                    <Textarea
+                        id="canvas-description"
+                        v-model="newCanvasDescription"
+                        :placeholder="t('Describe the purpose of this canvas')"
+                        rows="3"
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button
+                    variant="outline"
+                    @click="createCanvasDialog = false"
+                    :disabled="saving"
+                >
+                    {{ t('Cancel') }}
+                </Button>
+                <Button @click="createCanvas" :disabled="saving">
+                    <LoaderCircle
+                        v-if="saving"
+                        class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {{ t('Create') }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <!-- Edit Canvas Dialog -->
+    <Dialog v-model:open="editCanvasDialog">
+        <DialogContent class="sm:max-w-[425px]">
+            <DialogHeader>
+                <DialogTitle>{{ t('Edit Canvas') }}</DialogTitle>
+            </DialogHeader>
+            <div class="grid gap-4 py-4">
+                <div class="grid gap-2">
+                    <Label for="edit-canvas-name">{{ t('Name') }}</Label>
+                    <Input id="edit-canvas-name" v-model="editCanvasName" />
+                </div>
+                <div class="grid gap-2">
+                    <Label for="edit-canvas-description">{{
+                        t('Description')
+                    }}</Label>
+                    <Textarea
+                        id="edit-canvas-description"
+                        v-model="editCanvasDescription"
+                        rows="3"
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button
+                    variant="outline"
+                    @click="editCanvasDialog = false"
+                    :disabled="saving"
+                >
+                    {{ t('Cancel') }}
+                </Button>
+                <Button @click="updateCanvas" :disabled="saving">
+                    <LoaderCircle
+                        v-if="saving"
+                        class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {{ t('Save') }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <!-- Delete Canvas Confirmation -->
+    <AlertDialog v-model:open="deleteCanvasDialog">
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>{{ t('Delete Canvas') }}</AlertDialogTitle>
+                <AlertDialogDescription>
+                    {{
+                        t(
+                            'Are you sure you want to delete this canvas? All verse links and notes will be permanently removed.',
+                        )
+                    }}
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>{{ t('Cancel') }}</AlertDialogCancel>
+                <AlertDialogAction
+                    @click="deleteCanvas"
+                    class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                    {{ t('Delete') }}
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+
+    <!-- Add Verse Dialog -->
+    <Dialog v-model:open="addVerseDialog">
+        <DialogContent class="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>{{ t('Add Verse to Canvas') }}</DialogTitle>
+                <DialogDescription>
+                    {{ t('Search for a verse to add to your canvas.') }}
+                </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-4 py-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="grid gap-2">
+                        <Label>{{ t('Bible') }}</Label>
+                        <Select v-model="selectedBibleId">
+                            <SelectTrigger>
+                                <SelectValue
+                                    :placeholder="t('Select Bible')"
+                                />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem
+                                    v-for="bible in bibles"
+                                    :key="bible.id"
+                                    :value="bible.id.toString()"
+                                >
+                                    {{ bible.name }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div class="grid gap-2">
+                        <Label>{{ t('Book') }}</Label>
+                        <Select v-model="searchBookId">
+                            <SelectTrigger>
+                                <SelectValue :placeholder="t('Select Book')" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem
+                                    v-for="book in books"
+                                    :key="book.id"
+                                    :value="book.id.toString()"
+                                >
+                                    {{ book.title }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="grid gap-2">
+                        <Label for="search-chapter">{{ t('Chapter') }}</Label>
+                        <Input
+                            id="search-chapter"
+                            v-model="searchChapter"
+                            type="number"
+                            min="1"
+                            :placeholder="t('Chapter number')"
+                        />
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="search-verse">{{
+                            t('Verse (Optional)')
+                        }}</Label>
+                        <Input
+                            id="search-verse"
+                            v-model="searchVerse"
+                            type="number"
+                            min="1"
+                            :placeholder="t('Verse number')"
+                        />
+                    </div>
+                </div>
+                <Button @click="searchVerses" :disabled="searching">
+                    <LoaderCircle
+                        v-if="searching"
+                        class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {{ t('Search') }}
+                </Button>
+
+                <!-- Search Results -->
+                <ScrollArea
+                    v-if="searchResults.length > 0"
+                    class="h-[200px] rounded-md border p-2"
+                >
+                    <div class="space-y-2">
+                        <div
+                            v-for="verse in searchResults"
+                            :key="verse.id"
+                            class="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent"
+                            @click="addVerseToCanvas(verse)"
+                        >
+                            <p class="text-sm font-medium text-primary">
+                                {{ verse.book.title }}
+                                {{ verse.chapter.chapter_number }}:{{
+                                    verse.verse_number
+                                }}
+                            </p>
+                            <p class="line-clamp-2 text-xs text-muted-foreground">
+                                {{ verse.text }}
+                            </p>
+                        </div>
+                    </div>
+                </ScrollArea>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" @click="addVerseDialog = false">
+                    {{ t('Close') }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <!-- Notes Dialog -->
+    <NotesDialog
+        v-if="selectedNodeForNote"
+        :open="notesDialogOpen"
+        @update:open="notesDialogOpen = $event"
+        :verse-id="selectedNodeForNote.verse.id"
+        :verse-text="selectedNodeForNote.verse.text"
+        :verse-reference="`${selectedNodeForNote.verse.book.title} ${selectedNodeForNote.verse.chapter.chapter_number}:${selectedNodeForNote.verse.verse_number}`"
+        @saved="handleNoteSaved"
+    />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div
+            class="flex h-full flex-1 flex-col gap-3 overflow-hidden rounded-xl p-2 sm:gap-4 sm:p-4"
+        >
+            <!-- Canvas List View -->
+            <template v-if="!selectedCanvas">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <GitBranch class="h-5 w-5 text-primary" />
+                        <h1 class="text-lg font-semibold sm:text-xl">
+                            {{ t('Verse Link Canvases') }}
+                        </h1>
+                    </div>
+                    <Button @click="createCanvasDialog = true">
+                        <Plus class="mr-2 h-4 w-4" />
+                        {{ t('New Canvas') }}
+                    </Button>
+                </div>
+
+                <div
+                    v-if="canvases.length === 0"
+                    class="flex flex-1 flex-col items-center justify-center py-12 text-center"
+                >
+                    <GitBranch
+                        class="mb-4 h-12 w-12 text-muted-foreground/50"
+                    />
+                    <h3 class="text-lg font-semibold">
+                        {{ t('No Canvases Yet') }}
+                    </h3>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        {{
+                            t(
+                                'Create a canvas to start linking Bible verses together for deeper study.',
+                            )
+                        }}
+                    </p>
+                    <Button @click="createCanvasDialog = true" class="mt-4">
+                        <Plus class="mr-2 h-4 w-4" />
+                        {{ t('Create Your First Canvas') }}
+                    </Button>
+                </div>
+
+                <div
+                    v-else
+                    class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                >
+                    <Card
+                        v-for="canvas in canvases"
+                        :key="canvas.id"
+                        class="cursor-pointer transition-colors hover:bg-accent/50"
+                        @click="openCanvas(canvas)"
+                    >
+                        <CardHeader>
+                            <CardTitle class="flex items-center justify-between">
+                                <span class="truncate">{{ canvas.name }}</span>
+                                <GitBranch class="h-4 w-4 text-primary" />
+                            </CardTitle>
+                            <CardDescription v-if="canvas.description">
+                                {{ canvas.description }}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p class="text-sm text-muted-foreground">
+                                {{ canvas.nodes_count }}
+                                {{ t('verses') }}
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+            </template>
+
+            <!-- Canvas Editor View -->
+            <template v-else>
+                <!-- Canvas Header -->
+                <div
+                    class="flex flex-wrap items-center justify-between gap-2 border-b pb-3"
+                >
+                    <div class="flex items-center gap-3">
+                        <Button variant="ghost" size="sm" @click="goBack">
+                            <X class="h-4 w-4" />
+                        </Button>
+                        <div>
+                            <h1 class="text-lg font-semibold">
+                                {{ selectedCanvas.name }}
+                            </h1>
+                            <p
+                                v-if="selectedCanvas.description"
+                                class="text-xs text-muted-foreground"
+                            >
+                                {{ selectedCanvas.description }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            @click="addVerseDialog = true"
+                        >
+                            <Plus class="mr-1 h-4 w-4" />
+                            {{ t('Add Verse') }}
+                        </Button>
+                        <Button
+                            v-if="isConnecting"
+                            variant="secondary"
+                            size="sm"
+                            @click="cancelConnecting"
+                        >
+                            <X class="mr-1 h-4 w-4" />
+                            {{ t('Cancel Link') }}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            @click="openEditCanvasDialog"
+                        >
+                            <Pencil class="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            @click="deleteCanvasDialog = true"
+                        >
+                            <Trash2 class="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+
+                <!-- Connection Mode Indicator -->
+                <div
+                    v-if="isConnecting"
+                    class="rounded-lg bg-primary/10 px-4 py-2 text-center text-sm"
+                >
+                    <span class="font-medium">
+                        {{ t('Linking from:') }}
+                        {{ connectingFrom?.verse.book.title }}
+                        {{ connectingFrom?.verse.chapter.chapter_number }}:{{
+                            connectingFrom?.verse.verse_number
+                        }}
+                    </span>
+                    <span class="text-muted-foreground">
+                        — {{ t('Click on another verse to create a link') }}
+                    </span>
+                </div>
+
+                <!-- Loading State -->
+                <div
+                    v-if="loading"
+                    class="flex flex-1 items-center justify-center"
+                >
+                    <LoaderCircle class="h-8 w-8 animate-spin text-primary" />
+                </div>
+
+                <!-- Canvas Area -->
+                <div
+                    v-else-if="canvasData"
+                    ref="canvasRef"
+                    class="relative flex-1 overflow-auto rounded-lg border-2 border-dashed border-border bg-muted/20"
+                    :style="{
+                        backgroundImage: `radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)`,
+                        backgroundSize: '20px 20px',
+                    }"
+                >
+                    <!-- SVG for connection lines -->
+                    <svg
+                        class="pointer-events-none absolute left-0 top-0"
+                        :width="canvasBounds.width"
+                        :height="canvasBounds.height"
+                    >
+                        <defs>
+                            <marker
+                                id="arrowhead"
+                                markerWidth="10"
+                                markerHeight="7"
+                                refX="9"
+                                refY="3.5"
+                                orient="auto"
+                            >
+                                <polygon
+                                    points="0 0, 10 3.5, 0 7"
+                                    fill="hsl(var(--primary))"
+                                />
+                            </marker>
+                        </defs>
+                        <path
+                            v-for="connection in canvasData.connections"
+                            :key="connection.id"
+                            :d="getConnectionPath(connection)"
+                            fill="none"
+                            stroke="hsl(var(--primary))"
+                            stroke-width="2"
+                            marker-end="url(#arrowhead)"
+                            class="pointer-events-auto cursor-pointer opacity-60 transition-opacity hover:opacity-100"
+                            @click="deleteConnection(connection)"
+                        />
+                    </svg>
+
+                    <!-- Empty State -->
+                    <div
+                        v-if="canvasData.nodes.length === 0"
+                        class="absolute inset-0 flex flex-col items-center justify-center"
+                    >
+                        <BookOpen
+                            class="mb-4 h-12 w-12 text-muted-foreground/30"
+                        />
+                        <p class="text-muted-foreground">
+                            {{ t('Add verses to start building your study') }}
+                        </p>
+                        <Button
+                            variant="outline"
+                            class="mt-4"
+                            @click="addVerseDialog = true"
+                        >
+                            <Plus class="mr-2 h-4 w-4" />
+                            {{ t('Add First Verse') }}
+                        </Button>
+                    </div>
+
+                    <!-- Verse Cards -->
+                    <div
+                        v-for="node in canvasData.nodes"
+                        :key="node.id"
+                        class="absolute w-[300px]"
+                        :style="{
+                            left: `${node.position_x}px`,
+                            top: `${node.position_y}px`,
+                        }"
+                    >
+                        <Card
+                            class="shadow-lg transition-shadow"
+                            :class="{
+                                'ring-2 ring-primary':
+                                    isConnecting &&
+                                    connectingFrom?.id !== node.id,
+                                'ring-2 ring-primary/50':
+                                    connectingFrom?.id === node.id,
+                                'cursor-move': !isConnecting,
+                                'cursor-pointer':
+                                    isConnecting &&
+                                    connectingFrom?.id !== node.id,
+                            }"
+                        >
+                            <CardHeader
+                                class="cursor-move pb-2"
+                                @mousedown="startDrag($event, node)"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <GripVertical
+                                            class="h-4 w-4 text-muted-foreground"
+                                        />
+                                        <CardTitle class="text-sm">
+                                            {{ node.verse.book.title }}
+                                            {{
+                                                node.verse.chapter.chapter_number
+                                            }}:{{ node.verse.verse_number }}
+                                        </CardTitle>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            class="h-6 w-6 p-0"
+                                            @click.stop="startConnecting(node)"
+                                            :title="t('Create Link')"
+                                        >
+                                            <Link2 class="h-3 w-3" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            class="h-6 w-6 p-0"
+                                            @click.stop="
+                                                goToVerseStudy(node.verse.id)
+                                            "
+                                            :title="t('Study Verse')"
+                                        >
+                                            <ExternalLink class="h-3 w-3" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            class="h-6 w-6 p-0 text-destructive"
+                                            @click.stop="deleteNode(node)"
+                                            :title="t('Remove')"
+                                        >
+                                            <X class="h-3 w-3" />
+                                        </Button>
+                                    </div>
+                                </div>
+                                <CardDescription class="text-xs">
+                                    {{ node.verse.bible.name }}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent class="pt-0">
+                                <p
+                                    class="mb-3 line-clamp-3 text-xs leading-relaxed"
+                                >
+                                    "{{ node.verse.text }}"
+                                </p>
+
+                                <!-- Action buttons -->
+                                <div class="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        class="h-7 flex-1 text-xs"
+                                        @click.stop="openNotesForNode(node)"
+                                    >
+                                        <StickyNote class="mr-1 h-3 w-3" />
+                                        {{ t('Notes') }}
+                                    </Button>
+
+                                    <!-- References Collapsible -->
+                                    <Collapsible class="flex-1">
+                                        <CollapsibleTrigger as-child>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                class="h-7 w-full text-xs"
+                                                @click.stop="
+                                                    toggleReferences(node)
+                                                "
+                                            >
+                                                <LoaderCircle
+                                                    v-if="
+                                                        loadingReferences[
+                                                            node.id
+                                                        ]
+                                                    "
+                                                    class="mr-1 h-3 w-3 animate-spin"
+                                                />
+                                                <template v-else>
+                                                    <ChevronDown
+                                                        v-if="
+                                                            expandedReferences[
+                                                                node.id
+                                                            ]
+                                                        "
+                                                        class="mr-1 h-3 w-3"
+                                                    />
+                                                    <ChevronRight
+                                                        v-else
+                                                        class="mr-1 h-3 w-3"
+                                                    />
+                                                </template>
+                                                {{ t('Refs') }}
+                                            </Button>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent
+                                            v-if="
+                                                expandedReferences[node.id] &&
+                                                nodeReferences[node.id]
+                                            "
+                                            class="mt-2"
+                                        >
+                                            <ScrollArea class="max-h-[150px]">
+                                                <div
+                                                    v-if="
+                                                        nodeReferences[node.id]
+                                                            .length === 0
+                                                    "
+                                                    class="text-center text-xs text-muted-foreground"
+                                                >
+                                                    {{
+                                                        t(
+                                                            'No references found',
+                                                        )
+                                                    }}
+                                                </div>
+                                                <div
+                                                    v-else
+                                                    class="space-y-1"
+                                                >
+                                                    <div
+                                                        v-for="ref in nodeReferences[
+                                                            node.id
+                                                        ]"
+                                                        :key="ref.id"
+                                                        class="cursor-pointer rounded bg-muted px-2 py-1 text-xs hover:bg-accent"
+                                                        @click.stop="
+                                                            goToVerseStudy(
+                                                                ref.verse.id,
+                                                            )
+                                                        "
+                                                    >
+                                                        {{ ref.reference }}
+                                                    </div>
+                                                </div>
+                                            </ScrollArea>
+                                        </CollapsibleContent>
+                                    </Collapsible>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </AppLayout>
+</template>

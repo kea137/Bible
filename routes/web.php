@@ -12,6 +12,7 @@ use App\Http\Controllers\ShareController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\VerseController;
 use App\Http\Controllers\VerseHighlightController;
+use App\Http\Controllers\VerseLinkController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -112,6 +113,20 @@ Route::delete('/lessons/{lesson}', [LessonController::class, 'destroy'])->name('
 Route::get('/lessons', [LessonController::class, 'index'])->name('lessons')->middleware('auth');
 Route::get('/lessons/show/{lesson}', [LessonController::class, 'show'])->name('show_lesson')->middleware('auth');
 Route::post('/api/lesson/progress', [LessonController::class, 'toggleProgress'])->name('lesson_progress_toggle')->middleware('auth');
+
+// Verse Link Canvas routes
+Route::get('/verse-link', [VerseLinkController::class, 'index'])->name('verse_link')->middleware('auth');
+Route::post('/api/verse-link/canvas', [VerseLinkController::class, 'storeCanvas'])->name('verse_link_store_canvas')->middleware('auth');
+Route::get('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'showCanvas'])->name('verse_link_show_canvas')->middleware('auth');
+Route::put('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'updateCanvas'])->name('verse_link_update_canvas')->middleware('auth');
+Route::delete('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'destroyCanvas'])->name('verse_link_destroy_canvas')->middleware('auth');
+Route::post('/api/verse-link/node', [VerseLinkController::class, 'storeNode'])->name('verse_link_store_node')->middleware('auth');
+Route::put('/api/verse-link/node/{node}', [VerseLinkController::class, 'updateNode'])->name('verse_link_update_node')->middleware('auth');
+Route::delete('/api/verse-link/node/{node}', [VerseLinkController::class, 'destroyNode'])->name('verse_link_destroy_node')->middleware('auth');
+Route::get('/api/verse-link/node/{node}/references', [VerseLinkController::class, 'getNodeReferences'])->name('verse_link_node_references')->middleware('auth');
+Route::post('/api/verse-link/connection', [VerseLinkController::class, 'storeConnection'])->name('verse_link_store_connection')->middleware('auth');
+Route::delete('/api/verse-link/connection/{connection}', [VerseLinkController::class, 'destroyConnection'])->name('verse_link_destroy_connection')->middleware('auth');
+Route::get('/api/verse-link/search', [VerseLinkController::class, 'searchVerses'])->name('verse_link_search')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

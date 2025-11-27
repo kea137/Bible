@@ -27,6 +27,7 @@ import {
     reading_plan,
     references_configure,
     role_management,
+    verse_link,
 } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -36,6 +37,7 @@ import {
     BookText,
     CogIcon,
     FileText,
+    GitBranch,
     Highlighter,
     LayoutGrid,
     LibraryBig,
@@ -90,6 +92,11 @@ const mainNavItems: NavItem[] = [
         title: t('Notes'),
         href: notes(),
         icon: StickyNote,
+    },
+    {
+        title: t('Verse Link'),
+        href: verse_link(),
+        icon: GitBranch,
     },
 ];
 
