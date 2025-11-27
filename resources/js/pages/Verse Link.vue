@@ -1232,10 +1232,10 @@ const canvasBounds = computed(() => {
                     >
                         <!-- SVG for connection lines -->
                         <svg
-                            class="pointer-events-none absolute left-0 top-0"
+                            class="absolute left-0 top-0"
                             :width="canvasBounds.width"
                             :height="canvasBounds.height"
-                            style="z-index: 10"
+                            style="z-index: 5; pointer-events: none; overflow: visible"
                         >
                         <defs>
                             <marker
@@ -1252,17 +1252,18 @@ const canvasBounds = computed(() => {
                                 />
                             </marker>
                         </defs>
-                        <path
-                            v-for="connection in canvasData.connections"
-                            :key="connection.id"
-                            :d="getConnectionPath(connection)"
-                            fill="none"
-                            stroke="hsl(var(--primary))"
-                            stroke-width="2"
-                            marker-end="url(#arrowhead)"
-                            class="pointer-events-auto cursor-pointer opacity-60 transition-opacity hover:opacity-100"
-                            @click="deleteConnection(connection)"
-                        />
+                        <g v-for="connection in canvasData.connections" :key="connection.id">
+                            <path
+                                :d="getConnectionPath(connection)"
+                                fill="none"
+                                stroke="hsl(var(--primary))"
+                                stroke-width="3"
+                                marker-end="url(#arrowhead)"
+                                style="pointer-events: auto; cursor: pointer"
+                                class="opacity-70 transition-opacity hover:opacity-100"
+                                @click="deleteConnection(connection)"
+                            />
+                        </g>
                     </svg>
 
                     <!-- Empty State -->
@@ -1294,6 +1295,7 @@ const canvasBounds = computed(() => {
                         :style="{
                             left: `${node.position_x}px`,
                             top: `${node.position_y}px`,
+                            zIndex: 1,
                         }"
                     >
                         <Card
