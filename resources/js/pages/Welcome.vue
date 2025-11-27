@@ -5,6 +5,7 @@ import {
     BookOpen,
     Calendar,
     ExternalLink,
+    GitBranch,
     Highlighter,
     Library,
     Link2,
@@ -43,6 +44,10 @@ const features = [
     {
         icon: Link2,
         title: t('Cross References'),
+    },
+    {
+        icon: GitBranch,
+        title: t('Verse Link Canvas'),
     },
     {
         icon: Library,
