@@ -223,13 +223,14 @@ class VerseLinkController extends Controller
         // Check if connection already exists (in either direction)
         $existingConnection = VerseLinkConnection::where('canvas_id', $canvas->id)
             ->where(function ($query) use ($validated) {
-                $query->where('source_node_id', $validated['source_node_id'])
-                    ->where('target_node_id', $validated['target_node_id']);
-            })
-            ->orWhere(function ($query) use ($validated, $canvas) {
-                $query->where('canvas_id', $canvas->id)
-                    ->where('source_node_id', $validated['target_node_id'])
-                    ->where('target_node_id', $validated['source_node_id']);
+                $query->where(function ($q) use ($validated) {
+                    $q->where('source_node_id', $validated['source_node_id'])
+                        ->where('target_node_id', $validated['target_node_id']);
+                })
+                ->orWhere(function ($q) use ($validated) {
+                    $q->where('source_node_id', $validated['target_node_id'])
+                        ->where('target_node_id', $validated['source_node_id']);
+                });
             })
             ->first();
 
