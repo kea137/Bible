@@ -1370,11 +1370,11 @@ const canvasBounds = computed(() => {
                                 </p>
 
                                 <!-- Action buttons -->
-                                <div class="flex gap-2">
+                                <div class="flex flex-col gap-2">
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        class="h-7 flex-1 text-xs"
+                                        class="h-7 w-full text-xs"
                                         @click.stop="openNotesForNode(node)"
                                     >
                                         <StickyNote class="mr-1 h-3 w-3" />
@@ -1414,7 +1414,7 @@ const canvasBounds = computed(() => {
                                                         class="mr-1 h-3 w-3"
                                                     />
                                                 </template>
-                                                {{ t('Refs') }}
+                                                {{ t('References') }}
                                             </Button>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent
@@ -1433,7 +1433,7 @@ const canvasBounds = computed(() => {
                                                 </span>
                                             </div>
                                             <!-- References List -->
-                                            <ScrollArea
+                                            <View
                                                 v-else-if="expandedReferences[node.id] && nodeReferences[node.id]"
                                                 class="max-h-[200px]"
                                             >
@@ -1470,12 +1470,12 @@ const canvasBounds = computed(() => {
                                                             {{ ref.verse.book?.title }}
                                                             {{ ref.verse.chapter?.chapter_number }}:{{ ref.verse.verse_number }}
                                                         </p>
-                                                        <p class="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                                        <p class="mt-1 text-xs text-muted-foreground">
                                                             "{{ ref.verse.text }}"
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </ScrollArea>
+                                            </View>
                                         </CollapsibleContent>
                                     </Collapsible>
                                 </div>
