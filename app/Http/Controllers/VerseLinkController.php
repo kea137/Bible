@@ -310,9 +310,18 @@ class VerseLinkController extends Controller
         }
 
         $verse = $node->verse;
-        $references = $verse->references()
-            ->with(['verse.book', 'verse.chapter'])
-            ->get();
+        $verse->load(['book', 'chapter', 'bible']);
+
+        // Use the ReferenceService to get parsed references with verse data
+        $referenceService = app(\App\Services\ReferenceService::class);
+        $references = $referenceService->getReferencesForVerse($verse);
+
+        // Load the verse text and related data for each reference
+        foreach ($references as &$ref) {
+            if (isset($ref['verse']) && $ref['verse'] instanceof Verse) {
+                $ref['verse']->load(['book', 'chapter']);
+            }
+        }
 
         return response()->json($references);
     }

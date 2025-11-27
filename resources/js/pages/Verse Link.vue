@@ -1216,21 +1216,27 @@ const canvasBounds = computed(() => {
                 </div>
 
                 <!-- Canvas Area -->
-                <div
+                <ScrollArea
                     v-else-if="canvasData"
-                    ref="canvasRef"
-                    class="relative flex-1 overflow-auto rounded-lg border-2 border-dashed border-border bg-muted/20"
-                    :style="{
-                        backgroundImage: `radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)`,
-                        backgroundSize: '20px 20px',
-                    }"
+                    class="flex-1 rounded-lg border-2 border-dashed border-border"
                 >
-                    <!-- SVG for connection lines -->
-                    <svg
-                        class="pointer-events-none absolute left-0 top-0"
-                        :width="canvasBounds.width"
-                        :height="canvasBounds.height"
+                    <div
+                        ref="canvasRef"
+                        class="relative bg-muted/20"
+                        :style="{
+                            backgroundImage: `radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)`,
+                            backgroundSize: '20px 20px',
+                            minWidth: `${canvasBounds.width}px`,
+                            minHeight: `${canvasBounds.height}px`,
+                        }"
                     >
+                        <!-- SVG for connection lines -->
+                        <svg
+                            class="pointer-events-none absolute left-0 top-0"
+                            :width="canvasBounds.width"
+                            :height="canvasBounds.height"
+                            style="z-index: 10"
+                        >
                         <defs>
                             <marker
                                 id="arrowhead"
@@ -1412,19 +1418,31 @@ const canvasBounds = computed(() => {
                                             </Button>
                                         </CollapsibleTrigger>
                                         <CollapsibleContent
-                                            v-if="
-                                                expandedReferences[node.id] &&
-                                                nodeReferences[node.id]
-                                            "
                                             class="mt-2"
                                         >
-                                            <ScrollArea class="max-h-[150px]">
+                                            <!-- Loading State -->
+                                            <div
+                                                v-if="loadingReferences[node.id]"
+                                                class="flex items-center justify-center py-4"
+                                            >
+                                                <LoaderCircle
+                                                    class="h-5 w-5 animate-spin text-primary"
+                                                />
+                                                <span class="ml-2 text-xs text-muted-foreground">
+                                                    {{ t('Loading references...') }}
+                                                </span>
+                                            </div>
+                                            <!-- References List -->
+                                            <ScrollArea
+                                                v-else-if="expandedReferences[node.id] && nodeReferences[node.id]"
+                                                class="max-h-[200px]"
+                                            >
                                                 <div
                                                     v-if="
                                                         nodeReferences[node.id]
                                                             .length === 0
                                                     "
-                                                    class="text-center text-xs text-muted-foreground"
+                                                    class="py-2 text-center text-xs text-muted-foreground"
                                                 >
                                                     {{
                                                         t(
@@ -1434,21 +1452,27 @@ const canvasBounds = computed(() => {
                                                 </div>
                                                 <div
                                                     v-else
-                                                    class="space-y-1"
+                                                    class="space-y-2"
                                                 >
                                                     <div
                                                         v-for="ref in nodeReferences[
                                                             node.id
                                                         ]"
                                                         :key="ref.id"
-                                                        class="cursor-pointer rounded bg-muted px-2 py-1 text-xs hover:bg-accent"
+                                                        class="cursor-pointer rounded-md border bg-muted/50 p-2 transition-colors hover:bg-accent"
                                                         @click.stop="
                                                             goToVerseStudy(
                                                                 ref.verse.id,
                                                             )
                                                         "
                                                     >
-                                                        {{ ref.reference }}
+                                                        <p class="text-xs font-medium text-primary">
+                                                            {{ ref.verse.book?.title }}
+                                                            {{ ref.verse.chapter?.chapter_number }}:{{ ref.verse.verse_number }}
+                                                        </p>
+                                                        <p class="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                                                            "{{ ref.verse.text }}"
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </ScrollArea>
@@ -1459,6 +1483,7 @@ const canvasBounds = computed(() => {
                         </Card>
                     </div>
                 </div>
+                </ScrollArea>
             </template>
         </div>
     </AppLayout>
