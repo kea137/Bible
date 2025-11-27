@@ -63,7 +63,7 @@ test('authenticated users can update their canvas', function () {
     ]);
 });
 
-test('users cannot update other users canvas', function () {
+test('users cannot update other user\'s canvas', function () {
     $user1 = User::factory()->create(['onboarding_completed' => true]);
     $user2 = User::factory()->create(['onboarding_completed' => true]);
 
