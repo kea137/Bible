@@ -4,6 +4,7 @@ import NotesDialog from '@/components/NotesDialog.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
+import CardDescription from '@/components/ui/card/CardDescription.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
 import CardTitle from '@/components/ui/card/CardTitle.vue';
 import {
@@ -99,6 +100,8 @@ const selectedChapter2 = ref<number | null>(null);
 const loadedChapter2 = ref<any>(null);
 
 const hoveredVerseReferences = ref<any[]>([]);
+const selectedReferenceVerse = ref<any>(null);
+const clickedVerseId = ref<number | null>(null);
 const verseHighlights1 = ref<Record<number, any>>({});
 const verseHighlights2 = ref<Record<number, any>>({});
 const notesDialogOpen = ref(false);
@@ -420,6 +423,33 @@ async function handleVerseHover(verseId: number) {
     }
 }
 
+async function handleVerseClick(verseId: number) {
+    // Toggle: if clicking the same verse, close it
+    if (clickedVerseId.value === verseId) {
+        clickedVerseId.value = null;
+        hoveredVerseReferences.value = [];
+    } else {
+        clickedVerseId.value = verseId;
+        await handleVerseHover(verseId);
+    }
+}
+
+async function handleReferenceClick(reference: any) {
+    selectedReferenceVerse.value = reference.verse;
+}
+
+function translateReference(ref: string): string {
+    // translate EXO 12 12 to other language e.g KUT 12:12
+    const parts = ref.split(' ');
+    if (parts.length !== 3) {
+        return ref; // return original if format is unexpected
+    }
+    const bookCode = parts[0];
+    const chapter = parts[1];
+    const verse = parts[2];
+    return `${t(`${bookCode}`)} ${chapter}:${verse}`;
+}
+
 function studyVerse(verseId: number) {
     window.location.href = `/verses/${verseId}/study`;
 }
@@ -587,10 +617,12 @@ function shareVerse(verse: any, chapter: any) {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:gap-4 sm:p-4"
+            class="flex h-full flex-1 flex-col gap-3 overflow-x-auto rounded-xl p-2 sm:p-4 lg:flex-row lg:gap-4"
         >
-            <!-- Single Card for Merged View -->
-            <Card>
+            <!-- Main content area (2/3) -->
+            <div class="flex-[2]">
+                <!-- Single Card for Merged View -->
+                <Card>
                 <CardHeader class="pb-3">
                     <div class="space-y-3 sm:space-y-4">
                         <CardTitle
@@ -829,13 +861,18 @@ function shareVerse(verse: any, chapter: any) {
                                                 (open) =>
                                                     open &&
                                                     handleVerseHover(
-                                                        verse1.verse_number,
+                                                        verse1.id,
                                                     )
                                             "
                                         >
                                             <HoverCardTrigger>
                                                 <span
                                                     class="cursor-pointer font-semibold text-primary hover:underline"
+                                                    @click.stop="
+                                                        handleVerseClick(
+                                                            verse1.id,
+                                                        )
+                                                    "
                                                     >{{
                                                         verse1.verse_number
                                                     }}.</span
@@ -854,9 +891,9 @@ function shareVerse(verse: any, chapter: any) {
                                                     >
                                                         {{
                                                             t(
-                                                                'Cross References:',
+                                                                'Cross References',
                                                             )
-                                                        }}
+                                                        }}:
                                                     </p>
                                                     <div
                                                         class="space-y-1 text-sm"
@@ -869,7 +906,7 @@ function shareVerse(verse: any, chapter: any) {
                                                             :key="ref.id"
                                                             class="text-muted-foreground"
                                                         >
-                                                            {{ ref.reference }}:
+                                                            {{ translateReference(ref.reference) }}:
                                                             {{
                                                                 ref.verse?.text?.substring(
                                                                     0,
@@ -935,6 +972,65 @@ function shareVerse(verse: any, chapter: any) {
                                     </div>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
+                                    <!-- Cross References for Mobile -->
+                                    <div
+                                        v-if="
+                                            clickedVerseId === verse1.id &&
+                                            hoveredVerseReferences.length > 0
+                                        "
+                                        class="mb-2 sm:hidden"
+                                    >
+                                        <DropdownMenuLabel>{{
+                                            t('Cross References')
+                                        }}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <div
+                                            class="max-h-40 overflow-y-auto px-2 py-1"
+                                        >
+                                            <div
+                                                v-for="ref in hoveredVerseReferences.slice(
+                                                    0,
+                                                    3,
+                                                )"
+                                                :key="ref.id"
+                                                class="mb-2 text-xs"
+                                            >
+                                                <p
+                                                    class="font-semibold text-primary"
+                                                >
+                                                    {{
+                                                        translateReference(
+                                                            ref.reference,
+                                                        )
+                                                    }}
+                                                </p>
+                                                <p
+                                                    class="text-muted-foreground"
+                                                >
+                                                    {{
+                                                        ref.verse?.text?.substring(
+                                                            0,
+                                                            60,
+                                                        )
+                                                    }}...
+                                                </p>
+                                            </div>
+                                            <p
+                                                v-if="
+                                                    hoveredVerseReferences.length >
+                                                    3
+                                                "
+                                                class="text-xs text-muted-foreground italic"
+                                            >
+                                                +{{
+                                                    hoveredVerseReferences.length -
+                                                    3
+                                                }}
+                                                {{ t('more references') }}
+                                            </p>
+                                        </div>
+                                        <DropdownMenuSeparator />
+                                    </div>
                                     <DropdownMenuLabel>{{
                                         t('Highlight')
                                     }}</DropdownMenuLabel>
@@ -1012,6 +1108,103 @@ function shareVerse(verse: any, chapter: any) {
                     <p>{{ t('Select a translation to start') }}</p>
                 </CardContent>
             </Card>
+            </div>
+
+            <!-- References sidebar (1/3) -->
+            <div class="flex flex-[1] flex-col gap-3 lg:h-160 lg:gap-4">
+                <!-- Top half - Hovered verse references -->
+                <Card class="flex-1 overflow-hidden">
+                    <CardHeader class="pb-3">
+                        <CardTitle class="text-sm sm:text-base">{{
+                            t('Cross References')
+                        }}</CardTitle>
+                        <CardDescription class="text-xs"
+                            ><span class="hidden sm:inline"
+                                >{{ t('Hover over verse numbers to see') }}
+                                {{ t('references') }}</span
+                            ><span class="sm:hidden">{{
+                                t('Tap verse numbers to see references')
+                            }}</span></CardDescription
+                        >
+                    </CardHeader>
+                    <CardContent
+                        class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]"
+                    >
+                        <ScrollArea
+                            v-if="hoveredVerseReferences.length > 0"
+                            class="h-full"
+                        >
+                            <div class="space-y-3">
+                                <div
+                                    v-for="ref in hoveredVerseReferences"
+                                    :key="ref.id"
+                                    class="cursor-pointer rounded border p-2 transition-colors hover:bg-accent"
+                                    @click="handleReferenceClick(ref)"
+                                >
+                                    <p
+                                        class="text-sm font-semibold text-primary"
+                                    >
+                                        {{ translateReference(ref.reference) }}
+                                    </p>
+                                    <p
+                                        class="mt-1 text-xs text-muted-foreground"
+                                    >
+                                        {{
+                                            ref.verse?.text?.substring(0, 100)
+                                        }}...
+                                    </p>
+                                </div>
+                            </div>
+                        </ScrollArea>
+                        <p v-else class="text-sm text-muted-foreground italic">
+                            <span class="hidden sm:inline"
+                                >{{
+                                    t('Hover over a verse number to see its')
+                                }}
+                                {{ t('cross-references') }}</span
+                            >
+                            <span class="sm:hidden"
+                                >{{ t('Tap a verse number to see its') }}
+                                {{ t('cross-references') }}</span
+                            >
+                        </p>
+                    </CardContent>
+                </Card>
+
+                <!-- Bottom half - Selected reference verse -->
+                <Card class="flex-1 overflow-hidden">
+                    <CardHeader class="pb-3">
+                        <CardTitle class="text-sm sm:text-base">{{
+                            t('Selected Reference')
+                        }}</CardTitle>
+                        <CardDescription class="text-xs"
+                            >{{ t('Click a reference above to view full') }}
+                            {{ t('verse') }}</CardDescription
+                        >
+                    </CardHeader>
+                    <CardContent
+                        class="max-h-[30vh] overflow-y-auto lg:max-h-[40vh]"
+                    >
+                        <div v-if="selectedReferenceVerse" class="space-y-2">
+                            <p class="text-sm font-semibold">
+                                {{ selectedReferenceVerse.book?.title }}
+                                {{
+                                    selectedReferenceVerse.chapter
+                                        ?.chapter_number
+                                }}:{{ selectedReferenceVerse.verse_number }}
+                            </p>
+                            <p class="text-sm">
+                                {{ selectedReferenceVerse.text }}
+                            </p>
+                        </div>
+                        <p v-else class="text-sm text-muted-foreground italic">
+                            {{
+                                t('Click on a reference to view the full verse')
+                            }}
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
 
         <!-- Notes Dialog -->

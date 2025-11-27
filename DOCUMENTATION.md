@@ -2,6 +2,10 @@
 
 Welcome to the Bible Application documentation. This guide covers all features and functionality of the application.
 
+## Sister Mobile App
+
+Looking for the mobile version? Check out our companion mobile app: [**kea137/Bible-app**](https://github.com/kea137/Bible-app) - Take your Bible study on the go!
+
 ## Table of Contents
 
 1. [Overview](#overview)
@@ -15,9 +19,11 @@ Welcome to the Bible Application documentation. This guide covers all features a
 9. [Parallel Bibles](#parallel-bibles)
 10. [Lessons](#lessons)
 11. [Verse Sharing](#verse-sharing)
-12. [User Management](#user-management)
-13. [Configuration](#configuration)
-14. [Developer Guide](#developer-guide)
+12. [Verse Link](#verse-link)
+13. [User Management](#user-management)
+14. [Configuration](#configuration)
+15. [Developer Guide](#developer-guide)
+16. [Mobile App](#mobile-app)
 
 ---
 
@@ -33,14 +39,16 @@ The Bible Application is a modern Bible reading and study platform built with La
 - **Verse Highlighting**: Mark important verses with color codes
 - **Personal Notes**: Add private notes to verses
 - **Reading Plan**: Track your Bible reading progress
-- **Parallel View**: Compare multiple translations side-by-side
+- **Parallel View**: Compare multiple translations side-by-side with cross-references
 - **Lessons & Series**: Create, manage, and study Bible lessons with progress tracking
 - **Verse Sharing**: Create beautiful shareable images with gradient or photo backgrounds
+- **Verse Link Canvas**: Visual canvas for creating connections between Bible verses
 - **Onboarding**: Guided setup for new users
 - **User Authentication**: Secure account with optional two-factor authentication
 - **Dark Mode**: Choose your preferred theme
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 - **SEO Optimized**: Sitemap generation for search engine visibility
+- **Companion Mobile App**: Available at [kea137/Bible-app](https://github.com/kea137/Bible-app)
 
 ---
 
@@ -518,28 +526,37 @@ Track your Bible reading progress through all 66 books.
 
 ### Overview
 
-Compare multiple Bible translations side-by-side.
+Compare multiple Bible translations side-by-side with full cross-reference support.
 
 ### Features
 
 **Parallel View:**
-- Select up to 3 translations
+- Select up to 2 translations
 - Synchronized scrolling
 - Same chapter in all versions
 - Easy comparison
+- Cross-reference sidebar
+- Selected reference viewing
+
+**Cross-References:**
+- Hover over verse numbers to see cross-references (desktop)
+- Tap verse numbers to see cross-references (mobile)
+- View full reference text in the sidebar
+- Navigate to referenced verses
 
 **Use Cases:**
 - **Translation comparison**: See how different versions translate
-- **Study**: Get deeper understanding
+- **Study**: Get deeper understanding with cross-references
 - **Language learning**: Compare languages
 - **Research**: Academic and personal study
 
 **How to Use:**
 1. Go to Parallel Bibles page
-2. Select Bible translations (2-3)
+2. Select Bible translations (2)
 3. Choose book and chapter
 4. Read side-by-side
-5. Scroll to compare verses
+5. Hover/tap verse numbers to see cross-references
+6. Click references to view full text
 
 ---
 
@@ -1291,6 +1308,75 @@ See `PRODUCTION_DEPLOYMENT.md` for comprehensive deployment guide.
 
 ---
 
+## Verse Link
+
+### Overview
+
+The Verse Link feature provides an interactive canvas for creating visual connections between Bible verses. Build your own verse relationship maps and explore scripture connections.
+
+### Features
+
+**Canvas-Based Interface:**
+- Create multiple canvases to organize your verse studies
+- Name and describe each canvas for easy identification
+- Manage multiple study projects simultaneously
+
+**Visual Connections:**
+- Draw connections between verses to show relationships
+- Label connections to describe the relationship type
+- Create complex networks of interconnected verses
+
+**Verse Nodes:**
+- Add verses from any Bible translation to your canvas
+- Drag and drop verse nodes to arrange them visually
+- Add personal notes to any verse node
+- View cross-references directly from each node
+
+### How to Use
+
+1. Navigate to **Verse Link** from the navigation menu
+2. Create a new canvas with a name and optional description
+3. Use the search function to find verses by book, chapter, and verse
+4. Add verses to your canvas as draggable nodes
+5. Click "Connect" on a verse node to start a connection
+6. Click another verse node to complete the connection
+7. Add notes to verses by clicking the note icon
+8. Expand the cross-references section to discover related verses
+
+### Use Cases
+
+- **Thematic Studies**: Map connections across books of the Bible
+- **Sermon Preparation**: Create study guides with visual relationships
+- **Prophecy Study**: Visualize prophecy and fulfillment relationships
+- **Topical Study**: Build collections of verses on specific topics
+- **Character Study**: Track character appearances across scripture
+
+---
+
+## Mobile App
+
+### Overview
+
+The Bible Application has a companion mobile app that provides a native mobile experience for Bible study on the go.
+
+### Repository
+
+The mobile app is developed as a sister project and is available at:
+**[kea137/Bible-app](https://github.com/kea137/Bible-app)**
+
+### Key Features
+
+- **Native Mobile Experience**: Designed specifically for mobile devices
+- **Offline Reading**: Read Bible verses without an internet connection
+- **Cross-Platform**: Available for multiple platforms
+- **Beautiful Interface**: Clean, distraction-free reading experience
+
+### Relationship with Web App
+
+The mobile app (kea137/Bible-app) is the companion application to this web application (kea137/Bible). Both applications share the same mission of making Bible study accessible and enjoyable.
+
+---
+
 ## Credits & Acknowledgments
 
 This project utilizes resources from:
@@ -1302,6 +1388,12 @@ This project utilizes resources from:
   - Provides cross-reference data in `resources/References`
 
 We are grateful to these projects for making their resources available to the community.
+
+---
+
+## Related Projects
+
+- **[kea137/Bible-app](https://github.com/kea137/Bible-app)** - Companion mobile application for Bible study on the go
 
 ---
 

@@ -1364,9 +1364,9 @@ const canvasBounds = computed(() => {
                             </CardHeader>
                             <CardContent class="pt-0">
                                 <p
-                                    class="mb-3 text-xs leading-relaxed"
+                                    class="mb-3 text-sm leading-relaxed"
                                 >
-                                    "{{ node.verse.text }}"
+                                    {{ node.verse.text }}
                                 </p>
 
                                 <!-- Action buttons -->
