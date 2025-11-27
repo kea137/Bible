@@ -1311,7 +1311,7 @@ const canvasBounds = computed(() => {
                             }"
                         >
                             <CardHeader
-                                class="cursor-move pb-2"
+                                class="cursor-move"
                                 @mousedown="startDrag($event, node)"
                             >
                                 <div class="flex items-start justify-between">
@@ -1364,7 +1364,7 @@ const canvasBounds = computed(() => {
                             </CardHeader>
                             <CardContent class="pt-0">
                                 <p
-                                    class="mb-3 line-clamp-3 text-xs leading-relaxed"
+                                    class="mb-3 text-xs leading-relaxed"
                                 >
                                     "{{ node.verse.text }}"
                                 </p>
@@ -1433,9 +1433,9 @@ const canvasBounds = computed(() => {
                                                 </span>
                                             </div>
                                             <!-- References List -->
-                                            <View
+                                            <ScrollArea
                                                 v-else-if="expandedReferences[node.id] && nodeReferences[node.id]"
-                                                class="max-h-[200px]"
+                                                class=" h-100"
                                             >
                                                 <div
                                                     v-if="
@@ -1475,7 +1475,7 @@ const canvasBounds = computed(() => {
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </View>
+                                            </ScrollArea>
                                         </CollapsibleContent>
                                     </Collapsible>
                                 </div>
