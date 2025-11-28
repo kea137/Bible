@@ -1341,7 +1341,7 @@ const canvasBounds = computed(() => {
                                         <GripVertical
                                             class="h-4 w-4 text-muted-foreground"
                                         />
-                                        <CardTitle class="text-sm">
+                                        <CardTitle class="text-sm select-none">
                                             {{ node.verse.book.title }}
                                             {{
                                                 node.verse.chapter.chapter_number
@@ -1380,13 +1380,13 @@ const canvasBounds = computed(() => {
                                         </Button>
                                     </div>
                                 </div>
-                                <CardDescription class="text-xs">
+                                <CardDescription class="text-xs select-none">
                                     {{ node.verse.bible.name }}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent class="pt-0">
                                 <p
-                                    class="mb-3 text-sm leading-relaxed"
+                                    class="mb-3 text-sm leading-relaxed select-none"
                                 >
                                     {{ node.verse.text }}
                                 </p>
@@ -1396,7 +1396,7 @@ const canvasBounds = computed(() => {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        class="h-7 w-full text-xs"
+                                        class="h-7 w-full text-xs select-none"
                                         @click.stop="openNotesForNode(node)"
                                     >
                                         <StickyNote class="mr-1 h-3 w-3" />
@@ -1409,7 +1409,7 @@ const canvasBounds = computed(() => {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                class="h-7 w-full text-xs"
+                                                class="h-7 w-full text-xs select-none"
                                                 @click.stop="
                                                     toggleReferences(node)
                                                 "
