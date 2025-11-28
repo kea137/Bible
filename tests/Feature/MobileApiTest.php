@@ -395,7 +395,7 @@ test('can toggle lesson progress', function () {
     $lesson = Lesson::factory()->create(['readable' => true]);
 
     $response = $this->actingAs($user, 'sanctum')
-        ->postJson('/api/mobile/lesson-progress/toggle', [
+        ->postJson('/api/mobile/lesson-progress', [
             'lesson_id' => $lesson->id,
         ]);
 
