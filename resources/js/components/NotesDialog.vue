@@ -22,6 +22,11 @@ const props = defineProps<{
     verseId: number;
     verseText: string;
     verseReference: string;
+    note?: {
+        id?: number;
+        title?: string;
+        content?: string;
+    } | null;
 }>();
 
 const emit = defineEmits<{
@@ -35,12 +40,12 @@ const noteContent = ref('');
 const saving = ref(false);
 
 watch(
-    () => props.open,
-    (isOpen) => {
+    [() => props.open, () => props.note],
+    ([isOpen, note]) => {
         if (isOpen) {
-            // Reset form when dialog opens
-            noteTitle.value = '';
-            noteContent.value = '';
+            // If note is present, populate fields, else reset
+            noteTitle.value = note?.title || '';
+            noteContent.value = note?.content || '';
         }
     },
 );

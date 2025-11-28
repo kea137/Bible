@@ -96,6 +96,7 @@ Route::post('/api/notes', [NoteController::class, 'store'])->name('notes_store')
 Route::get('/api/notes/{note}', [NoteController::class, 'show'])->name('notes_show')->middleware('auth');
 Route::put('/api/notes/{note}', [NoteController::class, 'update'])->name('notes_update')->middleware('auth');
 Route::delete('/api/notes/{note}', [NoteController::class, 'destroy'])->name('notes_destroy')->middleware('auth');
+Route::get('/api/notes/verse/{verse}', [NoteController::class, 'getNotesForVerse'])->name('notes_for_verse')->middleware('auth');
 
 // Reading Progress routes
 Route::get('/reading-plan', [ReadingProgressController::class, 'readingPlan'])->name('reading_plan')->middleware('auth');

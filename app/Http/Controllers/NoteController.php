@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
 use App\Models\Note;
+use App\Models\Verse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -65,6 +66,20 @@ class NoteController extends Controller
         $note->load(['verse.book', 'verse.chapter']);
 
         return response()->json($note);
+    }
+
+    /**
+     * Display the specified note for a verse.
+     */
+    public function getNotesForVerse($verseId): JsonResponse
+    {
+        $notes = Note::with(['verse.book', 'verse.chapter'])
+            ->where('user_id', Auth::id())
+            ->where('verse_id', $verseId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($notes);
     }
 
     /**

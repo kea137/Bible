@@ -123,6 +123,12 @@ interface Reference {
     verse: Verse;
 }
 
+interface NoteLoad {
+    id: number;
+    title: string; 
+    content: string;
+}
+
 defineProps<{
     canvases: Canvas[];
 }>();
@@ -147,6 +153,7 @@ const deleteCanvasDialog = ref(false);
 const addVerseDialog = ref(false);
 const notesDialogOpen = ref(false);
 const selectedNodeForNote = ref<Node | null>(null);
+const userNoteForNode = ref<NoteLoad | null>(null);
 
 // Form data
 const newCanvasName = ref('');
@@ -702,11 +709,22 @@ async function toggleReferences(node: Node) {
     }
 }
 
-function openNotesForNode(node: Node) {
+async function openNotesForNode(node: Node) {
     selectedNodeForNote.value = node;
+    userNoteForNode.value = null;
+    try {
+        const response = await fetch(`/api/notes/verse/${node.verse.id}`);
+        if (response.ok) {
+            const notes = await response.json();
+            // If backend returns an array, pick the first note or null
+            // userNoteForNode.value = notes.length > 0 ? notes[0] : null;
+            userNoteForNode.value = notes[0] || null;
+        }
+    } catch (error) {
+        console.error('Failed to fetch note:', error);
+    }
     notesDialogOpen.value = true;
 }
-
 function handleNoteSaved() {
     alertMessage.value = t('Note saved successfully');
     alertSuccess.value = true;
@@ -1059,6 +1077,7 @@ const canvasBounds = computed(() => {
         :verse-id="selectedNodeForNote.verse.id"
         :verse-text="selectedNodeForNote.verse.text"
         :verse-reference="`${selectedNodeForNote.verse.book.title} ${selectedNodeForNote.verse.chapter.chapter_number}:${selectedNodeForNote.verse.verse_number}`"
+        :note="userNoteForNode"
         @saved="handleNoteSaved"
     />
 
