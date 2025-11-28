@@ -1157,14 +1157,6 @@ const canvasBounds = computed(() => {
                     </div>
                     <div class="flex gap-2">
                         <Button
-                            variant="outline"
-                            size="sm"
-                            @click="addVerseDialog = true"
-                        >
-                            <Plus class="mr-1 h-4 w-4" />
-                            {{ t('Add Verse') }}
-                        </Button>
-                        <Button
                             v-if="isConnecting"
                             variant="secondary"
                             size="sm"
@@ -1188,6 +1180,17 @@ const canvasBounds = computed(() => {
                             <Trash2 class="h-4 w-4" />
                         </Button>
                     </div>
+
+                <!-- Fixed Add Verse Button -->
+                <Button
+                    variant="outline"
+                    size="lg"
+                    class="fixed bottom-6 right-6 z-50 mr-4 shadow-lg"
+                    @click="addVerseDialog = true"
+                >
+                    <Plus class="mr-2 h-5 w-5" />
+                    {{ t('Add Verse') }}
+                </Button>
                 </div>
 
                 <!-- Connection Mode Indicator -->
@@ -1461,9 +1464,8 @@ const canvasBounds = computed(() => {
                                                         :key="ref.id"
                                                         class="cursor-pointer rounded-md border bg-muted/50 p-2 transition-colors hover:bg-accent"
                                                         @click.stop="
-                                                            goToVerseStudy(
-                                                                ref.verse.id,
-                                                            )
+                                                            selectVerseToAdd(ref.verse);
+                                                            confirmAddVerse();
                                                         "
                                                     >
                                                         <p class="text-xs font-medium text-primary">
