@@ -3,6 +3,7 @@
 use App\Jobs\BootupBiblesAndReferences;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -31,3 +32,6 @@ Artisan::command('bibles:bootup', function () {
 
     $this->info('Bible and References bootup process completed.');
 })->describe('Bootup Bibles and References');
+
+// Schedule memory verse reminders to be sent daily at 8:00 AM
+Schedule::command('memory-verses:send-reminders')->dailyAt('08:00');

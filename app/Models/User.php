@@ -67,4 +67,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Lesson::class);
     }
+
+    public function memoryVerses()
+    {
+        return $this->hasMany(MemoryVerse::class);
+    }
 }

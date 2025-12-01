@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\MemoryVerseController;
 use App\Http\Controllers\Api\MobileApiController;
 use App\Http\Controllers\Api\PublicBibleController;
 use Illuminate\Support\Facades\Route;
@@ -127,6 +128,14 @@ Route::middleware('throttle:60,1')->group(function () {
         Route::get('/mobile/lessons', [MobileApiController::class, 'lessons']);
         Route::get('/mobile/lessons/{lesson}', [MobileApiController::class, 'showLesson']);
         Route::post('/mobile/lesson-progress', [MobileApiController::class, 'lessonProgressToggle']);
+
+        // Memory verses (Spaced Repetition)
+        Route::get('/mobile/memory-verses', [MemoryVerseController::class, 'index']);
+        Route::post('/mobile/memory-verses', [MemoryVerseController::class, 'store']);
+        Route::get('/mobile/memory-verses/due', [MemoryVerseController::class, 'due']);
+        Route::post('/mobile/memory-verses/{id}/review', [MemoryVerseController::class, 'review']);
+        Route::get('/mobile/memory-verses/statistics', [MemoryVerseController::class, 'statistics']);
+        Route::delete('/mobile/memory-verses/{id}', [MemoryVerseController::class, 'destroy']);
     });
 });
 
