@@ -106,9 +106,18 @@ class ReferenceService
         if ($supportsTags) {
             Cache::tags(['verse_references'])->flush();
         } else {
-            // For cache drivers without tag support, we'll need to clear the entire cache
-            // or track cache keys separately. For now, we'll just flush the entire cache.
-            Cache::flush();
+            // For cache drivers without tag support, we clear only verse reference keys
+            // This is safer than flushing the entire cache
+            // Note: This may be slow for large datasets; consider using Redis/Memcached in production
+            $verses = Verse::with('book')->get();
+            $bibles = Bible::all();
+            
+            foreach ($verses as $verse) {
+                foreach ($bibles as $bible) {
+                    $cacheKey = "verse_references:{$verse->id}:{$bible->id}";
+                    Cache::forget($cacheKey);
+                }
+            }
         }
     }
 
@@ -192,7 +201,14 @@ class ReferenceService
             }
         }
 
-        // Build a single query to fetch all reference verses with eager loading
+        // Build queries to fetch all reference verses with eager loading
+        // Note: This still executes individual queries per reference verse due to complex
+        // whereHas conditions. A full N+1 elimination would require refactoring to:
+        // 1. Collect all book_number, chapter_number, verse_number combinations
+        // 2. Build a single query with WHERE IN or UNION
+        // 3. Match results back to references
+        // Current implementation prioritizes code maintainability and already includes
+        // eager loading to prevent additional N+1 queries for book/chapter relationships.
         $result = [];
 
         foreach ($refData as $id => $data) {

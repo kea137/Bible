@@ -49,9 +49,21 @@ This document outlines the performance optimizations implemented to improve hot 
 **After:**
 - Pre-processes all reference data before querying
 - Uses eager loading with `->with(['book', 'chapter'])` for each verse
-- Still has individual queries per reference but with eager loading to avoid additional N+1 for related models
+- Reduced N+1 queries for related book/chapter models
 
-**Note:** The current implementation still queries verses individually due to complex where conditions (whereHas). Further optimization could batch these queries but would require significant refactoring of the reference lookup logic.
+**Known Limitation:**
+The current implementation still executes individual queries per reference verse due to complex `whereHas` conditions that match on book_number, chapter_number, and verse_number across different tables. A complete N+1 elimination would require:
+
+1. Collecting all (book_number, chapter_number, verse_number) combinations
+2. Building a single complex query with WHERE IN or UNION clauses
+3. Post-processing to match results back to references
+
+This would be a significant refactor and might impact code maintainability. The current implementation provides substantial improvements through:
+- Eager loading to prevent N+1 for book/chapter relationships (2x query reduction per verse)
+- Caching to eliminate queries on subsequent calls (90%+ reduction)
+- Strategic database indexes to speed up the individual queries
+
+For production workloads, the caching layer provides the most significant performance benefit.
 
 ### VerseLinkController::showCanvas()
 
@@ -104,6 +116,9 @@ The controller calls `ReferenceService::getReferencesForVerse()` which now has c
 
 1. **Reference Updates** - When `loadFromJson()` updates/creates references
 2. **Reference Deletion** - When references are deleted via `ReferenceController::destroy()`
+
+**Note on Cache Invalidation Without Tags:**
+For cache drivers that don't support tags (file, array, database), the `clearAllReferenceCaches()` method iterates through all verses and bibles to forget individual cache keys. This can be slow for large datasets. For production use, Redis or Memcached is strongly recommended for efficient cache invalidation using tags.
 
 ## 4. Performance Testing
 

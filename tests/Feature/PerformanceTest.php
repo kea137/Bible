@@ -17,6 +17,7 @@ test('reference service getReferencesForVerse performs efficiently with caching'
     // Skip this test if using array or database cache driver (which don't support tags)
     if (! in_array(config('cache.default'), ['redis', 'memcached'])) {
         $this->markTestSkipped('Cache tags require redis or memcached driver');
+        return;
     }
 
     $referenceService = app(ReferenceService::class);
@@ -164,6 +165,7 @@ test('cache invalidation works correctly on reference updates', function () {
     // Skip this test if using array or database cache driver (which don't support tags)
     if (! in_array(config('cache.default'), ['redis', 'memcached'])) {
         $this->markTestSkipped('Cache tags require redis or memcached driver');
+        return;
     }
 
     $referenceService = app(ReferenceService::class);
