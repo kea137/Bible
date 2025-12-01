@@ -55,14 +55,10 @@ test.describe('Share Verse', () => {
             await shareButton.first().click();
             await page.waitForURL('**/share**', { timeout: 10000 });
 
-            // Wait for canvas/image to render
-            await page.waitForTimeout(2000);
-
-            // Verify canvas element exists
+            // Wait for canvas element to be rendered and visible
             const canvas = page.locator('canvas');
-            if (await canvas.isVisible()) {
-                await expect(canvas).toBeVisible();
-            }
+            await canvas.waitFor({ state: 'visible', timeout: 10000 });
+            await expect(canvas).toBeVisible();
 
             // Verify verse text is displayed
             await expect(page.locator('text=Share Verse')).toBeVisible();

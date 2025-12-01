@@ -66,17 +66,18 @@ export const test = base.extend<{
         await page.waitForURL('**/onboarding', { timeout: 10000 });
 
         // Complete onboarding - Step 1: Language (already default)
+        await page.waitForSelector('text=Next', { state: 'visible' });
         await page.click('text=Next');
 
         // Step 2: Select at least one Bible translation
-        await page.waitForTimeout(500);
-        // Find and click the first available Bible translation checkbox
+        await page.waitForSelector('[role="checkbox"]', { state: 'visible' });
         const firstCheckbox = page.locator('[role="checkbox"]').first();
         await firstCheckbox.click();
+        await page.waitForSelector('text=Next', { state: 'visible' });
         await page.click('text=Next');
 
         // Step 3: Theme selection (already default)
-        await page.waitForTimeout(500);
+        await page.waitForSelector('text=Complete Setup', { state: 'visible' });
         await page.click('text=Complete Setup');
 
         // Wait for dashboard

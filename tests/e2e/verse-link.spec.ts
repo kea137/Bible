@@ -16,16 +16,14 @@ test.describe('Verse Link Canvas CRUD', () => {
         if (await createButton.first().isVisible()) {
             await createButton.first().click();
 
-            // Fill in canvas details
-            await page.waitForTimeout(500);
+            // Wait for dialog/form to appear and fill in canvas details
             const nameInput = page.locator('input[name*="name"]').or(
                 page.locator('input[placeholder*="name"]').or(
                     page.locator('input[placeholder*="Name"]'),
                 ),
             );
-            if (await nameInput.first().isVisible()) {
-                await nameInput.first().fill('Test Canvas ' + Date.now());
-            }
+            await nameInput.first().waitFor({ state: 'visible', timeout: 5000 });
+            await nameInput.first().fill('Test Canvas ' + Date.now());
 
             // Save canvas
             const saveButton = page.locator('button:has-text("Save")').or(
