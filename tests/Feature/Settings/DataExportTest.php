@@ -1,10 +1,7 @@
 <?php
 
 use App\Models\ActivityLog;
-use App\Models\Lesson;
-use App\Models\Note;
 use App\Models\User;
-use App\Models\VerseHighlight;
 
 test('authenticated user can export their data', function () {
     $user = User::factory()->create();

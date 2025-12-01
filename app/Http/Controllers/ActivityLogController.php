@@ -39,7 +39,7 @@ class ActivityLogController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $logs = $query->paginate(50)->through(fn($log) => [
+        $logs = $query->paginate(50)->through(fn ($log) => [
             'id' => $log->id,
             'user' => $log->user ? [
                 'id' => $log->user->id,

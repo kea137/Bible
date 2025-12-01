@@ -96,7 +96,7 @@ test('activity log can be filtered by action', function () {
     ]);
 
     $logs = ActivityLog::where('action', 'account_deletion')->get();
-    
+
     expect($logs)->toHaveCount(1);
     expect($logs->first()->action)->toBe('account_deletion');
 });
