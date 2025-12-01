@@ -344,9 +344,13 @@ const hasActiveFilters = computed(() => {
                         <Pagination
                             :current-page="logs.current_page"
                             :total-pages="logs.last_page"
+                            :items-per-page="logs.per_page"
                         >
                             <PaginationContent>
-                                <PaginationItem>
+                                <PaginationItem
+                                    v-if="logs.current_page > 1"
+                                    :value="logs.current_page - 1"
+                                >
                                     <PaginationPrevious
                                         @click="goToPage(logs.current_page - 1)"
                                         :disabled="logs.current_page === 1"
@@ -365,6 +369,7 @@ const hasActiveFilters = computed(() => {
                                                 page - logs.current_page,
                                             ) <= 1
                                         "
+                                        :value="page"
                                     >
                                         <Button
                                             variant="outline"
@@ -383,12 +388,16 @@ const hasActiveFilters = computed(() => {
                                             page === logs.current_page - 2 ||
                                             page === logs.current_page + 2
                                         "
+                                        :value="page"
                                     >
                                         <PaginationEllipsis />
                                     </PaginationItem>
                                 </template>
 
-                                <PaginationItem>
+                                <PaginationItem
+                                    v-if="logs.current_page < logs.last_page"
+                                    :value="logs.current_page + 1"
+                                >
                                     <PaginationNext
                                         @click="goToPage(logs.current_page + 1)"
                                         :disabled="
