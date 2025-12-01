@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import DataExport from '@/components/DataExport.vue';
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
@@ -130,6 +131,8 @@ const user = page.props.auth.user;
                     </div>
                 </Form>
             </div>
+
+            <DataExport />
 
             <DeleteUser />
         </SettingsLayout>

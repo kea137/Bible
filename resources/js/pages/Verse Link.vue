@@ -1409,7 +1409,9 @@ const canvasBounds = computed(() => {
                             class="absolute top-4 right-4 z-50 rounded-lg border-2 border-border bg-background/95 p-2 shadow-lg backdrop-blur"
                             :style="`width: ${MINIMAP_WIDTH}px; height: ${MINIMAP_HEIGHT}px`"
                         >
-                            <div class="text-xs font-medium mb-1 text-muted-foreground">
+                            <div
+                                class="mb-1 text-xs font-medium text-muted-foreground"
+                            >
                                 {{ t('Minimap') }}
                             </div>
                             <div
@@ -1442,357 +1444,379 @@ const canvasBounds = computed(() => {
                         <ScrollArea
                             class="flex-1 rounded-lg border-2 border-dashed border-border"
                         >
-                        <div
-                            ref="canvasRef"
-                            class="relative bg-muted/20"
-                            :style="{
-                                backgroundImage: `radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)`,
-                                backgroundSize: '20px 20px',
-                                minWidth: `${canvasBounds.width}px`,
-                                minHeight: `${canvasBounds.height}px`,
-                            }"
-                        >
-                            <!-- SVG for connection lines -->
-                            <svg
-                                class="absolute top-0 left-0"
-                                :width="canvasBounds.width"
-                                :height="canvasBounds.height"
-                                style="
-                                    z-index: 1;
-                                    pointer-events: auto;
-                                    overflow: visible;
-                                "
-                            >
-                                <defs>
-                                    <marker
-                                        id="arrowhead"
-                                        markerWidth="10"
-                                        markerHeight="7"
-                                        refX="9"
-                                        refY="3.5"
-                                        orient="auto"
-                                    >
-                                        <polygon
-                                            points="0 0, 10 3.5, 0 7"
-                                            fill="hsl(var(--primary))"
-                                        />
-                                    </marker>
-                                </defs>
-                                <g
-                                    v-for="connection in canvasData.connections"
-                                    :key="connection.id"
-                                >
-                                    <path
-                                        :d="getConnectionPath(connection)"
-                                        stroke-width="3"
-                                        marker-end="url(#arrowhead)"
-                                        style="
-                                            stroke: currentColor;
-                                            color: hsl(var(--primary));
-                                            fill: none;
-                                            pointer-events: auto;
-                                            cursor: pointer;
-                                        "
-                                        class="opacity-70 transition-opacity hover:opacity-100"
-                                        @click="deleteConnection(connection)"
-                                    />
-                                </g>
-                            </svg>
-
-                            <!-- Empty State -->
                             <div
-                                v-if="canvasData.nodes.length === 0"
-                                class="absolute inset-0 flex flex-col items-center justify-center"
-                            >
-                                <BookOpen
-                                    class="mb-4 h-12 w-12 text-muted-foreground/30"
-                                />
-                                <p class="text-muted-foreground">
-                                    {{
-                                        t(
-                                            'Add verses to start building your study',
-                                        )
-                                    }}
-                                </p>
-                                <Button
-                                    variant="outline"
-                                    class="mt-4"
-                                    @click="addVerseDialog = true"
-                                >
-                                    <Plus class="mr-2 h-4 w-4" />
-                                    {{ t('Add First Verse') }}
-                                </Button>
-                            </div>
-
-                            <!-- Verse Cards -->
-                            <div
-                                v-for="node in canvasData.nodes"
-                                :key="node.id"
-                                class="absolute w-[300px]"
+                                ref="canvasRef"
+                                class="relative bg-muted/20"
                                 :style="{
-                                    left: `${node.position_x}px`,
-                                    top: `${node.position_y}px`,
-                                    zIndex: 1,
+                                    backgroundImage: `radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)`,
+                                    backgroundSize: '20px 20px',
+                                    minWidth: `${canvasBounds.width}px`,
+                                    minHeight: `${canvasBounds.height}px`,
                                 }"
-                                @click="toggleNodeSelection(node, $event)"
                             >
-                                <Card
-                                    class="shadow-lg transition-all"
-                                    :class="{
-                                        'ring-2 ring-primary':
-                                            isConnecting &&
-                                            connectingFrom?.id !== node.id,
-                                        'ring-2 ring-primary/50':
-                                            connectingFrom?.id === node.id,
-                                        'ring-4 ring-blue-500':
-                                            selectedNodes.has(node.id) &&
-                                            !isConnecting,
-                                        'cursor-move': !isConnecting,
-                                        'cursor-pointer':
-                                            isConnecting &&
-                                            connectingFrom?.id !== node.id,
-                                    }"
+                                <!-- SVG for connection lines -->
+                                <svg
+                                    class="absolute top-0 left-0"
+                                    :width="canvasBounds.width"
+                                    :height="canvasBounds.height"
+                                    style="
+                                        z-index: 1;
+                                        pointer-events: auto;
+                                        overflow: visible;
+                                    "
                                 >
-                                    <CardHeader
-                                        class="cursor-move"
-                                        @mousedown="startDrag($event, node)"
+                                    <defs>
+                                        <marker
+                                            id="arrowhead"
+                                            markerWidth="10"
+                                            markerHeight="7"
+                                            refX="9"
+                                            refY="3.5"
+                                            orient="auto"
+                                        >
+                                            <polygon
+                                                points="0 0, 10 3.5, 0 7"
+                                                fill="hsl(var(--primary))"
+                                            />
+                                        </marker>
+                                    </defs>
+                                    <g
+                                        v-for="connection in canvasData.connections"
+                                        :key="connection.id"
                                     >
-                                        <div
-                                            class="flex items-start justify-between"
+                                        <path
+                                            :d="getConnectionPath(connection)"
+                                            stroke-width="3"
+                                            marker-end="url(#arrowhead)"
+                                            style="
+                                                stroke: currentColor;
+                                                color: hsl(var(--primary));
+                                                fill: none;
+                                                pointer-events: auto;
+                                                cursor: pointer;
+                                            "
+                                            class="opacity-70 transition-opacity hover:opacity-100"
+                                            @click="
+                                                deleteConnection(connection)
+                                            "
+                                        />
+                                    </g>
+                                </svg>
+
+                                <!-- Empty State -->
+                                <div
+                                    v-if="canvasData.nodes.length === 0"
+                                    class="absolute inset-0 flex flex-col items-center justify-center"
+                                >
+                                    <BookOpen
+                                        class="mb-4 h-12 w-12 text-muted-foreground/30"
+                                    />
+                                    <p class="text-muted-foreground">
+                                        {{
+                                            t(
+                                                'Add verses to start building your study',
+                                            )
+                                        }}
+                                    </p>
+                                    <Button
+                                        variant="outline"
+                                        class="mt-4"
+                                        @click="addVerseDialog = true"
+                                    >
+                                        <Plus class="mr-2 h-4 w-4" />
+                                        {{ t('Add First Verse') }}
+                                    </Button>
+                                </div>
+
+                                <!-- Verse Cards -->
+                                <div
+                                    v-for="node in canvasData.nodes"
+                                    :key="node.id"
+                                    class="absolute w-[300px]"
+                                    :style="{
+                                        left: `${node.position_x}px`,
+                                        top: `${node.position_y}px`,
+                                        zIndex: 1,
+                                    }"
+                                    @click="toggleNodeSelection(node, $event)"
+                                >
+                                    <Card
+                                        class="shadow-lg transition-all"
+                                        :class="{
+                                            'ring-2 ring-primary':
+                                                isConnecting &&
+                                                connectingFrom?.id !== node.id,
+                                            'ring-2 ring-primary/50':
+                                                connectingFrom?.id === node.id,
+                                            'ring-4 ring-blue-500':
+                                                selectedNodes.has(node.id) &&
+                                                !isConnecting,
+                                            'cursor-move': !isConnecting,
+                                            'cursor-pointer':
+                                                isConnecting &&
+                                                connectingFrom?.id !== node.id,
+                                        }"
+                                    >
+                                        <CardHeader
+                                            class="cursor-move"
+                                            @mousedown="startDrag($event, node)"
                                         >
                                             <div
-                                                class="flex items-center gap-2"
+                                                class="flex items-start justify-between"
                                             >
-                                                <GripVertical
-                                                    class="h-4 w-4 text-muted-foreground"
-                                                />
-                                                <CardTitle
-                                                    class="text-sm select-none"
+                                                <div
+                                                    class="flex items-center gap-2"
                                                 >
-                                                    {{ node.verse.book.title }}
-                                                    {{
-                                                        node.verse.chapter
-                                                            .chapter_number
-                                                    }}:{{
-                                                        node.verse.verse_number
-                                                    }}
-                                                </CardTitle>
-                                            </div>
-                                            <div class="flex gap-1">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    class="h-6 w-6 p-0"
-                                                    @click.stop="
-                                                        startConnecting(node)
-                                                    "
-                                                    :title="t('Create Link')"
-                                                >
-                                                    <Link2 class="h-3 w-3" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    class="h-6 w-6 p-0"
-                                                    @click.stop="
-                                                        goToVerseStudy(
-                                                            node.verse.id,
-                                                        )
-                                                    "
-                                                    :title="t('Study Verse')"
-                                                >
-                                                    <ExternalLink
-                                                        class="h-3 w-3"
+                                                    <GripVertical
+                                                        class="h-4 w-4 text-muted-foreground"
                                                     />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    class="h-6 w-6 p-0 text-destructive"
-                                                    @click.stop="
-                                                        deleteNode(node)
-                                                    "
-                                                    :title="t('Remove')"
-                                                >
-                                                    <X class="h-3 w-3" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        <CardDescription
-                                            class="text-xs select-none"
-                                        >
-                                            {{ node.verse.bible.name }}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent class="pt-0">
-                                        <p
-                                            class="mb-3 text-sm leading-relaxed select-none"
-                                        >
-                                            {{ node.verse.text }}
-                                        </p>
-
-                                        <!-- Action buttons -->
-                                        <div class="flex flex-col gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                class="h-7 w-full text-xs select-none"
-                                                @click.stop="
-                                                    openNotesForNode(node)
-                                                "
-                                            >
-                                                <StickyNote
-                                                    class="mr-1 h-3 w-3"
-                                                />
-                                                {{ t('Notes') }}
-                                            </Button>
-
-                                            <!-- References Collapsible -->
-                                            <Collapsible class="flex-1">
-                                                <CollapsibleTrigger as-child>
+                                                    <CardTitle
+                                                        class="text-sm select-none"
+                                                    >
+                                                        {{
+                                                            node.verse.book
+                                                                .title
+                                                        }}
+                                                        {{
+                                                            node.verse.chapter
+                                                                .chapter_number
+                                                        }}:{{
+                                                            node.verse
+                                                                .verse_number
+                                                        }}
+                                                    </CardTitle>
+                                                </div>
+                                                <div class="flex gap-1">
                                                     <Button
-                                                        variant="outline"
+                                                        variant="ghost"
                                                         size="sm"
-                                                        class="h-7 w-full text-xs select-none"
+                                                        class="h-6 w-6 p-0"
                                                         @click.stop="
-                                                            toggleReferences(
+                                                            startConnecting(
                                                                 node,
                                                             )
                                                         "
+                                                        :title="
+                                                            t('Create Link')
+                                                        "
                                                     >
-                                                        <LoaderCircle
+                                                        <Link2
+                                                            class="h-3 w-3"
+                                                        />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        class="h-6 w-6 p-0"
+                                                        @click.stop="
+                                                            goToVerseStudy(
+                                                                node.verse.id,
+                                                            )
+                                                        "
+                                                        :title="
+                                                            t('Study Verse')
+                                                        "
+                                                    >
+                                                        <ExternalLink
+                                                            class="h-3 w-3"
+                                                        />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        class="h-6 w-6 p-0 text-destructive"
+                                                        @click.stop="
+                                                            deleteNode(node)
+                                                        "
+                                                        :title="t('Remove')"
+                                                    >
+                                                        <X class="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <CardDescription
+                                                class="text-xs select-none"
+                                            >
+                                                {{ node.verse.bible.name }}
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent class="pt-0">
+                                            <p
+                                                class="mb-3 text-sm leading-relaxed select-none"
+                                            >
+                                                {{ node.verse.text }}
+                                            </p>
+
+                                            <!-- Action buttons -->
+                                            <div class="flex flex-col gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    class="h-7 w-full text-xs select-none"
+                                                    @click.stop="
+                                                        openNotesForNode(node)
+                                                    "
+                                                >
+                                                    <StickyNote
+                                                        class="mr-1 h-3 w-3"
+                                                    />
+                                                    {{ t('Notes') }}
+                                                </Button>
+
+                                                <!-- References Collapsible -->
+                                                <Collapsible class="flex-1">
+                                                    <CollapsibleTrigger
+                                                        as-child
+                                                    >
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            class="h-7 w-full text-xs select-none"
+                                                            @click.stop="
+                                                                toggleReferences(
+                                                                    node,
+                                                                )
+                                                            "
+                                                        >
+                                                            <LoaderCircle
+                                                                v-if="
+                                                                    loadingReferences[
+                                                                        node.id
+                                                                    ]
+                                                                "
+                                                                class="mr-1 h-3 w-3 animate-spin"
+                                                            />
+                                                            <template v-else>
+                                                                <ChevronDown
+                                                                    v-if="
+                                                                        expandedReferences[
+                                                                            node
+                                                                                .id
+                                                                        ]
+                                                                    "
+                                                                    class="mr-1 h-3 w-3"
+                                                                />
+                                                                <ChevronRight
+                                                                    v-else
+                                                                    class="mr-1 h-3 w-3"
+                                                                />
+                                                            </template>
+                                                            {{
+                                                                t('References')
+                                                            }}
+                                                        </Button>
+                                                    </CollapsibleTrigger>
+                                                    <CollapsibleContent
+                                                        class="mt-2"
+                                                    >
+                                                        <!-- Loading State -->
+                                                        <div
                                                             v-if="
                                                                 loadingReferences[
                                                                     node.id
                                                                 ]
                                                             "
-                                                            class="mr-1 h-3 w-3 animate-spin"
-                                                        />
-                                                        <template v-else>
-                                                            <ChevronDown
-                                                                v-if="
-                                                                    expandedReferences[
-                                                                        node.id
-                                                                    ]
-                                                                "
-                                                                class="mr-1 h-3 w-3"
-                                                            />
-                                                            <ChevronRight
-                                                                v-else
-                                                                class="mr-1 h-3 w-3"
-                                                            />
-                                                        </template>
-                                                        {{ t('References') }}
-                                                    </Button>
-                                                </CollapsibleTrigger>
-                                                <CollapsibleContent
-                                                    class="mt-2"
-                                                >
-                                                    <!-- Loading State -->
-                                                    <div
-                                                        v-if="
-                                                            loadingReferences[
-                                                                node.id
-                                                            ]
-                                                        "
-                                                        class="flex items-center justify-center py-4"
-                                                    >
-                                                        <LoaderCircle
-                                                            class="h-5 w-5 animate-spin text-primary"
-                                                        />
-                                                        <span
-                                                            class="ml-2 text-xs text-muted-foreground"
+                                                            class="flex items-center justify-center py-4"
                                                         >
-                                                            {{
-                                                                t(
-                                                                    'Loading references...',
-                                                                )
-                                                            }}
-                                                        </span>
-                                                    </div>
-                                                    <!-- References List -->
-                                                    <ScrollArea
-                                                        v-else-if="
-                                                            expandedReferences[
-                                                                node.id
-                                                            ] &&
-                                                            nodeReferences[
-                                                                node.id
-                                                            ]
-                                                        "
-                                                        class="h-100"
-                                                    >
-                                                        <div
-                                                            v-if="
+                                                            <LoaderCircle
+                                                                class="h-5 w-5 animate-spin text-primary"
+                                                            />
+                                                            <span
+                                                                class="ml-2 text-xs text-muted-foreground"
+                                                            >
+                                                                {{
+                                                                    t(
+                                                                        'Loading references...',
+                                                                    )
+                                                                }}
+                                                            </span>
+                                                        </div>
+                                                        <!-- References List -->
+                                                        <ScrollArea
+                                                            v-else-if="
+                                                                expandedReferences[
+                                                                    node.id
+                                                                ] &&
                                                                 nodeReferences[
                                                                     node.id
-                                                                ].length === 0
+                                                                ]
                                                             "
-                                                            class="py-2 text-center text-xs text-muted-foreground"
-                                                        >
-                                                            {{
-                                                                t(
-                                                                    'No references found',
-                                                                )
-                                                            }}
-                                                        </div>
-                                                        <div
-                                                            v-else
-                                                            class="space-y-2"
+                                                            class="h-100"
                                                         >
                                                             <div
-                                                                v-for="ref in nodeReferences[
-                                                                    node.id
-                                                                ]"
-                                                                :key="ref.id"
-                                                                class="cursor-pointer rounded-md border bg-muted/50 p-2 transition-colors hover:bg-accent"
-                                                                @click.stop="
-                                                                    selectVerseToAdd(
-                                                                        ref.verse,
-                                                                    );
-                                                                    confirmAddVerse();
+                                                                v-if="
+                                                                    nodeReferences[
+                                                                        node.id
+                                                                    ].length ===
+                                                                    0
                                                                 "
+                                                                class="py-2 text-center text-xs text-muted-foreground"
                                                             >
-                                                                <p
-                                                                    class="text-xs font-medium text-primary"
-                                                                >
-                                                                    {{
-                                                                        ref
-                                                                            .verse
-                                                                            .book
-                                                                            ?.title
-                                                                    }}
-                                                                    {{
-                                                                        ref
-                                                                            .verse
-                                                                            .chapter
-                                                                            ?.chapter_number
-                                                                    }}:{{
-                                                                        ref
-                                                                            .verse
-                                                                            .verse_number
-                                                                    }}
-                                                                </p>
-                                                                <p
-                                                                    class="mt-1 text-xs text-muted-foreground"
-                                                                >
-                                                                    "{{
-                                                                        ref
-                                                                            .verse
-                                                                            .text
-                                                                    }}"
-                                                                </p>
+                                                                {{
+                                                                    t(
+                                                                        'No references found',
+                                                                    )
+                                                                }}
                                                             </div>
-                                                        </div>
-                                                    </ScrollArea>
-                                                </CollapsibleContent>
-                                            </Collapsible>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                                            <div
+                                                                v-else
+                                                                class="space-y-2"
+                                                            >
+                                                                <div
+                                                                    v-for="ref in nodeReferences[
+                                                                        node.id
+                                                                    ]"
+                                                                    :key="
+                                                                        ref.id
+                                                                    "
+                                                                    class="cursor-pointer rounded-md border bg-muted/50 p-2 transition-colors hover:bg-accent"
+                                                                    @click.stop="
+                                                                        selectVerseToAdd(
+                                                                            ref.verse,
+                                                                        );
+                                                                        confirmAddVerse();
+                                                                    "
+                                                                >
+                                                                    <p
+                                                                        class="text-xs font-medium text-primary"
+                                                                    >
+                                                                        {{
+                                                                            ref
+                                                                                .verse
+                                                                                .book
+                                                                                ?.title
+                                                                        }}
+                                                                        {{
+                                                                            ref
+                                                                                .verse
+                                                                                .chapter
+                                                                                ?.chapter_number
+                                                                        }}:{{
+                                                                            ref
+                                                                                .verse
+                                                                                .verse_number
+                                                                        }}
+                                                                    </p>
+                                                                    <p
+                                                                        class="mt-1 text-xs text-muted-foreground"
+                                                                    >
+                                                                        "{{
+                                                                            ref
+                                                                                .verse
+                                                                                .text
+                                                                        }}"
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </ScrollArea>
+                                                    </CollapsibleContent>
+                                                </Collapsible>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             </div>
-                        </div>
-                    </ScrollArea>
+                        </ScrollArea>
                     </div>
                 </template>
             </div>
