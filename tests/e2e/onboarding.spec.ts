@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from './fixtures/base.js';
 
 test.describe('Onboarding Flow', () => {
     test('should complete full onboarding process', async ({ authenticatedPage }) => {

@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from './fixtures/base.js';
 
 test.describe('Notes CRUD', () => {
     test('should navigate to notes page', async ({ onboardedPage }) => {

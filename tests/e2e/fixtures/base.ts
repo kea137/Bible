@@ -21,10 +21,10 @@ export const test = base.extend<{
 
         // Navigate to register page
         await page.goto('/register');
-        await page.fill('input[name="name"]', testUser.name);
-        await page.fill('input[name="email"]', testUser.email);
-        await page.fill('input[name="password"]', testUser.password);
-        await page.fill('input[name="password_confirmation"]', testUser.password);
+        await page.fill('input#name', testUser.name);
+        await page.fill('input#email', testUser.email);
+        await page.fill('input#password', testUser.password);
+        await page.fill('input#password_confirmation', testUser.password);
         await page.click('button[type="submit"]');
 
         // Wait for registration to complete
@@ -46,10 +46,10 @@ export const test = base.extend<{
 
         // Navigate to register page
         await page.goto('/register');
-        await page.fill('input[name="name"]', testUser.name);
-        await page.fill('input[name="email"]', testUser.email);
-        await page.fill('input[name="password"]', testUser.password);
-        await page.fill('input[name="password_confirmation"]', testUser.password);
+        await page.fill('input#name', testUser.name);
+        await page.fill('input#email', testUser.email);
+        await page.fill('input#password', testUser.password);
+        await page.fill('input#password_confirmation', testUser.password);
         await page.click('button[type="submit"]');
 
         // Wait for onboarding page

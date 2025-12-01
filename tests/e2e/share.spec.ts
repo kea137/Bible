@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from './fixtures/base.js';
 
 test.describe('Share Verse', () => {
     test('should navigate to share page from verse', async ({ onboardedPage }) => {

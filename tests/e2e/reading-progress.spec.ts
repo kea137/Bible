@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from './fixtures/base.js';
 
 test.describe('Bible Navigation and Reading Progress', () => {
     test('should mark chapter as read', async ({ onboardedPage }) => {

@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from './fixtures/base.js';
 
 test.describe('Bible Reading with References', () => {
     test('should navigate to Bible and read verses', async ({ onboardedPage }) => {
