@@ -54,7 +54,6 @@ async function loadDueVerses() {
         const response = await fetch('/api/mobile/memory-verses/due', {
             headers: {
                 Accept: 'application/json',
-                Authorization: `Bearer ${(page.props.auth as any)?.token || ''}`,
             },
         });
 
@@ -100,7 +99,6 @@ async function submitReview(quality: number) {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken || '',
                     Accept: 'application/json',
-                    Authorization: `Bearer ${(page.props.auth as any)?.token || ''}`,
                 },
                 body: JSON.stringify({ quality }),
             },
