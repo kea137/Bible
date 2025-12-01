@@ -12,6 +12,7 @@ Looking for the mobile version? Check out our companion mobile app: [**kea137/Bi
 - **Public API for Bible verses** (no authentication required, rate-limited)
 - **Verse sharing with beautiful backgrounds** - Create shareable images with gradient or photo backgrounds from Pexels
 - **Bible study lessons** - Create, manage, and track progress through single or serialized lessons with scripture references
+- **Memory verses with spaced repetition** - Memorize verses effectively with smart scheduling and daily reminders using the SM-2 algorithm
 - **Verse Link Canvas** - Visual canvas for creating connections between Bible verses and building verse relationship maps
 - User authentication and role management
 - Dark mode support

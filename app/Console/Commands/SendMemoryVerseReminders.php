@@ -38,8 +38,8 @@ class SendMemoryVerseReminders extends Command
             ->whereHas('memoryVerses', function ($query) {
                 $query->where('next_review_date', '<=', Carbon::now()->toDateString());
             })
-            ->having('due_verses_count', '>', 0)
-            ->get();
+            ->get()
+            ->filter(fn($user) => $user->due_verses_count > 0);
 
         $notificationsSent = 0;
 
