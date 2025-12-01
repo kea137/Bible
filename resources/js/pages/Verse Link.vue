@@ -1599,10 +1599,3 @@ const canvasBounds = computed(() => {
         </div>
     </AppLayout>
 </template>
-
-<style scoped>
-/* Force desktop layout - hide mobile footer spacer when in Verse Link page */
-:deep(.verse-link-desktop-wrapper) + div.h-20.md\:hidden {
-    display: none;
-}
-</style>
