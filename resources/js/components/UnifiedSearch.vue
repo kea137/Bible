@@ -95,7 +95,7 @@
                                     :key="book.id"
                                     :value="book.id"
                                 >
-                                    {{ book.name }}
+                                    {{ book.title }}
                                 </SelectItem>
                             </SelectContent>
                         </Select>
