@@ -16,6 +16,10 @@ class VerseLinkCanvas extends Model
         'is_collaborative',
     ];
 
+    protected $casts = [
+        'is_collaborative' => 'boolean',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
