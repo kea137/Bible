@@ -290,6 +290,7 @@ async function createCanvas() {
 async function openCanvas(canvas: Canvas) {
     selectedCanvas.value = canvas;
     loading.value = true;
+    selectedNodes.value.clear(); // Clear selection when opening a canvas
 
     try {
         const response = await fetch(`/api/verse-link/canvas/${canvas.id}`);
@@ -537,6 +538,8 @@ async function deleteNode(node: Node) {
                     c.source_node_id !== node.id &&
                     c.target_node_id !== node.id,
             );
+            // Remove from selection if it was selected
+            selectedNodes.value.delete(node.id);
             alertMessage.value = t('Verse removed from canvas');
             alertSuccess.value = true;
         }
