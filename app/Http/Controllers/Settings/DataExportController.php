@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class DataExportController extends Controller
@@ -86,12 +87,22 @@ class DataExportController extends Controller
         // Create temporary directory for export
         $exportDir = storage_path('app/exports/'.$user->id);
         if (! file_exists($exportDir)) {
-            mkdir($exportDir, 0755, true);
+            if (! mkdir($exportDir, 0755, true)) {
+                return response()->json(['error' => 'Failed to create export directory'], 500);
+            }
         }
 
         // Save JSON file
         $jsonPath = $exportDir.'/user_data.json';
-        file_put_contents($jsonPath, json_encode($userData, JSON_PRETTY_PRINT));
+        $jsonData = json_encode($userData, JSON_PRETTY_PRINT);
+        if ($jsonData === false || file_put_contents($jsonPath, $jsonData) === false) {
+            // Clean up and abort if JSON save fails
+            if (is_dir($exportDir)) {
+                @rmdir($exportDir);
+            }
+
+            return response()->json(['error' => 'Failed to create export data'], 500);
+        }
 
         // Create ZIP file
         $zipPath = storage_path('app/exports/user_'.$user->id.'_data_'.date('Y-m-d_His').'.zip');
@@ -131,7 +142,7 @@ class DataExportController extends Controller
             }
         } catch (\Exception $e) {
             // Log the error but don't prevent the download
-            \Log::warning('Failed to clean up export temporary files', ['error' => $e->getMessage()]);
+            Log::warning('Failed to clean up export temporary files', ['error' => $e->getMessage()]);
         }
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
