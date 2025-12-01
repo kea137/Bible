@@ -21,6 +21,11 @@ export const test = base.extend<{
 
         // Navigate to register page
         await page.goto('/register');
+        
+        // Wait for the page to load completely
+        await page.waitForLoadState('networkidle');
+        await page.waitForSelector('input#name', { timeout: 15000 });
+        
         await page.fill('input#name', testUser.name);
         await page.fill('input#email', testUser.email);
         await page.fill('input#password', testUser.password);
@@ -46,6 +51,11 @@ export const test = base.extend<{
 
         // Navigate to register page
         await page.goto('/register');
+        
+        // Wait for the page to load completely
+        await page.waitForLoadState('networkidle');
+        await page.waitForSelector('input#name', { timeout: 15000 });
+        
         await page.fill('input#name', testUser.name);
         await page.fill('input#email', testUser.email);
         await page.fill('input#password', testUser.password);
