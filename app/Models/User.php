@@ -67,4 +67,29 @@ class User extends Authenticatable
     {
         return $this->hasMany(Lesson::class);
     }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
+
+    public function verseHighlights()
+    {
+        return $this->hasMany(VerseHighlight::class);
+    }
+
+    public function lessonProgress()
+    {
+        return $this->hasMany(LessonProgress::class);
+    }
+
+    public function readingProgress()
+    {
+        return $this->hasMany(ReadingProgress::class);
+    }
+
+    public function verseLinkCanvases()
+    {
+        return $this->hasMany(VerseLinkCanvas::class);
+    }
 }
