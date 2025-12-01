@@ -39,16 +39,13 @@ const noteTitle = ref('');
 const noteContent = ref('');
 const saving = ref(false);
 
-watch(
-    [() => props.open, () => props.note],
-    ([isOpen, note]) => {
-        if (isOpen) {
-            // If note is present, populate fields, else reset
-            noteTitle.value = note?.title || '';
-            noteContent.value = note?.content || '';
-        }
-    },
-);
+watch([() => props.open, () => props.note], ([isOpen, note]) => {
+    if (isOpen) {
+        // If note is present, populate fields, else reset
+        noteTitle.value = note?.title || '';
+        noteContent.value = note?.content || '';
+    }
+});
 
 async function saveNote() {
     if (!noteContent.value.trim()) {
