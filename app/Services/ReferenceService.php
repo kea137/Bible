@@ -113,14 +113,19 @@ class ReferenceService
         } else {
             // For cache drivers without tag support, we clear only verse reference keys
             // Use chunking to avoid memory issues with large datasets
-            $bibles = Bible::all();
+            $bibleIds = Bible::pluck('id')->all();
             
-            Verse::with('book')->chunk(1000, function ($verses) use ($bibles) {
+            Verse::select('id', 'bible_id')->chunk(1000, function ($verses) use ($bibleIds) {
+                $keysToDelete = [];
                 foreach ($verses as $verse) {
-                    foreach ($bibles as $bible) {
-                        $cacheKey = "verse_references:{$verse->id}:{$bible->id}";
-                        Cache::forget($cacheKey);
+                    foreach ($bibleIds as $bibleId) {
+                        $keysToDelete[] = "verse_references:{$verse->id}:{$bibleId}";
                     }
+                }
+                
+                // Batch delete cache keys for better performance
+                foreach ($keysToDelete as $key) {
+                    Cache::forget($key);
                 }
             });
         }
