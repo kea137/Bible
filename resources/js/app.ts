@@ -8,8 +8,17 @@ import { initializeTheme } from './composables/useAppearance';
 import { initializeFontPreferences } from './composables/useFontPreferences';
 import { initializeLocale } from './composables/useLocale';
 import { i18n } from './i18n';
+import { offlineDB } from './lib/offlineDB';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+// Initialize IndexedDB for offline storage
+offlineDB.init().catch((error) => {
+    console.error('[App] Failed to initialize offline database:', error);
+});
+
+// Note: Service worker registration is handled in useOffline composable
+// to ensure proper lifecycle management and avoid duplicate registrations
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
