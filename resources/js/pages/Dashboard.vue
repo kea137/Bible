@@ -15,6 +15,7 @@ import {
     CommandList,
     CommandSeparator,
 } from '@/components/ui/command';
+import VerseSuggestions from '@/components/VerseSuggestions.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import {
     bibles,
@@ -498,6 +499,9 @@ function getHighlightColorClass(color: string): string {
                     </div>
                 </CardContent>
             </Card>
+
+            <!-- Verse Suggestions -->
+            <VerseSuggestions />
         </div>
 
         <!-- Search Dialog -->

@@ -28,6 +28,7 @@ import {
     reading_plan,
     references_configure,
     role_management,
+    topics,
     verse_link,
 } from '@/routes';
 import { type NavItem } from '@/types';
@@ -46,6 +47,7 @@ import {
     PenSquareIcon,
     ScrollText,
     StickyNote,
+    Tags,
     Target,
     UserCog2,
 } from 'lucide-vue-next';
@@ -74,6 +76,11 @@ const mainNavItems: NavItem[] = [
         title: t('Parallel Bibles'),
         href: bibles_parallel(),
         icon: BookCopy,
+    },
+    {
+        title: t('Topics'),
+        href: topics(),
+        icon: Tags,
     },
     {
         title: t('Lessons'),
