@@ -11,9 +11,11 @@ use App\Http\Controllers\ReferenceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShareController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\VerseController;
 use App\Http\Controllers\VerseHighlightController;
 use App\Http\Controllers\VerseLinkController;
+use App\Http\Controllers\VerseSuggestionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -132,6 +134,22 @@ Route::get('/api/verse-link/node/{node}/references', [VerseLinkController::class
 Route::post('/api/verse-link/connection', [VerseLinkController::class, 'storeConnection'])->name('verse_link_store_connection')->middleware('auth');
 Route::delete('/api/verse-link/connection/{connection}', [VerseLinkController::class, 'destroyConnection'])->name('verse_link_destroy_connection')->middleware('auth');
 Route::get('/api/verse-link/search', [VerseLinkController::class, 'searchVerses'])->name('verse_link_search')->middleware('auth');
+
+// Topic routes
+Route::get('/topics', [TopicController::class, 'index'])->name('topics')->middleware('auth');
+Route::get('/topics/{topic}', [TopicController::class, 'show'])->name('topics_show')->middleware('auth');
+Route::post('/api/topics', [TopicController::class, 'store'])->name('topics_store')->middleware('auth');
+Route::put('/api/topics/{topic}', [TopicController::class, 'update'])->name('topics_update')->middleware('auth');
+Route::delete('/api/topics/{topic}', [TopicController::class, 'destroy'])->name('topics_destroy')->middleware('auth');
+Route::post('/api/topics/{topic}/verses', [TopicController::class, 'addVerse'])->name('topics_add_verse')->middleware('auth');
+Route::delete('/api/topics/{topic}/verses/{verse}', [TopicController::class, 'removeVerse'])->name('topics_remove_verse')->middleware('auth');
+Route::put('/api/topics/{topic}/verses/{verse}', [TopicController::class, 'updateVerse'])->name('topics_update_verse')->middleware('auth');
+
+// Verse Suggestion routes
+Route::get('/api/verse-suggestions', [VerseSuggestionController::class, 'index'])->name('verse_suggestions')->middleware('auth');
+Route::post('/api/verse-suggestions/generate', [VerseSuggestionController::class, 'generate'])->name('verse_suggestions_generate')->middleware('auth');
+Route::post('/api/verse-suggestions/{suggestion}/click', [VerseSuggestionController::class, 'markClicked'])->name('verse_suggestions_click')->middleware('auth');
+Route::post('/api/verse-suggestions/{suggestion}/dismiss', [VerseSuggestionController::class, 'dismiss'])->name('verse_suggestions_dismiss')->middleware('auth');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
