@@ -50,9 +50,12 @@ const {
     installApp,
 } = useOffline();
 
+// Approximate size per chapter in KB for storage estimation
+const ESTIMATED_CHAPTER_SIZE_KB = 10;
+
 const totalSize = computed(() => {
-    // Rough estimate: each chapter is about 10KB
-    return ((cachedChapters.value.length * 10) / 1024).toFixed(2);
+    // Rough estimate based on average chapter size
+    return ((cachedChapters.value.length * ESTIMATED_CHAPTER_SIZE_KB) / 1024).toFixed(2);
 });
 
 async function handleInstallApp() {

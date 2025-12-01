@@ -5,20 +5,47 @@ const DB_VERSION = 1;
 const CHAPTERS_STORE = 'chapters';
 const MUTATIONS_STORE = 'mutations';
 
+export interface ChapterData {
+    id: number;
+    chapter_number: number;
+    book: {
+        id: number;
+        title: string;
+    };
+    verses: {
+        id: number;
+        verse_number: number;
+        text: string;
+    }[];
+}
+
 export interface CachedChapter {
     id: string; // e.g., "bible_1_book_1_chapter_1"
     bibleId: number;
     bookId: number;
     chapterNumber: number;
-    data: any;
+    data: ChapterData;
     timestamp: number;
+}
+
+export interface NoteMutationData {
+    id?: number;
+    verse_id: number;
+    title?: string;
+    content: string;
+}
+
+export interface HighlightMutationData {
+    id?: number;
+    verse_id: number;
+    color: string;
 }
 
 export interface QueuedMutation {
     id: string;
     type: 'note' | 'highlight';
     action: 'create' | 'update' | 'delete';
-    data: any;
+    data: NoteMutationData | HighlightMutationData;
     timestamp: number;
     retries: number;
 }

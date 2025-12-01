@@ -1,10 +1,20 @@
 import { ref, computed, onMounted } from 'vue';
-import { offlineDB, type CachedChapter, type QueuedMutation } from '@/lib/offlineDB';
+import { 
+    offlineDB, 
+    type CachedChapter, 
+    type QueuedMutation,
+    type ChapterData,
+    type NoteMutationData,
+    type HighlightMutationData 
+} from '@/lib/offlineDB';
 import { router } from '@inertiajs/vue3';
 
 const cachedChapters = ref<CachedChapter[]>([]);
 const queuedMutations = ref<QueuedMutation[]>([]);
 const isSyncing = ref(false);
+
+// Configuration constants
+const MAX_RETRIES = 3;
 
 export function useOfflineData() {
     // Load cached chapters from IndexedDB
@@ -30,7 +40,7 @@ export function useOfflineData() {
         bibleId: number,
         bookId: number,
         chapterNumber: number,
-        data: any,
+        data: ChapterData,
     ): Promise<void> => {
         const id = `bible_${bibleId}_book_${bookId}_chapter_${chapterNumber}`;
 
@@ -106,10 +116,18 @@ export function useOfflineData() {
     const queueMutation = async (
         type: 'note' | 'highlight',
         action: 'create' | 'update' | 'delete',
-        data: any,
+        data: NoteMutationData | HighlightMutationData,
     ): Promise<void> => {
+        // Use crypto.randomUUID if available, fallback to timestamp + random
+        const generateId = () => {
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                return crypto.randomUUID();
+            }
+            return `${type}_${action}_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+        };
+
         const mutation: QueuedMutation = {
-            id: `${type}_${action}_${Date.now()}_${Math.random()}`,
+            id: generateId(),
             type,
             action,
             data,
@@ -226,10 +244,10 @@ export function useOfflineData() {
 
                 // Increment retry count
                 mutation.retries++;
-                if (mutation.retries < 3) {
+                if (mutation.retries < MAX_RETRIES) {
                     await offlineDB.queueMutation(mutation);
                 } else {
-                    console.error('[OfflineData] Mutation failed after 3 retries, removing:', mutation.id);
+                    console.error(`[OfflineData] Mutation failed after ${MAX_RETRIES} retries, removing:`, mutation.id);
                     await offlineDB.removeMutation(mutation.id);
                 }
             }
