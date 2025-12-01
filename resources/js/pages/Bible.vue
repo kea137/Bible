@@ -53,11 +53,20 @@ import {
     PenTool,
     Search,
     Share2,
+    Download,
+    Trash2,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useOfflineData } from '@/composables/useOfflineData';
 
 const { t } = useI18n();
+const { 
+    isChapterCached, 
+    cacheChapter, 
+    removeCachedChapter,
+    getCachedChapter 
+} = useOfflineData();
 const props = defineProps<{
     bible: {
         id: number;
@@ -228,6 +237,48 @@ async function toggleChapterCompletion() {
         }
     } catch (error) {
         console.error('Failed to toggle chapter completion:', error);
+    }
+}
+
+const chapterCached = computed(() => {
+    if (!currentBook.value || selectedChapterId.value === null) return false;
+    return isChapterCached(
+        props.bible.id,
+        currentBook.value.id,
+        loadedChapter.value.chapter_number
+    );
+});
+
+async function toggleOfflineCache() {
+    if (!currentBook.value) return;
+
+    const bookId = currentBook.value.id;
+    const chapterNumber = loadedChapter.value.chapter_number;
+    
+    if (chapterCached.value) {
+        // Remove from cache
+        const id = `bible_${props.bible.id}_book_${bookId}_chapter_${chapterNumber}`;
+        try {
+            await removeCachedChapter(id);
+            console.log('[Bible] Chapter removed from offline cache');
+        } catch (error) {
+            console.error('[Bible] Failed to remove chapter from cache:', error);
+            alert(t('Failed to remove chapter from offline cache'));
+        }
+    } else {
+        // Add to cache
+        try {
+            await cacheChapter(
+                props.bible.id,
+                bookId,
+                chapterNumber,
+                loadedChapter.value
+            );
+            console.log('[Bible] Chapter cached for offline reading');
+        } catch (error) {
+            console.error('[Bible] Failed to cache chapter:', error);
+            alert(t('Failed to cache chapter for offline reading'));
+        }
     }
 }
 
@@ -825,6 +876,31 @@ function translateReference(ref: string): string {
                                     chapterCompleted
                                         ? t('Completed')
                                         : t('Mark as Read')
+                                }}
+                            </Button>
+                            <Button
+                                :variant="chapterCached ? 'default' : 'outline'"
+                                size="sm"
+                                @click="toggleOfflineCache"
+                                class="w-full sm:w-auto"
+                                :title="
+                                    chapterCached
+                                        ? t('Remove from offline cache')
+                                        : t('Cache for offline reading')
+                                "
+                            >
+                                <Download
+                                    v-if="!chapterCached"
+                                    class="mr-1 h-4 w-4"
+                                />
+                                <Trash2
+                                    v-else
+                                    class="mr-1 h-4 w-4"
+                                />
+                                {{
+                                    chapterCached
+                                        ? t('Cached')
+                                        : t('Cache Offline')
                                 }}
                             </Button>
                             <Button
