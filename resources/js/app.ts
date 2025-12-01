@@ -17,19 +17,8 @@ offlineDB.init().catch((error) => {
     console.error('[App] Failed to initialize offline database:', error);
 });
 
-// Register service worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker
-            .register('/sw.js', { scope: '/' })
-            .then((registration) => {
-                console.log('[App] Service Worker registered:', registration.scope);
-            })
-            .catch((error) => {
-                console.error('[App] Service Worker registration failed:', error);
-            });
-    });
-}
+// Note: Service worker registration is handled in useOffline composable
+// to ensure proper lifecycle management and avoid duplicate registrations
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),

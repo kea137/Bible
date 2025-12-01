@@ -198,6 +198,13 @@ export function useOfflineData() {
                     }
                 }
 
+                // Validate endpoint is set
+                if (!endpoint) {
+                    console.error('[OfflineData] Unknown mutation type/action:', mutation.type, mutation.action);
+                    await offlineDB.removeMutation(mutation.id);
+                    continue;
+                }
+
                 // Use Inertia router for the request
                 if (method === 'POST') {
                     await new Promise<void>((resolve, reject) => {
