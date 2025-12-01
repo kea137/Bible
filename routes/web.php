@@ -121,6 +121,11 @@ Route::post('/api/verse-link/canvas', [VerseLinkController::class, 'storeCanvas'
 Route::get('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'showCanvas'])->name('verse_link_show_canvas')->middleware('auth');
 Route::put('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'updateCanvas'])->name('verse_link_update_canvas')->middleware('auth');
 Route::delete('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'destroyCanvas'])->name('verse_link_destroy_canvas')->middleware('auth');
+Route::get('/api/verse-link/canvas/{canvas}/export', [VerseLinkController::class, 'exportCanvas'])->name('verse_link_export_canvas')->middleware('auth');
+Route::post('/api/verse-link/canvas/import', [VerseLinkController::class, 'importCanvas'])->name('verse_link_import_canvas')->middleware('auth');
+Route::post('/api/verse-link/canvas/{canvas}/share', [VerseLinkController::class, 'generateShareLink'])->name('verse_link_generate_share')->middleware('auth');
+Route::delete('/api/verse-link/canvas/{canvas}/share', [VerseLinkController::class, 'revokeShareLink'])->name('verse_link_revoke_share')->middleware('auth');
+Route::get('/verse-link/shared/{token}', [VerseLinkController::class, 'viewSharedCanvas'])->name('verse_link_view_shared');
 Route::post('/api/verse-link/node', [VerseLinkController::class, 'storeNode'])->name('verse_link_store_node')->middleware('auth');
 Route::put('/api/verse-link/node/{node}', [VerseLinkController::class, 'updateNode'])->name('verse_link_update_node')->middleware('auth');
 Route::delete('/api/verse-link/node/{node}', [VerseLinkController::class, 'destroyNode'])->name('verse_link_destroy_node')->middleware('auth');

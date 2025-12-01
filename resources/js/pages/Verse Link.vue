@@ -49,7 +49,11 @@ import {
     BookOpen,
     ChevronDown,
     ChevronRight,
+    Copy,
+    Download,
     ExternalLink,
+    FileDown,
+    FileUp,
     GitBranch,
     Grid3x3,
     GripVertical,
@@ -58,8 +62,10 @@ import {
     Map as MapIcon,
     Pencil,
     Plus,
+    Share2,
     StickyNote,
     Trash2,
+    Upload,
     X,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
@@ -117,6 +123,7 @@ interface Connection {
     source_node_id: number;
     target_node_id: number;
     label: string | null;
+    link_type: string;
 }
 
 interface Reference {
@@ -164,6 +171,33 @@ const editCanvasName = ref('');
 const editCanvasDescription = ref('');
 const saving = ref(false);
 
+// Link type and label state
+const selectedLinkType = ref<string>('general');
+const connectionLabel = ref<string>('');
+const showConnectionDialog = ref(false);
+const pendingConnection = ref<{ from: Node; to: Node } | null>(null);
+
+// Export/Import state
+const showExportDialog = ref(false);
+const showImportDialog = ref(false);
+const importFileContent = ref<string>('');
+
+// Share link state
+const showShareDialog = ref(false);
+const shareUrl = ref<string>('');
+const shareToken = ref<string>('');
+
+// Link types available
+const linkTypes = [
+    { value: 'general', label: 'General', color: '#3b82f6' },
+    { value: 'support', label: 'Support', color: '#10b981' },
+    { value: 'parallel', label: 'Parallel', color: '#8b5cf6' },
+    { value: 'prophecy', label: 'Prophecy', color: '#f59e0b' },
+    { value: 'typology', label: 'Typology', color: '#ec4899' },
+    { value: 'contrast', label: 'Contrast', color: '#ef4444' },
+    { value: 'cause-effect', label: 'Cause-Effect', color: '#06b6d4' },
+];
+
 // Search verse form
 const searchBookId = ref<string>('');
 const searchChapter = ref('');
@@ -196,6 +230,7 @@ const gridSize = 20; // Match the background grid size
 
 // Canvas viewport
 const canvasRef = ref<HTMLElement | null>(null);
+const importFileInput = ref<HTMLInputElement | null>(null);
 
 // Minimap state
 const minimapRef = ref<HTMLElement | null>(null);
@@ -577,6 +612,19 @@ async function connectToNode(targetNode: Node) {
         return;
     }
 
+    // Show dialog to select link type and label
+    pendingConnection.value = { from: connectingFrom.value, to: targetNode };
+    showConnectionDialog.value = true;
+    cancelConnecting();
+}
+
+async function createConnectionWithDetails() {
+    if (!pendingConnection.value || !selectedCanvas.value || !canvasData.value) {
+        return;
+    }
+
+    const { from, to } = pendingConnection.value;
+
     try {
         const response = await fetch('/api/verse-link/connection', {
             method: 'POST',
@@ -587,8 +635,10 @@ async function connectToNode(targetNode: Node) {
             },
             body: JSON.stringify({
                 canvas_id: selectedCanvas.value.id,
-                source_node_id: connectingFrom.value.id,
-                target_node_id: targetNode.id,
+                source_node_id: from.id,
+                target_node_id: to.id,
+                label: connectionLabel.value || null,
+                link_type: selectedLinkType.value,
             }),
         });
 
@@ -598,6 +648,10 @@ async function connectToNode(targetNode: Node) {
             canvasData.value.connections.push(result.connection);
             alertMessage.value = t('Connection created');
             alertSuccess.value = true;
+            showConnectionDialog.value = false;
+            pendingConnection.value = null;
+            connectionLabel.value = '';
+            selectedLinkType.value = 'general';
         } else {
             alertMessage.value =
                 result.message || t('Failed to create connection');
@@ -607,8 +661,6 @@ async function connectToNode(targetNode: Node) {
         alertMessage.value = t('Failed to create connection');
         alertError.value = true;
         console.error(error);
-    } finally {
-        cancelConnecting();
     }
 }
 
@@ -838,10 +890,236 @@ function goToVerseStudy(verseId: number) {
     router.visit(`/verses/${verseId}/study`);
 }
 
+// Export canvas to JSON
+async function exportCanvas() {
+    if (!selectedCanvas.value) return;
+
+    try {
+        const response = await fetch(
+            `/api/verse-link/canvas/${selectedCanvas.value.id}/export`,
+        );
+        if (response.ok) {
+            const data = await response.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], {
+                type: 'application/json',
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${selectedCanvas.value.name.replace(/[^a-z0-9]/gi, '_')}_canvas.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alertMessage.value = t('Canvas exported successfully');
+            alertSuccess.value = true;
+        } else {
+            alertMessage.value = t('Failed to export canvas');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to export canvas');
+        alertError.value = true;
+        console.error(error);
+    }
+}
+
+// Handle file upload for import
+function handleImportFile(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const content = e.target?.result as string;
+            importFileContent.value = content;
+            const data = JSON.parse(content);
+            // Validate basic structure
+            if (!data.nodes || !Array.isArray(data.nodes)) {
+                alertMessage.value = t('Invalid canvas file format');
+                alertError.value = true;
+                return;
+            }
+            showImportDialog.value = true;
+        } catch (error) {
+            alertMessage.value = t('Failed to read canvas file');
+            alertError.value = true;
+            console.error(error);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Import canvas from JSON
+async function importCanvas() {
+    if (!importFileContent.value) return;
+
+    saving.value = true;
+    try {
+        const data = JSON.parse(importFileContent.value);
+        const response = await fetch('/api/verse-link/canvas/import', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                Accept: 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alertMessage.value = t('Canvas imported successfully');
+            alertSuccess.value = true;
+            showImportDialog.value = false;
+            importFileContent.value = '';
+            router.reload({ only: ['canvases'] });
+        } else {
+            alertMessage.value = result.message || t('Failed to import canvas');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to import canvas');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        saving.value = false;
+    }
+}
+
+// Generate share link
+async function generateShareLink() {
+    if (!selectedCanvas.value) return;
+
+    saving.value = true;
+    try {
+        const response = await fetch(
+            `/api/verse-link/canvas/${selectedCanvas.value.id}/share`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                    Accept: 'application/json',
+                },
+            },
+        );
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            shareUrl.value = result.share_url;
+            shareToken.value = result.share_token;
+            showShareDialog.value = true;
+            alertMessage.value = t('Share link generated successfully');
+            alertSuccess.value = true;
+        } else {
+            alertMessage.value =
+                result.message || t('Failed to generate share link');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to generate share link');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        saving.value = false;
+    }
+}
+
+// Copy share link to clipboard
+async function copyShareLink() {
+    try {
+        await navigator.clipboard.writeText(shareUrl.value);
+        alertMessage.value = t('Share link copied to clipboard');
+        alertSuccess.value = true;
+    } catch (error) {
+        alertMessage.value = t('Failed to copy link');
+        alertError.value = true;
+        console.error(error);
+    }
+}
+
+// Revoke share link
+async function revokeShareLink() {
+    if (!selectedCanvas.value) return;
+
+    saving.value = true;
+    try {
+        const response = await fetch(
+            `/api/verse-link/canvas/${selectedCanvas.value.id}/share`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                    Accept: 'application/json',
+                },
+            },
+        );
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            showShareDialog.value = false;
+            shareUrl.value = '';
+            shareToken.value = '';
+            alertMessage.value = t('Share link revoked successfully');
+            alertSuccess.value = true;
+        } else {
+            alertMessage.value =
+                result.message || t('Failed to revoke share link');
+            alertError.value = true;
+        }
+    } catch (error) {
+        alertMessage.value = t('Failed to revoke share link');
+        alertError.value = true;
+        console.error(error);
+    } finally {
+        saving.value = false;
+    }
+}
+
 function goBack() {
     selectedCanvas.value = null;
     canvasData.value = null;
     selectedNodes.value.clear();
+}
+
+// Get color for link type
+function getLinkTypeColor(linkType: string): string {
+    const type = linkTypes.find((t) => t.value === linkType);
+    return type?.color || '#3b82f6';
+}
+
+// Get mid-point of connection for label
+function getConnectionMidPoint(connection: Connection): { x: number; y: number } {
+    if (!canvasData.value) return { x: 0, y: 0 };
+
+    const sourceNode = canvasData.value.nodes.find(
+        (n) => n.id === connection.source_node_id,
+    );
+    const targetNode = canvasData.value.nodes.find(
+        (n) => n.id === connection.target_node_id,
+    );
+
+    if (!sourceNode || !targetNode) return { x: 0, y: 0 };
+
+    const cardWidth = 300;
+    const cardHeight = 150;
+
+    const x1 = sourceNode.position_x + cardWidth / 2;
+    const y1 = sourceNode.position_y + cardHeight / 2;
+    const x2 = targetNode.position_x + cardWidth / 2;
+    const y2 = targetNode.position_y + cardHeight / 2;
+
+    return {
+        x: (x1 + x2) / 2,
+        y: (y1 + y2) / 2 - 10, // Offset above the line
+    };
 }
 
 // Minimap functionality
@@ -1210,6 +1488,151 @@ const canvasBounds = computed(() => {
         @saved="handleNoteSaved"
     />
 
+    <!-- Connection Details Dialog -->
+    <Dialog v-model:open="showConnectionDialog">
+        <DialogContent class="sm:max-w-[425px]">
+            <DialogHeader>
+                <DialogTitle>{{ t('Create Connection') }}</DialogTitle>
+                <DialogDescription>
+                    {{ t('Select the type of connection and add an optional label.') }}
+                </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-4 py-4">
+                <div class="grid gap-2">
+                    <Label for="link-type">{{ t('Link Type') }}</Label>
+                    <Select v-model="selectedLinkType">
+                        <SelectTrigger id="link-type">
+                            <SelectValue :placeholder="t('Select link type')" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem
+                                v-for="type in linkTypes"
+                                :key="type.value"
+                                :value="type.value"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="h-3 w-3 rounded-full"
+                                        :style="{ backgroundColor: type.color }"
+                                    />
+                                    {{ t(type.label) }}
+                                </div>
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div class="grid gap-2">
+                    <Label for="connection-label">{{ t('Label (Optional)') }}</Label>
+                    <Input
+                        id="connection-label"
+                        v-model="connectionLabel"
+                        :placeholder="t('e.g., Fulfillment of prophecy')"
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button
+                    variant="outline"
+                    @click="showConnectionDialog = false; pendingConnection = null; connectionLabel = ''; selectedLinkType = 'general';"
+                    :disabled="saving"
+                >
+                    {{ t('Cancel') }}
+                </Button>
+                <Button @click="createConnectionWithDetails" :disabled="saving">
+                    <LoaderCircle
+                        v-if="saving"
+                        class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {{ t('Create Connection') }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <!-- Import Canvas Dialog -->
+    <Dialog v-model:open="showImportDialog">
+        <DialogContent class="sm:max-w-[425px]">
+            <DialogHeader>
+                <DialogTitle>{{ t('Import Canvas') }}</DialogTitle>
+                <DialogDescription>
+                    {{ t('Import a canvas from a JSON file.') }}
+                </DialogDescription>
+            </DialogHeader>
+            <div class="py-4">
+                <p class="text-sm text-muted-foreground">
+                    {{ t('Click "Import" to create a new canvas with the data from the selected file.') }}
+                </p>
+            </div>
+            <DialogFooter>
+                <Button
+                    variant="outline"
+                    @click="showImportDialog = false; importFileContent = '';"
+                    :disabled="saving"
+                >
+                    {{ t('Cancel') }}
+                </Button>
+                <Button @click="importCanvas" :disabled="saving">
+                    <LoaderCircle
+                        v-if="saving"
+                        class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {{ t('Import') }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
+    <!-- Share Link Dialog -->
+    <Dialog v-model:open="showShareDialog">
+        <DialogContent class="sm:max-w-[500px]">
+            <DialogHeader>
+                <DialogTitle>{{ t('Share Canvas') }}</DialogTitle>
+                <DialogDescription>
+                    {{ t('Anyone with this link can view this canvas in read-only mode.') }}
+                </DialogDescription>
+            </DialogHeader>
+            <div class="grid gap-4 py-4">
+                <div class="grid gap-2">
+                    <Label>{{ t('Share Link') }}</Label>
+                    <div class="flex gap-2">
+                        <Input
+                            :value="shareUrl"
+                            readonly
+                            class="flex-1"
+                        />
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            @click="copyShareLink"
+                            :title="t('Copy to clipboard')"
+                        >
+                            <Copy class="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+                <p class="text-xs text-muted-foreground">
+                    {{ t('This link will remain active until you revoke it.') }}
+                </p>
+            </div>
+            <DialogFooter>
+                <Button
+                    variant="destructive"
+                    @click="revokeShareLink"
+                    :disabled="saving"
+                >
+                    <LoaderCircle
+                        v-if="saving"
+                        class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {{ t('Revoke Link') }}
+                </Button>
+                <Button variant="outline" @click="showShareDialog = false">
+                    {{ t('Close') }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <!-- Desktop-only layout wrapper for Verse Link -->
         <div class="verse-link-desktop-wrapper min-w-[900px] overflow-x-auto">
@@ -1225,10 +1648,27 @@ const canvasBounds = computed(() => {
                                 {{ t('Verse Link Canvases') }}
                             </h1>
                         </div>
-                        <Button @click="createCanvasDialog = true">
-                            <Plus class="mr-2 h-4 w-4" />
-                            {{ t('New Canvas') }}
-                        </Button>
+                        <div class="flex gap-2">
+                            <!-- Hidden file input for import -->
+                            <input
+                                type="file"
+                                ref="importFileInput"
+                                accept=".json"
+                                @change="handleImportFile"
+                                class="hidden"
+                            />
+                            <Button
+                                variant="outline"
+                                @click="importFileInput?.click()"
+                            >
+                                <FileUp class="mr-2 h-4 w-4" />
+                                {{ t('Import') }}
+                            </Button>
+                            <Button @click="createCanvasDialog = true">
+                                <Plus class="mr-2 h-4 w-4" />
+                                {{ t('New Canvas') }}
+                            </Button>
+                        </div>
                     </div>
 
                     <div
@@ -1345,6 +1785,24 @@ const canvasBounds = computed(() => {
                                 :title="t('Deselect All')"
                             >
                                 {{ selectedNodes.size }} {{ t('selected') }}
+                            </Button>
+                            <!-- Export Canvas -->
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="exportCanvas"
+                                :title="t('Export Canvas')"
+                            >
+                                <FileDown class="h-4 w-4" />
+                            </Button>
+                            <!-- Share Canvas -->
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="generateShareLink"
+                                :title="t('Share Canvas')"
+                            >
+                                <Share2 class="h-4 w-4" />
                             </Button>
                             <Button
                                 variant="outline"
@@ -1486,16 +1944,26 @@ const canvasBounds = computed(() => {
                                         :d="getConnectionPath(connection)"
                                         stroke-width="3"
                                         marker-end="url(#arrowhead)"
-                                        style="
-                                            stroke: currentColor;
-                                            color: hsl(var(--primary));
-                                            fill: none;
-                                            pointer-events: auto;
-                                            cursor: pointer;
-                                        "
+                                        :style="{
+                                            stroke: getLinkTypeColor(connection.link_type || 'general'),
+                                            fill: 'none',
+                                            pointerEvents: 'auto',
+                                            cursor: 'pointer',
+                                        }"
                                         class="opacity-70 transition-opacity hover:opacity-100"
                                         @click="deleteConnection(connection)"
                                     />
+                                    <!-- Label for connection -->
+                                    <text
+                                        v-if="connection.label"
+                                        :x="getConnectionMidPoint(connection).x"
+                                        :y="getConnectionMidPoint(connection).y"
+                                        text-anchor="middle"
+                                        class="text-xs fill-current pointer-events-none select-none"
+                                        :style="{ fill: getLinkTypeColor(connection.link_type || 'general') }"
+                                    >
+                                        {{ connection.label }}
+                                    </text>
                                 </g>
                             </svg>
 

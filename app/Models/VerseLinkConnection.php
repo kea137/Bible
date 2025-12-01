@@ -14,6 +14,7 @@ class VerseLinkConnection extends Model
         'source_node_id',
         'target_node_id',
         'label',
+        'link_type',
     ];
 
     public function canvas()

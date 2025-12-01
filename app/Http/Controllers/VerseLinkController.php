@@ -212,6 +212,7 @@ class VerseLinkController extends Controller
             'source_node_id' => 'required|exists:verse_link_nodes,id',
             'target_node_id' => 'required|exists:verse_link_nodes,id|different:source_node_id',
             'label' => 'nullable|string|max:255',
+            'link_type' => 'nullable|string|in:general,support,parallel,prophecy,typology,contrast,cause-effect',
         ]);
 
         $canvas = VerseLinkCanvas::findOrFail($validated['canvas_id']);
@@ -246,6 +247,7 @@ class VerseLinkController extends Controller
             'source_node_id' => $validated['source_node_id'],
             'target_node_id' => $validated['target_node_id'],
             'label' => $validated['label'] ?? null,
+            'link_type' => $validated['link_type'] ?? 'general',
         ]);
 
         return response()->json([
@@ -324,5 +326,202 @@ class VerseLinkController extends Controller
         }
 
         return response()->json($references);
+    }
+
+    /**
+     * Export canvas to JSON.
+     */
+    public function exportCanvas(VerseLinkCanvas $canvas): JsonResponse
+    {
+        if ($canvas->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $canvas->load([
+            'nodes.verse.book',
+            'nodes.verse.chapter',
+            'nodes.verse.bible',
+            'connections',
+        ]);
+
+        $exportData = [
+            'name' => $canvas->name,
+            'description' => $canvas->description,
+            'version' => '1.0',
+            'exported_at' => now()->toIso8601String(),
+            'nodes' => $canvas->nodes->map(function ($node) {
+                return [
+                    'id' => $node->id,
+                    'position_x' => $node->position_x,
+                    'position_y' => $node->position_y,
+                    'note' => $node->note,
+                    'verse' => [
+                        'book_title' => $node->verse->book->title,
+                        'chapter_number' => $node->verse->chapter->chapter_number,
+                        'verse_number' => $node->verse->verse_number,
+                        'text' => $node->verse->text,
+                        'bible_name' => $node->verse->bible->name,
+                        'bible_version' => $node->verse->bible->version,
+                    ],
+                ];
+            }),
+            'connections' => $canvas->connections->map(function ($connection) {
+                return [
+                    'source_node_id' => $connection->source_node_id,
+                    'target_node_id' => $connection->target_node_id,
+                    'label' => $connection->label,
+                    'link_type' => $connection->link_type ?? 'general',
+                ];
+            }),
+        ];
+
+        return response()->json($exportData);
+    }
+
+    /**
+     * Import canvas from JSON.
+     */
+    public function importCanvas(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'nodes' => 'required|array',
+            'nodes.*.position_x' => 'required|integer',
+            'nodes.*.position_y' => 'required|integer',
+            'nodes.*.note' => 'nullable|string',
+            'nodes.*.verse' => 'required|array',
+            'nodes.*.verse.book_title' => 'required|string',
+            'nodes.*.verse.chapter_number' => 'required|integer',
+            'nodes.*.verse.verse_number' => 'required|integer',
+            'nodes.*.verse.bible_version' => 'nullable|string',
+            'connections' => 'sometimes|array',
+            'connections.*.source_node_id' => 'required|integer',
+            'connections.*.target_node_id' => 'required|integer',
+            'connections.*.label' => 'nullable|string|max:255',
+            'connections.*.link_type' => 'nullable|string|in:general,support,parallel,prophecy,typology,contrast,cause-effect',
+        ]);
+
+        // Create canvas
+        $canvas = VerseLinkCanvas::create([
+            'user_id' => Auth::id(),
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        $nodeIdMapping = []; // Map old node IDs to new node IDs
+
+        // Import nodes
+        foreach ($validated['nodes'] as $nodeData) {
+            $verseData = $nodeData['verse'];
+            
+            // Find the verse by book title, chapter, and verse number
+            $verse = Verse::whereHas('book', function ($q) use ($verseData) {
+                $q->where('title', $verseData['book_title']);
+            })
+            ->whereHas('chapter', function ($q) use ($verseData) {
+                $q->where('chapter_number', $verseData['chapter_number']);
+            })
+            ->where('verse_number', $verseData['verse_number'])
+            ->first();
+
+            if (!$verse) {
+                // Skip verse if not found
+                continue;
+            }
+
+            $node = VerseLinkNode::create([
+                'canvas_id' => $canvas->id,
+                'verse_id' => $verse->id,
+                'position_x' => $nodeData['position_x'],
+                'position_y' => $nodeData['position_y'],
+                'note' => $nodeData['note'] ?? null,
+            ]);
+
+            // Store mapping if original ID was provided
+            if (isset($nodeData['id'])) {
+                $nodeIdMapping[$nodeData['id']] = $node->id;
+            }
+        }
+
+        // Import connections
+        if (isset($validated['connections'])) {
+            foreach ($validated['connections'] as $connectionData) {
+                $sourceId = $nodeIdMapping[$connectionData['source_node_id']] ?? null;
+                $targetId = $nodeIdMapping[$connectionData['target_node_id']] ?? null;
+
+                if ($sourceId && $targetId) {
+                    VerseLinkConnection::create([
+                        'canvas_id' => $canvas->id,
+                        'source_node_id' => $sourceId,
+                        'target_node_id' => $targetId,
+                        'label' => $connectionData['label'] ?? null,
+                        'link_type' => $connectionData['link_type'] ?? 'general',
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Canvas imported successfully',
+            'canvas' => $canvas->load('nodes', 'connections'),
+        ], 201);
+    }
+
+    /**
+     * Generate a share token for a canvas.
+     */
+    public function generateShareLink(VerseLinkCanvas $canvas): JsonResponse
+    {
+        if ($canvas->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $token = $canvas->generateShareToken();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Share link generated successfully',
+            'share_token' => $token,
+            'share_url' => url("/verse-link/shared/{$token}"),
+        ]);
+    }
+
+    /**
+     * Revoke the share token for a canvas.
+     */
+    public function revokeShareLink(VerseLinkCanvas $canvas): JsonResponse
+    {
+        if ($canvas->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $canvas->revokeShareToken();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Share link revoked successfully',
+        ]);
+    }
+
+    /**
+     * View a shared canvas (read-only).
+     */
+    public function viewSharedCanvas(string $token): Response
+    {
+        $canvas = VerseLinkCanvas::where('share_token', $token)->firstOrFail();
+
+        $canvas->load([
+            'nodes.verse.book',
+            'nodes.verse.chapter',
+            'nodes.verse.bible',
+            'connections',
+        ]);
+
+        return Inertia::render('Verse Link Shared', [
+            'canvas' => $canvas,
+            'isReadOnly' => true,
+        ]);
     }
 }
