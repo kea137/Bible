@@ -7,6 +7,7 @@ use App\Models\Reference;
 use App\Models\Verse;
 use App\Utils\BookShorthand;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ReferenceService
@@ -58,8 +59,76 @@ class ReferenceService
                         'verse_reference' => json_encode($references),
                     ]
                 );
+
+                // Invalidate cache for this verse across all Bibles
+                $this->invalidateVerseReferences($verse);
             }
         });
+    }
+
+    /**
+     * Invalidate cache for a specific verse across all Bibles
+     */
+    public function invalidateVerseReferences(Verse $verse): void
+    {
+        $cacheDriver = config('cache.default');
+        $supportsTags = in_array($cacheDriver, ['redis', 'memcached']);
+
+        if ($supportsTags) {
+            // If tags are supported, flush the entire tag
+            Cache::tags(['verse_references'])->flush();
+        } else {
+            // Find all equivalent verses across all Bibles in a single query
+            $bookNumber = $verse->book->book_number;
+            $chapterNumber = $verse->chapter->chapter_number;
+            $verseNumber = $verse->verse_number;
+
+            // Get all verses that match this book/chapter/verse across all Bibles
+            $equivalentVerses = Verse::select('verses.id', 'verses.bible_id')
+                ->join('books', 'verses.book_id', '=', 'books.id')
+                ->join('chapters', 'verses.chapter_id', '=', 'chapters.id')
+                ->where('books.book_number', $bookNumber)
+                ->where('chapters.chapter_number', $chapterNumber)
+                ->where('verses.verse_number', $verseNumber)
+                ->get();
+
+            // Invalidate cache for each equivalent verse
+            foreach ($equivalentVerses as $equivalentVerse) {
+                $cacheKey = "verse_references:{$equivalentVerse->id}:{$equivalentVerse->bible_id}";
+                Cache::forget($cacheKey);
+            }
+        }
+    }
+
+    /**
+     * Clear all verse reference caches
+     */
+    public function clearAllReferenceCaches(): void
+    {
+        $cacheDriver = config('cache.default');
+        $supportsTags = in_array($cacheDriver, ['redis', 'memcached']);
+
+        if ($supportsTags) {
+            Cache::tags(['verse_references'])->flush();
+        } else {
+            // For cache drivers without tag support, we clear only verse reference keys
+            // Use chunking to avoid memory issues with large datasets
+            $bibleIds = Bible::pluck('id')->all();
+            
+            Verse::select('id', 'bible_id')->chunk(1000, function ($verses) use ($bibleIds) {
+                $keysToDelete = [];
+                foreach ($verses as $verse) {
+                    foreach ($bibleIds as $bibleId) {
+                        $keysToDelete[] = "verse_references:{$verse->id}:{$bibleId}";
+                    }
+                }
+                
+                // Batch delete cache keys for better performance
+                foreach ($keysToDelete as $key) {
+                    Cache::forget($key);
+                }
+            });
+        }
     }
 
     /**
@@ -67,6 +136,30 @@ class ReferenceService
      * References are loaded from the first created Bible
      */
     public function getReferencesForVerse(Verse $verse): array
+    {
+        // Create a cache key based on verse ID and Bible ID
+        $cacheKey = "verse_references:{$verse->id}:{$verse->bible_id}";
+
+        // Try to get from cache, with a 1-hour TTL
+        // Use tags if supported (redis/memcached), otherwise use simple cache
+        $cacheDriver = config('cache.default');
+        $supportsTags = in_array($cacheDriver, ['redis', 'memcached']);
+
+        if ($supportsTags) {
+            return Cache::tags(['verse_references'])->remember($cacheKey, 3600, function () use ($verse) {
+                return $this->fetchReferencesForVerse($verse);
+            });
+        } else {
+            return Cache::remember($cacheKey, 3600, function () use ($verse) {
+                return $this->fetchReferencesForVerse($verse);
+            });
+        }
+    }
+
+    /**
+     * Fetch references for a verse (helper method for caching)
+     */
+    private function fetchReferencesForVerse(Verse $verse): array
     {
         // Load the verse and its related data
         $verse->load(['book', 'chapter', 'bible']);
@@ -106,19 +199,51 @@ class ReferenceService
             return [];
         }
 
+        // Pre-fetch all reference verses in a single query to avoid N+1
+        $refData = [];
+        foreach ($references as $id => $refString) {
+            $parsed = BookShorthand::parseReference($refString);
+            if (! empty($parsed)) {
+                $refData[$id] = [
+                    'reference' => $refString,
+                    'parsed' => $parsed,
+                ];
+            }
+        }
+
+        // Build queries to fetch all reference verses with eager loading
+        // Note: This still executes individual queries per reference verse due to complex
+        // whereHas conditions. A full N+1 elimination would require refactoring to:
+        // 1. Collect all book_number, chapter_number, verse_number combinations
+        // 2. Build a single query with WHERE IN or UNION
+        // 3. Match results back to references
+        // Current implementation prioritizes code maintainability and already includes
+        // eager loading to prevent additional N+1 queries for book/chapter relationships.
         $result = [];
 
-        foreach ($references as $id => $refString) {
-            $refData = BookShorthand::parseReference($refString);
-            if (! empty($refData)) {
-                // Find the reference verse in the current Bible being viewed
-                $refVerse = $this->findVerseByReference($verse->bible, $refData);
+        foreach ($refData as $id => $data) {
+            $parsed = $data['parsed'];
+            $bookNumber = BookShorthand::getBookNumber($parsed['book']);
+            if ($bookNumber) {
+                // Find verses matching the criteria
+                $refVerse = Verse::with(['book', 'chapter'])
+                    ->whereHas('book', function ($query) use ($bookNumber, $verse) {
+                        $query->where('bible_id', $verse->bible_id)
+                            ->where('book_number', $bookNumber);
+                    })
+                    ->whereHas('chapter', function ($query) use ($parsed, $verse) {
+                        $query->where('bible_id', $verse->bible_id)
+                            ->where('chapter_number', $parsed['chapter']);
+                    })
+                    ->where('verse_number', $parsed['verse'])
+                    ->first();
+
                 if ($refVerse) {
                     $result[] = [
                         'id' => $id,
-                        'reference' => $refString,
+                        'reference' => $data['reference'],
                         'verse' => $refVerse,
-                        'parsed' => $refData,
+                        'parsed' => $parsed,
                     ];
                 }
             }

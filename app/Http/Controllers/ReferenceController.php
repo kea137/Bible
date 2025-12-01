@@ -136,6 +136,9 @@ class ReferenceController extends Controller
         // Delete all references for this Bible
         Reference::where('bible_id', $bible->id)->delete();
 
+        // Clear all reference caches since we deleted references
+        $this->referenceService->clearAllReferenceCaches();
+
         return redirect()->route('references_configure')->with('success', 'References deleted successfully.');
     }
 }
