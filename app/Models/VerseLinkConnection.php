@@ -14,11 +14,23 @@ class VerseLinkConnection extends Model
         'source_node_id',
         'target_node_id',
         'label',
+        'version',
+        'last_modified_by',
+        'last_modified_at',
+    ];
+
+    protected $casts = [
+        'last_modified_at' => 'datetime',
     ];
 
     public function canvas()
     {
         return $this->belongsTo(VerseLinkCanvas::class, 'canvas_id');
+    }
+
+    public function lastModifiedBy()
+    {
+        return $this->belongsTo(User::class, 'last_modified_by');
     }
 
     public function sourceNode()

@@ -125,6 +125,10 @@ Route::post('/api/verse-link/canvas', [VerseLinkController::class, 'storeCanvas'
 Route::get('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'showCanvas'])->name('verse_link_show_canvas')->middleware('auth');
 Route::put('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'updateCanvas'])->name('verse_link_update_canvas')->middleware('auth');
 Route::delete('/api/verse-link/canvas/{canvas}', [VerseLinkController::class, 'destroyCanvas'])->name('verse_link_destroy_canvas')->middleware('auth');
+Route::post('/api/verse-link/canvas/{canvas}/share', [VerseLinkController::class, 'shareCanvas'])->name('verse_link_share_canvas')->middleware('auth');
+Route::delete('/api/verse-link/canvas/{canvas}/collaborator/{user}', [VerseLinkController::class, 'removePermission'])->name('verse_link_remove_permission')->middleware('auth');
+Route::get('/api/verse-link/canvas/{canvas}/collaborators', [VerseLinkController::class, 'getCollaborators'])->name('verse_link_get_collaborators')->middleware('auth');
+Route::get('/api/verse-link/users/search', [VerseLinkController::class, 'searchUsers'])->name('verse_link_search_users')->middleware('auth');
 Route::post('/api/verse-link/node', [VerseLinkController::class, 'storeNode'])->name('verse_link_store_node')->middleware('auth');
 Route::put('/api/verse-link/node/{node}', [VerseLinkController::class, 'updateNode'])->name('verse_link_update_node')->middleware('auth');
 Route::delete('/api/verse-link/node/{node}', [VerseLinkController::class, 'destroyNode'])->name('verse_link_destroy_node')->middleware('auth');

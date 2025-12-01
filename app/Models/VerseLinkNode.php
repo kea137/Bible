@@ -15,6 +15,13 @@ class VerseLinkNode extends Model
         'position_x',
         'position_y',
         'note',
+        'version',
+        'last_modified_by',
+        'last_modified_at',
+    ];
+
+    protected $casts = [
+        'last_modified_at' => 'datetime',
     ];
 
     public function canvas()
@@ -25,6 +32,11 @@ class VerseLinkNode extends Model
     public function verse()
     {
         return $this->belongsTo(Verse::class);
+    }
+
+    public function lastModifiedBy()
+    {
+        return $this->belongsTo(User::class, 'last_modified_by');
     }
 
     public function outgoingConnections()

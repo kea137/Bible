@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Verse;
 use App\Models\VerseLinkCanvas;
 use App\Models\VerseLinkConnection;
@@ -57,13 +58,12 @@ class VerseLinkController extends Controller
      */
     public function updateCanvas(Request $request, VerseLinkCanvas $canvas): JsonResponse
     {
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $canvas);
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
+            'is_collaborative' => 'sometimes|boolean',
         ]);
 
         $canvas->update($validated);
@@ -80,9 +80,7 @@ class VerseLinkController extends Controller
      */
     public function destroyCanvas(VerseLinkCanvas $canvas): JsonResponse
     {
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('delete', $canvas);
 
         $canvas->delete();
 
@@ -97,16 +95,21 @@ class VerseLinkController extends Controller
      */
     public function showCanvas(VerseLinkCanvas $canvas): JsonResponse
     {
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('view', $canvas);
 
         $canvas->load([
             'nodes.verse.book',
             'nodes.verse.chapter',
             'nodes.verse.bible',
-            'connections',
+            'nodes.lastModifiedBy:id,name',
+            'connections.lastModifiedBy:id,name',
+            'permissions.user:id,name',
         ]);
+
+        // Include user's permission level
+        $userPermission = $canvas->getPermissionForUser(Auth::id());
+        $canvas->user_role = $userPermission ? $userPermission->role : ($canvas->user_id === Auth::id() ? 'owner' : null);
+        $canvas->can_edit = $canvas->userCanEdit(Auth::id());
 
         return response()->json($canvas);
     }
@@ -125,10 +128,7 @@ class VerseLinkController extends Controller
         ]);
 
         $canvas = VerseLinkCanvas::findOrFail($validated['canvas_id']);
-
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $canvas);
 
         // Check if verse already exists on canvas
         $existingNode = VerseLinkNode::where('canvas_id', $canvas->id)
@@ -148,9 +148,12 @@ class VerseLinkController extends Controller
             'position_x' => $validated['position_x'],
             'position_y' => $validated['position_y'],
             'note' => $validated['note'] ?? null,
+            'version' => 1,
+            'last_modified_by' => Auth::id(),
+            'last_modified_at' => now(),
         ]);
 
-        $node->load(['verse.book', 'verse.chapter', 'verse.bible']);
+        $node->load(['verse.book', 'verse.chapter', 'verse.bible', 'lastModifiedBy:id,name']);
 
         return response()->json([
             'success' => true,
@@ -165,17 +168,37 @@ class VerseLinkController extends Controller
     public function updateNode(Request $request, VerseLinkNode $node): JsonResponse
     {
         $canvas = $node->canvas;
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $canvas);
 
         $validated = $request->validate([
             'position_x' => 'sometimes|integer',
             'position_y' => 'sometimes|integer',
             'note' => 'nullable|string',
+            'version' => 'required|integer',
         ]);
 
-        $node->update($validated);
+        // Check for version conflict
+        if ($validated['version'] !== $node->version) {
+            return response()->json([
+                'success' => false,
+                'error' => 'version_conflict',
+                'message' => 'This node was modified by another user. Please refresh and try again.',
+                'current_node' => $node->fresh(['lastModifiedBy:id,name']),
+            ], 409);
+        }
+
+        // Update with new version
+        $updateData = array_merge(
+            array_filter($validated, fn($key) => $key !== 'version', ARRAY_FILTER_USE_KEY),
+            [
+                'version' => $node->version + 1,
+                'last_modified_by' => Auth::id(),
+                'last_modified_at' => now(),
+            ]
+        );
+
+        $node->update($updateData);
+        $node->load('lastModifiedBy:id,name');
 
         return response()->json([
             'success' => true,
@@ -190,9 +213,7 @@ class VerseLinkController extends Controller
     public function destroyNode(VerseLinkNode $node): JsonResponse
     {
         $canvas = $node->canvas;
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $canvas);
 
         $node->delete();
 
@@ -215,10 +236,7 @@ class VerseLinkController extends Controller
         ]);
 
         $canvas = VerseLinkCanvas::findOrFail($validated['canvas_id']);
-
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $canvas);
 
         // Check if connection already exists (in either direction)
         $existingConnection = VerseLinkConnection::where('canvas_id', $canvas->id)
@@ -246,7 +264,12 @@ class VerseLinkController extends Controller
             'source_node_id' => $validated['source_node_id'],
             'target_node_id' => $validated['target_node_id'],
             'label' => $validated['label'] ?? null,
+            'version' => 1,
+            'last_modified_by' => Auth::id(),
+            'last_modified_at' => now(),
         ]);
+
+        $connection->load('lastModifiedBy:id,name');
 
         return response()->json([
             'success' => true,
@@ -261,9 +284,7 @@ class VerseLinkController extends Controller
     public function destroyConnection(VerseLinkConnection $connection): JsonResponse
     {
         $canvas = $connection->canvas;
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $canvas);
 
         $connection->delete();
 
@@ -305,9 +326,7 @@ class VerseLinkController extends Controller
     public function getNodeReferences(VerseLinkNode $node): JsonResponse
     {
         $canvas = $node->canvas;
-        if ($canvas->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('view', $canvas);
 
         $verse = $node->verse;
         $verse->load(['book', 'chapter', 'bible']);
@@ -324,5 +343,124 @@ class VerseLinkController extends Controller
         }
 
         return response()->json($references);
+    }
+
+    /**
+     * Share a canvas with another user.
+     */
+    public function shareCanvas(Request $request, VerseLinkCanvas $canvas): JsonResponse
+    {
+        $this->authorize('managePermissions', $canvas);
+
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role' => 'required|in:editor,viewer',
+        ]);
+
+        // Prevent sharing with self
+        if ($validated['user_id'] == $canvas->user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot share canvas with yourself',
+            ], 422);
+        }
+
+        // Check if permission already exists
+        $existing = $canvas->permissions()->where('user_id', $validated['user_id'])->first();
+        
+        if ($existing) {
+            // Update existing permission
+            $existing->update(['role' => $validated['role']]);
+            $permission = $existing;
+        } else {
+            // Create new permission
+            $permission = $canvas->permissions()->create([
+                'user_id' => $validated['user_id'],
+                'role' => $validated['role'],
+            ]);
+        }
+
+        // Enable collaborative mode if not already enabled
+        if (!$canvas->is_collaborative) {
+            $canvas->update(['is_collaborative' => true]);
+        }
+
+        $permission->load('user:id,name');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Canvas shared successfully',
+            'permission' => $permission,
+        ]);
+    }
+
+    /**
+     * Remove a user's permission from a canvas.
+     */
+    public function removePermission(Request $request, VerseLinkCanvas $canvas, User $user): JsonResponse
+    {
+        $this->authorize('managePermissions', $canvas);
+
+        $permission = $canvas->permissions()->where('user_id', $user->id)->first();
+
+        if (!$permission) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User does not have access to this canvas',
+            ], 404);
+        }
+
+        $permission->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permission removed successfully',
+        ]);
+    }
+
+    /**
+     * Get all users with access to a canvas.
+     */
+    public function getCollaborators(VerseLinkCanvas $canvas): JsonResponse
+    {
+        $this->authorize('view', $canvas);
+
+        $collaborators = $canvas->permissions()
+            ->with('user:id,name')
+            ->get()
+            ->map(function ($permission) {
+                return [
+                    'id' => $permission->user->id,
+                    'name' => $permission->user->name,
+                    'role' => $permission->role,
+                ];
+            });
+
+        // Add owner
+        $collaborators->prepend([
+            'id' => $canvas->user->id,
+            'name' => $canvas->user->name,
+            'role' => 'owner',
+        ]);
+
+        return response()->json($collaborators);
+    }
+
+    /**
+     * Search for users to share canvas with.
+     */
+    public function searchUsers(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'query' => 'required|string|min:2',
+        ]);
+
+        $users = User::where('name', 'like', '%' . $validated['query'] . '%')
+            ->where('id', '!=', Auth::id())
+            ->select('id', 'name')
+            ->limit(10)
+            ->get();
+
+        return response()->json($users);
     }
 }
