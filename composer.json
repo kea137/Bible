@@ -12,6 +12,7 @@
         "php": "^8.2",
         "algolia/algoliasearch-client-php": "^3.4",
         "algolia/scout-extended": "^3.0",
+        "dedoc/scramble": "^0.13.6",
         "http-interop/http-factory-guzzle": "^1.2",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/fortify": "^1.30",

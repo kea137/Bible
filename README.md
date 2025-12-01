@@ -65,7 +65,11 @@ curl "http://your-domain.com/api/English/KJV/false/John/3/16"
 
 **Rate Limit:** 30 requests per minute
 
-For detailed API documentation, see [DOCUMENTATION.md](DOCUMENTATION.md#public-bible-api).
+### API Documentation
+
+- **Interactive API Documentation**: Visit `/api/docs` on your running instance to explore the full API with Swagger UI
+- **OpenAPI Specification**: Available at `/api/docs.json` (OpenAPI 3.1)
+- For additional details, see [DOCUMENTATION.md](DOCUMENTATION.md#public-bible-api)
 
 ## Verse Sharing
 
