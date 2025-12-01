@@ -16,7 +16,18 @@ class SearchController extends Controller
     {
         $query = $request->input('query', '');
         $filters = $request->input('filters', []);
+        
+        // Handle types parameter - can be JSON string or array
         $types = $request->input('types', ['verses', 'notes', 'lessons']);
+        if (is_string($types)) {
+            $types = json_decode($types, true) ?: ['verses', 'notes', 'lessons'];
+        }
+        
+        // Handle filters - can be JSON string or array
+        if (is_string($filters)) {
+            $filters = json_decode($filters, true) ?: [];
+        }
+        
         $perPage = min((int) $request->input('per_page', 10), 100);
 
         $results = [
@@ -53,7 +64,7 @@ class SearchController extends Controller
                         'id' => $verse->id,
                         'text' => $verse->text,
                         'verse_number' => $verse->verse_number,
-                        'book' => $verse->book?->name,
+                        'book' => $verse->book?->title,
                         'chapter' => $verse->chapter?->chapter_number,
                         'version' => $verse->bible?->abbreviation,
                         'language' => $verse->bible?->language,
@@ -135,8 +146,8 @@ class SearchController extends Controller
             'bibles' => \App\Models\Bible::select('id', 'name', 'abbreviation', 'language')
                 ->orderBy('name')
                 ->get(),
-            'books' => \App\Models\Book::select('id', 'name')
-                ->orderBy('testament_order')
+            'books' => \App\Models\Book::select('id', 'title')
+                ->orderBy('book_number')
                 ->get(),
             'series' => \App\Models\LessonSeries::select('id', 'title')
                 ->orderBy('title')
