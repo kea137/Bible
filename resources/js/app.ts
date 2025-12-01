@@ -28,6 +28,9 @@ createInertiaApp({
         // Initialize font preferences after mount to ensure page props are available
         initializeFontPreferences();
 
+        // Initialize theme after mount to ensure Inertia page props exist
+        initializeTheme();
+
         return app;
     },
     progress: {
@@ -35,6 +38,4 @@ createInertiaApp({
     },
 });
 
-// This will set light / dark mode on page load...
-initializeTheme();
 initializeLocale(i18n);

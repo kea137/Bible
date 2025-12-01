@@ -55,7 +55,7 @@ import {
     GripVertical,
     Link2,
     LoaderCircle,
-    Map,
+    Map as MapIcon,
     Pencil,
     Plus,
     StickyNote,
@@ -1334,7 +1334,7 @@ const canvasBounds = computed(() => {
                                 @click="showMinimap = !showMinimap"
                                 :title="t('Toggle Minimap')"
                             >
-                                <Map class="h-4 w-4" />
+                                <MapIcon class="h-4 w-4" />
                             </Button>
                             <!-- Selection Controls -->
                             <Button
