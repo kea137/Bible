@@ -57,24 +57,30 @@ jobs:
         run: |
           echo "Checking for API route coverage..."
           
-          # Get all API routes
-          php artisan route:list --json | jq -r '.[] | select(.uri | startswith("api/")) | .uri' | sort > /tmp/all_routes.txt
+          # Get all API routes (without the api/ prefix) and normalize parameter names
+          php artisan route:list --json | jq -r '.[] | select(.uri | startswith("api/")) | .uri' | \
+            sed 's|^api/||' | \
+            sed 's/{[^}]*}/:param/g' | \
+            sort | uniq > /tmp/all_routes.txt
           
-          # Get documented routes from OpenAPI spec
-          jq -r '.paths | keys[]' openapi.json | sed 's/^\///' | sort > /tmp/documented_routes.txt
+          # Get documented routes from OpenAPI spec and normalize parameter names
+          jq -r '.paths | keys[]' openapi.json | \
+            sed 's|^/||' | \
+            sed 's/{[^}]*}/:param/g' | \
+            sort | uniq > /tmp/documented_routes.txt
           
           # Find undocumented routes
           undocumented=$(comm -23 /tmp/all_routes.txt /tmp/documented_routes.txt)
           
           if [ -n "$undocumented" ]; then
-            echo "❌ Error: The following API routes are not documented in the OpenAPI specification:"
+            echo "❌ Error: The following API route patterns are not documented in the OpenAPI specification:"
             echo "$undocumented"
             echo ""
             echo "Please ensure all API routes are properly documented."
             exit 1
           fi
           
-          echo "✓ All API routes are documented in the OpenAPI specification"
+          echo "✓ All API route patterns are documented in the OpenAPI specification"
 
       - name: Validate OpenAPI Spec
         run: |
