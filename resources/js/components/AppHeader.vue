@@ -97,6 +97,7 @@ const rightNavItems: NavItem[] = [
                                 variant="ghost"
                                 size="icon"
                                 class="mr-2 h-9 w-9"
+                                aria-label="Open navigation menu"
                             >
                                 <Menu class="h-5 w-5" />
                             </Button>
@@ -113,18 +114,20 @@ const rightNavItems: NavItem[] = [
                             <div
                                 class="flex h-full flex-1 flex-col justify-between space-y-4 py-6"
                             >
-                                <nav class="-mx-3 space-y-1">
+                                <nav class="-mx-3 space-y-1" aria-label="Main navigation">
                                     <Link
                                         v-for="item in mainNavItems"
                                         :key="item.title"
                                         :href="item.href"
                                         class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent"
                                         :class="activeItemStyles(item.href)"
+                                        :aria-label="`Navigate to ${item.title}`"
                                     >
                                         <component
                                             v-if="item.icon"
                                             :is="item.icon"
                                             class="h-5 w-5"
+                                            aria-hidden="true"
                                         />
                                         {{ item.title }}
                                     </Link>
@@ -137,11 +140,13 @@ const rightNavItems: NavItem[] = [
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="flex items-center space-x-2 text-sm font-medium"
+                                        :aria-label="`Open ${item.title} in new tab`"
                                     >
                                         <component
                                             v-if="item.icon"
                                             :is="item.icon"
                                             class="h-5 w-5"
+                                            aria-hidden="true"
                                         />
                                         <span>{{ item.title }}</span>
                                     </a>
@@ -151,7 +156,7 @@ const rightNavItems: NavItem[] = [
                     </Sheet>
                 </div>
 
-                <Link :href="dashboard()" class="flex items-center gap-x-2">
+                <Link :href="dashboard()" class="flex items-center gap-x-2" aria-label="Go to dashboard">
                     <AppLogo />
                 </Link>
 
@@ -173,17 +178,20 @@ const rightNavItems: NavItem[] = [
                                         'h-9 cursor-pointer px-3',
                                     ]"
                                     :href="item.href"
+                                    :aria-label="`Navigate to ${item.title}`"
                                 >
                                     <component
                                         v-if="item.icon"
                                         :is="item.icon"
                                         class="mr-2 h-4 w-4"
+                                        aria-hidden="true"
                                     />
                                     {{ item.title }}
                                 </Link>
                                 <div
                                     v-if="isCurrentRoute(item.href)"
                                     class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
+                                    aria-hidden="true"
                                 ></div>
                             </NavigationMenuItem>
                         </NavigationMenuList>
@@ -196,9 +204,11 @@ const rightNavItems: NavItem[] = [
                             variant="ghost"
                             size="icon"
                             class="group h-9 w-9 cursor-pointer"
+                            aria-label="Open search"
                         >
                             <Search
                                 class="size-5 opacity-80 group-hover:opacity-100"
+                                aria-hidden="true"
                             />
                         </Button>
 
@@ -220,6 +230,7 @@ const rightNavItems: NavItem[] = [
                                                     :href="toUrl(item.href)"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
+                                                    :aria-label="`Open ${item.title} in new tab`"
                                                 >
                                                     <span class="sr-only">{{
                                                         item.title
@@ -227,6 +238,7 @@ const rightNavItems: NavItem[] = [
                                                     <component
                                                         :is="item.icon"
                                                         class="size-5 opacity-80 group-hover:opacity-100"
+                                                        aria-hidden="true"
                                                     />
                                                 </a>
                                             </Button>
@@ -246,6 +258,7 @@ const rightNavItems: NavItem[] = [
                                 variant="ghost"
                                 size="icon"
                                 class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
+                                aria-label="Open user menu"
                             >
                                 <Avatar
                                     class="size-8 overflow-hidden rounded-full"
