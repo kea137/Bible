@@ -125,7 +125,7 @@ interface Reference {
 
 interface NoteLoad {
     id: number;
-    title: string; 
+    title: string;
     content: string;
 }
 
@@ -916,9 +916,7 @@ const canvasBounds = computed(() => {
                         <Label>{{ t('Bible') }}</Label>
                         <Select v-model="selectedBibleId">
                             <SelectTrigger>
-                                <SelectValue
-                                    :placeholder="t('Select Bible')"
-                                />
+                                <SelectValue :placeholder="t('Select Bible')" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem
@@ -1008,7 +1006,9 @@ const canvasBounds = computed(() => {
                                     verse.verse_number
                                 }}
                             </p>
-                            <p class="line-clamp-2 text-xs text-muted-foreground">
+                            <p
+                                class="line-clamp-2 text-xs text-muted-foreground"
+                            >
                                 {{ verse.text }}
                             </p>
                         </div>
@@ -1038,7 +1038,7 @@ const canvasBounds = computed(() => {
                             selectedVerseToAdd.verse_number
                         }}
                     </p>
-                    <p class="text-sm italic text-muted-foreground">
+                    <p class="text-sm text-muted-foreground italic">
                         "{{ selectedVerseToAdd.text }}"
                     </p>
                     <p class="mt-2 text-xs text-muted-foreground">
@@ -1082,430 +1082,527 @@ const canvasBounds = computed(() => {
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div
-            class="flex h-full flex-1 flex-col gap-3 overflow-hidden rounded-xl p-2 sm:gap-4 sm:p-4"
-        >
-            <!-- Canvas List View -->
-            <template v-if="!selectedCanvas">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <GitBranch class="h-5 w-5 text-primary" />
-                        <h1 class="text-lg font-semibold sm:text-xl">
-                            {{ t('Verse Link Canvases') }}
-                        </h1>
-                    </div>
-                    <Button @click="createCanvasDialog = true">
-                        <Plus class="mr-2 h-4 w-4" />
-                        {{ t('New Canvas') }}
-                    </Button>
-                </div>
-
-                <div
-                    v-if="canvases.length === 0"
-                    class="flex flex-1 flex-col items-center justify-center py-12 text-center"
-                >
-                    <GitBranch
-                        class="mb-4 h-12 w-12 text-muted-foreground/50"
-                    />
-                    <h3 class="text-lg font-semibold">
-                        {{ t('No Canvases Yet') }}
-                    </h3>
-                    <p class="mt-2 text-sm text-muted-foreground">
-                        {{
-                            t(
-                                'Create a canvas to start linking Bible verses together for deeper study.',
-                            )
-                        }}
-                    </p>
-                    <Button @click="createCanvasDialog = true" class="mt-4">
-                        <Plus class="mr-2 h-4 w-4" />
-                        {{ t('Create Your First Canvas') }}
-                    </Button>
-                </div>
-
-                <div
-                    v-else
-                    class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-                >
-                    <Card
-                        v-for="canvas in canvases"
-                        :key="canvas.id"
-                        class="cursor-pointer transition-colors hover:bg-accent/50"
-                        @click="openCanvas(canvas)"
-                    >
-                        <CardHeader>
-                            <CardTitle class="flex items-center justify-between">
-                                <span class="truncate">{{ canvas.name }}</span>
-                                <GitBranch class="h-4 w-4 text-primary" />
-                            </CardTitle>
-                            <CardDescription v-if="canvas.description">
-                                {{ canvas.description }}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p class="text-sm text-muted-foreground">
-                                {{ canvas.nodes_count }}
-                                {{ t('verses') }}
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-            </template>
-
-            <!-- Canvas Editor View -->
-            <template v-else>
-                <!-- Canvas Header -->
-                <div
-                    class="flex flex-wrap items-center justify-between gap-2 border-b pb-3"
-                >
-                    <div class="flex items-center gap-3">
-                        <Button variant="ghost" size="sm" @click="goBack">
-                            <X class="h-4 w-4" />
-                        </Button>
-                        <div>
-                            <h1 class="text-lg font-semibold">
-                                {{ selectedCanvas.name }}
+        <!-- Desktop-only layout wrapper for Verse Link -->
+        <div class="verse-link-desktop-wrapper min-w-[900px] overflow-x-auto">
+            <div
+                class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-xl p-4"
+            >
+                <!-- Canvas List View -->
+                <template v-if="!selectedCanvas">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <GitBranch class="h-5 w-5 text-primary" />
+                            <h1 class="text-xl font-semibold">
+                                {{ t('Verse Link Canvases') }}
                             </h1>
-                            <p
-                                v-if="selectedCanvas.description"
-                                class="text-xs text-muted-foreground"
-                            >
-                                {{ selectedCanvas.description }}
-                            </p>
                         </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <Button
-                            v-if="isConnecting"
-                            variant="secondary"
-                            size="sm"
-                            @click="cancelConnecting"
-                        >
-                            <X class="mr-1 h-4 w-4" />
-                            {{ t('Cancel Link') }}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            @click="openEditCanvasDialog"
-                        >
-                            <Pencil class="h-4 w-4" />
-                        </Button>
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            @click="deleteCanvasDialog = true"
-                        >
-                            <Trash2 class="h-4 w-4" />
-                        </Button>
-                    </div>
-
-                <!-- Fixed Add Verse Button -->
-                <Button
-                    variant="outline"
-                    size="lg"
-                    class="fixed bottom-6 right-6 z-50 mr-4 shadow-lg"
-                    @click="addVerseDialog = true"
-                >
-                    <Plus class="mr-2 h-5 w-5" />
-                    {{ t('Add Verse') }}
-                </Button>
-                </div>
-
-                <!-- Connection Mode Indicator -->
-                <div
-                    v-if="isConnecting"
-                    class="rounded-lg bg-primary/10 px-4 py-2 text-center text-sm"
-                >
-                    <span class="font-medium">
-                        {{ t('Linking from:') }}
-                        {{ connectingFrom?.verse.book.title }}
-                        {{ connectingFrom?.verse.chapter.chapter_number }}:{{
-                            connectingFrom?.verse.verse_number
-                        }}
-                    </span>
-                    <span class="text-muted-foreground">
-                        — {{ t('Click on another verse to create a link') }}
-                    </span>
-                </div>
-
-                <!-- Loading State -->
-                <div
-                    v-if="loading"
-                    class="flex flex-1 items-center justify-center"
-                >
-                    <LoaderCircle class="h-8 w-8 animate-spin text-primary" />
-                </div>
-
-                <!-- Canvas Area -->
-                <ScrollArea
-                    v-else-if="canvasData"
-                    class="flex-1 rounded-lg border-2 border-dashed border-border"
-                >
-                    <div
-                        ref="canvasRef"
-                        class="relative bg-muted/20"
-                        :style="{
-                            backgroundImage: `radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)`,
-                            backgroundSize: '20px 20px',
-                            minWidth: `${canvasBounds.width}px`,
-                            minHeight: `${canvasBounds.height}px`,
-                        }"
-                    >
-                        <!-- SVG for connection lines -->
-                        <svg
-                            class="absolute left-0 top-0"
-                            :width="canvasBounds.width"
-                            :height="canvasBounds.height"
-                            style="z-index: 1; pointer-events: auto; overflow: visible"
-                        >
-                        <defs>
-                            <marker
-                                id="arrowhead"
-                                markerWidth="10"
-                                markerHeight="7"
-                                refX="9"
-                                refY="3.5"
-                                orient="auto"
-                            >
-                                <polygon
-                                    points="0 0, 10 3.5, 0 7"
-                                    fill="hsl(var(--primary))"
-                                />
-                            </marker>
-                        </defs>
-                        <g v-for="connection in canvasData.connections" :key="connection.id">
-                            <path
-                                :d="getConnectionPath(connection)"
-                                stroke-width="3"
-                                marker-end="url(#arrowhead)"
-                                style="stroke: currentColor; color: hsl(var(--primary)); fill: none; pointer-events: auto; cursor: pointer"
-                                class="opacity-70 transition-opacity hover:opacity-100"
-                                @click="deleteConnection(connection)"
-                            />
-                        </g>
-                    </svg>
-
-                    <!-- Empty State -->
-                    <div
-                        v-if="canvasData.nodes.length === 0"
-                        class="absolute inset-0 flex flex-col items-center justify-center"
-                    >
-                        <BookOpen
-                            class="mb-4 h-12 w-12 text-muted-foreground/30"
-                        />
-                        <p class="text-muted-foreground">
-                            {{ t('Add verses to start building your study') }}
-                        </p>
-                        <Button
-                            variant="outline"
-                            class="mt-4"
-                            @click="addVerseDialog = true"
-                        >
+                        <Button @click="createCanvasDialog = true">
                             <Plus class="mr-2 h-4 w-4" />
-                            {{ t('Add First Verse') }}
+                            {{ t('New Canvas') }}
                         </Button>
                     </div>
 
-                    <!-- Verse Cards -->
                     <div
-                        v-for="node in canvasData.nodes"
-                        :key="node.id"
-                        class="absolute w-[300px]"
-                        :style="{
-                            left: `${node.position_x}px`,
-                            top: `${node.position_y}px`,
-                            zIndex: 1,
-                        }"
+                        v-if="canvases.length === 0"
+                        class="flex flex-1 flex-col items-center justify-center py-12 text-center"
                     >
+                        <GitBranch
+                            class="mb-4 h-12 w-12 text-muted-foreground/50"
+                        />
+                        <h3 class="text-lg font-semibold">
+                            {{ t('No Canvases Yet') }}
+                        </h3>
+                        <p class="mt-2 text-sm text-muted-foreground">
+                            {{
+                                t(
+                                    'Create a canvas to start linking Bible verses together for deeper study.',
+                                )
+                            }}
+                        </p>
+                        <Button @click="createCanvasDialog = true" class="mt-4">
+                            <Plus class="mr-2 h-4 w-4" />
+                            {{ t('Create Your First Canvas') }}
+                        </Button>
+                    </div>
+
+                    <div v-else class="grid grid-cols-3 gap-4">
                         <Card
-                            class="shadow-lg transition-shadow"
-                            :class="{
-                                'ring-2 ring-primary':
-                                    isConnecting &&
-                                    connectingFrom?.id !== node.id,
-                                'ring-2 ring-primary/50':
-                                    connectingFrom?.id === node.id,
-                                'cursor-move': !isConnecting,
-                                'cursor-pointer':
-                                    isConnecting &&
-                                    connectingFrom?.id !== node.id,
-                            }"
+                            v-for="canvas in canvases"
+                            :key="canvas.id"
+                            class="cursor-pointer transition-colors hover:bg-accent/50"
+                            @click="openCanvas(canvas)"
                         >
-                            <CardHeader
-                                class="cursor-move"
-                                @mousedown="startDrag($event, node)"
-                            >
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <GripVertical
-                                            class="h-4 w-4 text-muted-foreground"
-                                        />
-                                        <CardTitle class="text-sm select-none">
-                                            {{ node.verse.book.title }}
-                                            {{
-                                                node.verse.chapter.chapter_number
-                                            }}:{{ node.verse.verse_number }}
-                                        </CardTitle>
-                                    </div>
-                                    <div class="flex gap-1">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            class="h-6 w-6 p-0"
-                                            @click.stop="startConnecting(node)"
-                                            :title="t('Create Link')"
-                                        >
-                                            <Link2 class="h-3 w-3" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            class="h-6 w-6 p-0"
-                                            @click.stop="
-                                                goToVerseStudy(node.verse.id)
-                                            "
-                                            :title="t('Study Verse')"
-                                        >
-                                            <ExternalLink class="h-3 w-3" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            class="h-6 w-6 p-0 text-destructive"
-                                            @click.stop="deleteNode(node)"
-                                            :title="t('Remove')"
-                                        >
-                                            <X class="h-3 w-3" />
-                                        </Button>
-                                    </div>
-                                </div>
-                                <CardDescription class="text-xs select-none">
-                                    {{ node.verse.bible.name }}
+                            <CardHeader>
+                                <CardTitle
+                                    class="flex items-center justify-between"
+                                >
+                                    <span class="truncate">{{
+                                        canvas.name
+                                    }}</span>
+                                    <GitBranch class="h-4 w-4 text-primary" />
+                                </CardTitle>
+                                <CardDescription v-if="canvas.description">
+                                    {{ canvas.description }}
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent class="pt-0">
-                                <p
-                                    class="mb-3 text-sm leading-relaxed select-none"
-                                >
-                                    {{ node.verse.text }}
+                            <CardContent>
+                                <p class="text-sm text-muted-foreground">
+                                    {{ canvas.nodes_count }}
+                                    {{ t('verses') }}
                                 </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </template>
 
-                                <!-- Action buttons -->
-                                <div class="flex flex-col gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        class="h-7 w-full text-xs select-none"
-                                        @click.stop="openNotesForNode(node)"
+                <!-- Canvas Editor View -->
+                <template v-else>
+                    <!-- Canvas Header -->
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-2 border-b pb-3"
+                    >
+                        <div class="flex items-center gap-3">
+                            <Button variant="ghost" size="sm" @click="goBack">
+                                <X class="h-4 w-4" />
+                            </Button>
+                            <div>
+                                <h1 class="text-lg font-semibold">
+                                    {{ selectedCanvas.name }}
+                                </h1>
+                                <p
+                                    v-if="selectedCanvas.description"
+                                    class="text-xs text-muted-foreground"
+                                >
+                                    {{ selectedCanvas.description }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <Button
+                                v-if="isConnecting"
+                                variant="secondary"
+                                size="sm"
+                                @click="cancelConnecting"
+                            >
+                                <X class="mr-1 h-4 w-4" />
+                                {{ t('Cancel Link') }}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="openEditCanvasDialog"
+                            >
+                                <Pencil class="h-4 w-4" />
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                @click="deleteCanvasDialog = true"
+                            >
+                                <Trash2 class="h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <!-- Fixed Add Verse Button -->
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            class="fixed right-6 bottom-6 z-50 mr-4 shadow-lg"
+                            @click="addVerseDialog = true"
+                        >
+                            <Plus class="mr-2 h-5 w-5" />
+                            {{ t('Add Verse') }}
+                        </Button>
+                    </div>
+
+                    <!-- Connection Mode Indicator -->
+                    <div
+                        v-if="isConnecting"
+                        class="rounded-lg bg-primary/10 px-4 py-2 text-center text-sm"
+                    >
+                        <span class="font-medium">
+                            {{ t('Linking from:') }}
+                            {{ connectingFrom?.verse.book.title }}
+                            {{
+                                connectingFrom?.verse.chapter.chapter_number
+                            }}:{{ connectingFrom?.verse.verse_number }}
+                        </span>
+                        <span class="text-muted-foreground">
+                            — {{ t('Click on another verse to create a link') }}
+                        </span>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div
+                        v-if="loading"
+                        class="flex flex-1 items-center justify-center"
+                    >
+                        <LoaderCircle
+                            class="h-8 w-8 animate-spin text-primary"
+                        />
+                    </div>
+
+                    <!-- Canvas Area -->
+                    <ScrollArea
+                        v-else-if="canvasData"
+                        class="flex-1 rounded-lg border-2 border-dashed border-border"
+                    >
+                        <div
+                            ref="canvasRef"
+                            class="relative bg-muted/20"
+                            :style="{
+                                backgroundImage: `radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)`,
+                                backgroundSize: '20px 20px',
+                                minWidth: `${canvasBounds.width}px`,
+                                minHeight: `${canvasBounds.height}px`,
+                            }"
+                        >
+                            <!-- SVG for connection lines -->
+                            <svg
+                                class="absolute top-0 left-0"
+                                :width="canvasBounds.width"
+                                :height="canvasBounds.height"
+                                style="
+                                    z-index: 1;
+                                    pointer-events: auto;
+                                    overflow: visible;
+                                "
+                            >
+                                <defs>
+                                    <marker
+                                        id="arrowhead"
+                                        markerWidth="10"
+                                        markerHeight="7"
+                                        refX="9"
+                                        refY="3.5"
+                                        orient="auto"
                                     >
-                                        <StickyNote class="mr-1 h-3 w-3" />
-                                        {{ t('Notes') }}
-                                    </Button>
+                                        <polygon
+                                            points="0 0, 10 3.5, 0 7"
+                                            fill="hsl(var(--primary))"
+                                        />
+                                    </marker>
+                                </defs>
+                                <g
+                                    v-for="connection in canvasData.connections"
+                                    :key="connection.id"
+                                >
+                                    <path
+                                        :d="getConnectionPath(connection)"
+                                        stroke-width="3"
+                                        marker-end="url(#arrowhead)"
+                                        style="
+                                            stroke: currentColor;
+                                            color: hsl(var(--primary));
+                                            fill: none;
+                                            pointer-events: auto;
+                                            cursor: pointer;
+                                        "
+                                        class="opacity-70 transition-opacity hover:opacity-100"
+                                        @click="deleteConnection(connection)"
+                                    />
+                                </g>
+                            </svg>
 
-                                    <!-- References Collapsible -->
-                                    <Collapsible class="flex-1">
-                                        <CollapsibleTrigger as-child>
+                            <!-- Empty State -->
+                            <div
+                                v-if="canvasData.nodes.length === 0"
+                                class="absolute inset-0 flex flex-col items-center justify-center"
+                            >
+                                <BookOpen
+                                    class="mb-4 h-12 w-12 text-muted-foreground/30"
+                                />
+                                <p class="text-muted-foreground">
+                                    {{
+                                        t(
+                                            'Add verses to start building your study',
+                                        )
+                                    }}
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    class="mt-4"
+                                    @click="addVerseDialog = true"
+                                >
+                                    <Plus class="mr-2 h-4 w-4" />
+                                    {{ t('Add First Verse') }}
+                                </Button>
+                            </div>
+
+                            <!-- Verse Cards -->
+                            <div
+                                v-for="node in canvasData.nodes"
+                                :key="node.id"
+                                class="absolute w-[300px]"
+                                :style="{
+                                    left: `${node.position_x}px`,
+                                    top: `${node.position_y}px`,
+                                    zIndex: 1,
+                                }"
+                            >
+                                <Card
+                                    class="shadow-lg transition-shadow"
+                                    :class="{
+                                        'ring-2 ring-primary':
+                                            isConnecting &&
+                                            connectingFrom?.id !== node.id,
+                                        'ring-2 ring-primary/50':
+                                            connectingFrom?.id === node.id,
+                                        'cursor-move': !isConnecting,
+                                        'cursor-pointer':
+                                            isConnecting &&
+                                            connectingFrom?.id !== node.id,
+                                    }"
+                                >
+                                    <CardHeader
+                                        class="cursor-move"
+                                        @mousedown="startDrag($event, node)"
+                                    >
+                                        <div
+                                            class="flex items-start justify-between"
+                                        >
+                                            <div
+                                                class="flex items-center gap-2"
+                                            >
+                                                <GripVertical
+                                                    class="h-4 w-4 text-muted-foreground"
+                                                />
+                                                <CardTitle
+                                                    class="text-sm select-none"
+                                                >
+                                                    {{ node.verse.book.title }}
+                                                    {{
+                                                        node.verse.chapter
+                                                            .chapter_number
+                                                    }}:{{
+                                                        node.verse.verse_number
+                                                    }}
+                                                </CardTitle>
+                                            </div>
+                                            <div class="flex gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    class="h-6 w-6 p-0"
+                                                    @click.stop="
+                                                        startConnecting(node)
+                                                    "
+                                                    :title="t('Create Link')"
+                                                >
+                                                    <Link2 class="h-3 w-3" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    class="h-6 w-6 p-0"
+                                                    @click.stop="
+                                                        goToVerseStudy(
+                                                            node.verse.id,
+                                                        )
+                                                    "
+                                                    :title="t('Study Verse')"
+                                                >
+                                                    <ExternalLink
+                                                        class="h-3 w-3"
+                                                    />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    class="h-6 w-6 p-0 text-destructive"
+                                                    @click.stop="
+                                                        deleteNode(node)
+                                                    "
+                                                    :title="t('Remove')"
+                                                >
+                                                    <X class="h-3 w-3" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <CardDescription
+                                            class="text-xs select-none"
+                                        >
+                                            {{ node.verse.bible.name }}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent class="pt-0">
+                                        <p
+                                            class="mb-3 text-sm leading-relaxed select-none"
+                                        >
+                                            {{ node.verse.text }}
+                                        </p>
+
+                                        <!-- Action buttons -->
+                                        <div class="flex flex-col gap-2">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 class="h-7 w-full text-xs select-none"
                                                 @click.stop="
-                                                    toggleReferences(node)
+                                                    openNotesForNode(node)
                                                 "
                                             >
-                                                <LoaderCircle
-                                                    v-if="
-                                                        loadingReferences[
-                                                            node.id
-                                                        ]
-                                                    "
-                                                    class="mr-1 h-3 w-3 animate-spin"
+                                                <StickyNote
+                                                    class="mr-1 h-3 w-3"
                                                 />
-                                                <template v-else>
-                                                    <ChevronDown
+                                                {{ t('Notes') }}
+                                            </Button>
+
+                                            <!-- References Collapsible -->
+                                            <Collapsible class="flex-1">
+                                                <CollapsibleTrigger as-child>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        class="h-7 w-full text-xs select-none"
+                                                        @click.stop="
+                                                            toggleReferences(
+                                                                node,
+                                                            )
+                                                        "
+                                                    >
+                                                        <LoaderCircle
+                                                            v-if="
+                                                                loadingReferences[
+                                                                    node.id
+                                                                ]
+                                                            "
+                                                            class="mr-1 h-3 w-3 animate-spin"
+                                                        />
+                                                        <template v-else>
+                                                            <ChevronDown
+                                                                v-if="
+                                                                    expandedReferences[
+                                                                        node.id
+                                                                    ]
+                                                                "
+                                                                class="mr-1 h-3 w-3"
+                                                            />
+                                                            <ChevronRight
+                                                                v-else
+                                                                class="mr-1 h-3 w-3"
+                                                            />
+                                                        </template>
+                                                        {{ t('References') }}
+                                                    </Button>
+                                                </CollapsibleTrigger>
+                                                <CollapsibleContent
+                                                    class="mt-2"
+                                                >
+                                                    <!-- Loading State -->
+                                                    <div
                                                         v-if="
-                                                            expandedReferences[
+                                                            loadingReferences[
                                                                 node.id
                                                             ]
                                                         "
-                                                        class="mr-1 h-3 w-3"
-                                                    />
-                                                    <ChevronRight
-                                                        v-else
-                                                        class="mr-1 h-3 w-3"
-                                                    />
-                                                </template>
-                                                {{ t('References') }}
-                                            </Button>
-                                        </CollapsibleTrigger>
-                                        <CollapsibleContent
-                                            class="mt-2"
-                                        >
-                                            <!-- Loading State -->
-                                            <div
-                                                v-if="loadingReferences[node.id]"
-                                                class="flex items-center justify-center py-4"
-                                            >
-                                                <LoaderCircle
-                                                    class="h-5 w-5 animate-spin text-primary"
-                                                />
-                                                <span class="ml-2 text-xs text-muted-foreground">
-                                                    {{ t('Loading references...') }}
-                                                </span>
-                                            </div>
-                                            <!-- References List -->
-                                            <ScrollArea
-                                                v-else-if="expandedReferences[node.id] && nodeReferences[node.id]"
-                                                class=" h-100"
-                                            >
-                                                <div
-                                                    v-if="
-                                                        nodeReferences[node.id]
-                                                            .length === 0
-                                                    "
-                                                    class="py-2 text-center text-xs text-muted-foreground"
-                                                >
-                                                    {{
-                                                        t(
-                                                            'No references found',
-                                                        )
-                                                    }}
-                                                </div>
-                                                <div
-                                                    v-else
-                                                    class="space-y-2"
-                                                >
-                                                    <div
-                                                        v-for="ref in nodeReferences[
-                                                            node.id
-                                                        ]"
-                                                        :key="ref.id"
-                                                        class="cursor-pointer rounded-md border bg-muted/50 p-2 transition-colors hover:bg-accent"
-                                                        @click.stop="
-                                                            selectVerseToAdd(ref.verse);
-                                                            confirmAddVerse();
-                                                        "
+                                                        class="flex items-center justify-center py-4"
                                                     >
-                                                        <p class="text-xs font-medium text-primary">
-                                                            {{ ref.verse.book?.title }}
-                                                            {{ ref.verse.chapter?.chapter_number }}:{{ ref.verse.verse_number }}
-                                                        </p>
-                                                        <p class="mt-1 text-xs text-muted-foreground">
-                                                            "{{ ref.verse.text }}"
-                                                        </p>
+                                                        <LoaderCircle
+                                                            class="h-5 w-5 animate-spin text-primary"
+                                                        />
+                                                        <span
+                                                            class="ml-2 text-xs text-muted-foreground"
+                                                        >
+                                                            {{
+                                                                t(
+                                                                    'Loading references...',
+                                                                )
+                                                            }}
+                                                        </span>
                                                     </div>
-                                                </div>
-                                            </ScrollArea>
-                                        </CollapsibleContent>
-                                    </Collapsible>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
-                </ScrollArea>
-            </template>
+                                                    <!-- References List -->
+                                                    <ScrollArea
+                                                        v-else-if="
+                                                            expandedReferences[
+                                                                node.id
+                                                            ] &&
+                                                            nodeReferences[
+                                                                node.id
+                                                            ]
+                                                        "
+                                                        class="h-100"
+                                                    >
+                                                        <div
+                                                            v-if="
+                                                                nodeReferences[
+                                                                    node.id
+                                                                ].length === 0
+                                                            "
+                                                            class="py-2 text-center text-xs text-muted-foreground"
+                                                        >
+                                                            {{
+                                                                t(
+                                                                    'No references found',
+                                                                )
+                                                            }}
+                                                        </div>
+                                                        <div
+                                                            v-else
+                                                            class="space-y-2"
+                                                        >
+                                                            <div
+                                                                v-for="ref in nodeReferences[
+                                                                    node.id
+                                                                ]"
+                                                                :key="ref.id"
+                                                                class="cursor-pointer rounded-md border bg-muted/50 p-2 transition-colors hover:bg-accent"
+                                                                @click.stop="
+                                                                    selectVerseToAdd(
+                                                                        ref.verse,
+                                                                    );
+                                                                    confirmAddVerse();
+                                                                "
+                                                            >
+                                                                <p
+                                                                    class="text-xs font-medium text-primary"
+                                                                >
+                                                                    {{
+                                                                        ref
+                                                                            .verse
+                                                                            .book
+                                                                            ?.title
+                                                                    }}
+                                                                    {{
+                                                                        ref
+                                                                            .verse
+                                                                            .chapter
+                                                                            ?.chapter_number
+                                                                    }}:{{
+                                                                        ref
+                                                                            .verse
+                                                                            .verse_number
+                                                                    }}
+                                                                </p>
+                                                                <p
+                                                                    class="mt-1 text-xs text-muted-foreground"
+                                                                >
+                                                                    "{{
+                                                                        ref
+                                                                            .verse
+                                                                            .text
+                                                                    }}"
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </ScrollArea>
+                                                </CollapsibleContent>
+                                            </Collapsible>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
+                    </ScrollArea>
+                </template>
+            </div>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+/* Force desktop layout - hide mobile footer spacer when in Verse Link page */
+:deep(.verse-link-desktop-wrapper) + div.h-20.md\:hidden {
+    display: none;
+}
+</style>
