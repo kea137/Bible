@@ -8,8 +8,28 @@ import { initializeTheme } from './composables/useAppearance';
 import { initializeFontPreferences } from './composables/useFontPreferences';
 import { initializeLocale } from './composables/useLocale';
 import { i18n } from './i18n';
+import { offlineDB } from './lib/offlineDB';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+// Initialize IndexedDB for offline storage
+offlineDB.init().catch((error) => {
+    console.error('[App] Failed to initialize offline database:', error);
+});
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker
+            .register('/sw.js', { scope: '/' })
+            .then((registration) => {
+                console.log('[App] Service Worker registered:', registration.scope);
+            })
+            .catch((error) => {
+                console.error('[App] Service Worker registration failed:', error);
+            });
+    });
+}
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),

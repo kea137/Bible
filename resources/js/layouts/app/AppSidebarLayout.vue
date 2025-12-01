@@ -5,6 +5,7 @@ import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
 import MobileFooter from '@/components/MobileFooter.vue';
+import OfflineStatus from '@/components/OfflineStatus.vue';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -30,5 +31,6 @@ withDefaults(defineProps<Props>(), {
             <AppFooter />
             <MobileFooter />
         </AppContent>
+        <OfflineStatus />
     </AppShell>
 </template>
