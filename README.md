@@ -13,6 +13,9 @@ Looking for the mobile version? Check out our companion mobile app: [**kea137/Bi
 - **Verse sharing with beautiful backgrounds** - Create shareable images with gradient or photo backgrounds from Pexels
 - **Bible study lessons** - Create, manage, and track progress through single or serialized lessons with scripture references
 - **Verse Link Canvas** - Visual canvas for creating connections between Bible verses and building verse relationship maps
+- **Privacy-safe analytics** - Optional usage tracking without collecting personal information
+- **Feature flags** - Gradual rollout system for controlling feature availability
+- **Accessibility-first design** - WCAG AA compliant with skip navigation, ARIA labels, and keyboard support
 - User authentication and role management
 - Dark mode support
 - Responsive design with mobile-optimized interface
@@ -89,6 +92,40 @@ To enable photo backgrounds from Pexels:
 3. The app will automatically fetch serene nature images for verse backgrounds
 
 **Note**: The feature works perfectly without a Pexels API key - users can still use the beautiful gradient backgrounds.
+
+## Privacy & Analytics
+
+This application implements privacy-safe analytics that respects user privacy:
+
+- **No Personal Information**: Analytics never collects PII (names, emails, IP addresses)
+- **User Control**: Users can opt-in or opt-out of analytics at any time
+- **Transparent**: Clear documentation of what is tracked
+- **Local Storage**: Preferences stored locally in the browser
+
+See [ANALYTICS_AND_FEATURE_FLAGS.md](ANALYTICS_AND_FEATURE_FLAGS.md) for detailed documentation.
+
+## Feature Flags
+
+The application includes a feature flag system for controlled feature rollouts:
+
+- Enable/disable features without code changes
+- Gradual rollout capabilities
+- User-friendly toggle interface
+- Persistent settings across sessions
+
+All major features can be controlled via feature flags, allowing for safe deployments and A/B testing.
+
+## Accessibility
+
+We are committed to making this application accessible to all users:
+
+- **WCAG AA Compliant**: Meets Web Content Accessibility Guidelines Level AA
+- **Keyboard Navigation**: Full keyboard support with skip navigation links
+- **Screen Reader Support**: Proper ARIA labels and semantic HTML
+- **Focus Management**: Clear focus indicators throughout the application
+- **Color Contrast**: All text meets minimum contrast requirements
+
+See [ACCESSIBILITY.md](ACCESSIBILITY.md) for detailed accessibility documentation.
 
 ## Related Projects
 
