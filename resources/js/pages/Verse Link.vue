@@ -200,6 +200,12 @@ const canvasRef = ref<HTMLElement | null>(null);
 // Minimap state
 const minimapRef = ref<HTMLElement | null>(null);
 const showMinimap = ref(true);
+const MINIMAP_WIDTH = 200;
+const MINIMAP_HEIGHT = 150;
+const MINIMAP_PADDING = 16; // Total horizontal padding (8px left + 8px right)
+const MINIMAP_HEADER = 30; // Space for label and spacing
+const MINIMAP_VIEWPORT_WIDTH = MINIMAP_WIDTH - MINIMAP_PADDING;
+const MINIMAP_VIEWPORT_HEIGHT = MINIMAP_HEIGHT - MINIMAP_HEADER;
 
 // References state for collapsible
 const nodeReferences = ref<Record<number, Reference[]>>({});
@@ -739,7 +745,7 @@ function stopDrag() {
     } else {
         updateNodePosition(draggedNode.value);
     }
-    
+
     draggedNode.value = null;
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', stopDrag);
@@ -1401,7 +1407,7 @@ const canvasBounds = computed(() => {
                         <div
                             v-if="showMinimap && canvasData.nodes.length > 0"
                             class="absolute top-4 right-4 z-50 rounded-lg border-2 border-border bg-background/95 p-2 shadow-lg backdrop-blur"
-                            style="width: 200px; height: 150px"
+                            :style="`width: ${MINIMAP_WIDTH}px; height: ${MINIMAP_HEIGHT}px`"
                         >
                             <div class="text-xs font-medium mb-1 text-muted-foreground">
                                 {{ t('Minimap') }}
@@ -1409,7 +1415,7 @@ const canvasBounds = computed(() => {
                             <div
                                 ref="minimapRef"
                                 class="relative cursor-pointer overflow-hidden rounded border bg-muted/30"
-                                style="width: 184px; height: 120px"
+                                :style="`width: ${MINIMAP_VIEWPORT_WIDTH}px; height: ${MINIMAP_VIEWPORT_HEIGHT}px`"
                                 @click="navigateToMinimapPosition"
                             >
                                 <!-- Minimap nodes -->
@@ -1423,8 +1429,8 @@ const canvasBounds = computed(() => {
                                             : 'bg-primary/50'
                                     "
                                     :style="{
-                                        left: `${(node.position_x / canvasBounds.width) * 184}px`,
-                                        top: `${(node.position_y / canvasBounds.height) * 120}px`,
+                                        left: `${(node.position_x / canvasBounds.width) * MINIMAP_VIEWPORT_WIDTH}px`,
+                                        top: `${(node.position_y / canvasBounds.height) * MINIMAP_VIEWPORT_HEIGHT}px`,
                                         width: '8px',
                                         height: '8px',
                                     }"
