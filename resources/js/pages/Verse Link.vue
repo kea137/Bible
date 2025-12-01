@@ -51,9 +51,11 @@ import {
     ChevronRight,
     ExternalLink,
     GitBranch,
+    Grid3x3,
     GripVertical,
     Link2,
     LoaderCircle,
+    Map,
     Pencil,
     Plus,
     StickyNote,
@@ -181,9 +183,23 @@ const isConnecting = ref(false);
 const draggedNode = ref<Node | null>(null);
 const dragStartPos = ref({ x: 0, y: 0 });
 const nodeStartPos = ref({ x: 0, y: 0 });
+const selectedNodesStartPos = ref<Map<number, { x: number; y: number }>>(
+    new Map(),
+);
+
+// Multi-select state
+const selectedNodes = ref<Set<number>>(new Set());
+
+// Snap-to-grid state
+const snapToGrid = ref(false);
+const gridSize = 20; // Match the background grid size
 
 // Canvas viewport
 const canvasRef = ref<HTMLElement | null>(null);
+
+// Minimap state
+const minimapRef = ref<HTMLElement | null>(null);
+const showMinimap = ref(true);
 
 // References state for collapsible
 const nodeReferences = ref<Record<number, Reference[]>>({});
@@ -613,6 +629,32 @@ async function deleteConnection(connection: Connection) {
     }
 }
 
+// Helper function for snap-to-grid
+function snapToGridValue(value: number): number {
+    if (!snapToGrid.value) return value;
+    return Math.round(value / gridSize) * gridSize;
+}
+
+// Multi-select handlers
+function toggleNodeSelection(node: Node, event?: MouseEvent) {
+    if (event && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+        // Clear selection if no modifier key
+        selectedNodes.value.clear();
+        selectedNodes.value.add(node.id);
+    } else {
+        // Toggle selection with modifier key
+        if (selectedNodes.value.has(node.id)) {
+            selectedNodes.value.delete(node.id);
+        } else {
+            selectedNodes.value.add(node.id);
+        }
+    }
+}
+
+function deselectAllNodes() {
+    selectedNodes.value.clear();
+}
+
 // Drag handlers
 function startDrag(event: MouseEvent, node: Node) {
     if (isConnecting.value) {
@@ -620,28 +662,81 @@ function startDrag(event: MouseEvent, node: Node) {
         return;
     }
 
+    // If node is not selected, select it (and clear others if no modifier key)
+    if (!selectedNodes.value.has(node.id)) {
+        toggleNodeSelection(node, event);
+    }
+
     draggedNode.value = node;
     dragStartPos.value = { x: event.clientX, y: event.clientY };
     nodeStartPos.value = { x: node.position_x, y: node.position_y };
+
+    // Store starting positions of all selected nodes
+    if (canvasData.value) {
+        selectedNodesStartPos.value.clear();
+        const nodesToMove = canvasData.value.nodes.filter((n) =>
+            selectedNodes.value.has(n.id),
+        );
+        nodesToMove.forEach((n) => {
+            selectedNodesStartPos.value.set(n.id, {
+                x: n.position_x,
+                y: n.position_y,
+            });
+        });
+    }
 
     document.addEventListener('mousemove', onDrag);
     document.addEventListener('mouseup', stopDrag);
 }
 
 function onDrag(event: MouseEvent) {
-    if (!draggedNode.value) return;
+    if (!draggedNode.value || !canvasData.value) return;
 
     const dx = event.clientX - dragStartPos.value.x;
     const dy = event.clientY - dragStartPos.value.y;
 
-    draggedNode.value.position_x = Math.max(0, nodeStartPos.value.x + dx);
-    draggedNode.value.position_y = Math.max(0, nodeStartPos.value.y + dy);
+    // If multiple nodes are selected, move them all
+    if (selectedNodes.value.size > 1) {
+        const nodesToMove = canvasData.value.nodes.filter((n) =>
+            selectedNodes.value.has(n.id),
+        );
+        nodesToMove.forEach((n) => {
+            const startPos = selectedNodesStartPos.value.get(n.id);
+            if (startPos) {
+                const newX = Math.max(0, startPos.x + dx);
+                const newY = Math.max(0, startPos.y + dy);
+
+                n.position_x = snapToGridValue(newX);
+                n.position_y = snapToGridValue(newY);
+            }
+        });
+    } else {
+        const newX = Math.max(0, nodeStartPos.value.x + dx);
+        const newY = Math.max(0, nodeStartPos.value.y + dy);
+
+        draggedNode.value.position_x = snapToGridValue(newX);
+        draggedNode.value.position_y = snapToGridValue(newY);
+    }
 }
 
 function stopDrag() {
-    if (draggedNode.value) {
+    if (!draggedNode.value || !canvasData.value) {
+        draggedNode.value = null;
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', stopDrag);
+        return;
+    }
+
+    // Update positions for all selected nodes
+    if (selectedNodes.value.size > 1) {
+        const nodesToUpdate = canvasData.value.nodes.filter((n) =>
+            selectedNodes.value.has(n.id),
+        );
+        nodesToUpdate.forEach((n) => updateNodePosition(n));
+    } else {
         updateNodePosition(draggedNode.value);
     }
+    
     draggedNode.value = null;
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', stopDrag);
@@ -737,6 +832,31 @@ function goToVerseStudy(verseId: number) {
 function goBack() {
     selectedCanvas.value = null;
     canvasData.value = null;
+    selectedNodes.value.clear();
+}
+
+// Minimap functionality
+function navigateToMinimapPosition(event: MouseEvent) {
+    if (!minimapRef.value || !canvasRef.value) return;
+
+    const minimapRect = minimapRef.value.getBoundingClientRect();
+    const clickX = event.clientX - minimapRect.left;
+    const clickY = event.clientY - minimapRect.top;
+
+    const minimapWidth = minimapRect.width;
+    const minimapHeight = minimapRect.height;
+
+    const canvasScrollElement = canvasRef.value.parentElement;
+    if (!canvasScrollElement) return;
+
+    const scrollX = (clickX / minimapWidth) * canvasBounds.value.width;
+    const scrollY = (clickY / minimapHeight) * canvasBounds.value.height;
+
+    canvasScrollElement.scrollTo({
+        left: scrollX - canvasScrollElement.clientWidth / 2,
+        top: scrollY - canvasScrollElement.clientHeight / 2,
+        behavior: 'smooth',
+    });
 }
 
 // Calculate canvas bounds for SVG
@@ -1187,6 +1307,36 @@ const canvasBounds = computed(() => {
                                 <X class="mr-1 h-4 w-4" />
                                 {{ t('Cancel Link') }}
                             </Button>
+                            <!-- Snap to Grid Toggle -->
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                :class="{ 'bg-primary/10': snapToGrid }"
+                                @click="snapToGrid = !snapToGrid"
+                                :title="t('Snap to Grid')"
+                            >
+                                <Grid3x3 class="h-4 w-4" />
+                            </Button>
+                            <!-- Minimap Toggle -->
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                :class="{ 'bg-primary/10': showMinimap }"
+                                @click="showMinimap = !showMinimap"
+                                :title="t('Toggle Minimap')"
+                            >
+                                <Map class="h-4 w-4" />
+                            </Button>
+                            <!-- Selection Controls -->
+                            <Button
+                                v-if="selectedNodes.size > 0"
+                                variant="outline"
+                                size="sm"
+                                @click="deselectAllNodes"
+                                :title="t('Deselect All')"
+                            >
+                                {{ selectedNodes.size }} {{ t('selected') }}
+                            </Button>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -1242,11 +1392,47 @@ const canvasBounds = computed(() => {
                         />
                     </div>
 
-                    <!-- Canvas Area -->
-                    <ScrollArea
-                        v-else-if="canvasData"
-                        class="flex-1 rounded-lg border-2 border-dashed border-border"
-                    >
+                    <!-- Canvas Area with Minimap -->
+                    <div v-else-if="canvasData" class="relative flex-1">
+                        <!-- Minimap -->
+                        <div
+                            v-if="showMinimap && canvasData.nodes.length > 0"
+                            class="absolute top-4 right-4 z-50 rounded-lg border-2 border-border bg-background/95 p-2 shadow-lg backdrop-blur"
+                            style="width: 200px; height: 150px"
+                        >
+                            <div class="text-xs font-medium mb-1 text-muted-foreground">
+                                {{ t('Minimap') }}
+                            </div>
+                            <div
+                                ref="minimapRef"
+                                class="relative cursor-pointer overflow-hidden rounded border bg-muted/30"
+                                style="width: 184px; height: 120px"
+                                @click="navigateToMinimapPosition"
+                            >
+                                <!-- Minimap nodes -->
+                                <div
+                                    v-for="node in canvasData.nodes"
+                                    :key="node.id"
+                                    class="absolute rounded-sm transition-colors"
+                                    :class="
+                                        selectedNodes.has(node.id)
+                                            ? 'bg-primary'
+                                            : 'bg-primary/50'
+                                    "
+                                    :style="{
+                                        left: `${(node.position_x / canvasBounds.width) * 184}px`,
+                                        top: `${(node.position_y / canvasBounds.height) * 120}px`,
+                                        width: '8px',
+                                        height: '8px',
+                                    }"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Canvas Area -->
+                        <ScrollArea
+                            class="flex-1 rounded-lg border-2 border-dashed border-border"
+                        >
                         <div
                             ref="canvasRef"
                             class="relative bg-muted/20"
@@ -1339,15 +1525,19 @@ const canvasBounds = computed(() => {
                                     top: `${node.position_y}px`,
                                     zIndex: 1,
                                 }"
+                                @click="toggleNodeSelection(node, $event)"
                             >
                                 <Card
-                                    class="shadow-lg transition-shadow"
+                                    class="shadow-lg transition-all"
                                     :class="{
                                         'ring-2 ring-primary':
                                             isConnecting &&
                                             connectingFrom?.id !== node.id,
                                         'ring-2 ring-primary/50':
                                             connectingFrom?.id === node.id,
+                                        'ring-4 ring-blue-500':
+                                            selectedNodes.has(node.id) &&
+                                            !isConnecting,
                                         'cursor-move': !isConnecting,
                                         'cursor-pointer':
                                             isConnecting &&
@@ -1594,6 +1784,7 @@ const canvasBounds = computed(() => {
                             </div>
                         </div>
                     </ScrollArea>
+                    </div>
                 </template>
             </div>
         </div>
