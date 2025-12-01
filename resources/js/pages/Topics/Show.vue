@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import CardContent from '@/components/ui/card/CardContent.vue';
 import CardHeader from '@/components/ui/card/CardHeader.vue';
@@ -56,9 +55,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 function viewVerse(verse: Verse) {
-    const book = verse.book.title;
-    const chapter = verse.chapter.chapter_number;
-    const verseNumber = verse.verse_number;
     router.visit(`/verses/${verse.id}/study`);
 }
 

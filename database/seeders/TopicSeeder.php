@@ -60,7 +60,7 @@ class TopicSeeder extends Seeder
         //             $b->where('title', 'John');
         //         });
         //     })->first();
-        //     
+        //
         //     if ($johnVerse) {
         //         $loveTopic->verses()->attach($johnVerse->id, [
         //             'order' => 1,
@@ -70,4 +70,3 @@ class TopicSeeder extends Seeder
         // }
     }
 }
-

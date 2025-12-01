@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Note;
+use App\Models\ReadingProgress;
 use App\Models\User;
 use App\Models\Verse;
-use App\Models\VerseSuggestion;
 use App\Models\VerseHighlight;
-use App\Models\ReadingProgress;
-use App\Models\Note;
+use App\Models\VerseSuggestion;
 use Illuminate\Support\Facades\DB;
 
 class VerseSuggestionService
@@ -41,7 +41,7 @@ class VerseSuggestionService
         $suggestions = array_merge($suggestions, $topicalSuggestions);
 
         // Sort by score and limit
-        usort($suggestions, fn($a, $b) => $b['score'] <=> $a['score']);
+        usort($suggestions, fn ($a, $b) => $b['score'] <=> $a['score']);
         $suggestions = array_slice($suggestions, 0, $limit);
 
         // Store suggestions in database
@@ -94,7 +94,9 @@ class VerseSuggestionService
         $suggestions = [];
 
         foreach ($highlightedVerses as $verse) {
-            if (!isset($verse['id'])) continue;
+            if (! isset($verse['id'])) {
+                continue;
+            }
 
             // Get cross-references for this verse
             $references = DB::table('references')
@@ -102,18 +104,24 @@ class VerseSuggestionService
                 ->get();
 
             foreach ($references as $ref) {
-                if (!$ref->to_verse_id) continue;
+                if (! $ref->to_verse_id) {
+                    continue;
+                }
 
                 // Check if user already highlighted this verse
                 $isHighlighted = VerseHighlight::where('user_id', $user->id)
                     ->where('verse_id', $ref->to_verse_id)
                     ->exists();
 
-                if ($isHighlighted) continue;
+                if ($isHighlighted) {
+                    continue;
+                }
 
                 // Get the referenced verse
                 $refVerse = Verse::with(['book', 'chapter', 'bible'])->find($ref->to_verse_id);
-                if (!$refVerse) continue;
+                if (! $refVerse) {
+                    continue;
+                }
 
                 $suggestions[] = [
                     'verse_id' => $refVerse->id,
@@ -124,7 +132,7 @@ class VerseSuggestionService
                             'type' => 'cross_reference',
                             'description' => 'Related to a verse you highlighted',
                             'source_verse' => $this->formatVerseReference($verse),
-                        ]
+                        ],
                     ],
                 ];
             }
@@ -162,8 +170,8 @@ class VerseSuggestionService
                     'reasons' => [
                         [
                             'type' => 'same_book',
-                            'description' => 'From the book of ' . $verse->book->title . ' which you\'ve been reading',
-                        ]
+                            'description' => 'From the book of '.$verse->book->title.' which you\'ve been reading',
+                        ],
                     ],
                 ];
             }
@@ -192,7 +200,7 @@ class VerseSuggestionService
         $excludedIds = array_unique(array_merge($highlightedIds, $notedIds));
 
         foreach ($keywords as $keyword) {
-            $verses = Verse::where('text', 'LIKE', '%' . $keyword . '%')
+            $verses = Verse::where('text', 'LIKE', '%'.$keyword.'%')
                 ->whereNotIn('id', $excludedIds)
                 ->with(['book', 'chapter', 'bible'])
                 ->inRandomOrder()
@@ -209,7 +217,7 @@ class VerseSuggestionService
                             'type' => 'keyword_match',
                             'description' => 'Contains similar themes to verses you\'ve highlighted',
                             'keyword' => $keyword,
-                        ]
+                        ],
                     ],
                 ];
             }
@@ -227,12 +235,14 @@ class VerseSuggestionService
         $commonWords = ['the', 'and', 'of', 'to', 'a', 'in', 'that', 'is', 'for', 'it', 'with', 'as', 'was', 'on', 'be', 'at', 'by', 'from', 'or', 'an', 'this', 'not', 'but', 'they', 'you', 'he', 'she', 'will', 'have', 'are'];
 
         foreach ($verses as $verse) {
-            if (!isset($verse['text'])) continue;
+            if (! isset($verse['text'])) {
+                continue;
+            }
 
             $words = preg_split('/\s+/', strtolower($verse['text']));
             foreach ($words as $word) {
                 $word = preg_replace('/[^a-z]/', '', $word);
-                if (strlen($word) > 4 && !in_array($word, $commonWords)) {
+                if (strlen($word) > 4 && ! in_array($word, $commonWords)) {
                     $keywords[] = $word;
                 }
             }
@@ -241,6 +251,7 @@ class VerseSuggestionService
         // Get most common keywords
         $keywords = array_count_values($keywords);
         arsort($keywords);
+
         return array_slice(array_keys($keywords), 0, 10);
     }
 
@@ -273,18 +284,18 @@ class VerseSuggestionService
      */
     private function formatVerseReference($verse): string
     {
-        if (!isset($verse['book_id'])) {
+        if (! isset($verse['book_id'])) {
             return 'Unknown';
         }
 
         $book = DB::table('books')->find($verse['book_id']);
         $chapter = DB::table('chapters')->find($verse['chapter_id']);
 
-        if (!$book || !$chapter) {
+        if (! $book || ! $chapter) {
             return 'Unknown';
         }
 
-        return $book->title . ' ' . $chapter->chapter_number . ':' . ($verse['verse_number'] ?? '?');
+        return $book->title.' '.$chapter->chapter_number.':'.($verse['verse_number'] ?? '?');
     }
 
     /**

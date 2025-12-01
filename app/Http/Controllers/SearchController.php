@@ -16,18 +16,18 @@ class SearchController extends Controller
     {
         $query = $request->input('query', '');
         $filters = $request->input('filters', []);
-        
+
         // Handle types parameter - can be JSON string or array
         $types = $request->input('types', ['verses', 'notes', 'lessons']);
         if (is_string($types)) {
             $types = json_decode($types, true) ?: ['verses', 'notes', 'lessons'];
         }
-        
+
         // Handle filters - can be JSON string or array
         if (is_string($filters)) {
             $filters = json_decode($filters, true) ?: [];
         }
-        
+
         $perPage = min((int) $request->input('per_page', 10), 100);
 
         $results = [
@@ -43,16 +43,16 @@ class SearchController extends Controller
             $versesQuery = Verse::search($query);
 
             // Apply filters
-            if (!empty($filters['bible_id'])) {
+            if (! empty($filters['bible_id'])) {
                 $versesQuery->where('bible_id', $filters['bible_id']);
             }
-            if (!empty($filters['book_id'])) {
+            if (! empty($filters['book_id'])) {
                 $versesQuery->where('book_id', $filters['book_id']);
             }
-            if (!empty($filters['version'])) {
+            if (! empty($filters['version'])) {
                 $versesQuery->where('version', $filters['version']);
             }
-            if (!empty($filters['language'])) {
+            if (! empty($filters['language'])) {
                 $versesQuery->where('language', $filters['language']);
             }
 
@@ -78,10 +78,10 @@ class SearchController extends Controller
                 ->where('user_id', auth()->id());
 
             // Apply date filter
-            if (!empty($filters['date_from'])) {
+            if (! empty($filters['date_from'])) {
                 $notesQuery->where('created_at', '>=', strtotime($filters['date_from']));
             }
-            if (!empty($filters['date_to'])) {
+            if (! empty($filters['date_to'])) {
                 $notesQuery->where('created_at', '<=', strtotime($filters['date_to']));
             }
 
@@ -105,16 +105,16 @@ class SearchController extends Controller
             $lessonsQuery = Lesson::search($query);
 
             // Apply filters
-            if (!empty($filters['language'])) {
+            if (! empty($filters['language'])) {
                 $lessonsQuery->where('language', $filters['language']);
             }
-            if (!empty($filters['series_id'])) {
+            if (! empty($filters['series_id'])) {
                 $lessonsQuery->where('series_id', $filters['series_id']);
             }
-            if (!empty($filters['date_from'])) {
+            if (! empty($filters['date_from'])) {
                 $lessonsQuery->where('created_at', '>=', strtotime($filters['date_from']));
             }
-            if (!empty($filters['date_to'])) {
+            if (! empty($filters['date_to'])) {
                 $lessonsQuery->where('created_at', '<=', strtotime($filters['date_to']));
             }
 
