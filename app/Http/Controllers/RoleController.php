@@ -49,7 +49,21 @@ class RoleController extends Controller
             'role_ids.*' => 'exists:roles,id',
         ]);
 
+        $oldRoles = $user->roles->pluck('name')->toArray();
         $user->roles()->sync($validated['role_ids']);
+        $newRoles = $user->fresh()->roles->pluck('name')->toArray();
+
+        // Log the role update
+        \App\Models\ActivityLog::log(
+            'role_update',
+            "Updated roles for user {$user->name}",
+            $user->id,
+            [
+                'old_roles' => $oldRoles,
+                'new_roles' => $newRoles,
+                'email' => $user->email,
+            ]
+        );
 
         return redirect()->back()->with('success', 'User roles updated successfully.');
     }
@@ -60,6 +74,14 @@ class RoleController extends Controller
     public function deleteUser(User $user)
     {
         Gate::authorize('delete', $user);
+
+        // Log the user deletion by admin
+        \App\Models\ActivityLog::log(
+            'user_deletion_by_admin',
+            "Admin deleted user {$user->name}",
+            $user->id,
+            ['email' => $user->email]
+        );
 
         $user->delete();
 

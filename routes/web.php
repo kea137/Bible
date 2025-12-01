@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\BibleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LessonController;
@@ -72,6 +73,9 @@ Route::get('/api/bibles/books/chapters/{chapter}', [BibleController::class, 'sho
 Route::get('/role/management', [RoleController::class, 'index'])->name('role_management')->middleware(['auth', 'can:create,App\\Models\\Role']);
 Route::put('/users/{user}/roles', [RoleController::class, 'updateRoles'])->name('update_roles')->middleware(['auth', 'can:create,App\\Models\Role']);
 Route::delete('/users/{user}', [RoleController::class, 'deleteUser'])->name('delete_user')->middleware(['auth', 'can:delete,user']);
+
+// Activity Log routes (admin only)
+Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs')->middleware(['auth', 'can:create,App\\Models\\Role']);
 
 // Reference routes
 Route::get('/references/configure', [ReferenceController::class, 'index'])->name('references_configure')->middleware(['auth', 'can:update,App\\Models\\Reference']);
