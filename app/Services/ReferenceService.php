@@ -78,19 +78,24 @@ class ReferenceService
             // If tags are supported, flush the entire tag
             Cache::tags(['verse_references'])->flush();
         } else {
-            // Otherwise, find and delete individual cache keys
-            $bibles = Bible::all();
-            foreach ($bibles as $bible) {
-                $equivalentVerse = $this->findVerseInBible(
-                    $bible,
-                    $verse->book->book_number,
-                    $verse->chapter->chapter_number,
-                    $verse->verse_number
-                );
-                if ($equivalentVerse) {
-                    $cacheKey = "verse_references:{$equivalentVerse->id}:{$bible->id}";
-                    Cache::forget($cacheKey);
-                }
+            // Find all equivalent verses across all Bibles in a single query
+            $bookNumber = $verse->book->book_number;
+            $chapterNumber = $verse->chapter->chapter_number;
+            $verseNumber = $verse->verse_number;
+
+            // Get all verses that match this book/chapter/verse across all Bibles
+            $equivalentVerses = Verse::select('verses.id', 'verses.bible_id')
+                ->join('books', 'verses.book_id', '=', 'books.id')
+                ->join('chapters', 'verses.chapter_id', '=', 'chapters.id')
+                ->where('books.book_number', $bookNumber)
+                ->where('chapters.chapter_number', $chapterNumber)
+                ->where('verses.verse_number', $verseNumber)
+                ->get();
+
+            // Invalidate cache for each equivalent verse
+            foreach ($equivalentVerses as $equivalentVerse) {
+                $cacheKey = "verse_references:{$equivalentVerse->id}:{$equivalentVerse->bible_id}";
+                Cache::forget($cacheKey);
             }
         }
     }
@@ -107,17 +112,17 @@ class ReferenceService
             Cache::tags(['verse_references'])->flush();
         } else {
             // For cache drivers without tag support, we clear only verse reference keys
-            // This is safer than flushing the entire cache
-            // Note: This may be slow for large datasets; consider using Redis/Memcached in production
-            $verses = Verse::with('book')->get();
+            // Use chunking to avoid memory issues with large datasets
             $bibles = Bible::all();
             
-            foreach ($verses as $verse) {
-                foreach ($bibles as $bible) {
-                    $cacheKey = "verse_references:{$verse->id}:{$bible->id}";
-                    Cache::forget($cacheKey);
+            Verse::with('book')->chunk(1000, function ($verses) use ($bibles) {
+                foreach ($verses as $verse) {
+                    foreach ($bibles as $bible) {
+                        $cacheKey = "verse_references:{$verse->id}:{$bible->id}";
+                        Cache::forget($cacheKey);
+                    }
                 }
-            }
+            });
         }
     }
 

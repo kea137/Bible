@@ -118,7 +118,10 @@ The controller calls `ReferenceService::getReferencesForVerse()` which now has c
 2. **Reference Deletion** - When references are deleted via `ReferenceController::destroy()`
 
 **Note on Cache Invalidation Without Tags:**
-For cache drivers that don't support tags (file, array, database), the `clearAllReferenceCaches()` method iterates through all verses and bibles to forget individual cache keys. This can be slow for large datasets. For production use, Redis or Memcached is strongly recommended for efficient cache invalidation using tags.
+For cache drivers that don't support tags (file, array, database):
+- `invalidateVerseReferences()` uses a single optimized query with joins to find all equivalent verses across Bibles
+- `clearAllReferenceCaches()` uses chunking (1000 verses at a time) to avoid memory issues with large datasets
+- For production use, Redis or Memcached is strongly recommended for efficient cache invalidation using tags
 
 ## 4. Performance Testing
 
