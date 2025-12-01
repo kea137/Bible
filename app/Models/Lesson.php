@@ -48,4 +48,18 @@ class Lesson extends Model
     {
         return $this->hasOne(LessonProgress::class)->where('user_id', $userId);
     }
+
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'language' => $this->language,
+            'user_id' => $this->user_id,
+            'series_id' => $this->series_id,
+            'episode_number' => $this->episode_number,
+            'created_at' => $this->created_at?->timestamp,
+        ];
+    }
 }
