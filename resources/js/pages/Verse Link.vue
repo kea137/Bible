@@ -41,6 +41,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { getLinkTypeColor, linkTypes } from '@/composables/useLinkTypes';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { verse_link } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -183,17 +184,6 @@ const importFileContent = ref<string>('');
 const showShareDialog = ref(false);
 const shareUrl = ref<string>('');
 const shareToken = ref<string>('');
-
-// Link types available
-const linkTypes = [
-    { value: 'general', label: 'General', color: '#3b82f6' },
-    { value: 'support', label: 'Support', color: '#10b981' },
-    { value: 'parallel', label: 'Parallel', color: '#8b5cf6' },
-    { value: 'prophecy', label: 'Prophecy', color: '#f59e0b' },
-    { value: 'typology', label: 'Typology', color: '#ec4899' },
-    { value: 'contrast', label: 'Contrast', color: '#ef4444' },
-    { value: 'cause-effect', label: 'Cause-Effect', color: '#06b6d4' },
-];
 
 // Search verse form
 const searchBookId = ref<string>('');
@@ -1088,12 +1078,6 @@ function goBack() {
     selectedCanvas.value = null;
     canvasData.value = null;
     selectedNodes.value.clear();
-}
-
-// Get color for link type
-function getLinkTypeColor(linkType: string): string {
-    const type = linkTypes.find((t) => t.value === linkType);
-    return type?.color || '#3b82f6';
 }
 
 // Get mid-point of connection for label
