@@ -36,7 +36,7 @@ class PexelsService
         return Cache::remember($cacheKey, 60, function () use ($perPage) {
             try {
                 // Use a consistent query for better caching and image consistency
-                $terms = ['water', 'forest', 'space', 'God', 'nature', 'light', 'christ', 'royal', 'white', 'snow', 'rain', 'sun', 'people'];
+                $terms = ['water', 'forest', 'space', 'nature', 'light', 'royal', 'white', 'rain', 'sun'];
                 shuffle($terms);
                 $query = implode(' ', $terms);
 
