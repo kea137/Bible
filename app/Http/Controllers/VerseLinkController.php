@@ -227,10 +227,10 @@ class VerseLinkController extends Controller
                     $q->where('source_node_id', $validated['source_node_id'])
                         ->where('target_node_id', $validated['target_node_id']);
                 })
-                ->orWhere(function ($q) use ($validated) {
-                    $q->where('source_node_id', $validated['target_node_id'])
-                        ->where('target_node_id', $validated['source_node_id']);
-                });
+                    ->orWhere(function ($q) use ($validated) {
+                        $q->where('source_node_id', $validated['target_node_id'])
+                            ->where('target_node_id', $validated['source_node_id']);
+                    });
             })
             ->first();
 

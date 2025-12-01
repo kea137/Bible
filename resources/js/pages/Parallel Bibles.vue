@@ -623,491 +623,523 @@ function shareVerse(verse: any, chapter: any) {
             <div class="flex-[2]">
                 <!-- Single Card for Merged View -->
                 <Card>
-                <CardHeader class="pb-3">
-                    <div class="space-y-3 sm:space-y-4">
-                        <CardTitle
-                            class="flex items-center gap-2 text-base sm:text-lg"
-                        >
-                            <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
-                            {{ t('Parallel Bibles') }}
-                        </CardTitle>
+                    <CardHeader class="pb-3">
+                        <div class="space-y-3 sm:space-y-4">
+                            <CardTitle
+                                class="flex items-center gap-2 text-base sm:text-lg"
+                            >
+                                <BookOpen class="h-4 w-4 sm:h-5 sm:w-5" />
+                                {{ t('Parallel Bibles') }}
+                            </CardTitle>
 
-                        <!-- Translation Selection Row -->
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <!-- Bible 1 Selection -->
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">{{
-                                    t('Translation 1')
-                                }}</label>
-                                <Select v-model="selectedBible1">
-                                    <SelectTrigger>
-                                        <SelectValue
-                                            :placeholder="
-                                                t('Select first Bible')
-                                            "
-                                        />
+                            <!-- Translation Selection Row -->
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <!-- Bible 1 Selection -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-medium">{{
+                                        t('Translation 1')
+                                    }}</label>
+                                    <Select v-model="selectedBible1">
+                                        <SelectTrigger>
+                                            <SelectValue
+                                                :placeholder="
+                                                    t('Select first Bible')
+                                                "
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>{{
+                                                    t('Bibles')
+                                                }}</SelectLabel>
+                                                <SelectItem
+                                                    v-for="bible in biblesList"
+                                                    :key="bible.id"
+                                                    :value="bible.id.toString()"
+                                                >
+                                                    {{ bible.name }} ({{
+                                                        bible.language
+                                                    }})
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <!-- Bible 2 Selection -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-medium">{{
+                                        t('Translation 2')
+                                    }}</label>
+                                    <Select v-model="selectedBible2">
+                                        <SelectTrigger>
+                                            <SelectValue
+                                                :placeholder="
+                                                    t('Select second Bible')
+                                                "
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>{{
+                                                    t('Bibles')
+                                                }}</SelectLabel>
+                                                <SelectItem
+                                                    v-for="bible in biblesOther"
+                                                    :key="bible.id"
+                                                    :value="bible.id.toString()"
+                                                >
+                                                    {{ bible.name }} ({{
+                                                        bible.language
+                                                    }})
+                                                </SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <!-- Book and Chapter Selection -->
+                            <div
+                                v-if="selectedBible1"
+                                class="flex flex-col gap-2 sm:flex-row"
+                            >
+                                <Select v-model="selectedBook1">
+                                    <SelectTrigger class="w-full flex-1">
+                                        <SelectValue :placeholder="t('Book')" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>{{
-                                                t('Bibles')
+                                                t('Books')
                                             }}</SelectLabel>
                                             <SelectItem
-                                                v-for="bible in biblesList"
-                                                :key="bible.id"
-                                                :value="bible.id.toString()"
-                                            >
-                                                {{ bible.name }} ({{
-                                                    bible.language
-                                                }})
-                                            </SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <!-- Bible 2 Selection -->
-                            <div class="space-y-2">
-                                <label class="text-sm font-medium">{{
-                                    t('Translation 2')
-                                }}</label>
-                                <Select v-model="selectedBible2">
-                                    <SelectTrigger>
-                                        <SelectValue
-                                            :placeholder="
-                                                t('Select second Bible')
-                                            "
-                                        />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>{{
-                                                t('Bibles')
-                                            }}</SelectLabel>
-                                            <SelectItem
-                                                v-for="bible in biblesOther"
-                                                :key="bible.id"
-                                                :value="bible.id.toString()"
-                                            >
-                                                {{ bible.name }} ({{
-                                                    bible.language
-                                                }})
-                                            </SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <!-- Book and Chapter Selection -->
-                        <div
-                            v-if="selectedBible1"
-                            class="flex flex-col gap-2 sm:flex-row"
-                        >
-                            <Select v-model="selectedBook1">
-                                <SelectTrigger class="w-full flex-1">
-                                    <SelectValue :placeholder="t('Book')" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>{{
-                                            t('Books')
-                                        }}</SelectLabel>
-                                        <SelectItem
-                                            v-for="book in biblesList.find(
-                                                (b) =>
-                                                    b.id ===
-                                                    Number(selectedBible1),
-                                            )?.books || []"
-                                            :key="book.id"
-                                            :value="book.id.toString()"
-                                        >
-                                            {{ book.title }}
-                                        </SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                            <Select v-model="selectedChapter1">
-                                <SelectTrigger class="w-full sm:w-32">
-                                    <SelectValue :placeholder="t('Chapter')" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>{{
-                                            t('Chapters')
-                                        }}</SelectLabel>
-                                        <SelectItem
-                                            v-for="chapter in biblesList
-                                                .find(
+                                                v-for="book in biblesList.find(
                                                     (b) =>
                                                         b.id ===
                                                         Number(selectedBible1),
-                                                )
-                                                ?.books.find(
-                                                    (book) =>
-                                                        book.id ===
-                                                        Number(selectedBook1),
-                                                )?.chapters || []"
-                                            :key="chapter.id"
-                                            :value="chapter.id.toString()"
-                                        >
-                                            {{ chapter.chapter_number }}
-                                        </SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                </CardHeader>
-
-                <CardContent v-if="loadedChapter1">
-                    <div
-                        class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
-                    >
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            @click="goToPreviousChapter1"
-                            :disabled="!hasPreviousChapter1"
-                            class="w-full sm:w-auto"
-                        >
-                            <ChevronLeft class="mr-1 h-4 w-4" />
-                            {{ t('Previous') }}
-                        </Button>
-                        <Button
-                            v-if="page.props.auth?.user && selectedChapter1"
-                            :variant="chapterCompleted1 ? 'default' : 'outline'"
-                            size="sm"
-                            @click="
-                                toggleChapterCompletion(
-                                    selectedChapter1,
-                                    Number(selectedBible1),
-                                    'left',
-                                )
-                            "
-                            class="w-full sm:w-auto"
-                        >
-                            <CheckCircle class="mr-1 h-4 w-4" />
-                            {{
-                                chapterCompleted1
-                                    ? t('Completed')
-                                    : t('Mark as Read')
-                            }}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            @click="goToNextChapter1"
-                            :disabled="!hasNextChapter1"
-                            class="w-full sm:w-auto"
-                        >
-                            {{ t('Next') }}
-                            <ChevronRight class="ml-1 h-4 w-4" />
-                        </Button>
-                    </div>
-
-                    <!-- Legend for font styles or message -->
-                    <div
-                        v-if="loadedChapter2"
-                        class="mb-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground"
-                    >
-                        <div class="flex items-center gap-2">
-                            <span class="font-normal">{{
-                                getBibleName(Number(selectedBible1))
-                            }}</span>
-                            <span class="text-xs">({{ t('Regular') }})</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-normal italic">{{
-                                getBibleName(Number(selectedBible2))
-                            }}</span>
-                            <span class="text-xs">({{ t('Italic') }})</span>
-                        </div>
-                    </div>
-                    <div
-                        v-else
-                        class="mb-4 rounded bg-muted p-3 text-sm text-muted-foreground"
-                    >
-                        {{
-                            t(
-                                'Select a second translation to see parallel verses',
-                            )
-                        }}
-                    </div>
-
-                    <ScrollArea
-                        class="h-98 space-y-2 text-sm leading-relaxed sm:text-base"
-                    >
-                        <h3 class="mb-4 text-base font-semibold sm:text-lg">
-                            {{ loadedChapter1.book?.name }}
-                            {{ loadedChapter1.chapter_number }}
-                        </h3>
-
-                        <!-- Merged Verses -->
-                        <div
-                            v-for="verse1 in loadedChapter1.verses"
-                            :key="verse1.id"
-                            class="mb-4 rounded px-2 py-1 transition-colors"
-                            :class="getVerseHighlightClass(verse1.id, 'left')"
-                        >
-                            <DropdownMenu>
-                                <DropdownMenuTrigger
-                                    class="w-full cursor-default text-left"
-                                >
-                                    <div class="space-y-2">
-                                        <!-- Verse Number -->
-                                        <HoverCard
-                                            @update:open="
-                                                (open) =>
-                                                    open &&
-                                                    handleVerseHover(
-                                                        verse1.id,
+                                                )?.books || []"
+                                                :key="book.id"
+                                                :value="book.id.toString()"
+                                            >
+                                                {{ book.title }}
+                                            </SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                                <Select v-model="selectedChapter1">
+                                    <SelectTrigger class="w-full sm:w-32">
+                                        <SelectValue
+                                            :placeholder="t('Chapter')"
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>{{
+                                                t('Chapters')
+                                            }}</SelectLabel>
+                                            <SelectItem
+                                                v-for="chapter in biblesList
+                                                    .find(
+                                                        (b) =>
+                                                            b.id ===
+                                                            Number(
+                                                                selectedBible1,
+                                                            ),
                                                     )
-                                            "
-                                        >
-                                            <HoverCardTrigger>
-                                                <span
-                                                    class="cursor-pointer font-semibold text-primary hover:underline"
-                                                    @click.stop="
-                                                        handleVerseClick(
+                                                    ?.books.find(
+                                                        (book) =>
+                                                            book.id ===
+                                                            Number(
+                                                                selectedBook1,
+                                                            ),
+                                                    )?.chapters || []"
+                                                :key="chapter.id"
+                                                :value="chapter.id.toString()"
+                                            >
+                                                {{ chapter.chapter_number }}
+                                            </SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </CardHeader>
+
+                    <CardContent v-if="loadedChapter1">
+                        <div
+                            class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+                        >
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToPreviousChapter1"
+                                :disabled="!hasPreviousChapter1"
+                                class="w-full sm:w-auto"
+                            >
+                                <ChevronLeft class="mr-1 h-4 w-4" />
+                                {{ t('Previous') }}
+                            </Button>
+                            <Button
+                                v-if="page.props.auth?.user && selectedChapter1"
+                                :variant="
+                                    chapterCompleted1 ? 'default' : 'outline'
+                                "
+                                size="sm"
+                                @click="
+                                    toggleChapterCompletion(
+                                        selectedChapter1,
+                                        Number(selectedBible1),
+                                        'left',
+                                    )
+                                "
+                                class="w-full sm:w-auto"
+                            >
+                                <CheckCircle class="mr-1 h-4 w-4" />
+                                {{
+                                    chapterCompleted1
+                                        ? t('Completed')
+                                        : t('Mark as Read')
+                                }}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="goToNextChapter1"
+                                :disabled="!hasNextChapter1"
+                                class="w-full sm:w-auto"
+                            >
+                                {{ t('Next') }}
+                                <ChevronRight class="ml-1 h-4 w-4" />
+                            </Button>
+                        </div>
+
+                        <!-- Legend for font styles or message -->
+                        <div
+                            v-if="loadedChapter2"
+                            class="mb-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground"
+                        >
+                            <div class="flex items-center gap-2">
+                                <span class="font-normal">{{
+                                    getBibleName(Number(selectedBible1))
+                                }}</span>
+                                <span class="text-xs"
+                                    >({{ t('Regular') }})</span
+                                >
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-normal italic">{{
+                                    getBibleName(Number(selectedBible2))
+                                }}</span>
+                                <span class="text-xs">({{ t('Italic') }})</span>
+                            </div>
+                        </div>
+                        <div
+                            v-else
+                            class="mb-4 rounded bg-muted p-3 text-sm text-muted-foreground"
+                        >
+                            {{
+                                t(
+                                    'Select a second translation to see parallel verses',
+                                )
+                            }}
+                        </div>
+
+                        <ScrollArea
+                            class="h-98 space-y-2 text-sm leading-relaxed sm:text-base"
+                        >
+                            <h3 class="mb-4 text-base font-semibold sm:text-lg">
+                                {{ loadedChapter1.book?.name }}
+                                {{ loadedChapter1.chapter_number }}
+                            </h3>
+
+                            <!-- Merged Verses -->
+                            <div
+                                v-for="verse1 in loadedChapter1.verses"
+                                :key="verse1.id"
+                                class="mb-4 rounded px-2 py-1 transition-colors"
+                                :class="
+                                    getVerseHighlightClass(verse1.id, 'left')
+                                "
+                            >
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger
+                                        class="w-full cursor-default text-left"
+                                    >
+                                        <div class="space-y-2">
+                                            <!-- Verse Number -->
+                                            <HoverCard
+                                                @update:open="
+                                                    (open) =>
+                                                        open &&
+                                                        handleVerseHover(
                                                             verse1.id,
                                                         )
-                                                    "
-                                                    >{{
-                                                        verse1.verse_number
-                                                    }}.</span
-                                                >
-                                            </HoverCardTrigger>
-                                            <HoverCardContent class="w-80">
-                                                <div
-                                                    v-if="
-                                                        hoveredVerseReferences.length >
-                                                        0
-                                                    "
-                                                    class="space-y-2"
-                                                >
+                                                "
+                                            >
+                                                <HoverCardTrigger>
+                                                    <span
+                                                        class="cursor-pointer font-semibold text-primary hover:underline"
+                                                        @click.stop="
+                                                            handleVerseClick(
+                                                                verse1.id,
+                                                            )
+                                                        "
+                                                        >{{
+                                                            verse1.verse_number
+                                                        }}.</span
+                                                    >
+                                                </HoverCardTrigger>
+                                                <HoverCardContent class="w-80">
+                                                    <div
+                                                        v-if="
+                                                            hoveredVerseReferences.length >
+                                                            0
+                                                        "
+                                                        class="space-y-2"
+                                                    >
+                                                        <p
+                                                            class="text-sm font-semibold"
+                                                        >
+                                                            {{
+                                                                t(
+                                                                    'Cross References',
+                                                                )
+                                                            }}:
+                                                        </p>
+                                                        <div
+                                                            class="space-y-1 text-sm"
+                                                        >
+                                                            <p
+                                                                v-for="ref in hoveredVerseReferences.slice(
+                                                                    0,
+                                                                    3,
+                                                                )"
+                                                                :key="ref.id"
+                                                                class="text-muted-foreground"
+                                                            >
+                                                                {{
+                                                                    translateReference(
+                                                                        ref.reference,
+                                                                    )
+                                                                }}:
+                                                                {{
+                                                                    ref.verse?.text?.substring(
+                                                                        0,
+                                                                        80,
+                                                                    )
+                                                                }}...
+                                                            </p>
+                                                            <p
+                                                                v-if="
+                                                                    hoveredVerseReferences.length >
+                                                                    3
+                                                                "
+                                                                class="text-xs text-muted-foreground italic"
+                                                            >
+                                                                +{{
+                                                                    hoveredVerseReferences.length -
+                                                                    3
+                                                                }}
+                                                                {{
+                                                                    t(
+                                                                        'more references',
+                                                                    )
+                                                                }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                     <p
-                                                        class="text-sm font-semibold"
+                                                        v-else
+                                                        class="text-sm text-muted-foreground"
                                                     >
                                                         {{
                                                             t(
-                                                                'Cross References',
+                                                                'No cross-references',
                                                             )
-                                                        }}:
+                                                        }}
+                                                        {{ t('available') }}
                                                     </p>
-                                                    <div
-                                                        class="space-y-1 text-sm"
-                                                    >
-                                                        <p
-                                                            v-for="ref in hoveredVerseReferences.slice(
-                                                                0,
-                                                                3,
-                                                            )"
-                                                            :key="ref.id"
-                                                            class="text-muted-foreground"
-                                                        >
-                                                            {{ translateReference(ref.reference) }}:
-                                                            {{
-                                                                ref.verse?.text?.substring(
-                                                                    0,
-                                                                    80,
-                                                                )
-                                                            }}...
-                                                        </p>
-                                                        <p
-                                                            v-if="
-                                                                hoveredVerseReferences.length >
-                                                                3
-                                                            "
-                                                            class="text-xs text-muted-foreground italic"
-                                                        >
-                                                            +{{
-                                                                hoveredVerseReferences.length -
-                                                                3
-                                                            }}
-                                                            {{
-                                                                t(
-                                                                    'more references',
-                                                                )
-                                                            }}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <p
-                                                    v-else
-                                                    class="text-sm text-muted-foreground"
+                                                </HoverCardContent>
+                                            </HoverCard>
+
+                                            <!-- Translation 1 Text (Regular) -->
+                                            <span class="font-normal">{{
+                                                verse1.text
+                                            }}</span>
+
+                                            <!-- Translation 2 Text (Italic) -->
+                                            <template
+                                                v-if="
+                                                    loadedChapter2 &&
+                                                    getVerse2ByNumber(
+                                                        verse1.verse_number,
+                                                    )
+                                                "
+                                            >
+                                                <span
+                                                    class="ml-1 font-normal italic"
                                                 >
                                                     {{
-                                                        t('No cross-references')
+                                                        getVerse2ByNumber(
+                                                            verse1.verse_number,
+                                                        ).text
                                                     }}
-                                                    {{ t('available') }}
-                                                </p>
-                                            </HoverCardContent>
-                                        </HoverCard>
-
-                                        <!-- Translation 1 Text (Regular) -->
-                                        <span class="font-normal">{{
-                                            verse1.text
-                                        }}</span>
-
-                                        <!-- Translation 2 Text (Italic) -->
-                                        <template
+                                                </span>
+                                            </template>
+                                        </div>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <!-- Cross References for Mobile -->
+                                        <div
                                             v-if="
-                                                loadedChapter2 &&
-                                                getVerse2ByNumber(
-                                                    verse1.verse_number,
+                                                clickedVerseId === verse1.id &&
+                                                hoveredVerseReferences.length >
+                                                    0
+                                            "
+                                            class="mb-2 sm:hidden"
+                                        >
+                                            <DropdownMenuLabel>{{
+                                                t('Cross References')
+                                            }}</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <div
+                                                class="max-h-40 overflow-y-auto px-2 py-1"
+                                            >
+                                                <div
+                                                    v-for="ref in hoveredVerseReferences.slice(
+                                                        0,
+                                                        3,
+                                                    )"
+                                                    :key="ref.id"
+                                                    class="mb-2 text-xs"
+                                                >
+                                                    <p
+                                                        class="font-semibold text-primary"
+                                                    >
+                                                        {{
+                                                            translateReference(
+                                                                ref.reference,
+                                                            )
+                                                        }}
+                                                    </p>
+                                                    <p
+                                                        class="text-muted-foreground"
+                                                    >
+                                                        {{
+                                                            ref.verse?.text?.substring(
+                                                                0,
+                                                                60,
+                                                            )
+                                                        }}...
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    v-if="
+                                                        hoveredVerseReferences.length >
+                                                        3
+                                                    "
+                                                    class="text-xs text-muted-foreground italic"
+                                                >
+                                                    +{{
+                                                        hoveredVerseReferences.length -
+                                                        3
+                                                    }}
+                                                    {{ t('more references') }}
+                                                </p>
+                                            </div>
+                                            <DropdownMenuSeparator />
+                                        </div>
+                                        <DropdownMenuLabel>{{
+                                            t('Highlight')
+                                        }}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            @click="
+                                                highlightVerse(
+                                                    verse1.id,
+                                                    'yellow',
                                                 )
                                             "
                                         >
                                             <span
-                                                class="ml-1 font-normal italic"
+                                                class="flex items-center gap-2"
                                             >
-                                                {{
-                                                    getVerse2ByNumber(
-                                                        verse1.verse_number,
-                                                    ).text
-                                                }}
+                                                <span
+                                                    class="h-4 w-4 rounded bg-yellow-300"
+                                                ></span>
+                                                {{ t('Highlight - Yellow') }}
                                             </span>
-                                        </template>
-                                    </div>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <!-- Cross References for Mobile -->
-                                    <div
-                                        v-if="
-                                            clickedVerseId === verse1.id &&
-                                            hoveredVerseReferences.length > 0
-                                        "
-                                        class="mb-2 sm:hidden"
-                                    >
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                highlightVerse(
+                                                    verse1.id,
+                                                    'green',
+                                                )
+                                            "
+                                        >
+                                            <span
+                                                class="flex items-center gap-2"
+                                            >
+                                                <span
+                                                    class="h-4 w-4 rounded bg-green-300"
+                                                ></span>
+                                                {{ t('Highlight - Green') }}
+                                            </span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="removeHighlight(verse1.id)"
+                                        >
+                                            {{ t('Remove Highlight') }}
+                                        </DropdownMenuItem>
                                         <DropdownMenuLabel>{{
-                                            t('Cross References')
+                                            t('Learn More')
                                         }}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <div
-                                            class="max-h-40 overflow-y-auto px-2 py-1"
+                                        <DropdownMenuItem
+                                            @click="studyVerse(verse1.id)"
                                         >
-                                            <div
-                                                v-for="ref in hoveredVerseReferences.slice(
-                                                    0,
-                                                    3,
-                                                )"
-                                                :key="ref.id"
-                                                class="mb-2 text-xs"
-                                            >
-                                                <p
-                                                    class="font-semibold text-primary"
-                                                >
-                                                    {{
-                                                        translateReference(
-                                                            ref.reference,
-                                                        )
-                                                    }}
-                                                </p>
-                                                <p
-                                                    class="text-muted-foreground"
-                                                >
-                                                    {{
-                                                        ref.verse?.text?.substring(
-                                                            0,
-                                                            60,
-                                                        )
-                                                    }}...
-                                                </p>
-                                            </div>
-                                            <p
-                                                v-if="
-                                                    hoveredVerseReferences.length >
-                                                    3
-                                                "
-                                                class="text-xs text-muted-foreground italic"
-                                            >
-                                                +{{
-                                                    hoveredVerseReferences.length -
-                                                    3
-                                                }}
-                                                {{ t('more references') }}
-                                            </p>
-                                        </div>
+                                            {{ t('Study this Verse') }}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openNotesDialog(
+                                                    verse1,
+                                                    loadedChapter1,
+                                                )
+                                            "
+                                        >
+                                            {{ t('Put Note on this Verse') }}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuLabel>{{
+                                            t('Share')
+                                        }}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                    </div>
-                                    <DropdownMenuLabel>{{
-                                        t('Highlight')
-                                    }}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        @click="
-                                            highlightVerse(verse1.id, 'yellow')
-                                        "
-                                    >
-                                        <span class="flex items-center gap-2">
-                                            <span
-                                                class="h-4 w-4 rounded bg-yellow-300"
-                                            ></span>
-                                            {{ t('Highlight - Yellow') }}
-                                        </span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        @click="
-                                            highlightVerse(verse1.id, 'green')
-                                        "
-                                    >
-                                        <span class="flex items-center gap-2">
-                                            <span
-                                                class="h-4 w-4 rounded bg-green-300"
-                                            ></span>
-                                            {{ t('Highlight - Green') }}
-                                        </span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        @click="removeHighlight(verse1.id)"
-                                    >
-                                        {{ t('Remove Highlight') }}
-                                    </DropdownMenuItem>
-                                    <DropdownMenuLabel>{{
-                                        t('Learn More')
-                                    }}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        @click="studyVerse(verse1.id)"
-                                    >
-                                        {{ t('Study this Verse') }}
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        @click="
-                                            openNotesDialog(
-                                                verse1,
-                                                loadedChapter1,
-                                            )
-                                        "
-                                    >
-                                        {{ t('Put Note on this Verse') }}
-                                    </DropdownMenuItem>
-                                    <DropdownMenuLabel>{{
-                                        t('Share')
-                                    }}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        @click="
-                                            shareVerse(verse1, loadedChapter1)
-                                        "
-                                    >
-                                        <Share2 class="mr-2 h-4 w-4" />
-                                        {{ t('Share this Verse') }}
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
-                    </ScrollArea>
-                </CardContent>
+                                        <DropdownMenuItem
+                                            @click="
+                                                shareVerse(
+                                                    verse1,
+                                                    loadedChapter1,
+                                                )
+                                            "
+                                        >
+                                            <Share2 class="mr-2 h-4 w-4" />
+                                            {{ t('Share this Verse') }}
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </ScrollArea>
+                    </CardContent>
 
-                <CardContent
-                    v-else
-                    class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
-                >
-                    <p>{{ t('Select a translation to start') }}</p>
-                </CardContent>
-            </Card>
+                    <CardContent
+                        v-else
+                        class="py-6 text-center text-sm text-muted-foreground sm:py-8 sm:text-base"
+                    >
+                        <p>{{ t('Select a translation to start') }}</p>
+                    </CardContent>
+                </Card>
             </div>
 
             <!-- References sidebar (1/3) -->

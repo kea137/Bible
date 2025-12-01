@@ -355,11 +355,11 @@ class MobileApiController extends Controller
         ]);
     }
 
-
     /**
      * Mark as read function for chapters
      */
-    public function markAsRead(Request $request): JsonResponse{
+    public function markAsRead(Request $request): JsonResponse
+    {
         $userId = Auth::id();
 
         $validated = $request->validate([
@@ -419,7 +419,7 @@ class MobileApiController extends Controller
         ]);
     }
 
-    public function bibleShowChapterVerses(Bible $bible, Book $book, Chapter $chapter = null): JsonResponse
+    public function bibleShowChapterVerses(Bible $bible, Book $book, ?Chapter $chapter = null): JsonResponse
     {
         if (! $chapter) {
             $chapter_load = Chapter::where('bible_id', $bible->id)
@@ -431,7 +431,7 @@ class MobileApiController extends Controller
                     }]);
                 }])
                 ->first();
-                
+
         } else {
             $chapter_load = $chapter->load(['verses' => function ($query) {
                 $query->with(['highlight' => function ($q) {
@@ -579,12 +579,12 @@ class MobileApiController extends Controller
                     ->select('id', 'verse_id', 'color');
             }]);
         }, 'book']);
-        
+
         $isRead = ReadingProgress::where('user_id', Auth::id())
             ->where('chapter_id', $chapter->id)
             ->where('completed', true)
             ->exists();
-        
+
         $chapter['is_read'] = $isRead;
 
         return response()->json([

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\DataExportController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -32,4 +33,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');
+
+    // Data export route
+    Route::get('settings/export-data', [DataExportController::class, 'export'])->name('data.export');
 });

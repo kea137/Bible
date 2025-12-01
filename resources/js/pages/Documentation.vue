@@ -317,20 +317,35 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <li>✅ Verse Highlighting with color codes</li>
                                 <li>✅ Personal Notes</li>
                                 <li>✅ Reading Plan with progress tracking</li>
-                                <li>✅ Parallel Bible comparison view with cross-references</li>
+                                <li>
+                                    ✅ Parallel Bible comparison view with
+                                    cross-references
+                                </li>
                                 <li>
                                     ✅ Bible study Lessons with series support
                                 </li>
                                 <li>
                                     ✅ Verse Sharing with beautiful backgrounds
                                 </li>
-                                <li>✅ Verse Link Canvas for connecting verses visually</li>
+                                <li>
+                                    ✅ Verse Link Canvas for connecting verses
+                                    visually
+                                </li>
                                 <li>✅ Onboarding for new users</li>
                                 <li>✅ User Authentication with 2FA</li>
                                 <li>✅ Dark Mode support</li>
                                 <li>✅ Responsive design for all devices</li>
                                 <li>✅ SEO optimized with sitemap</li>
-                                <li>✅ <a href="https://github.com/kea137/Bible-app" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Companion Mobile App</a></li>
+                                <li>
+                                    ✅
+                                    <a
+                                        href="https://github.com/kea137/Bible-app"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="text-primary hover:underline"
+                                        >Companion Mobile App</a
+                                    >
+                                </li>
                             </ul>
                         </div>
                     </section>
@@ -442,7 +457,8 @@ php artisan serve</code></pre>
                                 <p class="text-sm text-muted-foreground">
                                     Compare up to 2 Bible translations
                                     side-by-side with synchronized scrolling,
-                                    cross-references, and selected reference viewing.
+                                    cross-references, and selected reference
+                                    viewing.
                                 </p>
                             </div>
                         </div>
@@ -1869,24 +1885,30 @@ print(data['verses'][0]['text'])</code></pre>
                                 </h3>
                                 <ul class="space-y-2 text-sm text-foreground">
                                     <li>
-                                        🎨 <strong>Canvas-Based Interface:</strong>
-                                        Create multiple canvases to organize your verse studies
+                                        🎨
+                                        <strong>Canvas-Based Interface:</strong>
+                                        Create multiple canvases to organize
+                                        your verse studies
                                     </li>
                                     <li>
                                         🔗 <strong>Visual Connections:</strong>
-                                        Draw connections between verses to show relationships
+                                        Draw connections between verses to show
+                                        relationships
                                     </li>
                                     <li>
                                         📝 <strong>Personal Notes:</strong>
-                                        Add notes to any verse node on the canvas
+                                        Add notes to any verse node on the
+                                        canvas
                                     </li>
                                     <li>
                                         🔍 <strong>Cross-References:</strong>
-                                        View cross-references for each verse directly on the canvas
+                                        View cross-references for each verse
+                                        directly on the canvas
                                     </li>
                                     <li>
                                         🖱️ <strong>Drag & Drop:</strong>
-                                        Easily rearrange verse nodes on the canvas
+                                        Easily rearrange verse nodes on the
+                                        canvas
                                     </li>
                                 </ul>
                             </div>
@@ -1898,13 +1920,34 @@ print(data['verses'][0]['text'])</code></pre>
                                     How to Use
                                 </h3>
                                 <ol class="space-y-2 text-sm text-foreground">
-                                    <li>1. Navigate to Verse Link from the navigation menu</li>
-                                    <li>2. Create a new canvas with a name and optional description</li>
-                                    <li>3. Search for verses and add them to your canvas</li>
-                                    <li>4. Drag verse nodes to arrange them visually</li>
-                                    <li>5. Click "Connect" to draw lines between related verses</li>
-                                    <li>6. Add notes to verses for additional context</li>
-                                    <li>7. Expand cross-references to discover related verses</li>
+                                    <li>
+                                        1. Navigate to Verse Link from the
+                                        navigation menu
+                                    </li>
+                                    <li>
+                                        2. Create a new canvas with a name and
+                                        optional description
+                                    </li>
+                                    <li>
+                                        3. Search for verses and add them to
+                                        your canvas
+                                    </li>
+                                    <li>
+                                        4. Drag verse nodes to arrange them
+                                        visually
+                                    </li>
+                                    <li>
+                                        5. Click "Connect" to draw lines between
+                                        related verses
+                                    </li>
+                                    <li>
+                                        6. Add notes to verses for additional
+                                        context
+                                    </li>
+                                    <li>
+                                        7. Expand cross-references to discover
+                                        related verses
+                                    </li>
                                 </ol>
                             </div>
 
@@ -1916,12 +1959,26 @@ print(data['verses'][0]['text'])</code></pre>
                                 >
                                     Use Cases
                                 </h3>
-                                <ul class="space-y-1 text-sm text-muted-foreground">
-                                    <li>• Map thematic connections across books of the Bible</li>
-                                    <li>• Create study guides for sermon preparation</li>
-                                    <li>• Visualize prophecy and fulfillment relationships</li>
+                                <ul
+                                    class="space-y-1 text-sm text-muted-foreground"
+                                >
+                                    <li>
+                                        • Map thematic connections across books
+                                        of the Bible
+                                    </li>
+                                    <li>
+                                        • Create study guides for sermon
+                                        preparation
+                                    </li>
+                                    <li>
+                                        • Visualize prophecy and fulfillment
+                                        relationships
+                                    </li>
                                     <li>• Build topical verse collections</li>
-                                    <li>• Track character appearances across scripture</li>
+                                    <li>
+                                        • Track character appearances across
+                                        scripture
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -1945,10 +2002,10 @@ print(data['verses'][0]['text'])</code></pre>
                                 </h3>
                             </div>
                             <p class="text-sm text-foreground">
-                                Take your Bible study on the go with our companion
-                                mobile application. The mobile app provides a
-                                seamless reading experience optimized for mobile
-                                devices.
+                                Take your Bible study on the go with our
+                                companion mobile application. The mobile app
+                                provides a seamless reading experience optimized
+                                for mobile devices.
                             </p>
                         </div>
 
@@ -1963,12 +2020,16 @@ print(data['verses'][0]['text'])</code></pre>
                                 </h3>
                                 <ul class="space-y-2 text-sm text-foreground">
                                     <li>
-                                        📱 <strong>Native Mobile Experience:</strong>
+                                        📱
+                                        <strong
+                                            >Native Mobile Experience:</strong
+                                        >
                                         Designed specifically for mobile devices
                                     </li>
                                     <li>
                                         📖 <strong>Offline Reading:</strong>
-                                        Read Bible verses without an internet connection
+                                        Read Bible verses without an internet
+                                        connection
                                     </li>
                                     <li>
                                         🔄 <strong>Cross-Platform:</strong>
@@ -1976,7 +2037,8 @@ print(data['verses'][0]['text'])</code></pre>
                                     </li>
                                     <li>
                                         🎨 <strong>Beautiful Interface:</strong>
-                                        Clean, distraction-free reading experience
+                                        Clean, distraction-free reading
+                                        experience
                                     </li>
                                 </ul>
                             </div>
@@ -1988,8 +2050,8 @@ print(data['verses'][0]['text'])</code></pre>
                                     Repository
                                 </h3>
                                 <p class="mb-2 text-sm text-foreground">
-                                    The mobile app is developed as a sister project
-                                    and is available on GitHub:
+                                    The mobile app is developed as a sister
+                                    project and is available on GitHub:
                                 </p>
                                 <a
                                     href="https://github.com/kea137/Bible-app"
@@ -2012,10 +2074,10 @@ print(data['verses'][0]['text'])</code></pre>
                                 </h3>
                                 <p class="text-sm text-muted-foreground">
                                     The mobile app (kea137/Bible-app) is the
-                                    companion application to this web application
-                                    (kea137/Bible). Both applications share the
-                                    same mission of making Bible study accessible
-                                    and enjoyable.
+                                    companion application to this web
+                                    application (kea137/Bible). Both
+                                    applications share the same mission of
+                                    making Bible study accessible and enjoyable.
                                 </p>
                             </div>
                         </div>

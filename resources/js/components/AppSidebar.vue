@@ -14,6 +14,7 @@ import {
     SidebarSeparator,
 } from '@/components/ui/sidebar';
 import {
+    activity_logs,
     bibles,
     bibles_configure,
     bibles_parallel,
@@ -43,6 +44,7 @@ import {
     LibraryBig,
     PencilRuler,
     PenSquareIcon,
+    ScrollText,
     StickyNote,
     Target,
     UserCog2,
@@ -128,6 +130,15 @@ const footerNavItems = computed(() => {
             title: t('Role Management'),
             href: role_management(),
             icon: UserCog2,
+        });
+    }
+
+    // Activity Logs - only for role number 1 (admin)
+    if (roleNumbers.value.includes(1)) {
+        items.push({
+            title: t('Activity Logs'),
+            href: activity_logs(),
+            icon: ScrollText,
         });
     }
 
