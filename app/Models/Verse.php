@@ -58,6 +58,9 @@ class Verse extends Model
             'chapter_id' => $this->chapter_id,
             'verse_number' => $this->verse_number,
             'text' => $this->text,
+            'book_name' => $this->book?->title,
+            'version' => $this->bible?->abbreviation,
+            'language' => $this->bible?->language,
         ];
     }
 }

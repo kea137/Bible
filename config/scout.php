@@ -139,9 +139,21 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            // 'verses' => [
-            //     'filterableAttributes'=> ['text', 'bible_id'],
-            // ],
+            'verses' => [
+                'filterableAttributes' => ['bible_id', 'book_id', 'chapter_id', 'book_name', 'version', 'language'],
+                'sortableAttributes' => ['book_id', 'chapter_id', 'verse_number'],
+                'searchableAttributes' => ['text', 'book_name', 'version'],
+            ],
+            'notes' => [
+                'filterableAttributes' => ['user_id', 'created_at'],
+                'sortableAttributes' => ['created_at', 'updated_at'],
+                'searchableAttributes' => ['title', 'content'],
+            ],
+            'lessons' => [
+                'filterableAttributes' => ['language', 'series_id', 'user_id', 'created_at'],
+                'sortableAttributes' => ['created_at', 'episode_number'],
+                'searchableAttributes' => ['title', 'description'],
+            ],
         ],
     ],
 

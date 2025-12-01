@@ -130,6 +130,23 @@ Route::middleware('throttle:60,1')->group(function () {
     });
 });
 
+/*
+|--------------------------------------------------------------------------
+| Unified Search API Routes
+|--------------------------------------------------------------------------
+|
+| Search across verses, notes, and lessons with filtering support.
+|
+*/
+
+Route::middleware('throttle:60,1')->group(function () {
+    // Public search endpoint
+    Route::get('/search', [\App\Http\Controllers\SearchController::class, 'search']);
+
+    // Get available filter options
+    Route::get('/search/filters', [\App\Http\Controllers\SearchController::class, 'filterOptions']);
+});
+
 // Sanctum CSRF Cookie Route
 Route::prefix('mobile')->get('/sanctum/csrf-cookie', function () {
     $csrfToken = csrf_token();
