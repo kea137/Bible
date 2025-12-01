@@ -31,23 +31,24 @@ class SendMemoryVerseReminders extends Command
     {
         $this->info('Checking for users with due memory verses...');
 
-        // Get all users who have memory verses due today
-        $usersWithDueVerses = User::whereHas('memoryVerses', function ($query) {
+        // Get all users who have memory verses due today with counts
+        $usersWithDueVerses = User::withCount(['memoryVerses as due_verses_count' => function ($query) {
             $query->where('next_review_date', '<=', Carbon::now()->toDateString());
-        })->get();
+        }])
+            ->whereHas('memoryVerses', function ($query) {
+                $query->where('next_review_date', '<=', Carbon::now()->toDateString());
+            })
+            ->having('due_verses_count', '>', 0)
+            ->get();
 
         $notificationsSent = 0;
 
         foreach ($usersWithDueVerses as $user) {
-            $dueCount = $user->memoryVerses()
-                ->where('next_review_date', '<=', Carbon::now()->toDateString())
-                ->count();
+            $dueCount = $user->due_verses_count;
 
-            if ($dueCount > 0) {
-                $user->notify(new MemoryVerseReminder($dueCount));
-                $notificationsSent++;
-                $this->info("Sent reminder to {$user->email} for {$dueCount} verse(s)");
-            }
+            $user->notify(new MemoryVerseReminder($dueCount));
+            $notificationsSent++;
+            $this->info("Sent reminder to {$user->email} for {$dueCount} verse(s)");
         }
 
         $this->info("Sent {$notificationsSent} reminder(s) successfully.");

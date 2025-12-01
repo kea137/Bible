@@ -12,11 +12,13 @@ class SpacedRepetitionService
      * 
      * @param MemoryVerse $memoryVerse
      * @param int $quality Quality of recall (0-5, where 0 is complete blackout and 5 is perfect recall)
+     *                     Values outside this range will be clamped to [0, 5]
      * @return void
      */
     public function updateReviewSchedule(MemoryVerse $memoryVerse, int $quality): void
     {
-        // Validate quality rating (0-5)
+        // Clamp quality rating to valid range (0-5)
+        // This ensures client bugs don't break the algorithm
         $quality = max(0, min(5, $quality));
         
         // Update review tracking
