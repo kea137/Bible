@@ -27,3 +27,8 @@ yarn-error.log
 /.vscode
 /.zed
 /openapi.json
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
