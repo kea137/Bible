@@ -13,6 +13,8 @@ Looking for the mobile version? Check out our companion mobile app: [**kea137/Bi
 - **Verse sharing with beautiful backgrounds** - Create shareable images with gradient or photo backgrounds from Pexels
 - **Bible study lessons** - Create, manage, and track progress through single or serialized lessons with scripture references
 - **Verse Link Canvas** - Visual canvas for creating connections between Bible verses and building verse relationship maps
+- **Topic Index** - Explore curated topics with verse chains for thematic Bible study
+- **Smart Verse Suggestions** - Get personalized verse recommendations based on your reading history and highlights with explainable AI
 - User authentication and role management
 - Dark mode support
 - Responsive design with mobile-optimized interface
