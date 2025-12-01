@@ -4,6 +4,7 @@ import FontSelector from '@/components/FontSelector.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 import PreferredTranslationsSelector from '@/components/PreferredTranslationsSelector.vue';
+import ReminderTimeSelector from '@/components/ReminderTimeSelector.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/appearance';
@@ -58,6 +59,13 @@ const breadcrumbItems: BreadcrumbItem[] = [
                             {{ t('Preferred Bible Translations') }}
                         </h3>
                         <PreferredTranslationsSelector />
+                    </div>
+
+                    <div>
+                        <h3 class="mb-2 text-sm font-medium">
+                            {{ t('Memory Verse Reminders') }}
+                        </h3>
+                        <ReminderTimeSelector />
                     </div>
                 </div>
             </div>
