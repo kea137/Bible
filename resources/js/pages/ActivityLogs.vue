@@ -104,7 +104,6 @@ const applyFilters = () => {
     }
 
     router.get(activity_logs().url, params, {
-        preserveState: true,
         preserveScroll: true,
     });
 };
@@ -124,7 +123,6 @@ const goToPage = (page: number) => {
     if (dateTo.value) params.date_to = dateTo.value;
 
     router.get(activity_logs().url, params, {
-        preserveState: true,
         preserveScroll: true,
     });
 };
