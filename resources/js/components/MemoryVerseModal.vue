@@ -51,7 +51,7 @@ watch(
 async function loadDueVerses() {
     loading.value = true;
     try {
-        const response = await fetch('/api/mobile/memory-verses/due', {
+        const response = await fetch('/api/memory-verses/due', {
             headers: {
                 Accept: 'application/json',
             },
@@ -92,7 +92,7 @@ async function submitReview(quality: number) {
         }
 
         const response = await fetch(
-            `/api/mobile/memory-verses/${currentVerse.value.id}/review`,
+            `/api/memory-verses/${currentVerse.value.id}/review`,
             {
                 method: 'POST',
                 headers: {

@@ -438,7 +438,7 @@ async function addToMemoryVerses(verse: any) {
             csrfToken = String(page.props.csrf_token);
         }
 
-        const response = await fetch('/api/mobile/memory-verses', {
+        const response = await fetch('/api/memory-verses', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
