@@ -834,6 +834,47 @@ New users are guided through an onboarding process to personalize their experien
 - **Session management**: View and revoke active sessions
 - **Password requirements**: Strong password policy
 
+### Privacy Tools
+
+The application provides comprehensive privacy tools to give users control over their data:
+
+**Data Export:**
+- **Export Your Data**: Download all your personal data in a convenient ZIP file
+  - User profile information
+  - Notes on Bible verses
+  - Verse highlights
+  - Lessons created
+  - Lesson progress
+  - Reading progress
+  - Verse link canvases
+  - All data exported in JSON format for portability
+- **Access**: Available in Settings → Profile → Export My Data
+- **Format**: ZIP file containing JSON data and README
+- **Privacy**: Action is logged for security purposes
+
+**Account Deletion:**
+- **Delete Account**: Permanently delete your account and all associated data
+  - Requires password confirmation
+  - Deletes all personal data including notes, highlights, and progress
+  - Action is logged before deletion
+  - Cascade deletion ensures complete data removal
+- **Access**: Available in Settings → Profile → Delete Account
+- **Warning**: This action is irreversible
+
+**Activity Logging (Admin Only):**
+- **Admin Activity Log**: Track sensitive actions for security and compliance
+  - User account deletions
+  - Admin-initiated user deletions
+  - Role changes
+  - Data exports
+- **Features**:
+  - Filter by action type
+  - Filter by user
+  - Date range filtering
+  - IP address tracking
+  - Detailed metadata for each action
+- **Access**: Admin users can access activity logs from the admin panel
+
 **Preferences:**
 - **Theme**: Light or Dark mode
 - **Language**: Interface language selection

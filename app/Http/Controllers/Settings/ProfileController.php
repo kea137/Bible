@@ -51,7 +51,7 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Log the account deletion
+        // Log the account deletion BEFORE logout
         \App\Models\ActivityLog::log(
             'account_deletion',
             "User {$user->name} deleted their account",
