@@ -72,8 +72,9 @@ function isActive(href: string): boolean {
 
 <template>
     <!-- Mobile Footer - Only visible on small screens -->
-    <div
+    <nav
         class="fixed right-0 bottom-0 left-0 z-50 border-t border-border bg-background md:hidden"
+        aria-label="Mobile navigation"
     >
         <div class="flex items-center justify-around px-2 py-2">
             <Link
@@ -86,12 +87,14 @@ function isActive(href: string): boolean {
                         ? 'text-primary'
                         : 'text-muted-foreground hover:text-foreground'
                 "
+                :aria-label="`Navigate to ${item.title}`"
+                :aria-current="isActive(item.href) ? 'page' : undefined"
             >
-                <component :is="item.icon" class="h-5 w-5" />
+                <component :is="item.icon" class="h-5 w-5" aria-hidden="true" />
                 <span class="text-[10px] font-medium">{{ item.title }}</span>
             </Link>
         </div>
-    </div>
+    </nav>
 
     <!-- Spacer to prevent content from being hidden behind the fixed footer -->
     <div class="h-20 md:hidden"></div>

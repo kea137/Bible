@@ -59,6 +59,7 @@ import {
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useOfflineData } from '@/composables/useOfflineData';
+import { trackBibleReading, trackPageView } from '@/composables/useAnalytics';
 
 const { t } = useI18n();
 const { 
@@ -531,6 +532,16 @@ const searchOpen = ref(false);
 
 onMounted(() => {
     searchVerses();
+    trackPageView('Bible Reading');
+    
+    // Track Bible reading activity
+    if (props.bible && props.selectedBook && props.selectedChapter) {
+        trackBibleReading(
+            props.bible.abbreviation,
+            props.selectedBook.title,
+            props.selectedChapter.chapter_number,
+        );
+    }
 });
 
 const highlights = ref<any[]>([]);

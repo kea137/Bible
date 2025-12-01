@@ -17,8 +17,9 @@ import { lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { trackLessonProgress, trackPageView } from '@/composables/useAnalytics';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -113,6 +114,12 @@ async function toggleLessonCompletion() {
         if (response.ok) {
             const result = await response.json();
             lessonCompleted.value = result.progress.completed;
+            
+            // Track lesson progress
+            trackLessonProgress(
+                props.lesson.id,
+                result.progress.completed ? 'complete' : 'start',
+            );
         }
     } catch (error) {
         console.error('Failed to toggle chapter completion:', error);
@@ -138,6 +145,16 @@ if (error) {
 if (info) {
     alertInfo.value = true;
 }
+
+// Track page view on mount
+onMounted(() => {
+    trackPageView('Lesson');
+    
+    // Track lesson start if not completed
+    if (!lessonCompleted.value) {
+        trackLessonProgress(props.lesson.id, 'start');
+    }
+});
 
 function handleReferenceClick(reference: any) {
     selectedReferenceVerse.value = reference;

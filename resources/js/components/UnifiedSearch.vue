@@ -205,13 +205,14 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/Icon.vue';
+import { trackSearch } from '@/composables/useAnalytics';
 
 const searchQuery = ref('');
 const loading = ref(false);
@@ -268,8 +269,16 @@ const performSearch = async () => {
         const response = await fetch(`/api/search?${params}`);
         const data = await response.json();
         results.value = data;
+        
+        // Track search with results count
+        const totalResults = 
+            (data.verses?.data?.length || 0) +
+            (data.notes?.data?.length || 0) +
+            (data.lessons?.data?.length || 0);
+        trackSearch(searchQuery.value, totalResults);
     } catch (error) {
         console.error('Search error:', error);
+        trackSearch(searchQuery.value, 0);
     } finally {
         loading.value = false;
     }
