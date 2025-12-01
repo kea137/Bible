@@ -1,0 +1,113 @@
+name: OpenAPI Drift Check
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  openapi-drift:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          tools: composer:v2
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copy Environment File
+        run: cp .env.example .env
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Create Database
+        run: touch database/database.sqlite
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+
+      - name: Generate OpenAPI Specification
+        run: php artisan scramble:export
+
+      - name: Validate OpenAPI Spec Exists
+        run: |
+          if [ ! -f openapi.json ]; then
+            echo "Error: openapi.json was not generated"
+            exit 1
+          fi
+          echo "✓ OpenAPI specification generated successfully"
+
+      - name: Check for Undocumented Routes
+        run: |
+          echo "Checking for API route coverage..."
+          
+          # Get all API routes
+          php artisan route:list --json | jq -r '.[] | select(.uri | startswith("api/")) | .uri' | sort > /tmp/all_routes.txt
+          
+          # Get documented routes from OpenAPI spec
+          jq -r '.paths | keys[]' openapi.json | sed 's/^\///' | sort > /tmp/documented_routes.txt
+          
+          # Find undocumented routes
+          undocumented=$(comm -23 /tmp/all_routes.txt /tmp/documented_routes.txt)
+          
+          if [ -n "$undocumented" ]; then
+            echo "❌ Error: The following API routes are not documented in the OpenAPI specification:"
+            echo "$undocumented"
+            echo ""
+            echo "Please ensure all API routes are properly documented."
+            exit 1
+          fi
+          
+          echo "✓ All API routes are documented in the OpenAPI specification"
+
+      - name: Validate OpenAPI Spec
+        run: |
+          echo "Validating OpenAPI specification structure..."
+          
+          # Check if spec has required fields
+          if ! jq -e '.openapi' openapi.json > /dev/null; then
+            echo "❌ Error: OpenAPI version is missing"
+            exit 1
+          fi
+          
+          if ! jq -e '.info' openapi.json > /dev/null; then
+            echo "❌ Error: API info is missing"
+            exit 1
+          fi
+          
+          if ! jq -e '.paths' openapi.json > /dev/null; then
+            echo "❌ Error: API paths are missing"
+            exit 1
+          fi
+          
+          # Count documented endpoints
+          endpoint_count=$(jq '.paths | length' openapi.json)
+          echo "✓ OpenAPI specification is valid"
+          echo "✓ Total documented endpoints: $endpoint_count"
+
+      - name: Summary
+        run: |
+          echo "## OpenAPI Documentation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All checks passed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- OpenAPI specification generated successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- All API routes are documented" >> $GITHUB_STEP_SUMMARY
+          echo "- OpenAPI spec is valid" >> $GITHUB_STEP_SUMMARY
+          echo "- Total endpoints: $(jq '.paths | length' openapi.json)" >> $GITHUB_STEP_SUMMARY
