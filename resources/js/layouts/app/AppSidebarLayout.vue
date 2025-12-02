@@ -36,5 +36,7 @@ withDefaults(defineProps<Props>(), {
         </AppContent>
         <OfflineStatus />
     </AppShell>
-    <Toaster position="bottom-right" richColors />
+    <Teleport to="body">
+        <Toaster position="bottom-right" richColors />
+    </Teleport>
 </template>
