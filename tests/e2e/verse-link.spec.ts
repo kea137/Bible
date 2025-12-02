@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/base.js';
+import { test } from './fixtures/base.js';
 
 test.describe('Verse Link Canvas CRUD', () => {
     test('should create a new verse link canvas', async ({ onboardedPage }) => {

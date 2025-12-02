@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 export interface OfflineState {
     isOnline: boolean;
@@ -35,9 +35,12 @@ export function useOffline() {
     const registerServiceWorker = async () => {
         if ('serviceWorker' in navigator) {
             try {
-                registration = await navigator.serviceWorker.register('/sw.js', {
-                    scope: '/',
-                });
+                registration = await navigator.serviceWorker.register(
+                    '/sw.js',
+                    {
+                        scope: '/',
+                    },
+                );
 
                 console.log('[App] Service Worker registered:', registration);
 
@@ -65,7 +68,10 @@ export function useOffline() {
                     }
                 });
             } catch (error) {
-                console.error('[App] Service Worker registration failed:', error);
+                console.error(
+                    '[App] Service Worker registration failed:',
+                    error,
+                );
             }
         }
     };
@@ -106,7 +112,10 @@ export function useOffline() {
         updateOnlineStatus();
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.addEventListener(
+            'beforeinstallprompt',
+            handleBeforeInstallPrompt,
+        );
         window.addEventListener('appinstalled', handleAppInstalled);
 
         // Check if app is already installed
@@ -121,7 +130,10 @@ export function useOffline() {
     onUnmounted(() => {
         window.removeEventListener('online', updateOnlineStatus);
         window.removeEventListener('offline', updateOnlineStatus);
-        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.removeEventListener(
+            'beforeinstallprompt',
+            handleBeforeInstallPrompt,
+        );
         window.removeEventListener('appinstalled', handleAppInstalled);
     });
 

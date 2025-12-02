@@ -77,8 +77,6 @@ test.describe('Notes CRUD', () => {
 
         await page.waitForTimeout(1000);
 
-        // Check if there are any notes
-        const notesList = page.locator('[role="list"]').or(page.locator('.note-item'));
         // Just verify the page loaded, notes might be empty
     });
 

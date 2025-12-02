@@ -66,7 +66,10 @@ function updateReminderTime(value: string) {
 <template>
     <div class="space-y-2">
         <Label for="reminder-time">{{ t('Memory Verse Reminder Time') }}</Label>
-        <Select :model-value="reminderTime" @update:model-value="updateReminderTime">
+        <Select
+            :model-value="reminderTime"
+            @update:model-value="updateReminderTime"
+        >
             <SelectTrigger id="reminder-time">
                 <SelectValue :placeholder="t('Select reminder time')" />
             </SelectTrigger>
@@ -81,7 +84,11 @@ function updateReminderTime(value: string) {
             </SelectContent>
         </Select>
         <p class="text-xs text-muted-foreground">
-            {{ t('Choose when you want to receive daily memory verse reminders') }}
+            {{
+                t(
+                    'Choose when you want to receive daily memory verse reminders',
+                )
+            }}
         </p>
     </div>
 </template>

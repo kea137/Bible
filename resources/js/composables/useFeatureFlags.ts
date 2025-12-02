@@ -171,7 +171,8 @@ export function getFeatureFlagMetadata(): Array<{
         {
             key: 'parallelBibles',
             label: 'Parallel Bibles',
-            description: 'Enable parallel Bible view for comparing translations',
+            description:
+                'Enable parallel Bible view for comparing translations',
             enabled: flags.parallelBibles,
         },
         {

@@ -12,6 +12,7 @@ import {
     HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { trackLessonProgress, trackPageView } from '@/composables/useAnalytics';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { lessons } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -19,7 +20,6 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { trackLessonProgress, trackPageView } from '@/composables/useAnalytics';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -114,7 +114,7 @@ async function toggleLessonCompletion() {
         if (response.ok) {
             const result = await response.json();
             lessonCompleted.value = result.progress.completed;
-            
+
             // Track lesson progress
             trackLessonProgress(
                 props.lesson.id,
@@ -149,7 +149,7 @@ if (info) {
 // Track page view on mount
 onMounted(() => {
     trackPageView('Lesson');
-    
+
     // Track lesson start if not completed
     if (!lessonCompleted.value) {
         trackLessonProgress(props.lesson.id, 'start');

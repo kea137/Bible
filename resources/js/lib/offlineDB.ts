@@ -58,7 +58,10 @@ class OfflineDB {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
 
             request.onerror = () => {
-                console.error('[IndexedDB] Error opening database:', request.error);
+                console.error(
+                    '[IndexedDB] Error opening database:',
+                    request.error,
+                );
                 reject(request.error);
             };
 
@@ -76,17 +79,28 @@ class OfflineDB {
                     const chaptersStore = db.createObjectStore(CHAPTERS_STORE, {
                         keyPath: 'id',
                     });
-                    chaptersStore.createIndex('bibleId', 'bibleId', { unique: false });
-                    chaptersStore.createIndex('timestamp', 'timestamp', { unique: false });
+                    chaptersStore.createIndex('bibleId', 'bibleId', {
+                        unique: false,
+                    });
+                    chaptersStore.createIndex('timestamp', 'timestamp', {
+                        unique: false,
+                    });
                 }
 
                 // Create mutations queue store
                 if (!db.objectStoreNames.contains(MUTATIONS_STORE)) {
-                    const mutationsStore = db.createObjectStore(MUTATIONS_STORE, {
-                        keyPath: 'id',
+                    const mutationsStore = db.createObjectStore(
+                        MUTATIONS_STORE,
+                        {
+                            keyPath: 'id',
+                        },
+                    );
+                    mutationsStore.createIndex('timestamp', 'timestamp', {
+                        unique: false,
                     });
-                    mutationsStore.createIndex('timestamp', 'timestamp', { unique: false });
-                    mutationsStore.createIndex('type', 'type', { unique: false });
+                    mutationsStore.createIndex('type', 'type', {
+                        unique: false,
+                    });
                 }
 
                 console.log('[IndexedDB] Database upgraded successfully');
@@ -99,7 +113,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([CHAPTERS_STORE], 'readwrite');
+            const transaction = this.db!.transaction(
+                [CHAPTERS_STORE],
+                'readwrite',
+            );
             const store = transaction.objectStore(CHAPTERS_STORE);
             const request = store.put(chapter);
 
@@ -112,7 +129,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([CHAPTERS_STORE], 'readonly');
+            const transaction = this.db!.transaction(
+                [CHAPTERS_STORE],
+                'readonly',
+            );
             const store = transaction.objectStore(CHAPTERS_STORE);
             const request = store.get(id);
 
@@ -125,7 +145,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([CHAPTERS_STORE], 'readonly');
+            const transaction = this.db!.transaction(
+                [CHAPTERS_STORE],
+                'readonly',
+            );
             const store = transaction.objectStore(CHAPTERS_STORE);
             const request = store.getAll();
 
@@ -138,7 +161,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([CHAPTERS_STORE], 'readwrite');
+            const transaction = this.db!.transaction(
+                [CHAPTERS_STORE],
+                'readwrite',
+            );
             const store = transaction.objectStore(CHAPTERS_STORE);
             const request = store.delete(id);
 
@@ -151,7 +177,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([CHAPTERS_STORE], 'readwrite');
+            const transaction = this.db!.transaction(
+                [CHAPTERS_STORE],
+                'readwrite',
+            );
             const store = transaction.objectStore(CHAPTERS_STORE);
             const request = store.clear();
 
@@ -165,7 +194,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([MUTATIONS_STORE], 'readwrite');
+            const transaction = this.db!.transaction(
+                [MUTATIONS_STORE],
+                'readwrite',
+            );
             const store = transaction.objectStore(MUTATIONS_STORE);
             const request = store.put(mutation);
 
@@ -178,7 +210,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([MUTATIONS_STORE], 'readonly');
+            const transaction = this.db!.transaction(
+                [MUTATIONS_STORE],
+                'readonly',
+            );
             const store = transaction.objectStore(MUTATIONS_STORE);
             const request = store.getAll();
 
@@ -191,7 +226,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([MUTATIONS_STORE], 'readwrite');
+            const transaction = this.db!.transaction(
+                [MUTATIONS_STORE],
+                'readwrite',
+            );
             const store = transaction.objectStore(MUTATIONS_STORE);
             const request = store.delete(id);
 
@@ -204,7 +242,10 @@ class OfflineDB {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([MUTATIONS_STORE], 'readwrite');
+            const transaction = this.db!.transaction(
+                [MUTATIONS_STORE],
+                'readwrite',
+            );
             const store = transaction.objectStore(MUTATIONS_STORE);
             const request = store.clear();
 

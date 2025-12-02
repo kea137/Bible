@@ -22,11 +22,6 @@ test.describe('Bible Navigation and Reading Progress', () => {
         if (await markReadButton.first().isVisible()) {
             await markReadButton.first().click();
             await page.waitForTimeout(1000);
-
-            // Verify visual feedback
-            const checkIcon = page.locator('[data-icon="check"]').or(
-                page.locator('svg[class*="check"]'),
-            );
         }
     });
 
@@ -46,11 +41,6 @@ test.describe('Bible Navigation and Reading Progress', () => {
             // Verify progress page loaded
             await expect(page).toHaveURL(/.*reading-plan/);
             await page.waitForTimeout(1000);
-
-            // Check for progress indicators
-            const progressBar = page.locator('[role="progressbar"]').or(
-                page.locator('.progress'),
-            );
         }
     });
 
@@ -134,9 +124,6 @@ test.describe('Bible Navigation and Reading Progress', () => {
         await firstBible.click();
         await page.waitForTimeout(1000);
 
-        // Get current chapter number
-        const currentChapter = await page.locator('text=/Chapter \\d+/').textContent();
-
         // Click next chapter
         const nextButton = page.locator('button:has-text("Next")').or(
             page.locator('button[aria-label*="next"]'),
@@ -217,10 +204,6 @@ test.describe('Bible Navigation and Reading Progress', () => {
         await page.goto('/dashboard');
         await page.waitForTimeout(1000);
 
-        // Look for statistics section
-        const statsSection = page.locator('text=/\\d+.*read/i').or(
-            page.locator('text=/\\d+.*chapter/i'),
-        );
         // Statistics might be visible on dashboard
     });
 });

@@ -78,7 +78,9 @@ const handleReset = (): void => {
 
         <Separator />
 
-        <div class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/30">
+        <div
+            class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/30"
+        >
             <Info class="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400" />
             <div class="flex-1 space-y-2">
                 <p class="text-sm font-medium text-blue-900 dark:text-blue-100">

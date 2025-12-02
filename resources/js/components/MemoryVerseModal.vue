@@ -10,7 +10,13 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { usePage } from '@inertiajs/vue3';
-import { BookMarked, Brain, CheckCircle, LoaderCircle, X } from 'lucide-vue-next';
+import {
+    BookMarked,
+    Brain,
+    CheckCircle,
+    LoaderCircle,
+    X,
+} from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -178,9 +184,7 @@ onMounted(() => {
                 v-else-if="!loading && !reviewing && dueVerses.length > 0"
                 class="space-y-4"
             >
-                <div
-                    class="rounded-lg border bg-muted/50 p-4 text-center"
-                >
+                <div class="rounded-lg border bg-muted/50 p-4 text-center">
                     <p class="text-2xl font-bold text-primary">
                         {{ dueVerses.length }}
                     </p>
@@ -204,7 +208,9 @@ onMounted(() => {
                                             verse.verse_number
                                         }}
                                     </p>
-                                    <p class="mt-1 text-sm text-muted-foreground">
+                                    <p
+                                        class="mt-1 text-sm text-muted-foreground"
+                                    >
                                         {{ verse.verse_text.substring(0, 80)
                                         }}{{
                                             verse.verse_text.length > 80
@@ -268,7 +274,9 @@ onMounted(() => {
                         </p>
 
                         <div class="space-y-3">
-                            <p class="text-sm font-medium text-muted-foreground">
+                            <p
+                                class="text-sm font-medium text-muted-foreground"
+                            >
                                 {{ t('How well did you remember?') }}
                             </p>
                             <div class="grid grid-cols-2 gap-2">
@@ -305,11 +313,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <Button
-                    variant="ghost"
-                    class="w-full"
-                    @click="resetReview"
-                >
+                <Button variant="ghost" class="w-full" @click="resetReview">
                     <X class="mr-2 h-4 w-4" />
                     {{ t('Exit Review') }}
                 </Button>

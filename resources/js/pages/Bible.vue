@@ -41,6 +41,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import VerseDialog from '@/components/VerseDialog.vue';
+import { trackBibleReading, trackPageView } from '@/composables/useAnalytics';
+import { useOfflineData } from '@/composables/useOfflineData';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { bibles, verse_study } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -52,24 +54,17 @@ import {
     CheckCircle,
     ChevronLeft,
     ChevronRight,
+    Download,
     PenTool,
     Search,
     Share2,
-    Download,
     Trash2,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useOfflineData } from '@/composables/useOfflineData';
-import { trackBibleReading, trackPageView } from '@/composables/useAnalytics';
 
 const { t } = useI18n();
-const { 
-    isChapterCached, 
-    cacheChapter, 
-    removeCachedChapter,
-    getCachedChapter 
-} = useOfflineData();
+const { isChapterCached, cacheChapter, removeCachedChapter } = useOfflineData();
 const props = defineProps<{
     bible: {
         id: number;
@@ -249,7 +244,7 @@ const chapterCached = computed(() => {
     return isChapterCached(
         props.bible.id,
         currentBook.value.id,
-        loadedChapter.value.chapter_number
+        loadedChapter.value.chapter_number,
     );
 });
 
@@ -258,7 +253,7 @@ async function toggleOfflineCache() {
 
     const bookId = currentBook.value.id;
     const chapterNumber = loadedChapter.value.chapter_number;
-    
+
     if (chapterCached.value) {
         // Remove from cache
         const id = `bible_${props.bible.id}_book_${bookId}_chapter_${chapterNumber}`;
@@ -266,7 +261,10 @@ async function toggleOfflineCache() {
             await removeCachedChapter(id);
             console.log('[Bible] Chapter removed from offline cache');
         } catch (error) {
-            console.error('[Bible] Failed to remove chapter from cache:', error);
+            console.error(
+                '[Bible] Failed to remove chapter from cache:',
+                error,
+            );
             alert(t('Failed to remove chapter from offline cache'));
         }
     } else {
@@ -276,7 +274,7 @@ async function toggleOfflineCache() {
                 props.bible.id,
                 bookId,
                 chapterNumber,
-                loadedChapter.value
+                loadedChapter.value,
             );
             console.log('[Bible] Chapter cached for offline reading');
         } catch (error) {
@@ -502,7 +500,7 @@ async function addToMemoryVerses(verse: any) {
             }),
         });
 
-        const data = await response.json();
+        await response.json();
 
         if (response.ok) {
             alertSuccess.value = true;
@@ -580,7 +578,7 @@ const searchOpen = ref(false);
 onMounted(() => {
     searchVerses();
     trackPageView('Bible Reading');
-    
+
     // Track Bible reading activity
     if (props.bible && props.selectedBook && props.selectedChapter) {
         trackBibleReading(
@@ -963,10 +961,7 @@ function translateReference(ref: string): string {
                                     v-if="!chapterCached"
                                     class="mr-1 h-4 w-4"
                                 />
-                                <Trash2
-                                    v-else
-                                    class="mr-1 h-4 w-4"
-                                />
+                                <Trash2 v-else class="mr-1 h-4 w-4" />
                                 {{
                                     chapterCached
                                         ? t('Cached')

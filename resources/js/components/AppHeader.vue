@@ -114,7 +114,10 @@ const rightNavItems: NavItem[] = [
                             <div
                                 class="flex h-full flex-1 flex-col justify-between space-y-4 py-6"
                             >
-                                <nav class="-mx-3 space-y-1" aria-label="Main navigation">
+                                <nav
+                                    class="-mx-3 space-y-1"
+                                    aria-label="Main navigation"
+                                >
                                     <Link
                                         v-for="item in mainNavItems"
                                         :key="item.title"
@@ -156,7 +159,11 @@ const rightNavItems: NavItem[] = [
                     </Sheet>
                 </div>
 
-                <Link :href="dashboard()" class="flex items-center gap-x-2" aria-label="Go to dashboard">
+                <Link
+                    :href="dashboard()"
+                    class="flex items-center gap-x-2"
+                    aria-label="Go to dashboard"
+                >
                     <AppLogo />
                 </Link>
 

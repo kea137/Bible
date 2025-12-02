@@ -91,7 +91,10 @@ export function trackBibleReading(
 /**
  * Track verse sharing
  */
-export function trackVerseShare(translation: string, shareMethod: string): void {
+export function trackVerseShare(
+    translation: string,
+    shareMethod: string,
+): void {
     trackEvent({
         category: 'Verse Sharing',
         action: 'Share',

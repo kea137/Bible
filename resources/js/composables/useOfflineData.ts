@@ -1,13 +1,13 @@
-import { ref, computed, onMounted } from 'vue';
-import { 
-    offlineDB, 
-    type CachedChapter, 
-    type QueuedMutation,
+import {
+    offlineDB,
+    type CachedChapter,
     type ChapterData,
+    type HighlightMutationData,
     type NoteMutationData,
-    type HighlightMutationData 
+    type QueuedMutation,
 } from '@/lib/offlineDB';
 import { router } from '@inertiajs/vue3';
+import { computed, onMounted, ref } from 'vue';
 
 const cachedChapters = ref<CachedChapter[]>([]);
 const queuedMutations = ref<QueuedMutation[]>([]);
@@ -22,7 +22,10 @@ export function useOfflineData() {
         try {
             cachedChapters.value = await offlineDB.getAllCachedChapters();
         } catch (error) {
-            console.error('[OfflineData] Error loading cached chapters:', error);
+            console.error(
+                '[OfflineData] Error loading cached chapters:',
+                error,
+            );
         }
     };
 
@@ -31,7 +34,10 @@ export function useOfflineData() {
         try {
             queuedMutations.value = await offlineDB.getAllMutations();
         } catch (error) {
-            console.error('[OfflineData] Error loading queued mutations:', error);
+            console.error(
+                '[OfflineData] Error loading queued mutations:',
+                error,
+            );
         }
     };
 
@@ -141,7 +147,10 @@ export function useOfflineData() {
             console.log('[OfflineData] Mutation queued:', mutation.id);
 
             // Try to register background sync
-            if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
+            if (
+                'serviceWorker' in navigator &&
+                'sync' in ServiceWorkerRegistration.prototype
+            ) {
                 const registration = await navigator.serviceWorker.ready;
                 await registration.sync.register('sync-mutations');
             }
@@ -200,7 +209,11 @@ export function useOfflineData() {
 
                 // Validate endpoint is set
                 if (!endpoint) {
-                    console.error('[OfflineData] Unknown mutation type/action:', mutation.type, mutation.action);
+                    console.error(
+                        '[OfflineData] Unknown mutation type/action:',
+                        mutation.type,
+                        mutation.action,
+                    );
                     await offlineDB.removeMutation(mutation.id);
                     continue;
                 }
@@ -208,29 +221,21 @@ export function useOfflineData() {
                 // Use Inertia router for the request
                 if (method === 'POST') {
                     await new Promise<void>((resolve, reject) => {
-                        router.post(
-                            endpoint,
-                            mutation.data,
-                            {
-                                preserveState: true,
-                                preserveScroll: true,
-                                onSuccess: () => resolve(),
-                                onError: () => reject(new Error('Request failed')),
-                            },
-                        );
+                        router.post(endpoint, mutation.data, {
+                            preserveState: true,
+                            preserveScroll: true,
+                            onSuccess: () => resolve(),
+                            onError: () => reject(new Error('Request failed')),
+                        });
                     });
                 } else if (method === 'PUT') {
                     await new Promise<void>((resolve, reject) => {
-                        router.put(
-                            endpoint,
-                            mutation.data,
-                            {
-                                preserveState: true,
-                                preserveScroll: true,
-                                onSuccess: () => resolve(),
-                                onError: () => reject(new Error('Request failed')),
-                            },
-                        );
+                        router.put(endpoint, mutation.data, {
+                            preserveState: true,
+                            preserveScroll: true,
+                            onSuccess: () => resolve(),
+                            onError: () => reject(new Error('Request failed')),
+                        });
                     });
                 } else if (method === 'DELETE') {
                     await new Promise<void>((resolve, reject) => {
@@ -247,14 +252,21 @@ export function useOfflineData() {
                 await offlineDB.removeMutation(mutation.id);
                 console.log('[OfflineData] Mutation synced:', mutation.id);
             } catch (error) {
-                console.error('[OfflineData] Error syncing mutation:', mutation.id, error);
+                console.error(
+                    '[OfflineData] Error syncing mutation:',
+                    mutation.id,
+                    error,
+                );
 
                 // Increment retry count
                 mutation.retries++;
                 if (mutation.retries < MAX_RETRIES) {
                     await offlineDB.queueMutation(mutation);
                 } else {
-                    console.error(`[OfflineData] Mutation failed after ${MAX_RETRIES} retries, removing:`, mutation.id);
+                    console.error(
+                        `[OfflineData] Mutation failed after ${MAX_RETRIES} retries, removing:`,
+                        mutation.id,
+                    );
                     await offlineDB.removeMutation(mutation.id);
                 }
             }

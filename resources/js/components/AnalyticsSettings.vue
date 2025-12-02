@@ -62,10 +62,16 @@ const handleToggle = (enabled: boolean): void => {
         <Separator />
 
         <div class="space-y-4">
-            <div class="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
-                <ShieldCheck class="mt-0.5 h-5 w-5 text-green-600 dark:text-green-400" />
+            <div
+                class="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30"
+            >
+                <ShieldCheck
+                    class="mt-0.5 h-5 w-5 text-green-600 dark:text-green-400"
+                />
                 <div class="flex-1 space-y-2">
-                    <p class="text-sm font-medium text-green-900 dark:text-green-100">
+                    <p
+                        class="text-sm font-medium text-green-900 dark:text-green-100"
+                    >
                         {{ t('Privacy-First Analytics') }}
                     </p>
                     <p class="text-sm text-green-700 dark:text-green-300">
@@ -78,13 +84,19 @@ const handleToggle = (enabled: boolean): void => {
                 </div>
             </div>
 
-            <div class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/30">
+            <div
+                class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/30"
+            >
                 <Info class="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400" />
                 <div class="flex-1 space-y-2">
-                    <p class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    <p
+                        class="text-sm font-medium text-blue-900 dark:text-blue-100"
+                    >
                         {{ t('What We Track') }}
                     </p>
-                    <ul class="list-inside list-disc space-y-1 text-sm text-blue-700 dark:text-blue-300">
+                    <ul
+                        class="list-inside list-disc space-y-1 text-sm text-blue-700 dark:text-blue-300"
+                    >
                         <li>{{ t('Page views and navigation patterns') }}</li>
                         <li>
                             {{
@@ -93,7 +105,9 @@ const handleToggle = (enabled: boolean): void => {
                                 )
                             }}
                         </li>
-                        <li>{{ t('Feature usage (verse sharing, lessons)') }}</li>
+                        <li>
+                            {{ t('Feature usage (verse sharing, lessons)') }}
+                        </li>
                         <li>{{ t('Search queries (anonymized)') }}</li>
                     </ul>
                     <p class="mt-2 text-sm text-blue-700 dark:text-blue-300">
