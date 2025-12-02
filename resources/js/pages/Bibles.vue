@@ -142,17 +142,19 @@ const filteredHighlights = computed(() => {
 });
 
 const searchQuery = ref('');
-const client = algoliasearch(
-    import.meta.env.VITE_ALGOLIA_APP_ID || 'ZRYCA9P53B',
-    import.meta.env.VITE_ALGOLIA_API_KEY || '4bb73bb3c87b2a1005c2c06e9128dec4',
-);
+const client = import.meta.env.VITE_ALGOLIA_APP_ID && import.meta.env.VITE_ALGOLIA_API_KEY
+    ? algoliasearch(
+        import.meta.env.VITE_ALGOLIA_APP_ID,
+        import.meta.env.VITE_ALGOLIA_API_KEY,
+    )
+    : null;
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
         // Fetch all highlights and bibles if search query is empty
         await loadHighlights();
-    } else {
-        // Search verses from Algolia
+    } else if (client) {
+        // Search verses from Algolia only if client is configured
         try {
             const response = await client.searchSingleIndex({
                 indexName: 'verses',
