@@ -20,10 +20,27 @@ class VerseLinkController extends Controller
      */
     public function index(): Response
     {
-        $canvases = VerseLinkCanvas::where('user_id', Auth::id())
+        $userId = Auth::id();
+        
+        // Get canvases owned by the user
+        $ownedCanvases = VerseLinkCanvas::where('user_id', $userId)
             ->withCount('nodes')
-            ->orderBy('updated_at', 'desc')
             ->get();
+        
+        // Get canvases shared with the user
+        $sharedCanvases = VerseLinkCanvas::whereHas('permissions', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+            ->with(['permissions' => function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            }])
+            ->withCount('nodes')
+            ->get();
+        
+        // Combine and sort by updated_at
+        $canvases = $ownedCanvases->concat($sharedCanvases)
+            ->sortByDesc('updated_at')
+            ->values();
 
         return Inertia::render('Verse Link', [
             'canvases' => $canvases,
@@ -98,6 +115,7 @@ class VerseLinkController extends Controller
         $this->authorize('view', $canvas);
 
         $canvas->load([
+            'user:id,name',
             'nodes.verse.book',
             'nodes.verse.chapter',
             'nodes.verse.bible',
