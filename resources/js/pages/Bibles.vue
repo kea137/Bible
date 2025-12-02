@@ -181,7 +181,7 @@ const searchVerses = async () => {
         }
     } else {
         // Algolia client not configured, fall back to loading highlights
-        console.warn('Search functionality is not available - Algolia credentials not configured');
+        console.warn('Search functionality is not available - configure VITE_ALGOLIA_APP_ID and VITE_ALGOLIA_API_KEY environment variables to enable search features');
         await loadHighlights();
     }
 };
