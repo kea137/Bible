@@ -28,6 +28,7 @@ import {
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LogoImage from '/resources/images/logo-small.png';
+import { trackPageView, trackVerseShare } from '@/composables/useAnalytics';
 
 const { t } = useI18n();
 const props = defineProps<{
@@ -493,6 +494,9 @@ function downloadImage(platform?: string) {
     link.download = filename;
     link.href = imageDataUrl.value;
     link.click();
+    
+    // Track verse share
+    trackVerseShare(props.verseReference, 'download');
 }
 
 async function shareImage() {
@@ -510,6 +514,9 @@ async function shareImage() {
                 text: props.verseText,
                 files: [file],
             });
+            
+            // Track verse share
+            trackVerseShare(props.verseReference, 'native-share');
         } else {
             // Fallback: just download
             shareError.value =
@@ -532,6 +539,7 @@ async function shareImage() {
 
 onMounted(() => {
     generateImage();
+    trackPageView('Verse Sharing');
 });
 
 // Watch for changes in customization options

@@ -6,6 +6,7 @@ import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
 import MobileFooter from '@/components/MobileFooter.vue';
 import OfflineStatus from '@/components/OfflineStatus.vue';
+import SkipNavigation from '@/components/SkipNavigation.vue';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -19,13 +20,14 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <AppShell variant="sidebar">
+        <SkipNavigation />
         <AppSidebar />
         <AppContent
             variant="sidebar"
             class="flex min-h-screen flex-col overflow-x-hidden"
         >
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
-            <div class="flex-1">
+            <div id="main-content" class="flex-1" tabindex="-1">
                 <slot />
             </div>
             <AppFooter />

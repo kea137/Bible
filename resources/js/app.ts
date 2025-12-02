@@ -4,7 +4,9 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
+import { initializeAnalytics } from './composables/useAnalytics';
 import { initializeTheme } from './composables/useAppearance';
+import { initializeFeatureFlags } from './composables/useFeatureFlags';
 import { initializeFontPreferences } from './composables/useFontPreferences';
 import { initializeLocale } from './composables/useLocale';
 import { i18n } from './i18n';
@@ -39,6 +41,12 @@ createInertiaApp({
 
         // Initialize theme after mount to ensure Inertia page props exist
         initializeTheme();
+
+        // Initialize feature flags
+        initializeFeatureFlags();
+
+        // Initialize analytics
+        initializeAnalytics();
 
         return app;
     },
