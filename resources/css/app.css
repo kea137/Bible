@@ -91,6 +91,46 @@
     }
 }
 
+/* Sonner (toast) theme overrides to match app UI */
+@layer components {
+    .toaster {
+        --sonner-z-index: 50;
+        --sonner-bg: var(--card);
+        --sonner-color: var(--card-foreground);
+        --sonner-border: var(--border);
+        --sonner-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        --sonner-toast-height: auto;
+        --sonner-icon-size: 18px;
+        --sonner-radius: var(--radius);
+        --sonner-gap: 8px;
+
+        --sonner-success-bg: var(--accent);
+        --sonner-success-color: var(--accent-foreground);
+        --sonner-success-border: var(--border);
+
+        --sonner-error-bg: var(--destructive);
+        --sonner-error-color: var(--destructive-foreground);
+        --sonner-error-border: var(--border);
+
+        --sonner-warning-bg: var(--secondary);
+        --sonner-warning-color: var(--secondary-foreground);
+        --sonner-warning-border: var(--border);
+    }
+
+    .toaster .toast {
+        @apply rounded-lg border bg-card text-card-foreground shadow-lg;
+    }
+    .toaster .toast .description {
+        @apply text-muted-foreground;
+    }
+    .toaster .toast .actions button[data-type="action"] {
+        @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    }
+    .toaster .toast .actions button[data-type="cancel"] {
+        @apply bg-muted text-muted-foreground hover:bg-muted/80;
+    }
+}
+
 :root {
     --background: hsl(0 0% 100%);
     --foreground: hsl(0 0% 3.9%);

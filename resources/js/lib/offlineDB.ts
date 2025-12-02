@@ -53,6 +53,19 @@ export interface QueuedMutation {
 class OfflineDB {
     private db: IDBDatabase | null = null;
 
+    private sanitizeForIDB<T>(obj: T): T {
+        try {
+            // Prefer structuredClone when available
+            if (typeof structuredClone === 'function') {
+                return structuredClone(obj);
+            }
+        } catch (e) {
+            // Fall through to JSON clone
+        }
+        // Fallback: JSON clone to strip proxies/functions
+        return JSON.parse(JSON.stringify(obj)) as T;
+    }
+
     async init(): Promise<void> {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -118,7 +131,8 @@ class OfflineDB {
                 'readwrite',
             );
             const store = transaction.objectStore(CHAPTERS_STORE);
-            const request = store.put(chapter);
+            const sanitized = this.sanitizeForIDB(chapter);
+            const request = store.put(sanitized);
 
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
@@ -199,7 +213,8 @@ class OfflineDB {
                 'readwrite',
             );
             const store = transaction.objectStore(MUTATIONS_STORE);
-            const request = store.put(mutation);
+            const sanitized = this.sanitizeForIDB(mutation);
+            const request = store.put(sanitized);
 
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);

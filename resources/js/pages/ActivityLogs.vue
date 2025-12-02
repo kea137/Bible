@@ -86,7 +86,7 @@ const props = defineProps<{
 }>();
 
 // Filter state
-const selectedAction = ref(props.filters.action || '');
+const selectedAction = ref<string | null>(props.filters.action ?? null);
 const dateFrom = ref(props.filters.date_from || '');
 const dateTo = ref(props.filters.date_to || '');
 
@@ -110,7 +110,7 @@ const applyFilters = () => {
 };
 
 const resetFilters = () => {
-    selectedAction.value = '';
+    selectedAction.value = null;
     dateFrom.value = '';
     dateTo.value = '';
     router.get(activity_logs().url);
@@ -180,9 +180,6 @@ const hasActiveFilters = computed(() => {
                                         />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">
-                                            {{ t('All actions') }}
-                                        </SelectItem>
                                         <SelectItem
                                             v-for="action in actions"
                                             :key="action"

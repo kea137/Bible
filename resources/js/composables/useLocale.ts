@@ -22,11 +22,13 @@ export function initializeLocale(i18n: any) {
     }
 
     // Initialize locale from user's database preference passed via Inertia
-    const page = usePage();
-    const userLanguage = (page.props.language as Locale) || 'en';
-
-    if (i18n.global) {
-        i18n.global.locale.value = userLanguage;
+    try {
+        const page = usePage();
+        const preferred = (page?.props?.language as string) || 'en';
+        i18n.global.locale.value = preferred;
+    } catch {
+        // Fallback if usePage not ready yet
+        i18n.global.locale.value = 'en';
     }
 }
 

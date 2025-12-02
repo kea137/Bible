@@ -2,9 +2,11 @@
 import { useSidebar } from '@/components/ui/sidebar';
 import { useLocale } from '@/composables/useLocale';
 import { Languages } from 'lucide-vue-next';
+import { usePage } from '@inertiajs/vue3';
 
 const { locale, changeLocale } = useLocale();
 const { state } = useSidebar();
+const page = usePage();
 
 // store language in database when changed
 async function updateLocale(newLocale: any) {
