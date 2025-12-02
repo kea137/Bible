@@ -59,7 +59,7 @@ class OfflineDB {
             if (typeof structuredClone === 'function') {
                 return structuredClone(obj);
             }
-        } catch (e) {
+        } catch {
             // Fall through to JSON clone
         }
         // Fallback: JSON clone to strip proxies/functions

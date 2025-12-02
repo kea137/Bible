@@ -4,7 +4,7 @@ import { useLocale } from '@/composables/useLocale';
 import { Languages } from 'lucide-vue-next';
 import { usePage } from '@inertiajs/vue3';
 
-const { locale, changeLocale } = useLocale();
+const { locale } = useLocale();
 const { state } = useSidebar();
 const page = usePage();
 
