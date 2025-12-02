@@ -54,7 +54,7 @@ class MemoryVerse extends Model
         if ($this->total_reviews === 0) {
             return 0;
         }
-        
+
         return round(($this->correct_reviews / $this->total_reviews) * 100, 2);
     }
 }

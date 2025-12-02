@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\MemoryVerse;
 use App\Models\User;
 use App\Notifications\MemoryVerseReminder;
 use Carbon\Carbon;
@@ -39,7 +38,7 @@ class SendMemoryVerseReminders extends Command
                 $query->where('next_review_date', '<=', Carbon::now()->toDateString());
             })
             ->get()
-            ->filter(fn($user) => $user->due_verses_count > 0);
+            ->filter(fn ($user) => $user->due_verses_count > 0);
 
         $notificationsSent = 0;
 

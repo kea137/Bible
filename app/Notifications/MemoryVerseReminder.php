@@ -37,7 +37,7 @@ class MemoryVerseReminder extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $verseText = $this->dueCount === 1 ? 'verse' : 'verses';
-        
+
         return (new MailMessage)
             ->subject('Memory Verse Review Reminder')
             ->line("You have {$this->dueCount} memory {$verseText} due for review today.")

@@ -248,7 +248,7 @@ test('can delete a memory verse', function () {
 });
 
 test('SM-2 algorithm updates intervals correctly for correct responses', function () {
-    $service = new SpacedRepetitionService();
+    $service = new SpacedRepetitionService;
     $memoryVerse = MemoryVerse::create([
         'user_id' => $this->user->id,
         'verse_id' => $this->verse->id,
@@ -280,7 +280,7 @@ test('SM-2 algorithm updates intervals correctly for correct responses', functio
 });
 
 test('SM-2 algorithm resets on incorrect response', function () {
-    $service = new SpacedRepetitionService();
+    $service = new SpacedRepetitionService;
     $memoryVerse = MemoryVerse::create([
         'user_id' => $this->user->id,
         'verse_id' => $this->verse->id,
@@ -295,7 +295,7 @@ test('SM-2 algorithm resets on incorrect response', function () {
     // Incorrect review (quality = 2)
     $service->updateReviewSchedule($memoryVerse, 2);
     $memoryVerse->refresh();
-    
+
     expect($memoryVerse->repetitions)->toBe(0);
     expect($memoryVerse->interval)->toBe(1);
 });
@@ -316,7 +316,7 @@ test('unauthenticated users cannot access memory verse endpoints', function () {
 
 test('users can only access their own memory verses', function () {
     $otherUser = User::factory()->create();
-    
+
     $memoryVerse = MemoryVerse::create([
         'user_id' => $otherUser->id,
         'verse_id' => $this->verse->id,

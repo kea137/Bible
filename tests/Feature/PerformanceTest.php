@@ -17,6 +17,7 @@ test('reference service getReferencesForVerse performs efficiently with caching'
     // Skip this test if using array or database cache driver (which don't support tags)
     if (! in_array(config('cache.default'), ['redis', 'memcached'])) {
         $this->markTestSkipped('Cache tags require redis or memcached driver');
+
         return;
     }
 
@@ -33,7 +34,7 @@ test('reference service getReferencesForVerse performs efficiently with caching'
         'book_id' => $book->id,
         'chapter_number' => 1,
     ]);
-    
+
     // Create main verse
     $verse = Verse::factory()->create([
         'bible_id' => $bible->id,
@@ -56,7 +57,7 @@ test('reference service getReferencesForVerse performs efficiently with caching'
     // Create reference data
     $referenceData = [];
     foreach ($refVerses as $i => $refVerse) {
-        $referenceData[(string) ($i + 1)] = 'GEN 1 ' . ($i + 2);
+        $referenceData[(string) ($i + 1)] = 'GEN 1 '.($i + 2);
     }
 
     Reference::create([
@@ -84,14 +85,14 @@ test('reference service getReferencesForVerse performs efficiently with caching'
 
     expect($references2)->toBeArray();
     expect($references2)->toHaveCount(9);
-    
+
     // Cache should reduce query count to 0 or very low
     expect($queryCount2)->toBeLessThan($queryCount1);
 });
 
 test('verse link canvas showCanvas query is optimized with eager loading', function () {
     $user = \App\Models\User::factory()->create();
-    
+
     // Create test data
     $bible = Bible::factory()->create();
     $book = Book::factory()->create(['bible_id' => $bible->id]);
@@ -137,15 +138,15 @@ test('verse link canvas showCanvas query is optimized with eager loading', funct
 test('database indexes exist for performance critical columns', function () {
     // For SQLite, we need to use a different query
     $dbDriver = DB::connection()->getDriverName();
-    
+
     if ($dbDriver === 'sqlite') {
         // Check if indexes exist in SQLite
         $indexes = DB::select("SELECT * FROM sqlite_master WHERE type='index' AND tbl_name='notes' AND (name LIKE '%verse_id%' OR name LIKE '%user_id%')");
         expect($indexes)->not->toBeEmpty();
-        
+
         $indexes = DB::select("SELECT * FROM sqlite_master WHERE type='index' AND tbl_name='references' AND name LIKE '%verse_id%'");
         expect($indexes)->not->toBeEmpty();
-        
+
         $indexes = DB::select("SELECT * FROM sqlite_master WHERE type='index' AND tbl_name='verse_link_nodes' AND name LIKE '%verse_id%'");
         expect($indexes)->not->toBeEmpty();
     } else {
@@ -165,6 +166,7 @@ test('cache invalidation works correctly on reference updates', function () {
     // Skip this test if using array or database cache driver (which don't support tags)
     if (! in_array(config('cache.default'), ['redis', 'memcached'])) {
         $this->markTestSkipped('Cache tags require redis or memcached driver');
+
         return;
     }
 
@@ -181,7 +183,7 @@ test('cache invalidation works correctly on reference updates', function () {
         'book_id' => $book->id,
         'chapter_number' => 1,
     ]);
-    
+
     $verse = Verse::factory()->create([
         'bible_id' => $bible->id,
         'book_id' => $book->id,
@@ -212,7 +214,7 @@ test('cache invalidation works correctly on reference updates', function () {
 
     // Load again - should get fresh data, not cached
     $references2 = $referenceService->getReferencesForVerse($verse);
-    
+
     // If cache was properly invalidated, we should see the updated reference count
     expect($references2)->toBeArray();
 });

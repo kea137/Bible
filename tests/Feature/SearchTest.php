@@ -33,7 +33,7 @@ test('search returns verses matching query', function () {
     $bible = Bible::factory()->create(['abbreviation' => 'KJV']);
     $book = Book::factory()->create(['bible_id' => $bible->id]);
     $chapter = Chapter::factory()->create(['bible_id' => $bible->id, 'book_id' => $book->id]);
-    
+
     Verse::factory()->create([
         'bible_id' => $bible->id,
         'book_id' => $book->id,
@@ -54,14 +54,14 @@ test('search filters verses by bible version', function () {
     $book = Book::factory()->create();
     $kjvChapter = Chapter::factory()->create(['bible_id' => $kjv->id, 'book_id' => $book->id]);
     $nivChapter = Chapter::factory()->create(['bible_id' => $niv->id, 'book_id' => $book->id]);
-    
+
     Verse::factory()->create([
         'bible_id' => $kjv->id,
         'book_id' => $book->id,
         'chapter_id' => $kjvChapter->id,
         'text' => 'Love one another',
     ]);
-    
+
     Verse::factory()->create([
         'bible_id' => $niv->id,
         'book_id' => $book->id,
@@ -81,14 +81,14 @@ test('search filters verses by book', function () {
     $matthew = Book::factory()->create(['title' => 'Matthew', 'bible_id' => $bible->id]);
     $johnChapter = Chapter::factory()->create(['bible_id' => $bible->id, 'book_id' => $john->id]);
     $matthewChapter = Chapter::factory()->create(['bible_id' => $bible->id, 'book_id' => $matthew->id]);
-    
+
     Verse::factory()->create([
         'bible_id' => $bible->id,
         'book_id' => $john->id,
         'chapter_id' => $johnChapter->id,
         'text' => 'In the beginning was the Word',
     ]);
-    
+
     Verse::factory()->create([
         'bible_id' => $bible->id,
         'book_id' => $matthew->id,
@@ -113,14 +113,14 @@ test('search returns user notes only', function () {
         'book_id' => $book->id,
         'chapter_id' => $chapter->id,
     ]);
-    
+
     Note::factory()->create([
         'user_id' => $user1->id,
         'verse_id' => $verse->id,
         'title' => 'My Study Note',
         'content' => 'This is my personal note',
     ]);
-    
+
     Note::factory()->create([
         'user_id' => $user2->id,
         'verse_id' => $verse->id,
@@ -139,7 +139,7 @@ test('search returns lessons matching query', function () {
         'description' => 'Learn about the power of prayer',
         'language' => 'English',
     ]);
-    
+
     Lesson::factory()->create([
         'title' => 'Bible Study Methods',
         'description' => 'Different approaches to studying scripture',
@@ -156,7 +156,7 @@ test('search filters lessons by language', function () {
         'title' => 'English Lesson',
         'language' => 'English',
     ]);
-    
+
     Lesson::factory()->create([
         'title' => 'Spanish Lesson',
         'language' => 'Spanish',
@@ -172,7 +172,7 @@ test('search respects per_page parameter', function () {
     $bible = Bible::factory()->create();
     $book = Book::factory()->create();
     $chapter = Chapter::factory()->create(['bible_id' => $bible->id, 'book_id' => $book->id]);
-    
+
     // Create multiple verses
     for ($i = 1; $i <= 15; $i++) {
         Verse::factory()->create([
@@ -251,4 +251,3 @@ test('search endpoint is rate limited', function () {
     // Depending on exact timing, this might be 200 or 429
     expect($response->status())->toBeIn([200, 429]);
 });
-
