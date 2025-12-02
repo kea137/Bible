@@ -60,9 +60,26 @@ class MemoryVerseController extends Controller
         $memoryVerses = MemoryVerse::with('verse.book', 'verse.chapter')
             ->where('user_id', Auth::id())
             ->orderBy('next_review_date')
-            ->get();
+            ->get()
+            ->map(function ($memoryVerse) {
+                return [
+                    'id' => $memoryVerse->id,
+                    'verse_id' => $memoryVerse->verse_id,
+                    'verse_text' => $memoryVerse->verse->text,
+                    'book_name' => $memoryVerse->verse->book->name,
+                    'chapter_number' => $memoryVerse->verse->chapter->chapter_number,
+                    'verse_number' => $memoryVerse->verse->verse_number,
+                    'next_review_date' => $memoryVerse->next_review_date->toDateString(),
+                    'last_reviewed_at' => $memoryVerse->last_reviewed_at?->toDateString(),
+                    'is_due' => $memoryVerse->isDue(),
+                    'success_rate' => $memoryVerse->success_rate,
+                    'total_reviews' => $memoryVerse->total_reviews,
+                ];
+            });
 
-        return response()->json($memoryVerses);
+        return response()->json([
+            'memory_verses' => $memoryVerses,
+        ]);
     }
 
     /**
@@ -72,9 +89,22 @@ class MemoryVerseController extends Controller
     {
         $dueVerses = $this->spacedRepetitionService->getDueMemoryVerses(Auth::id());
 
+        $formattedVerses = $dueVerses->map(function ($memoryVerse) {
+            return [
+                'id' => $memoryVerse->id,
+                'verse_id' => $memoryVerse->verse_id,
+                'verse_text' => $memoryVerse->verse->text,
+                'book_name' => $memoryVerse->verse->book->name,
+                'chapter_number' => $memoryVerse->verse->chapter->chapter_number,
+                'verse_number' => $memoryVerse->verse->verse_number,
+                'next_review_date' => $memoryVerse->next_review_date->toDateString(),
+                'repetitions' => $memoryVerse->repetitions,
+            ];
+        });
+
         return response()->json([
-            'due_verses' => $dueVerses,
-            'count' => $dueVerses->count(),
+            'due_verses' => $formattedVerses,
+            'count' => $formattedVerses->count(),
         ]);
     }
 
