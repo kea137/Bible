@@ -105,7 +105,7 @@ const applyFilters = () => {
 
     router.get(activity_logs().url, params, {
         preserveScroll: true,
-        preserveState: false,
+        preserveState: true,
     });
 };
 
@@ -125,7 +125,7 @@ const goToPage = (page: number) => {
 
     router.get(activity_logs().url, params, {
         preserveScroll: true,
-        preserveState: false,
+        preserveState: true,
     });
 };
 

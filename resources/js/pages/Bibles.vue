@@ -88,7 +88,9 @@ const filteredBibles = computed(() => {
 });
 
 function viewBible(bibleId: number) {
-    router.visit(`/bibles/${bibleId}`);
+    router.visit(`/bibles/${bibleId}`, {
+        preserveState: false,
+    });
     searchOpen.value = false;
 }
 

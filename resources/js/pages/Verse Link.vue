@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AlertUser from '@/components/AlertUser.vue';
 import NotesDialog from '@/components/NotesDialog.vue';
 import {
     AlertDialog,
@@ -64,6 +63,7 @@ import {
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const breadcrumbs: BreadcrumbItem[] = [
@@ -136,9 +136,6 @@ defineProps<{
 }>();
 
 const page = usePage();
-const alertSuccess = ref(false);
-const alertError = ref(false);
-const alertMessage = ref('');
 
 // Canvas state
 const selectedCanvas = ref<Canvas | null>(null);
@@ -251,8 +248,7 @@ function getCsrfToken(): string {
 
 async function createCanvas() {
     if (!newCanvasName.value.trim()) {
-        alertMessage.value = t('Please enter a canvas name');
-        alertError.value = true;
+        toast.error(t('Please enter a canvas name'));
         return;
     }
 
@@ -274,19 +270,16 @@ async function createCanvas() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            alertMessage.value = t('Canvas created successfully');
-            alertSuccess.value = true;
+            toast.success(t('Canvas created successfully'));
             createCanvasDialog.value = false;
             newCanvasName.value = '';
             newCanvasDescription.value = '';
             router.reload({ only: ['canvases'] });
         } else {
-            alertMessage.value = result.message || t('Failed to create canvas');
-            alertError.value = true;
+            toast.error(result.message || t('Failed to create canvas'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to create canvas');
-        alertError.value = true;
+        toast.error(t('Failed to create canvas'));
         console.error(error);
     } finally {
         saving.value = false;
@@ -307,12 +300,10 @@ async function openCanvas(canvas: Canvas) {
                 connections: data.connections || [],
             };
         } else {
-            alertMessage.value = t('Failed to load canvas');
-            alertError.value = true;
+            toast.error(t('Failed to load canvas'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to load canvas');
-        alertError.value = true;
+        toast.error(t('Failed to load canvas'));
         console.error(error);
     } finally {
         loading.value = false;
@@ -352,17 +343,14 @@ async function updateCanvas() {
         if (response.ok && result.success) {
             selectedCanvas.value.name = editCanvasName.value;
             selectedCanvas.value.description = editCanvasDescription.value;
-            alertMessage.value = t('Canvas updated successfully');
-            alertSuccess.value = true;
+            toast.success(t('Canvas updated successfully'));
             editCanvasDialog.value = false;
             router.reload({ only: ['canvases'] });
         } else {
-            alertMessage.value = result.message || t('Failed to update canvas');
-            alertError.value = true;
+            toast.error(result.message || t('Failed to update canvas'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to update canvas');
-        alertError.value = true;
+        toast.error(t('Failed to update canvas'));
         console.error(error);
     } finally {
         saving.value = false;
@@ -389,19 +377,16 @@ async function deleteCanvas() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            alertMessage.value = t('Canvas deleted successfully');
-            alertSuccess.value = true;
+            toast.success(t('Canvas deleted successfully'));
             deleteCanvasDialog.value = false;
             selectedCanvas.value = null;
             canvasData.value = null;
             router.reload({ only: ['canvases'] });
         } else {
-            alertMessage.value = result.message || t('Failed to delete canvas');
-            alertError.value = true;
+            toast.error(result.message || t('Failed to delete canvas'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to delete canvas');
-        alertError.value = true;
+        toast.error(t('Failed to delete canvas'));
         console.error(error);
     } finally {
         saving.value = false;
@@ -410,8 +395,7 @@ async function deleteCanvas() {
 
 async function searchVerses() {
     if (!searchBookId.value || !searchChapter.value || !searchVerse.value) {
-        alertMessage.value = t('Please select a book, chapter, and verse');
-        alertError.value = true;
+        toast.error(t('Please select a book, chapter, and verse'));
         return;
     }
 
@@ -428,12 +412,10 @@ async function searchVerses() {
         if (response.ok) {
             searchResults.value = await response.json();
         } else {
-            alertMessage.value = t('Failed to search verses');
-            alertError.value = true;
+            toast.error(t('Failed to search verses'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to search verses');
-        alertError.value = true;
+        toast.error(t('Failed to search verses'));
         console.error(error);
     } finally {
         searching.value = false;
@@ -482,8 +464,7 @@ async function addVerseToCanvas(verse: Verse) {
 
         if (response.ok && result.success) {
             canvasData.value.nodes.push(result.node);
-            alertMessage.value = t('Verse added to canvas');
-            alertSuccess.value = true;
+            toast.success(t('Verse added to canvas'));
             addVerseDialog.value = false;
             searchResults.value = [];
             searchBookId.value = '';
@@ -491,12 +472,10 @@ async function addVerseToCanvas(verse: Verse) {
             searchVerse.value = '';
             selectedVerseToAdd.value = null;
         } else {
-            alertMessage.value = result.message || t('Failed to add verse');
-            alertError.value = true;
+            toast.error(result.message || t('Failed to add verse'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to add verse');
-        alertError.value = true;
+        toast.error(t('Failed to add verse'));
         console.error(error);
     } finally {
         saving.value = false;
@@ -546,12 +525,10 @@ async function deleteNode(node: Node) {
             );
             // Remove from selection if it was selected
             selectedNodes.value.delete(node.id);
-            alertMessage.value = t('Verse removed from canvas');
-            alertSuccess.value = true;
+            toast.success(t('Verse removed from canvas'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to remove verse');
-        alertError.value = true;
+        toast.error(t('Failed to remove verse'));
         console.error(error);
     }
 }
@@ -596,16 +573,12 @@ async function connectToNode(targetNode: Node) {
 
         if (response.ok && result.success) {
             canvasData.value.connections.push(result.connection);
-            alertMessage.value = t('Connection created');
-            alertSuccess.value = true;
+            toast.success(t('Connection created'));
         } else {
-            alertMessage.value =
-                result.message || t('Failed to create connection');
-            alertError.value = true;
+            toast.error(result.message || t('Failed to create connection'));
         }
     } catch (error) {
-        alertMessage.value = t('Failed to create connection');
-        alertError.value = true;
+        toast.error(t('Failed to create connection'));
         console.error(error);
     } finally {
         cancelConnecting();
@@ -830,8 +803,7 @@ async function openNotesForNode(node: Node) {
     notesDialogOpen.value = true;
 }
 function handleNoteSaved() {
-    alertMessage.value = t('Note saved successfully');
-    alertSuccess.value = true;
+    toast.success(t('Note saved successfully'));
 }
 
 function goToVerseStudy(verseId: number) {
@@ -891,25 +863,6 @@ const canvasBounds = computed(() => {
 
 <template>
     <Head :title="t('Verse Link')" />
-
-    <AlertUser
-        v-if="alertSuccess"
-        :open="true"
-        :title="t('Success')"
-        :confirmButtonText="'OK'"
-        :message="alertMessage"
-        variant="success"
-        @update:open="() => (alertSuccess = false)"
-    />
-    <AlertUser
-        v-if="alertError"
-        :open="true"
-        :title="t('Error')"
-        :confirmButtonText="'OK'"
-        :message="alertMessage"
-        variant="error"
-        @update:open="() => (alertError = false)"
-    />
 
     <!-- Create Canvas Dialog -->
     <Dialog v-model:open="createCanvasDialog">

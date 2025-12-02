@@ -7,6 +7,7 @@ import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
 import MobileFooter from '@/components/MobileFooter.vue';
 import OfflineStatus from '@/components/OfflineStatus.vue';
 import SkipNavigation from '@/components/SkipNavigation.vue';
+import { Toaster } from '@/components/ui/sonner';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -34,5 +35,6 @@ withDefaults(defineProps<Props>(), {
             <MobileFooter />
         </AppContent>
         <OfflineStatus />
+        <Toaster position="bottom-right" richColors />
     </AppShell>
 </template>
