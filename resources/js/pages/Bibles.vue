@@ -179,6 +179,10 @@ const searchVerses = async () => {
         } catch (error) {
             console.error('Algolia search error:', error);
         }
+    } else {
+        // Algolia client not configured, fall back to loading highlights
+        console.warn('Search functionality is not available - Algolia credentials not configured');
+        await loadHighlights();
     }
 };
 </script>
