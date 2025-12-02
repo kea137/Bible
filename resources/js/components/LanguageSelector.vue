@@ -8,11 +8,8 @@ const { locale, changeLocale } = useLocale();
 const { state } = useSidebar();
 const page = usePage();
 
-// store language in database when changed
+// store language in database when changed (DB is source of truth)
 async function updateLocale(newLocale: any) {
-    // Change locale in frontend
-    changeLocale(newLocale);
-
     if (!page.props.auth?.user) {
         alert('Please log in to change your language');
         return;
@@ -49,13 +46,15 @@ async function updateLocale(newLocale: any) {
 
         const result = await response.json();
         if (response.ok && result?.success) {
-            // Optionally show success message
+            // Reload to receive updated language from server props
         } else {
             alert(result?.message || 'Failed to update language.');
+            return;
         }
     } catch (error) {
         alert('Failed to update language.');
         console.error(error);
+        return;
     }
 
     window.location.reload();

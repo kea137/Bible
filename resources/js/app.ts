@@ -37,6 +37,9 @@ createInertiaApp({
 
         app.mount(el);
 
+        // Initialize locale from server-provided props (DB source of truth)
+        initializeLocale(i18n);
+
         // Initialize font preferences after mount to ensure page props are available
         initializeFontPreferences();
 
@@ -55,5 +58,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-
-initializeLocale(i18n);
