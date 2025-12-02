@@ -68,6 +68,11 @@ class User extends Authenticatable
         return $this->hasMany(Lesson::class);
     }
 
+    public function memoryVerses()
+    {
+        return $this->hasMany(MemoryVerse::class);
+    }
+
     public function notes()
     {
         return $this->hasMany(Note::class);

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AlertUser from '@/components/AlertUser.vue';
+import MemoryVerseModal from '@/components/MemoryVerseModal.vue';
 import NotesDialog from '@/components/NotesDialog.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
@@ -47,6 +48,7 @@ import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { algoliasearch } from 'algoliasearch';
 import {
     BookOpen,
+    Brain,
     CheckCircle,
     ChevronLeft,
     ChevronRight,
@@ -124,6 +126,7 @@ const selectedVerseForNote = ref<any>(null);
 const selectedVerseForEdit = ref<any>(null);
 const chapterCompleted = ref(false);
 const clickedVerseId = ref<number | null>(null);
+const memoryVerseModalOpen = ref(false);
 const auth = computed(() => page.props.auth);
 const roleNumbers = computed(() => auth.value?.roleNumbers || []);
 
@@ -475,6 +478,50 @@ function openNotesDialog(verse: any) {
 function openVerseDialog(verse: any) {
     selectedVerseForEdit.value = verse;
     verseDialogOpen.value = true;
+}
+
+async function addToMemoryVerses(verse: any) {
+    try {
+        let csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
+        if (!csrfToken && page.props.csrf_token) {
+            csrfToken = String(page.props.csrf_token);
+        }
+
+        const response = await fetch('/api/memory-verses', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken || '',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                verse_id: verse.id,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alertSuccess.value = true;
+            // Optionally show success message
+        } else {
+            if (response.status === 409) {
+                // Already a memory verse
+                alertInfo.value = true;
+            } else {
+                alertError.value = true;
+            }
+        }
+    } catch (error) {
+        console.error('Failed to add memory verse:', error);
+        alertError.value = true;
+    }
+}
+
+function openMemoryVerseModal() {
+    memoryVerseModalOpen.value = true;
 }
 
 function shareVerse(verse: any) {
@@ -852,16 +899,28 @@ function translateReference(ref: string): string {
                         <div
                             class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                         >
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                @click="goToPreviousChapter"
-                                :disabled="!hasPreviousChapter"
-                                class="w-full sm:w-auto"
-                            >
-                                <ChevronLeft class="mr-1 h-4 w-4" />
-                                {{ t('Previous') }}
-                            </Button>
+                            <div class="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    @click="goToPreviousChapter"
+                                    :disabled="!hasPreviousChapter"
+                                    class="flex-1 sm:w-auto"
+                                >
+                                    <ChevronLeft class="mr-1 h-4 w-4" />
+                                    {{ t('Previous') }}
+                                </Button>
+                                <Button
+                                    v-if="page.props.auth?.user"
+                                    variant="outline"
+                                    size="sm"
+                                    @click="openMemoryVerseModal"
+                                    class="flex-1 sm:w-auto"
+                                    title="Review memory verses"
+                                >
+                                    <Brain class="h-4 w-4" />
+                                </Button>
+                            </div>
                             <Button
                                 v-if="page.props.auth?.user"
                                 :variant="
@@ -1145,6 +1204,12 @@ function translateReference(ref: string): string {
                                             {{ t('Put Note on this Verse') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            @click="addToMemoryVerses(verse)"
+                                        >
+                                            <Brain class="mr-2 h-4 w-4" />
+                                            {{ t('Memorize this Verse') }}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
                                             v-if="canUpdate"
                                             @click="openVerseDialog(verse)"
                                         >
@@ -1274,6 +1339,12 @@ function translateReference(ref: string): string {
             :verse-text="selectedVerseForNote.text"
             :verse-reference="`${loadedChapter.book?.title} ${loadedChapter.chapter_number}:${selectedVerseForNote.verse_number}`"
             @saved="handleNoteSaved"
+        />
+
+        <!-- Memory Verse Modal -->
+        <MemoryVerseModal
+            :open="memoryVerseModalOpen"
+            @update:open="memoryVerseModalOpen = $event"
         />
 
         <!-- Notes Dialog -->

@@ -18,12 +18,13 @@ Looking for the mobile version? Check out our companion mobile app: [**kea137/Bi
 8. [Reading Plan](#reading-plan)
 9. [Parallel Bibles](#parallel-bibles)
 10. [Lessons](#lessons)
-11. [Verse Sharing](#verse-sharing)
-12. [Verse Link](#verse-link)
-13. [User Management](#user-management)
-14. [Configuration](#configuration)
-15. [Developer Guide](#developer-guide)
-16. [Mobile App](#mobile-app)
+11. [Memory Verses](#memory-verses)
+12. [Verse Sharing](#verse-sharing)
+13. [Verse Link](#verse-link)
+14. [User Management](#user-management)
+15. [Configuration](#configuration)
+16. [Developer Guide](#developer-guide)
+17. [Mobile App](#mobile-app)
 
 ---
 
@@ -41,6 +42,7 @@ The Bible Application is a modern Bible reading and study platform built with La
 - **Reading Plan**: Track your Bible reading progress
 - **Parallel View**: Compare multiple translations side-by-side with cross-references
 - **Lessons & Series**: Create, manage, and study Bible lessons with progress tracking
+- **Memory Verses**: Memorize verses with spaced repetition and smart reminders
 - **Verse Sharing**: Create beautiful shareable images with gradient or photo backgrounds
 - **Verse Link Canvas**: Visual canvas for creating connections between Bible verses
 - **Onboarding**: Guided setup for new users
@@ -674,6 +676,192 @@ POST /api/lesson/progress     # Toggle lesson completion
 3. **Series Organization**: Use meaningful episode numbers
 4. **Content Quality**: Write clear, engaging content
 5. **Book Codes**: Use consistent book codes (English or localized)
+
+---
+
+## Memory Verses
+
+### Overview
+
+The Memory Verses feature helps users memorize Bible verses effectively using a proven spaced repetition algorithm (SM-2). The system automatically schedules reviews at optimal intervals and sends reminders to reinforce memory retention.
+
+### Features
+
+#### How It Works
+
+**Spaced Repetition (SM-2 Algorithm):**
+- Based on scientifically proven learning principles
+- Automatically adjusts review intervals based on your performance
+- Verses you know well are reviewed less frequently
+- Verses you struggle with are reviewed more often
+- Optimizes long-term retention
+
+**Review Schedule:**
+1. First review: 1 day after marking as memory verse
+2. Second review: 6 days after first correct review
+3. Subsequent reviews: Interval increases based on performance
+4. Failed reviews: Reset to 1-day interval
+
+#### Marking Verses for Memorization
+
+**How to Add a Memory Verse:**
+1. Find the verse you want to memorize
+2. Mark it as a memory verse via the API
+3. The verse is scheduled for review the next day
+4. You'll receive reminders when it's due for review
+
+**API Request:**
+```bash
+POST /api/mobile/memory-verses
+{
+  "verse_id": 123
+}
+```
+
+#### Reviewing Memory Verses
+
+**Review Process:**
+1. Check for due memory verses
+2. Recall the verse from memory
+3. Submit your performance rating (0-5)
+4. System automatically schedules the next review
+
+**Performance Ratings:**
+- **5**: Perfect recall
+- **4**: Correct with slight hesitation
+- **3**: Correct with difficulty
+- **2**: Incorrect but recognized
+- **1**: Incorrect but familiar
+- **0**: Complete blackout
+
+**Get Due Verses:**
+```bash
+GET /api/mobile/memory-verses/due
+```
+
+**Submit Review:**
+```bash
+POST /api/mobile/memory-verses/{id}/review
+{
+  "quality": 4
+}
+```
+
+#### Daily Reminders
+
+**Automatic Notifications:**
+- Sent daily at 8:00 AM (configurable)
+- Email and in-app notifications
+- Shows count of verses due for review
+- Direct link to review interface
+- Only sent when you have verses due
+
+**Notification Content:**
+- Number of verses due
+- Encouragement message
+- Quick access to review page
+- Tracks your progress
+
+#### Statistics & Progress
+
+**Track Your Memorization:**
+- Total memory verses
+- Verses due for review
+- Total reviews completed
+- Success rate percentage
+- Individual verse statistics
+
+**Get Statistics:**
+```bash
+GET /api/mobile/memory-verses/statistics
+```
+
+**Response Example:**
+```json
+{
+  "total_memory_verses": 10,
+  "due_for_review": 3,
+  "total_reviews": 45,
+  "correct_reviews": 38,
+  "overall_success_rate": 84.44
+}
+```
+
+#### Managing Memory Verses
+
+**View All Memory Verses:**
+```bash
+GET /api/mobile/memory-verses
+```
+
+**Remove a Memory Verse:**
+```bash
+DELETE /api/mobile/memory-verses/{id}
+```
+
+### API Endpoints
+
+All endpoints require authentication via Sanctum token.
+
+**Base URL:** `/api/mobile/memory-verses`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | List all memory verses |
+| POST | `/` | Mark verse as memory verse |
+| GET | `/due` | Get verses due for review |
+| POST | `/{id}/review` | Submit review for a verse |
+| GET | `/statistics` | Get memorization statistics |
+| DELETE | `/{id}` | Remove memory verse |
+
+### Best Practices
+
+1. **Start Small**: Begin with 2-3 verses, add more as you build confidence
+2. **Be Honest**: Rate your recall honestly for optimal scheduling
+3. **Daily Reviews**: Check for due verses daily to maintain consistency
+4. **Context Matters**: Include verse references in your memorization
+5. **Use Reminders**: Enable notifications to stay on track
+6. **Review Regularly**: Even well-learned verses benefit from occasional review
+7. **Don't Rush**: Quality memorization takes time and repetition
+
+### Tips for Effective Memorization
+
+1. **Break It Down**: Memorize phrases or sections, then combine them
+2. **Understand First**: Know what the verse means before memorizing
+3. **Repeat Aloud**: Speaking helps reinforce memory
+4. **Write It Out**: Writing engages different memory pathways
+5. **Use Associations**: Connect verses to personal experiences
+6. **Review Context**: Read surrounding verses for better retention
+7. **Stay Consistent**: Regular, short sessions work better than cramming
+
+### Technical Details
+
+**SM-2 Algorithm Parameters:**
+- Initial easiness factor: 2.5
+- Minimum easiness factor: 1.3
+- Initial interval: 1 day
+- Second interval: 6 days
+- Subsequent intervals: Previous interval × easiness factor
+
+**Quality Impact:**
+- Ratings 3-5: Increase interval
+- Ratings 0-2: Reset to 1-day interval
+- Easiness factor adjusts based on quality rating
+- All reviews tracked for statistics
+
+### Scheduled Tasks
+
+**Daily Reminder Job:**
+```bash
+# Runs automatically at 8:00 AM daily
+php artisan memory-verses:send-reminders
+```
+
+**Manual Trigger:**
+```bash
+# Test the reminder system
+php artisan memory-verses:send-reminders
+```
 
 ---
 

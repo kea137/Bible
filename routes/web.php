@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\BibleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\MemoryVerseController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ReadingProgressController;
@@ -92,6 +93,14 @@ Route::get('/api/verse-highlights', [VerseHighlightController::class, 'index'])-
 Route::get('/api/verse-highlights/chapter', [VerseHighlightController::class, 'getForChapter'])->name('verse_highlights_chapter')->middleware('auth');
 Route::get('/highlighted-verses', [VerseHighlightController::class, 'highlightedVersesPage'])->name('highlighted_verses_page')->middleware('auth');
 Route::put('/api/verse/{verse}', [VerseController::class, 'update'])->name('verse_update')->middleware('auth');
+
+// Memory verse routes
+Route::post('/api/memory-verses', [MemoryVerseController::class, 'store'])->name('memory_verses_store')->middleware('auth');
+Route::get('/api/memory-verses', [MemoryVerseController::class, 'index'])->name('memory_verses_index')->middleware('auth');
+Route::get('/api/memory-verses/due', [MemoryVerseController::class, 'due'])->name('memory_verses_due')->middleware('auth');
+Route::post('/api/memory-verses/{id}/review', [MemoryVerseController::class, 'review'])->name('memory_verses_review')->middleware('auth');
+Route::get('/api/memory-verses/statistics', [MemoryVerseController::class, 'statistics'])->name('memory_verses_statistics')->middleware('auth');
+Route::delete('/api/memory-verses/{id}', [MemoryVerseController::class, 'destroy'])->name('memory_verses_destroy')->middleware('auth');
 
 // Note routes
 Route::get('/notes', [NoteController::class, 'index'])->name('notes')->middleware('auth');
