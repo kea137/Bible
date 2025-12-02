@@ -18,9 +18,16 @@ class VerseFactory extends Factory
      */
     public function definition(): array
     {
+        $bible = \App\Models\Bible::factory()->create();
+        $book = \App\Models\Book::factory()->create(['bible_id' => $bible->id]);
+        $chapter = \App\Models\Chapter::factory()->create(['book_id' => $book->id]);
+
         return [
-            'verse_number' => fake()->numberBetween(1, 176),
-            'text' => fake()->paragraph(),
+            'bible_id' => $bible->id,
+            'book_id' => $book->id,
+            'chapter_id' => $chapter->id,
+            'verse_number' => 1,
+            'text' => 'Test verse text for automated testing.',
         ];
     }
 }
