@@ -29,6 +29,10 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('settings/Offline');
     })->name('offline.edit');
 
+    Route::get('settings/privacy', function () {
+        return Inertia::render('settings/Privacy');
+    })->name('privacy.edit');
+
     Route::patch('settings/language', [LanguageController::class, 'update'])->name('language.update');
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
