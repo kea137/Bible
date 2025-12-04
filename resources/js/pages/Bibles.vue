@@ -142,12 +142,13 @@ const filteredHighlights = computed(() => {
 });
 
 const searchQuery = ref('');
-const client = import.meta.env.VITE_ALGOLIA_APP_ID && import.meta.env.VITE_ALGOLIA_API_KEY
-    ? algoliasearch(
-        import.meta.env.VITE_ALGOLIA_APP_ID,
-        import.meta.env.VITE_ALGOLIA_API_KEY,
-    )
-    : null;
+const client =
+    import.meta.env.VITE_ALGOLIA_APP_ID && import.meta.env.VITE_ALGOLIA_API_KEY
+        ? algoliasearch(
+              import.meta.env.VITE_ALGOLIA_APP_ID,
+              import.meta.env.VITE_ALGOLIA_API_KEY,
+          )
+        : null;
 
 const searchVerses = async () => {
     if (searchQuery.value.trim() === '') {
@@ -181,7 +182,9 @@ const searchVerses = async () => {
         }
     } else {
         // Algolia client not configured, fall back to loading highlights
-        console.warn('Search functionality is not available - configure VITE_ALGOLIA_APP_ID and VITE_ALGOLIA_API_KEY environment variables to enable search features');
+        console.warn(
+            'Search functionality is not available - configure VITE_ALGOLIA_APP_ID and VITE_ALGOLIA_API_KEY environment variables to enable search features',
+        );
         await loadHighlights();
     }
 };

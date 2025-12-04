@@ -98,7 +98,7 @@
         --sonner-bg: var(--card);
         --sonner-color: var(--card-foreground);
         --sonner-border: var(--border);
-        --sonner-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        --sonner-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
         --sonner-toast-height: auto;
         --sonner-icon-size: 18px;
         --sonner-radius: var(--radius);
@@ -123,10 +123,10 @@
     .toaster .toast .description {
         @apply text-muted-foreground;
     }
-    .toaster .toast .actions button[data-type="action"] {
+    .toaster .toast .actions button[data-type='action'] {
         @apply bg-primary text-primary-foreground hover:bg-primary/90;
     }
-    .toaster .toast .actions button[data-type="cancel"] {
+    .toaster .toast .actions button[data-type='cancel'] {
         @apply bg-muted text-muted-foreground hover:bg-muted/80;
     }
 }

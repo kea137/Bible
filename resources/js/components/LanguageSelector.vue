@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useSidebar } from '@/components/ui/sidebar';
 import { useLocale } from '@/composables/useLocale';
-import { Languages } from 'lucide-vue-next';
 import { usePage } from '@inertiajs/vue3';
+import { Languages } from 'lucide-vue-next';
 
-const { locale, changeLocale } = useLocale();
+const { locale } = useLocale();
 const { state } = useSidebar();
 const page = usePage();
 
