@@ -18,7 +18,7 @@ const hasPendingMutations = computed(() => queuedMutations.value.length > 0);
             class="flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-lg"
         >
             <WifiOffIcon class="h-4 w-4" />
-            <span>Offline Mode</span>
+            <span>Offline</span>
         </div>
 
         <!-- Syncing indicator -->

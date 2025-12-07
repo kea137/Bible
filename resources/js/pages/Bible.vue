@@ -739,6 +739,38 @@ function translateReference(ref: string): string {
                             <div
                                 class="flex flex-col gap-2 sm:flex-row sm:gap-3"
                             >
+                                <Button
+                                    v-if="page.props.auth?.user"
+                                    variant="outline"
+                                    size="sm"
+                                    @click="openMemoryVerseModal"
+                                    class="w-full p-5 sm:w-auto"
+                                    title="Review memory verses"
+                                >
+                                    <Brain class="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    :variant="chapterCached ? 'default' : 'outline'"
+                                    size="sm"
+                                    @click="toggleOfflineCache"
+                                    class="w-full p-5 sm:w-auto"
+                                    :title="
+                                        chapterCached
+                                            ? t('UnCache')
+                                            : t('Cache')
+                                    "
+                                >
+                                    <Download
+                                        v-if="!chapterCached"
+                                        class="mr-1 h-4 w-4"
+                                    />
+                                    <Trash2 v-else class="mr-1 h-4 w-4" />
+                                    {{
+                                        chapterCached
+                                            ? t('Cached')
+                                            : t('Cache')
+                                    }}
+                                </Button>
                                 <Select v-model="selectedBookId">
                                     <SelectTrigger class="w-full sm:w-40">
                                         <SelectValue
@@ -789,7 +821,7 @@ function translateReference(ref: string): string {
                                 <Button
                                     @click="searchOpen = true"
                                     variant="outline"
-                                    class="w-full sm:w-auto"
+                                    class="w-full p-5 sm:w-auto"
                                 >
                                     <Search class="mr-2 h-4 w-4" />
                                     {{ t('Search') }}
@@ -919,16 +951,6 @@ function translateReference(ref: string): string {
                                     <ChevronLeft class="mr-1 h-4 w-4" />
                                     {{ t('Previous') }}
                                 </Button>
-                                <Button
-                                    v-if="page.props.auth?.user"
-                                    variant="outline"
-                                    size="sm"
-                                    @click="openMemoryVerseModal"
-                                    class="flex-1 sm:w-auto"
-                                    title="Review memory verses"
-                                >
-                                    <Brain class="h-4 w-4" />
-                                </Button>
                             </div>
                             <Button
                                 v-if="page.props.auth?.user"
@@ -944,28 +966,6 @@ function translateReference(ref: string): string {
                                     chapterCompleted
                                         ? t('Completed')
                                         : t('Mark as Read')
-                                }}
-                            </Button>
-                            <Button
-                                :variant="chapterCached ? 'default' : 'outline'"
-                                size="sm"
-                                @click="toggleOfflineCache"
-                                class="w-full sm:w-auto"
-                                :title="
-                                    chapterCached
-                                        ? t('Remove from offline cache')
-                                        : t('Cache for offline reading')
-                                "
-                            >
-                                <Download
-                                    v-if="!chapterCached"
-                                    class="mr-1 h-4 w-4"
-                                />
-                                <Trash2 v-else class="mr-1 h-4 w-4" />
-                                {{
-                                    chapterCached
-                                        ? t('Cached')
-                                        : t('Cache Offline')
                                 }}
                             </Button>
                             <Button
