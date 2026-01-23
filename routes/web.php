@@ -57,7 +57,7 @@ Route::post('/api/user/translations', [DashboardController::class, 'updateTransl
 // Store user's font preferences
 Route::post('/api/user/font-preferences', [DashboardController::class, 'updateFontPreferences'])->name('update_font_preferences')->middleware('auth');
 
-Route::get('/bibles', [BibleController::class, 'index'])->name('bibles')->middleware(['auth', 'check.onboarding']);
+Route::get('/bibles_index', [BibleController::class, 'index'])->name('bibles')->middleware(['auth', 'check.onboarding']);
 Route::get('/bibles/parallel', [BibleController::class, 'parallel'])->name('bibles_parallel')->middleware(['auth', 'check.onboarding']);
 Route::get('/bibles/configure', [BibleController::class, 'configure'])->name('bibles_configure')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);
 Route::post('/bibles/bootup', [BibleController::class, 'bootup'])->name('bibles_bootup')->middleware(['auth', 'check.onboarding', 'can:update,App\\Models\\Bible']);

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBibleRequest;
 use App\Jobs\BootupBiblesAndReferences;
 use App\Models\Bible;
 use App\Models\Chapter;
+use App\Models\ReadingProgress;
 use App\Models\Role;
 use App\Services\BibleJsonParser;
 use Illuminate\Http\Request;
@@ -98,7 +99,7 @@ class BibleController extends Controller
         $bible->load('books.chapters');
 
         if (empty($request->all())) {
-            $lastReadingProgress = \App\Models\ReadingProgress::where('user_id', Auth::id())
+            $lastReadingProgress = ReadingProgress::where('user_id', Auth::id())
                 ->where('completed', true)
                 ->with([
                     'bible:id,name',
