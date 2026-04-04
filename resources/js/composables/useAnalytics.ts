@@ -18,13 +18,38 @@ export interface AnalyticsEvent {
 const analyticsEnabled = ref(true);
 const events: AnalyticsEvent[] = [];
 
+function getStorageItem(key: string): string | null {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        return localStorage.getItem(key);
+    } catch (error) {
+        console.error('[Analytics] Failed to read storage:', error);
+        return null;
+    }
+}
+
+function setStorageItem(key: string, value: string): void {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    try {
+        localStorage.setItem(key, value);
+    } catch (error) {
+        console.error('[Analytics] Failed to write storage:', error);
+    }
+}
+
 /**
  * Initialize analytics system
  * Checks user preferences and localStorage for analytics consent
  */
 export function initializeAnalytics(): void {
     // Check if user has opted out of analytics
-    const consent = localStorage.getItem('analytics_consent');
+    const consent = getStorageItem('analytics_consent');
     if (consent === 'false') {
         analyticsEnabled.value = false;
     }
@@ -135,7 +160,7 @@ export function trackSearch(query: string, resultsCount: number): void {
  */
 export function setAnalyticsConsent(enabled: boolean): void {
     analyticsEnabled.value = enabled;
-    localStorage.setItem('analytics_consent', enabled.toString());
+    setStorageItem('analytics_consent', enabled.toString());
 
     if (import.meta.env.DEV) {
         console.log(

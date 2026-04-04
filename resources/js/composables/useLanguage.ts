@@ -34,11 +34,34 @@ const setCookie = (name: string, value: string, days = 365) => {
 
 const language = ref<Language>('en');
 
+const getStoredLanguage = (): Language | null => {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        return localStorage.getItem('language') as Language | null;
+    } catch (error) {
+        console.error('[Language] Failed to read local storage:', error);
+        return null;
+    }
+};
+
+const setStoredLanguage = (value: Language) => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    try {
+        localStorage.setItem('language', value);
+    } catch (error) {
+        console.error('[Language] Failed to write local storage:', error);
+    }
+};
+
 export function useLanguage() {
     onMounted(() => {
-        const savedLanguage = localStorage.getItem(
-            'language',
-        ) as Language | null;
+        const savedLanguage = getStoredLanguage();
 
         if (savedLanguage) {
             language.value = savedLanguage;
@@ -49,7 +72,7 @@ export function useLanguage() {
         language.value = value;
 
         // Store in localStorage for client-side persistence...
-        localStorage.setItem('language', value);
+        setStoredLanguage(value);
 
         // Store in cookie for SSR...
         setCookie('language', value);

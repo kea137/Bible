@@ -14,10 +14,14 @@ const serviceWorkerReady = ref(false);
 const deferredPrompt = ref<any>(null);
 
 let registration: ServiceWorkerRegistration | null = null;
+let removeServiceWorkerMessageListener: (() => void) | null = null;
+
+const canUseWindow = () =>
+    typeof window !== 'undefined' && typeof navigator !== 'undefined';
 
 export function useOffline() {
     const updateOnlineStatus = () => {
-        isOnline.value = navigator.onLine;
+        isOnline.value = typeof navigator === 'undefined' ? true : navigator.onLine;
     };
 
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -33,46 +37,48 @@ export function useOffline() {
     };
 
     const registerServiceWorker = async () => {
-        if ('serviceWorker' in navigator) {
-            try {
-                registration = await navigator.serviceWorker.register(
-                    '/sw.js',
-                    {
-                        scope: '/',
-                    },
-                );
+        if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+            return;
+        }
 
-                console.log('[App] Service Worker registered:', registration);
+        try {
+            registration = await navigator.serviceWorker.register('/sw.js', {
+                scope: '/',
+            });
 
-                // Check if service worker is ready
-                if (registration.active) {
-                    serviceWorkerReady.value = true;
-                }
+            console.log('[App] Service Worker registered:', registration);
 
-                registration.addEventListener('updatefound', () => {
-                    const newWorker = registration?.installing;
-                    if (newWorker) {
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'activated') {
-                                serviceWorkerReady.value = true;
-                            }
-                        });
-                    }
-                });
-
-                // Listen for messages from service worker
-                navigator.serviceWorker.addEventListener('message', (event) => {
-                    if (event.data && event.data.type === 'SYNC_MUTATIONS') {
-                        // Trigger sync in the app
-                        window.dispatchEvent(new CustomEvent('sync-mutations'));
-                    }
-                });
-            } catch (error) {
-                console.error(
-                    '[App] Service Worker registration failed:',
-                    error,
-                );
+            // Check if service worker is ready
+            if (registration.active) {
+                serviceWorkerReady.value = true;
             }
+
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration?.installing;
+                if (newWorker) {
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'activated') {
+                            serviceWorkerReady.value = true;
+                        }
+                    });
+                }
+            });
+
+            const handleMessage = (event: MessageEvent) => {
+                if (event.data && event.data.type === 'SYNC_MUTATIONS') {
+                    // Trigger sync in the app
+                    window.dispatchEvent(new CustomEvent('sync-mutations'));
+                }
+            };
+
+            navigator.serviceWorker.addEventListener('message', handleMessage);
+            removeServiceWorkerMessageListener = () =>
+                navigator.serviceWorker.removeEventListener(
+                    'message',
+                    handleMessage,
+                );
+        } catch (error) {
+            console.error('[App] Service Worker registration failed:', error);
         }
     };
 
@@ -103,12 +109,20 @@ export function useOffline() {
     };
 
     const clearCache = async () => {
-        if ('serviceWorker' in navigator && registration) {
+        if (
+            typeof navigator !== 'undefined' &&
+            'serviceWorker' in navigator &&
+            registration
+        ) {
             registration.active?.postMessage({ type: 'CLEAR_CACHE' });
         }
     };
 
     onMounted(() => {
+        if (!canUseWindow()) {
+            return;
+        }
+
         updateOnlineStatus();
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
@@ -119,7 +133,10 @@ export function useOffline() {
         window.addEventListener('appinstalled', handleAppInstalled);
 
         // Check if app is already installed
-        if (window.matchMedia('(display-mode: standalone)').matches) {
+        if (
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(display-mode: standalone)').matches
+        ) {
             isInstalled.value = true;
         }
 
@@ -128,6 +145,10 @@ export function useOffline() {
     });
 
     onUnmounted(() => {
+        if (!canUseWindow()) {
+            return;
+        }
+
         window.removeEventListener('online', updateOnlineStatus);
         window.removeEventListener('offline', updateOnlineStatus);
         window.removeEventListener(
@@ -135,6 +156,8 @@ export function useOffline() {
             handleBeforeInstallPrompt,
         );
         window.removeEventListener('appinstalled', handleAppInstalled);
+        removeServiceWorkerMessageListener?.();
+        removeServiceWorkerMessageListener = null;
     });
 
     return {

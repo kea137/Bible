@@ -40,12 +40,37 @@ const flags = reactive<FeatureFlags>({ ...defaultFlags });
 // Storage key for feature flags
 const STORAGE_KEY = 'app_feature_flags';
 
+function getStorageItem(key: string): string | null {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        return localStorage.getItem(key);
+    } catch (error) {
+        console.error('[Feature Flags] Failed to read storage:', error);
+        return null;
+    }
+}
+
+function setStorageItem(key: string, value: string): void {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    try {
+        localStorage.setItem(key, value);
+    } catch (error) {
+        console.error('[Feature Flags] Failed to write storage:', error);
+    }
+}
+
 /**
  * Initialize feature flags from localStorage
  */
 export function initializeFeatureFlags(): void {
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = getStorageItem(STORAGE_KEY);
         if (stored) {
             const storedFlags = JSON.parse(stored) as Partial<FeatureFlags>;
             Object.assign(flags, { ...defaultFlags, ...storedFlags });
@@ -118,7 +143,7 @@ export function resetFeatureFlags(): void {
  */
 function saveFeatureFlags(): void {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(flags));
+        setStorageItem(STORAGE_KEY, JSON.stringify(flags));
     } catch (error) {
         console.error('[Feature Flags] Failed to save:', error);
     }

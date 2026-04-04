@@ -53,6 +53,10 @@ export interface QueuedMutation {
 class OfflineDB {
     private db: IDBDatabase | null = null;
 
+    isSupported(): boolean {
+        return typeof indexedDB !== 'undefined';
+    }
+
     private sanitizeForIDB<T>(obj: T): T {
         try {
             // Prefer structuredClone when available
@@ -67,6 +71,14 @@ class OfflineDB {
     }
 
     async init(): Promise<void> {
+        if (this.db) {
+            return;
+        }
+
+        if (!this.isSupported()) {
+            throw new Error('IndexedDB is not supported in this browser');
+        }
+
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
 

@@ -5,6 +5,10 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    build: {
+        target: 'es2019',
+        cssTarget: 'safari13',
+    },
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],

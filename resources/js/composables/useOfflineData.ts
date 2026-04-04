@@ -7,11 +7,12 @@ import {
     type QueuedMutation,
 } from '@/lib/offlineDB';
 import { router } from '@inertiajs/vue3';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const cachedChapters = ref<CachedChapter[]>([]);
 const queuedMutations = ref<QueuedMutation[]>([]);
 const isSyncing = ref(false);
+const offlineStorageAvailable = ref(true);
 
 // Configuration constants
 const MAX_RETRIES = 3;
@@ -48,6 +49,10 @@ export function useOfflineData() {
         chapterNumber: number,
         data: ChapterData,
     ): Promise<void> => {
+        if (!offlineStorageAvailable.value) {
+            return;
+        }
+
         const id = `bible_${bibleId}_book_${bookId}_chapter_${chapterNumber}`;
 
         const chapter: CachedChapter = {
@@ -71,6 +76,10 @@ export function useOfflineData() {
 
     // Remove a cached chapter
     const removeCachedChapter = async (id: string): Promise<void> => {
+        if (!offlineStorageAvailable.value) {
+            return;
+        }
+
         try {
             await offlineDB.removeCachedChapter(id);
             await loadCachedChapters();
@@ -83,6 +92,11 @@ export function useOfflineData() {
 
     // Clear all cached chapters
     const clearAllChapters = async (): Promise<void> => {
+        if (!offlineStorageAvailable.value) {
+            cachedChapters.value = [];
+            return;
+        }
+
         try {
             await offlineDB.clearAllChapters();
             cachedChapters.value = [];
@@ -109,6 +123,10 @@ export function useOfflineData() {
         bookId: number,
         chapterNumber: number,
     ): Promise<CachedChapter | null> => {
+        if (!offlineStorageAvailable.value) {
+            return null;
+        }
+
         const id = `bible_${bibleId}_book_${bookId}_chapter_${chapterNumber}`;
         try {
             return await offlineDB.getCachedChapter(id);
@@ -124,6 +142,10 @@ export function useOfflineData() {
         action: 'create' | 'update' | 'delete',
         data: NoteMutationData | HighlightMutationData,
     ): Promise<void> => {
+        if (!offlineStorageAvailable.value) {
+            return;
+        }
+
         // Use crypto.randomUUID if available, fallback to timestamp + random
         const generateId = () => {
             if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -148,7 +170,9 @@ export function useOfflineData() {
 
             // Try to register background sync
             if (
+                typeof navigator !== 'undefined' &&
                 'serviceWorker' in navigator &&
+                typeof ServiceWorkerRegistration !== 'undefined' &&
                 'sync' in ServiceWorkerRegistration.prototype
             ) {
                 const registration = await navigator.serviceWorker.ready;
@@ -167,7 +191,11 @@ export function useOfflineData() {
             return;
         }
 
-        if (!navigator.onLine) {
+        if (!offlineStorageAvailable.value) {
+            return;
+        }
+
+        if (typeof navigator !== 'undefined' && !navigator.onLine) {
             console.log('[OfflineData] Cannot sync while offline');
             return;
         }
@@ -279,6 +307,11 @@ export function useOfflineData() {
 
     // Clear all mutations
     const clearAllMutations = async (): Promise<void> => {
+        if (!offlineStorageAvailable.value) {
+            queuedMutations.value = [];
+            return;
+        }
+
         try {
             await offlineDB.clearAllMutations();
             queuedMutations.value = [];
@@ -290,21 +323,50 @@ export function useOfflineData() {
     };
 
     // Initialize on mount
+    const handleSyncMutations = () => {
+        syncMutations();
+    };
+
+    const handleOnline = () => {
+        console.log('[OfflineData] Back online, syncing mutations...');
+        syncMutations();
+    };
+
     onMounted(async () => {
-        await offlineDB.init();
-        await loadCachedChapters();
-        await loadQueuedMutations();
+        try {
+            await offlineDB.init();
+            offlineStorageAvailable.value = true;
+            await loadCachedChapters();
+            await loadQueuedMutations();
+        } catch (error) {
+            offlineStorageAvailable.value = false;
+            cachedChapters.value = [];
+            queuedMutations.value = [];
+            console.warn(
+                '[OfflineData] Offline storage unavailable in this browser:',
+                error,
+            );
+            return;
+        }
+
+        if (typeof window === 'undefined') {
+            return;
+        }
 
         // Listen for sync events
-        window.addEventListener('sync-mutations', () => {
-            syncMutations();
-        });
+        window.addEventListener('sync-mutations', handleSyncMutations);
 
         // Listen for online event to auto-sync
-        window.addEventListener('online', () => {
-            console.log('[OfflineData] Back online, syncing mutations...');
-            syncMutations();
-        });
+        window.addEventListener('online', handleOnline);
+    });
+
+    onUnmounted(() => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        window.removeEventListener('sync-mutations', handleSyncMutations);
+        window.removeEventListener('online', handleOnline);
     });
 
     return {
@@ -322,5 +384,6 @@ export function useOfflineData() {
         syncMutations,
         clearAllMutations,
         isSyncing: computed(() => isSyncing.value),
+        offlineStorageAvailable: computed(() => offlineStorageAvailable.value),
     };
 }

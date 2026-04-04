@@ -1,17 +1,23 @@
 import { usePage } from '@inertiajs/vue3';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 type Appearance = 'light' | 'dark' | 'system';
+type MediaQueryListener = (event: MediaQueryListEvent) => void;
+
+let cleanupThemeListener: (() => void) | null = null;
 
 export function updateTheme(value: Appearance) {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
         return;
     }
 
     if (value === 'system') {
-        const mediaQueryList = window.matchMedia(
-            '(prefers-color-scheme: dark)',
-        );
+        if (typeof window.matchMedia !== 'function') {
+            document.documentElement.classList.toggle('dark', false);
+            return;
+        }
+
+        const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
         const systemTheme = mediaQueryList.matches ? 'dark' : 'light';
 
         document.documentElement.classList.toggle(
@@ -24,7 +30,10 @@ export function updateTheme(value: Appearance) {
 }
 
 const mediaQuery = () => {
-    if (typeof window === 'undefined') {
+    if (
+        typeof window === 'undefined' ||
+        typeof window.matchMedia !== 'function'
+    ) {
         return null;
     }
 
@@ -46,10 +55,30 @@ export function initializeTheme() {
     updateTheme(userTheme);
 
     // Set up system theme change listener
-    if (userTheme === 'system') {
-        mediaQuery()?.addEventListener('change', () =>
-            handleSystemThemeChange(userTheme),
-        );
+    cleanupThemeListener?.();
+    cleanupThemeListener = null;
+
+    if (userTheme !== 'system') {
+        return;
+    }
+
+    const query = mediaQuery();
+    if (!query) {
+        return;
+    }
+
+    const listener: MediaQueryListener = () =>
+        handleSystemThemeChange(userTheme);
+
+    if (typeof query.addEventListener === 'function') {
+        query.addEventListener('change', listener);
+        cleanupThemeListener = () => query.removeEventListener('change', listener);
+        return;
+    }
+
+    if (typeof query.addListener === 'function') {
+        query.addListener(listener);
+        cleanupThemeListener = () => query.removeListener(listener);
     }
 }
 
@@ -64,6 +93,11 @@ export function useAppearance() {
     onMounted(() => {
         appearance.value = userTheme.value;
         updateTheme(userTheme.value);
+    });
+
+    onUnmounted(() => {
+        cleanupThemeListener?.();
+        cleanupThemeListener = null;
     });
 
     async function updateAppearance(value: Appearance) {
